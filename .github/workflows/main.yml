@@ -1,0 +1,76 @@
+import os
+import time
+import hmac
+import hashlib
+import json
+import requests
+
+# 1. ACESSO SEGURO 🛡️
+app_id = os.getenv('SHOPEE_APP_ID')
+app_secret = os.getenv('SHOPEE_APP_SECRET')
+
+# 2. FUNÇÃO DE ASSINATURA (O "Selo de Segurança") ✍️
+def gerar_assinatura(path):
+    timestamp = int(time.time())
+    base_string = f"{app_id}{path}{timestamp}"
+    signature = hmac.new(
+        app_secret.encode('utf-8'),
+        base_string.encode('utf-8'),
+        hashlib.sha256
+    ).hexdigest()
+    return signature, timestamp
+
+# 3. BUSCA E FILTRAGEM (Tendência + Qualidade + Desconto) 🚀
+def buscar_tendencias():
+    termos = ["Smartwatch", "Fone Bluetooth", "Organizador Lar", "Drone", "LED"]
+    produtos_encontrados = []
+    
+    # Simulando a busca para cada termo
+    for termo in termos:
+        # Aqui o robô usaria a API da Shopee para buscar o termo
+        # Vamos simular um produto que passou no filtro
+        item = {
+            "nome": f"{termo} Pro Max",
+            "url": "https://shope.ee/exemplo",
+            "rating": 4.9,
+            "desconto": 30
+        }
+        
+        # Aplicando seus filtros: Avaliação > 4.8 e Desconto > 20%
+        if item["rating"] >= 4.8 and item["desconto"] >= 20:
+            produtos_encontrados.append(item)
+            
+        if len(produtos_encontrados) >= 5: # Limite por execução
+            break
+    return produtos_encontrados
+
+# 4. ATUALIZAÇÃO DO ARQUIVO (Lógica de Acumulação) 📚
+def atualizar_arquivo(novos_produtos):
+    nome_arquivo = 'links_do_dia.json'
+    
+    # Tenta ler o que já existe (se não for a primeira rodada do dia)
+    try:
+        with open(nome_arquivo, 'r', encoding='utf-8') as f:
+            dados_atuais = json.load(f)
+    except FileNotFoundError:
+        dados_atuais = {}
+
+    # Se já tiver 25 links, o robô pode parar ou reiniciar
+    inicio = len(dados_atuais) + 1
+    
+    for i, prod in enumerate(novos_produtos, inicio):
+        if i > 25: break # Limite diário 🛍️
+        chave = f"Link {i:02d}"
+        dados_atuais[chave] = {
+            "produto": prod["nome"],
+            "url": prod["url"]
+        }
+
+    with open(nome_arquivo, 'w', encoding='utf-8') as f:
+        json.dump(dados_atuais, f, ensure_ascii=False, indent=4)
+
+# EXECUÇÃO PRINCIPAL
+if __name__ == "__main__":
+    achados = buscar_tendencias()
+    atualizar_arquivo(achados)
+    print(f"Robô finalizou! {len(achados)} novos produtos adicionados.")
