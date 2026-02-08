@@ -1,36 +1,23 @@
 name: Shopee Auto Bot
 
 on:
+  workflow_dispatch:
   schedule:
-    # Agendado para rodar às 09h, 12h, 15h, 18h e 21h (UTC)
     - cron: '0 9,12,15,18,21 * * *'
-  workflow_dispatch: # Permite que você rode manualmente para testar
 
 jobs:
-  build:
+  run-bot:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout do código
-        uses: actions/checkout@v3
-
-      - name: Configurar Python
-        uses: setup-python@v4
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
           python-version: '3.9'
-
-      - name: Instalar Dependências
+      - name: Install dependencies
         run: pip install requests
-
-      - name: Rodar Script
+      - name: Run script
         env:
           SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
           SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
         run: python bot_shopee.py
-
-      - name: Salvar Alterações (Links)
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add links_do_dia.json
-          git commit -m "Atualizando links do dia" || echo "Sem mudanças para salvar"
-          git push
