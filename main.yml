@@ -1,0 +1,25 @@
+name: Shopee Auto Bot
+
+on:
+  schedule:
+    # Agendado para rodar às 09h, 12h, 15h, 18h e 21h (UTC)
+    - cron: '0 9,12,15,18,21 * * *'
+  workflow_dispatch: # Permite que você rode manualmente para testar
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v2
+
+      - name: Configurar Python
+        uses: setup-python@v2
+        with:
+          python-version: '3.9'
+
+      - name: Rodar Script
+        env:
+          SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
+          SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
+        run: python bot_shopee.py
