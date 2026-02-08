@@ -5,7 +5,7 @@ import json
 import requests
 from datetime import datetime
 
-# 1. PEGAR AS CREDENCIAIS (Limpando espaços invisíveis) 🧼
+# 1. CREDENCIAIS COM LIMPEZA AUTOMÁTICA 🧼
 app_id = str(os.getenv('SHOPEE_APP_ID', '')).strip()
 app_secret = str(os.getenv('SHOPEE_APP_SECRET', '')).strip()
 affiliate_id = str(os.getenv('SHOPEE_AFFILIATE_ID', '')).strip()
@@ -13,14 +13,15 @@ affiliate_id = str(os.getenv('SHOPEE_AFFILIATE_ID', '')).strip()
 API_URL = "https://open-api.affiliate.shopee.com.br/graphql"
 
 def gerar_assinatura(payload, timestamp):
+    # Monta a assinatura digital exata que a Shopee exige
     base_string = f"{app_id}{timestamp}{payload}{app_secret}"
     return hashlib.sha256(base_string.encode('utf-8')).hexdigest()
 
-def buscar_produtos():
+def buscar_produtos_reais():
     novas_ofertas = []
     timestamp = int(time.time())
     
-    # Suas categorias na ordem: Moda(1), Beleza(2), Eletrônicos(4), Casa(3)
+    # Suas categorias: Moda, Beleza, Eletrônicos, Casa
     categorias = [11050227, 11050232, 11050237, 11050242]
     
     for cat_id in categorias:
@@ -46,15 +47,17 @@ def buscar_produtos():
                         "url": p['productLink']
                     })
                     if len(novas_ofertas) >= 25: break
+            elif 'errors' in res:
+                print(f"❌ Erro Shopee (Cat {cat_id}): {res['errors'][0]['message']}")
         except Exception as e:
-            print(f"Erro na categoria {cat_id}: {e}")
+            print(f"🚨 Erro de conexão: {e}")
         
         if len(novas_ofertas) >= 25: break
     return novas_ofertas
 
 if __name__ == "__main__":
-    print("🚀 Iniciando busca real na Shopee...")
-    ofertas = buscar_produtos()
+    print("🚀 Iniciando busca real...")
+    ofertas = buscar_produtos_reais()
     
     with open('links_do_dia.json', 'w', encoding='utf-8') as f:
         if ofertas:
@@ -62,6 +65,5 @@ if __name__ == "__main__":
             json.dump(dados, f, indent=4, ensure_ascii=False)
             print(f"✅ SUCESSO! {len(ofertas)} links capturados.")
         else:
-            # Se der erro, ele escreve o motivo no arquivo para você ver
-            json.dump({"status": "Erro", "motivo": "Credenciais Rejeitadas ou Sem Produtos"}, f)
-            print("❌ FALHA: Verifique se o AppID e Secret estão corretos no GitHub.")
+            json.dump({"status": "Erro", "motivo": "Verifique AppID e Secret no GitHub"}, f)
+            print("❌ FALHA: Credenciais rejeitadas pela Shopee.")
