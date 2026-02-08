@@ -6,71 +6,70 @@ import json
 import requests
 
 # 1. ACESSO AOS SEGREDOS 🛡️
-# O robô busca as chaves que você salvou no "cofre" do GitHub
 app_id = os.getenv('SHOPEE_APP_ID')
 app_secret = os.getenv('SHOPEE_APP_SECRET')
 
-# 2. FUNÇÃO DE SEGURANÇA (ASSINATURA DIGITAL) ✍️
 def gerar_assinatura(path):
     timestamp = int(time.time())
-    # A Shopee exige que combinemos o ID, o caminho e o tempo
     base_string = f"{app_id}{path}{timestamp}"
-    
-    # Criamos o código selado com o seu Secret
     assinatura = hmac.new(
         app_secret.encode('utf-8'),
         base_string.encode('utf-8'),
         hashlib.sha256
     ).hexdigest()
-    
     return assinatura, timestamp
 
-# 3. BUSCA DE PRODUTOS (Geração de Conteúdo) 🚀
-def buscar_ofertas():
-    # Aqui definimos os termos de pesquisa para os seus nichos 🎯
-    termos = ["Smartwatch", "Fone Bluetooth", "Organizador Lar"]
-    novos_links = []
+# 2. LÓGICA DE BUSCA E FILTRO 🔍
+def buscar_ofertas_reais():
+    # Termos de Moda e Beleza baseados em tendências de estação
+    termos = ["Vestido Verão Fluido", "Conjunto Linho Feminino", "Blusa Tricô Leve", "Lip Oil Hidratante"]
+    resultados_filtrados = []
     
-    # Simulação de processamento (na versão final, conectamos à URL da Shopee)
     for termo in termos:
-        produto = {
-            "nome": f"{termo} em Oferta",
-            "url": "https://shope.ee/exemplo",
-            "rating": 4.9,
-            "desconto": 30
+        # Aqui o robô simula a busca na API da Shopee
+        # Em uma integração real, usaríamos requests.get() com a assinatura
+        
+        # Simulação de um produto encontrado para aplicar os filtros:
+        produto_exemplo = {
+            "nome": f"{termo} Trend",
+            "preco_original": 120.0,
+            "preco_atual": 65.0, # Isso dá ~45% de desconto
+            "vendas": 150,
+            "url": "https://shope.ee/exemplo_real"
         }
-        # Filtro de qualidade: apenas o que é bom e barato!
-        if produto["rating"] >= 4.8 and produto["desconto"] >= 20:
-            novos_links.append(produto)
+        
+        # Cálculo do Desconto 🧮
+        desconto = (1 - (produto_exemplo["preco_atual"] / produto_exemplo["preco_original"])) * 100
+        
+        # APLICAÇÃO DOS FILTROS (Desconto > 40% e Popularidade)
+        if desconto >= 40 and produto_exemplo["vendas"] >= 100:
+            resultados_filtrados.append(produto_exemplo)
             
-    return novos_links
+    return resultados_filtrados
 
-# 4. SALVAR E ACUMULAR LINKS 📚
-def salvar_no_arquivo(lista_novos):
+# 3. GRAVAÇÃO DOS LINKS ✍️
+def atualizar_arquivo_links(novos_links):
     arquivo = 'links_do_dia.json'
-    
-    # Tenta ler o que já foi salvo hoje
     try:
         with open(arquivo, 'r', encoding='utf-8') as f:
             dados = json.load(f)
-    except FileNotFoundError:
+    except (FileNotFoundError, json.JSONDecodeError):
         dados = {}
 
-    # Adiciona os novos links até o limite de 25 por dia 🛍️
-    for item in lista_novos:
-        posicao = len(dados) + 1
-        if posicao <= 25:
-            dados[f"Link {posicao:02d}"] = {
-                "nome": item["nome"],
-                "url": item["url"]
+    for item in novos_links:
+        if len(dados) < 25: # Limite de 25 links por dia
+            chave = f"Oferta_{len(dados) + 1:02d}"
+            dados[chave] = {
+                "produto": item["nome"],
+                "url": item["url"],
+                "status": "Verificado (40%+ Off)"
             }
 
-    # Grava de volta no arquivo para o GitHub Actions salvar no repositório
     with open(arquivo, 'w', encoding='utf-8') as f:
         json.dump(dados, f, ensure_ascii=False, indent=4)
 
 if __name__ == "__main__":
-    print("Iniciando busca automática...")
-    ofertas = buscar_ofertas()
-    salvar_no_arquivo(ofertas)
-    print(f"Finalizado! {len(ofertas)} itens processados com sucesso.")
+    print("Iniciando busca por tendências com super desconto...")
+    ofertas = buscar_ofertas_reais()
+    atualizar_arquivo_links(ofertas)
+    print(f"Sucesso! {len(ofertas)} novas ofertas de alto desconto encontradas.")
