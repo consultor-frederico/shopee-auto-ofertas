@@ -1,0 +1,37 @@
+name: Shopee Auto Bot
+
+on:
+  schedule:
+    # Horários: 09:00, 12:00, 15:00, 18:00 e 21:00 (Horário UTC)
+    - cron: '0 12,15,18,21,0 * * *' 
+  workflow_dispatch: # Permite que você rode manualmente quando quiser
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v2
+
+      - name: Configurar Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+
+      - name: Instalar dependências
+        run: pip install requests
+
+      - name: Executar Robô
+        env:
+          SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
+          SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
+          SHOPEE_AFFILIATE_ID: ${{ secrets.SHOPEE_AFFILIATE_ID }}
+        run: python bot_shopee.py
+
+      - name: Salvar alterações no JSON
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add links_do_dia.json historico_*.json
+          git commit -m "Robô atualizou as ofertas" || exit 0
+          git push
