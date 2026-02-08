@@ -32,6 +32,9 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add links_do_dia.json historico_*.json
+          # Adicionamos o arquivo principal primeiro
+          git add links_do_dia.json
+          # O comando abaixo tenta adicionar o histórico. Se não existir, ele não gera erro
+          git add historico_*.json || echo "Nenhum histórico encontrado ainda"
           git commit -m "Robô atualizou as ofertas" || exit 0
           git push
