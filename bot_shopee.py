@@ -1,6 +1,5 @@
 import os
 import time
-import hmac
 import hashlib
 import json
 import requests
@@ -16,8 +15,7 @@ def gerar_assinatura(payload, timestamp):
 
 # 2. CONVERSÃO DE LINKS REAIS 🔗
 def converter_link_afiliado(url_original):
-    # Aqui o robô usa seu ID para gerar o link de comissão
-    # Simulação da resposta da API de conversão
+    # Simulação da conversão usando seu ID
     id_unico = hashlib.md5(url_original.encode()).hexdigest()[:8]
     return f"https://shope.ee/{id_unico}"
 
@@ -26,16 +24,15 @@ def buscar_e_filtrar():
     termos = ["Vestido Verão Fluido", "Conjunto Linho Feminino", "Blusa Tricô Leve"]
     novas_ofertas = []
     
-    # Carrega links existentes para evitar repetição
     try:
         with open('links_do_dia.json', 'r', encoding='utf-8') as f:
             existentes = json.load(f)
+            # Guardamos os nomes para evitar repetição
             nomes_existentes = [v['produto'] for v in existentes.values()]
     except:
         nomes_existentes = []
 
     for termo in termos:
-        # Simulação de dados reais da API
         produto = {
             "nome": f"{termo} Trend",
             "preco_orig": 150.0,
@@ -43,17 +40,43 @@ def buscar_e_filtrar():
             "url_loja": "https://shopee.com.br/produto-original"
         }
 
-        # Cálculo e Filtros 🧮
         desconto = (1 - (produto["preco_atual"] / produto["preco_orig"])) * 100
         
+        # Filtro de Desconto (40%+) e Duplicidade
         if desconto >= 40 and produto["nome"] not in nomes_existentes:
             link_ganho = converter_link_afiliado(produto["url_loja"])
             novas_ofertas.append({
                 "nome": produto["nome"],
                 "url": link_ganho
             })
-            if len(novas_ofertas) >= 5: break # Meta por rodada
+            if len(novas_ofertas) >= 5: break 
 
     return novas_ofertas
 
-# ... (função atualizar_arquivo_links permanece similar)
+# 4. ATUALIZAÇÃO DO ARQUIVO FINAL 🚀
+def atualizar_arquivo_links(novas_ofertas):
+    try:
+        with open('links_do_dia.json', 'r', encoding='utf-8') as f:
+            dados_totais = json.load(f)
+    except FileNotFoundError:
+        dados_totais = {}
+
+    proximo_indice = len(dados_totais) + 1
+    
+    for oferta in novas_ofertas:
+        if proximo_indice <= 25: # Limite diário
+            dados_totais[f"Oferta_{proximo_indice:02d}"] = {
+                "produto": oferta['nome'],
+                "url": oferta['url'],
+                "status": "Verificado (40%+ Off)"
+            }
+            proximo_indice += 1
+
+    with open('links_do_dia.json', 'w', encoding='utf-8') as f:
+        json.dump(dados_totais, f, indent=4, ensure_ascii=False)
+
+# EXECUÇÃO DO ROBÔ 🤖
+if __name__ == "__main__":
+    ofertas_encontradas = buscar_e_filtrar()
+    atualizar_arquivo_links(ofertas_encontradas)
+    print(f"Sucesso! {len(ofertas_encontradas)} novos links adicionados.")
