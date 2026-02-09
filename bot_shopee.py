@@ -15,11 +15,11 @@ print(f"DIAGNÓSTICO: O AppSecret enviado tem {len(app_secret)} caracteres.")
 API_URL = "https://open-api.affiliate.shopee.com.br/graphql"
 
 def gerar_assinatura(payload, timestamp):
-    # Montamos a base combinando os dados
-    base = f"{app_id}{timestamp}{payload}{app_secret}"
+    # AJUSTE TÉCNICO: Invertemos a ordem colocando o app_secret ANTES do payload
+    base = f"{app_id}{timestamp}{app_secret}{payload}"
     
-    # 🔍 NOVO DIAGNÓSTICO: Verificamos a estrutura da assinatura sem expor a senha toda
-    print(f"DIAGNÓSTICO: Gerando assinatura para AppID {app_id} no Timestamp {timestamp}")
+    # 🔍 DIAGNÓSTICO DA NOVA ESTRUTURA:
+    print(f"DIAGNÓSTICO: Testando nova ordem de assinatura (Secret antes do Payload)")
     print(f"DIAGNÓSTICO: Início da base: {base[:20]}... Fim da base: ...{base[-10:]}")
     
     return hashlib.sha256(base.encode('utf-8')).hexdigest()
@@ -62,7 +62,7 @@ def buscar_produtos_em_massa():
     return ofertas_finais
 
 if __name__ == "__main__":
-    print("🚀 Iniciando busca em Modo de Diagnóstico Avançado...")
+    print("🚀 Iniciando busca com nova ordem de assinatura...")
     lista = buscar_produtos_em_massa()
     
     with open('links_do_dia.json', 'w', encoding='utf-8') as f:
