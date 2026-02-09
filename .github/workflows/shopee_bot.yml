@@ -1,15 +1,15 @@
-  name: Shopee Auto Bot
+name: Shopee Auto Bot
 
 on:
   schedule:
-    # 09h, 12h, 15h, 18h e 21h (Horário de Brasília)
+    # Executa às 09h, 12h, 15h, 18h e 21h (Horário de Brasília)
     - cron: '0 12,15,18,21,0 * * *' 
   workflow_dispatch: 
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    # Permissão vital para o bot conseguir salvar o histórico e não repetir produtos
+    # ESSA LINHA É O SEGREDO: Dá permissão para o bot salvar o histórico e não repetir produtos
     permissions:
       contents: write
     steps:
