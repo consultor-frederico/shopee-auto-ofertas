@@ -6,7 +6,7 @@ import requests
 
 # 1. CREDENCIAIS 🔐
 app_id = str(os.getenv('SHOPEE_APP_ID', '18377620107')).strip()
-app_secret = str(os.getenv('SHOPEE_APP_SECRET', 'Z47YUUZINZYEZVV2ZQ7P4QJICKISTOMB')).strip()
+app_secret = str(os.getenv('SHOPEE_APP_SECRET', 'QQZL7L2MOUXDHZFKRBSHFFWNNGGULBYV')).strip()
 
 API_URL = "https://open-api.affiliate.shopee.com.br/graphql"
 
@@ -18,7 +18,7 @@ def buscar_produtos_em_massa():
     ofertas_finais = []
     timestamp = int(time.time())
     
-    # 🎯 TESTE DE CAMINHO LIVRE: Sem filtros de ordenação para destravar a API
+    # 🎯 TESTE DE CAMINHO LIVRE: Query simplificada para diagnóstico
     query = 'query{productOfferList(limit:5){nodes{productName,offerLink,imageUrl}}}'
     payload = json.dumps({"query": query})
     
@@ -33,6 +33,10 @@ def buscar_produtos_em_massa():
         response = requests.post(API_URL, headers=headers, data=payload)
         res = response.json()
         
+        # 🔍 MODO DIAGNÓSTICO: Isso vai aparecer no log do GitHub Actions
+        print(f"DEBUG - Status Code: {response.status_code}")
+        print(f"DEBUG - Resposta da Shopee: {json.dumps(res, indent=2)}")
+        
         if 'data' in res and res['data'] and res['data']['productOfferList']:
             produtos = res['data']['productOfferList']['nodes']
             for p in produtos:
@@ -42,14 +46,14 @@ def buscar_produtos_em_massa():
                     "foto": p.get('imageUrl')
                 })
         else:
-            print(f"Aviso: A API respondeu mas não trouxe produtos. Erro: {res}")
+            print("Aviso: A API não retornou o formato de dados esperado.")
     except Exception as e:
         print(f"Erro de conexão: {e}")
         
     return ofertas_finais
 
 if __name__ == "__main__":
-    print("🚀 Testando busca simplificada...")
+    print("🚀 Iniciando busca em Modo de Diagnóstico...")
     lista = buscar_produtos_em_massa()
     
     with open('links_do_dia.json', 'w', encoding='utf-8') as f:
@@ -58,5 +62,6 @@ if __name__ == "__main__":
             json.dump(dados, f, indent=4, ensure_ascii=False)
             print(f"✅ SUCESSO! {len(lista)} produtos encontrados.")
         else:
-            json.dump({"status": "Aguardando", "detalhes": "Tentativa com query simples falhou."}, f)
-            print("❌ Nenhuma oferta encontrada mesmo com a query simplificada.")
+            # Salvamos o erro detalhado no JSON para o Make também "ver" se necessário
+            json.dump({"status": "Erro", "detalhes": "Verificar log do GitHub Actions para erro detalhado."}, f)
+            print("❌ Nenhuma oferta encontrada. Cheque o log do GitHub.")
