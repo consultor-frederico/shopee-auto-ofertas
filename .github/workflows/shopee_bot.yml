@@ -8,6 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # ALINHAMENTO CORRIGIDO
     permissions:
       contents: write
     steps:
