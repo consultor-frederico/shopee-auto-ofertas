@@ -9,7 +9,6 @@ from datetime import datetime, timedelta
 APP_ID = str(os.getenv('SHOPEE_APP_ID')).strip()
 APP_SECRET = str(os.getenv('SHOPEE_APP_SECRET')).strip()
 API_URL = "https://open-api.affiliate.shopee.com.br/graphql"
-# UNIFICADO PARA O NOME QUE O GIT ESTÁ SALVANDO
 ARQUIVO_HISTORICO = 'historico_completo.json'
 
 def gerar_assinatura_v2(payload, timestamp):
@@ -46,19 +45,12 @@ def buscar_produtos_validos(quantidade=5):
     produtos_filtrados = []
     pagina = 1
     
-    # Lista expandida com as categorias que mais saem (Beleza, Casa, Eletrônicos, Moda, Bebês, etc.)
-    categorias_bombando = [
-        11035544, 11035179, 11034471, 11035031, 11035314, 
-        11034547, 11035017, 11034626, 11034491, 11035238, 
-        11034870, 11034731, 11034493, 11035417, 11035205
-    ]
-    
-    while len(produtos_filtrados) < quantidade and pagina <= 10:
+    # BUSCA ULTRA-PROFUNDA: Olhamos até 50 páginas de TODA a Shopee
+    while len(produtos_filtrados) < quantidade and pagina <= 50:
         timestamp = int(time.time())
-        # Ajustado para buscar mais ofertas (limit: 40) conforme solicitado
         query = f"""
         query {{
-          productOfferV2(limit: 40, sortType: 5, page: {pagina}, categoryIds: {categorias_bombando}) {{
+          productOfferV2(limit: 40, sortType: 5, page: {pagina}) {{
             nodes {{
               itemId
               productName
@@ -116,3 +108,5 @@ if __name__ == "__main__":
         
         salvar_no_historico(historico_base, novos_produtos)
         print("✅ Dados prontos para o Make!")
+    else:
+        print("❌ Nenhum produto novo encontrado mesmo após 50 páginas.")
