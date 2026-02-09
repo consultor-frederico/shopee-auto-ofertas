@@ -1,4 +1,4 @@
-name: Shopee Auto Bot
+  name: Shopee Auto Bot
 
 on:
   schedule:
@@ -9,6 +9,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # Permissão vital para o bot conseguir salvar o histórico e não repetir produtos
+    permissions:
+      contents: write
     steps:
       - name: Checkout do código
         uses: actions/checkout@v4
