@@ -45,7 +45,7 @@ def buscar_produtos_validos(quantidade=5):
     produtos_filtrados = []
     pagina = 1
     
-    # IDs das categorias que mais vendem: Casa, Cozinha, Beleza e Eletrônicos
+    # Categorias de alta conversão: Casa, Beleza, Cozinha e Eletrônicos
     categorias_bombando = [11035544, 11035179, 11034471, 11035031]
     
     while len(produtos_filtrados) < quantidade and pagina <= 10:
