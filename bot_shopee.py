@@ -51,9 +51,10 @@ def buscar_produtos_validos(quantidade=5):
     
     while len(produtos_filtrados) < quantidade and pagina <= 10:
         timestamp = int(time.time())
+        # Ajustado para buscar mais ofertas (limit: 40) conforme solicitado
         query = f"""
         query {{
-          productOfferV2(limit: 50, sortType: 5, page: {pagina}, categoryIds: {categorias_bombando}) {{
+          productOfferV2(limit: 40, sortType: 5, page: {pagina}, categoryIds: {categorias_bombando}) {{
             nodes {{
               itemId
               productName
