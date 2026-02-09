@@ -16,7 +16,6 @@ def gerar_assinatura_v2(payload, timestamp):
     return hashlib.sha256(base.encode('utf-8')).hexdigest()
 
 def carregar_historico():
-    """Carrega o histórico com IDs e datas de postagem."""
     if os.path.exists(ARQUIVO_HISTORICO):
         try:
             with open(ARQUIVO_HISTORICO, 'r', encoding='utf-8') as f:
@@ -26,7 +25,6 @@ def carregar_historico():
     return {}
 
 def salvar_no_historico(historico, novos_produtos):
-    """Adiciona novos produtos ao histórico com a data atual."""
     data_hoje = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     for p in novos_produtos:
         historico[str(p['itemId'])] = data_hoje
@@ -35,23 +33,20 @@ def salvar_no_historico(historico, novos_produtos):
         json.dump(historico, f, indent=4, ensure_ascii=False)
 
 def produto_pode_repetir(item_id, historico):
-    """Verifica se o produto nunca foi postado ou se foi postado há mais de 7 dias."""
     if item_id not in historico:
         return True
     
     data_postagem = datetime.strptime(historico[item_id], "%Y-%m-%d %H:%M:%S")
+    # Regra: Só repete se a última postagem foi há mais de 7 dias
     if datetime.now() - data_postagem > timedelta(days=7):
         return True
     return False
 
 def buscar_produtos_validos(quantidade=5):
-    """Busca produtos na v2 respeitando a regra de 7 dias e paginação."""
     historico = carregar_historico()
     produtos_filtrados = []
     pagina = 1
     
-    print(f"🔎 Analisando histórico para garantir intervalo de 7 dias...")
-
     while len(produtos_filtrados) < quantidade and pagina <= 10:
         timestamp = int(time.time())
         query = f"""
@@ -90,7 +85,7 @@ def buscar_produtos_validos(quantidade=5):
             
             pagina += 1
         except Exception as e:
-            print(f"💥 Erro na página {pagina}: {e}")
+            print(f"Erro: {e}")
             break
 
     return produtos_filtrados, historico
@@ -99,7 +94,7 @@ if __name__ == "__main__":
     novos_produtos, historico_base = buscar_produtos_validos(5)
     
     if novos_produtos:
-        # 1. Limpa e Gera o CSV de Integração (Sobrescreve o anterior)
+        # GERAR CSV (Sempre limpa e cria novo para o ManyChat)
         with open('integracao_shopee.csv', 'w', encoding='utf-16') as f:
             f.write("produto;preco;comissao_rs;vendas;nota;link_foto;link_afiliado\n")
             for p in novos_produtos:
@@ -107,15 +102,12 @@ if __name__ == "__main__":
                 comissao = f"{float(p['commission']):.2f}"
                 f.write(f"{nome};{p['priceMin']};{comissao};{p['sales']};{p['ratingStar']};{p['imageUrl']};{p['offerLink']}\n")
         
-        # 2. Limpa e Gera o JSON dos links do dia (Sobrescreve o anterior)
+        # GERAR JSON (Sempre limpa e cria novo)
         with open('links_do_dia.json', 'w', encoding='utf-8') as j:
             json.dump({
-                "data_geracao": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                "ultima_atualizacao": datetime.now().strftime("%d/%m/%Y %H:%M"),
                 "produtos": novos_produtos
             }, j, indent=4, ensure_ascii=False)
         
-        # 3. Atualiza a memória com data/hora e salva
         salvar_no_historico(historico_base, novos_produtos)
-        print(f"✅ Sucesso! 5 ofertas únicas geradas. Memória de 7 dias aplicada.")
-    else:
-        print("❌ Não foram encontrados produtos que atendam ao critério de 7 dias.")
+        print(f"✅ Automação concluída com sucesso às {datetime.now()}.")
