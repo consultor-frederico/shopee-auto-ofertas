@@ -5,8 +5,17 @@ import json
 import requests
 
 # 1. CREDENCIAIS 🔐
+# Usamos o strip() para garantir que não existam espaços invisíveis
 app_id = str(os.getenv('SHOPEE_APP_ID', '18377620107')).strip()
 app_secret = str(os.getenv('SHOPEE_APP_SECRET', 'QQZL7L2MOUXDHZFKRBSHFFWNNGGULBYV')).strip()
+
+# 🧪 TESTE DE DIAGNÓSTICO:
+# Isso nos dirá se o GitHub está enviando as chaves corretamente
+print(f"DIAGNÓSTICO: O AppID enviado tem {len(app_id)} caracteres.")
+print(f"DIAGNÓSTICO: O AppSecret enviado tem {len(app_secret)} caracteres.")
+
+if len(app_secret) < 10:
+    print("⚠️ AVISO: A senha (AppSecret) parece estar vazia ou curta demais!")
 
 API_URL = "https://open-api.affiliate.shopee.com.br/graphql"
 
@@ -18,7 +27,7 @@ def buscar_produtos_em_massa():
     ofertas_finais = []
     timestamp = int(time.time())
     
-    # 🎯 TESTE DE CAMINHO LIVRE: Query simplificada para diagnóstico
+    # Query simplificada para teste de conexão
     query = 'query{productOfferList(limit:5){nodes{productName,offerLink,imageUrl}}}'
     payload = json.dumps({"query": query})
     
@@ -33,7 +42,7 @@ def buscar_produtos_em_massa():
         response = requests.post(API_URL, headers=headers, data=payload)
         res = response.json()
         
-        # 🔍 MODO DIAGNÓSTICO: Isso vai aparecer no log do GitHub Actions
+        # Exibe a resposta técnica da Shopee
         print(f"DEBUG - Status Code: {response.status_code}")
         print(f"DEBUG - Resposta da Shopee: {json.dumps(res, indent=2)}")
         
@@ -62,6 +71,5 @@ if __name__ == "__main__":
             json.dump(dados, f, indent=4, ensure_ascii=False)
             print(f"✅ SUCESSO! {len(lista)} produtos encontrados.")
         else:
-            # Salvamos o erro detalhado no JSON para o Make também "ver" se necessário
             json.dump({"status": "Erro", "detalhes": "Verificar log do GitHub Actions para erro detalhado."}, f)
             print("❌ Nenhuma oferta encontrada. Cheque o log do GitHub.")
