@@ -4,27 +4,38 @@ import hashlib
 import json
 import requests
 
-# 1. CREDENCIAIS (Configuradas nas Secrets do GitHub) 🔐
+# 1. CREDENCIAIS 🔐
 APP_ID = str(os.getenv('SHOPEE_APP_ID')).strip()
 APP_SECRET = str(os.getenv('SHOPEE_APP_SECRET')).strip()
 API_URL = "https://open-api.affiliate.shopee.com.br/graphql"
 
 def gerar_assinatura_v2(payload, timestamp):
-    """Gera a assinatura digital rigorosa da v2 da Shopee."""
-    # Ordem obrigatória: AppID + Timestamp + Payload + AppSecret
     base = f"{APP_ID}{timestamp}{payload}{APP_SECRET}"
     return hashlib.sha256(base.encode('utf-8')).hexdigest()
 
-def buscar_v2_com_midia():
-    """Busca 5 ofertas na API v2 com campos de imagem e vídeo."""
+def buscar_melhores_ofertas():
     timestamp = int(time.time())
     
-    # Query v2 configurada para 5 itens e todos os tipos de mídia
-    query = 'query{shopeeOfferV2(limit:5){nodes{offerName imageUrl videoUrl offerLink}}}'
+    # Usando productOfferV2 (conforme sua última documentação)
+    # sortType: 5 -> Maior Comissão primeiro
+    # limit: 5 -> Trazer 5 produtos
+    query = """
+    query {
+      productOfferV2(limit: 5, sortType: 5) {
+        nodes {
+          productName
+          imageUrl
+          offerLink
+          priceMin
+          commission
+          sales
+          ratingStar
+        }
+      }
+    }
+    """
     
-    # Payload limpo (compacto) para não quebrar a assinatura
     payload = json.dumps({"query": query}, separators=(',', ':'))
-    
     sig = gerar_assinatura_v2(payload, timestamp)
     
     headers = {
@@ -32,55 +43,34 @@ def buscar_v2_com_midia():
         "Content-Type": "application/json"
     }
     
-    print("🚀 Iniciando busca de 5 ofertas (Reels e Fotos) na v2...")
+    print("🚀 Puxando os 5 produtos que mais pagam comissão...")
     try:
         response = requests.post(API_URL, headers=headers, data=payload)
         res = response.json()
-        
-        if 'data' in res and res['data'].get('shopeeOfferV2'):
-            return res['data']['shopeeOfferV2']['nodes']
+        if 'data' in res and res['data'].get('productOfferV2'):
+            return res['data']['productOfferV2']['nodes']
         else:
-            print(f"⚠️ Resposta da Shopee sem dados: {res.get('errors')}")
+            print(f"⚠️ Erro: {res.get('errors')}")
             return None
     except Exception as e:
-        print(f"💥 Erro técnico na conexão: {e}")
+        print(f"💥 Erro técnico: {e}")
         return None
 
 if __name__ == "__main__":
-    # Executa a busca
-    produtos = buscar_v2_com_midia()
+    produtos = buscar_melhores_ofertas()
     
-    # 2. GERANDO O ARQUIVO DE INTEGRAÇÃO (CSV para Excel/ManyChat) 📊
-    # Usamos encoding utf-16 e separador ';' para o Excel brasileiro abrir direto
-    nome_arquivo_csv = 'integracao_shopee.csv'
-    nome_arquivo_json = 'links_do_dia.json'
-
     if produtos:
-        # Criando o CSV de integração
-        with open(nome_arquivo_csv, 'w', encoding='utf-16') as f:
-            # Cabeçalho das colunas
-            f.write("produto;tem_video;link_video;link_foto;link_afiliado\n")
-            
+        # GERANDO CSV PARA EXCEL/MANYCHAT
+        with open('integracao_shopee.csv', 'w', encoding='utf-16') as f:
+            f.write("produto;preco;comissao_rs;vendas;nota;foto;link\n")
             for p in produtos:
-                video = p.get('videoUrl', '')
-                tem_video = "SIM" if video else "NÃO"
-                # Limpa o nome do produto para não quebrar as colunas do CSV
-                nome_limpo = p['offerName'].replace(';', ' ').replace('\n', '')
-                
-                f.write(f"{nome_limpo};{tem_video};{video};{p['imageUrl']};{p['offerLink']}\n")
+                nome = p['productName'].replace(';', ' ')
+                f.write(f"{nome};{p['priceMin']};{p['commission']};{p['sales']};{p['ratingStar']};{p['imageUrl']};{p['offerLink']}\n")
         
-        # Também salvamos em JSON para manter o histórico que você já tinha
-        with open(nome_arquivo_json, 'w', encoding='utf-8') as j:
-            json.dump({
-                "status": "Sucesso",
-                "versao": "v2",
-                "total": len(produtos),
-                "produtos": produtos
-            }, j, indent=4, ensure_ascii=False)
+        # SALVANDO JSON
+        with open('links_do_dia.json', 'w', encoding='utf-8') as j:
+            json.dump({"status": "Sucesso", "produtos": produtos}, j, indent=4, ensure_ascii=False)
             
-        print(f"✅ Sucesso! Arquivos '{nome_arquivo_csv}' e '{nome_arquivo_json}' gerados.")
+        print(f"✅ Integração completa com {len(produtos)} produtos!")
     else:
-        # Se falhar, registra o erro no JSON
-        with open(nome_arquivo_json, 'w', encoding='utf-8') as j:
-            json.dump({"status": "Erro", "detalhes": "Não foi possível carregar as ofertas."}, j)
-        print("❌ Falha na integração. Verifique os logs.")
+        print("❌ Falha na busca.")
