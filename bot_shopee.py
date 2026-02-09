@@ -9,6 +9,7 @@ from datetime import datetime, timedelta
 APP_ID = str(os.getenv('SHOPEE_APP_ID')).strip()
 APP_SECRET = str(os.getenv('SHOPEE_APP_SECRET')).strip()
 API_URL = "https://open-api.affiliate.shopee.com.br/graphql"
+# UNIFICADO PARA O NOME QUE O GIT ESTÁ SALVANDO
 ARQUIVO_HISTORICO = 'historico_completo.json'
 
 def gerar_assinatura_v2(payload, timestamp):
