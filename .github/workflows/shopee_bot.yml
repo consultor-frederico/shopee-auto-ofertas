@@ -4,7 +4,7 @@ on:
   schedule:
     # Horários: 09:00, 12:00, 15:00, 18:00 e 21:00 (Horário UTC)
     - cron: '0 12,15,18,21,0 * * *' 
-  workflow_dispatch: # Permite que você rode manualmente quando quiser
+  workflow_dispatch: 
 
 jobs:
   build:
@@ -28,11 +28,15 @@ jobs:
           SHOPEE_AFFILIATE_ID: ${{ secrets.SHOPEE_AFFILIATE_ID }}
         run: python bot_shopee.py
 
-      - name: Salvar alterações no JSON
+      - name: Salvar alterações (JSON, CSV e Memória)
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
+          # Adiciona o JSON de links do dia
           git add links_do_dia.json
-          git add historico_*.json || echo "Nenhum histórico encontrado ainda"
-          git commit -m "Robô atualizou as ofertas" || exit 0
+          # Adiciona o CSV de integração para Excel/ManyChat
+          git add integracao_shopee.csv
+          # Adiciona a memória (historico_ids.json) para não repetir produtos
+          git add historico_ids.json
+          git commit -m "Robô atualizou ofertas e memória" || exit 0
           git push
