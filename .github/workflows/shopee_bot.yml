@@ -2,7 +2,8 @@ name: Shopee Auto Bot
 
 on:
   schedule:
-    - cron: '0 12,15,18,21,0 * * *' 
+    # Rodar todos os dias às 19:00 (Horário de Brasília é UTC-3, então usamos 22:00 UTC)
+    - cron: '0 22 * * *' 
   workflow_dispatch: 
 
 jobs:
