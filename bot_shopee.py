@@ -35,9 +35,7 @@ def salvar_no_historico(historico, novos_produtos):
 def produto_pode_repetir(item_id, historico):
     if item_id not in historico:
         return True
-    
     data_postagem = datetime.strptime(historico[item_id], "%Y-%m-%d %H:%M:%S")
-    # Regra: Só repete se a última postagem foi há mais de 7 dias
     if datetime.now() - data_postagem > timedelta(days=7):
         return True
     return False
@@ -94,7 +92,7 @@ if __name__ == "__main__":
     novos_produtos, historico_base = buscar_produtos_validos(5)
     
     if novos_produtos:
-        # GERAR CSV (Sempre limpa e cria novo para o ManyChat)
+        # Gera o CSV para o Make (usando delimitador ';')
         with open('integracao_shopee.csv', 'w', encoding='utf-16') as f:
             f.write("produto;preco;comissao_rs;vendas;nota;link_foto;link_afiliado\n")
             for p in novos_produtos:
@@ -102,12 +100,12 @@ if __name__ == "__main__":
                 comissao = f"{float(p['commission']):.2f}"
                 f.write(f"{nome};{p['priceMin']};{comissao};{p['sales']};{p['ratingStar']};{p['imageUrl']};{p['offerLink']}\n")
         
-        # GERAR JSON (Sempre limpa e cria novo)
+        # Gera o JSON para o Make (mais fácil de mapear campos)
         with open('links_do_dia.json', 'w', encoding='utf-8') as j:
             json.dump({
-                "ultima_atualizacao": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                "ultima_atualizacao": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "produtos": novos_produtos
             }, j, indent=4, ensure_ascii=False)
         
         salvar_no_historico(historico_base, novos_produtos)
-        print(f"✅ Automação concluída com sucesso às {datetime.now()}.")
+        print("✅ Dados prontos para o Make!")
