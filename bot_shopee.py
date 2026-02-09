@@ -3,74 +3,119 @@ import time
 import hashlib
 import json
 import requests
+from datetime import datetime, timedelta
 
 # 1. CREDENCIAIS 🔐
 APP_ID = str(os.getenv('SHOPEE_APP_ID')).strip()
 APP_SECRET = str(os.getenv('SHOPEE_APP_SECRET')).strip()
 API_URL = "https://open-api.affiliate.shopee.com.br/graphql"
+ARQUIVO_HISTORICO = 'historico_completo.json'
 
 def gerar_assinatura_v2(payload, timestamp):
     base = f"{APP_ID}{timestamp}{payload}{APP_SECRET}"
     return hashlib.sha256(base.encode('utf-8')).hexdigest()
 
-def buscar_melhores_ofertas():
-    timestamp = int(time.time())
+def carregar_historico():
+    """Carrega o histórico com IDs e datas de postagem."""
+    if os.path.exists(ARQUIVO_HISTORICO):
+        try:
+            with open(ARQUIVO_HISTORICO, 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except:
+            return {}
+    return {}
+
+def salvar_no_historico(historico, novos_produtos):
+    """Adiciona novos produtos ao histórico com a data atual."""
+    data_hoje = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    for p in novos_produtos:
+        historico[str(p['itemId'])] = data_hoje
     
-    # Usando productOfferV2 (conforme sua última documentação)
-    # sortType: 5 -> Maior Comissão primeiro
-    # limit: 5 -> Trazer 5 produtos
-    query = """
-    query {
-      productOfferV2(limit: 5, sortType: 5) {
-        nodes {
-          productName
-          imageUrl
-          offerLink
-          priceMin
-          commission
-          sales
-          ratingStar
+    with open(ARQUIVO_HISTORICO, 'w', encoding='utf-8') as f:
+        json.dump(historico, f, indent=4, ensure_ascii=False)
+
+def produto_pode_repetir(item_id, historico):
+    """Verifica se o produto nunca foi postado ou se foi postado há mais de 7 dias."""
+    if item_id not in historico:
+        return True
+    
+    data_postagem = datetime.strptime(historico[item_id], "%Y-%m-%d %H:%M:%S")
+    if datetime.now() - data_postagem > timedelta(days=7):
+        return True
+    return False
+
+def buscar_produtos_validos(quantidade=5):
+    """Busca produtos na v2 respeitando a regra de 7 dias e paginação."""
+    historico = carregar_historico()
+    produtos_filtrados = []
+    pagina = 1
+    
+    print(f"🔎 Analisando histórico para garantir intervalo de 7 dias...")
+
+    while len(produtos_filtrados) < quantidade and pagina <= 10:
+        timestamp = int(time.time())
+        query = f"""
+        query {{
+          productOfferV2(limit: 20, sortType: 5, page: {pagina}) {{
+            nodes {{
+              itemId
+              productName
+              imageUrl
+              offerLink
+              priceMin
+              commission
+              sales
+              ratingStar
+            }}
+          }}
+        }}
+        """
+        payload = json.dumps({"query": query}, separators=(',', ':'))
+        sig = gerar_assinatura_v2(payload, timestamp)
+        
+        headers = {
+            "Authorization": f"SHA256 Credential={APP_ID}, Signature={sig}, Timestamp={timestamp}",
+            "Content-Type": "application/json"
         }
-      }
-    }
-    """
-    
-    payload = json.dumps({"query": query}, separators=(',', ':'))
-    sig = gerar_assinatura_v2(payload, timestamp)
-    
-    headers = {
-        "Authorization": f"SHA256 Credential={APP_ID}, Signature={sig}, Timestamp={timestamp}",
-        "Content-Type": "application/json"
-    }
-    
-    print("🚀 Puxando os 5 produtos que mais pagam comissão...")
-    try:
-        response = requests.post(API_URL, headers=headers, data=payload)
-        res = response.json()
-        if 'data' in res and res['data'].get('productOfferV2'):
-            return res['data']['productOfferV2']['nodes']
-        else:
-            print(f"⚠️ Erro: {res.get('errors')}")
-            return None
-    except Exception as e:
-        print(f"💥 Erro técnico: {e}")
-        return None
+        
+        try:
+            response = requests.post(API_URL, headers=headers, data=payload)
+            res = response.json()
+            nodes = res.get('data', {}).get('productOfferV2', {}).get('nodes', [])
+            
+            for p in nodes:
+                item_id = str(p['itemId'])
+                if produto_pode_repetir(item_id, historico) and len(produtos_filtrados) < quantidade:
+                    produtos_filtrados.append(p)
+            
+            pagina += 1
+        except Exception as e:
+            print(f"💥 Erro na página {pagina}: {e}")
+            break
+
+    return produtos_filtrados, historico
 
 if __name__ == "__main__":
-    produtos = buscar_melhores_ofertas()
+    novos_produtos, historico_base = buscar_produtos_validos(5)
     
-    if produtos:
-        # GERANDO CSV PARA EXCEL/MANYCHAT
+    if novos_produtos:
+        # 1. Limpa e Gera o CSV de Integração (Sobrescreve o anterior)
         with open('integracao_shopee.csv', 'w', encoding='utf-16') as f:
-            f.write("produto;preco;comissao_rs;vendas;nota;foto;link\n")
-            for p in produtos:
-                nome = p['productName'].replace(';', ' ')
-                f.write(f"{nome};{p['priceMin']};{p['commission']};{p['sales']};{p['ratingStar']};{p['imageUrl']};{p['offerLink']}\n")
+            f.write("produto;preco;comissao_rs;vendas;nota;link_foto;link_afiliado\n")
+            for p in novos_produtos:
+                nome = p['productName'].replace(';', ' ').replace('\n', '')
+                comissao = f"{float(p['commission']):.2f}"
+                f.write(f"{nome};{p['priceMin']};{comissao};{p['sales']};{p['ratingStar']};{p['imageUrl']};{p['offerLink']}\n")
         
-        # SALVANDO JSON
+        # 2. Limpa e Gera o JSON dos links do dia (Sobrescreve o anterior)
         with open('links_do_dia.json', 'w', encoding='utf-8') as j:
-            json.dump({"status": "Sucesso", "produtos": produtos}, j, indent=4, ensure_ascii=False)
-            
-        print(f"✅ Integração completa com {len(produtos)} produtos!")
+            json.dump({
+                "data_geracao": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                "produtos": novos_produtos
+            }, j, indent=4, ensure_ascii=False)
+        
+        # 3. Atualiza a memória com data/hora e salva
+        salvar_no_historico(historico_base, novos_produtos)
+        print(f"✅ Sucesso! 5 ofertas únicas geradas. Memória de 7 dias aplicada.")
     else:
-        print("❌ Falha na busca.")
+        print("❌ Não foram encontrados produtos que atendam ao critério de 7 dias.")
