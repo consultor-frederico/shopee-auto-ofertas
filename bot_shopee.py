@@ -45,11 +45,14 @@ def buscar_produtos_validos(quantidade=5):
     produtos_filtrados = []
     pagina = 1
     
+    # IDs das categorias que mais vendem: Casa, Cozinha, Beleza e Eletrônicos
+    categorias_bombando = [11035544, 11035179, 11034471, 11035031]
+    
     while len(produtos_filtrados) < quantidade and pagina <= 10:
         timestamp = int(time.time())
         query = f"""
         query {{
-          productOfferV2(limit: 20, sortType: 5, page: {pagina}) {{
+          productOfferV2(limit: 50, sortType: 5, page: {pagina}, categoryIds: {categorias_bombando}) {{
             nodes {{
               itemId
               productName
@@ -92,7 +95,6 @@ if __name__ == "__main__":
     novos_produtos, historico_base = buscar_produtos_validos(5)
     
     if novos_produtos:
-        # Gera o CSV para o Make (usando delimitador ';')
         with open('integracao_shopee.csv', 'w', encoding='utf-16') as f:
             f.write("produto;preco;comissao_rs;vendas;nota;link_foto;link_afiliado\n")
             for p in novos_produtos:
@@ -100,7 +102,6 @@ if __name__ == "__main__":
                 comissao = f"{float(p['commission']):.2f}"
                 f.write(f"{nome};{p['priceMin']};{comissao};{p['sales']};{p['ratingStar']};{p['imageUrl']};{p['offerLink']}\n")
         
-        # Gera o JSON para o Make (mais fácil de mapear campos)
         with open('links_do_dia.json', 'w', encoding='utf-8') as j:
             json.dump({
                 "ultima_atualizacao": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
