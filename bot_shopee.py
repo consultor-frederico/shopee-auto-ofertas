@@ -18,8 +18,8 @@ def buscar_produtos_em_massa():
     ofertas_finais = []
     timestamp = int(time.time())
     
-    # ALTERAÇÃO REALIZADA: sortBy mudado para "relevance" para facilitar a busca inicial 🎯
-    query = 'query{productOfferList(limit:50,sortBy:"relevance"){nodes{productName,offerLink,imageUrl,videoUrl}}}'
+    # 🎯 TESTE DE CAMINHO LIVRE: Sem filtros de ordenação para destravar a API
+    query = 'query{productOfferList(limit:5){nodes{productName,offerLink,imageUrl}}}'
     payload = json.dumps({"query": query})
     
     sig = gerar_assinatura(payload, timestamp)
@@ -39,25 +39,24 @@ def buscar_produtos_em_massa():
                 ofertas_finais.append({
                     "produto": p['productName'],
                     "url": p['offerLink'],
-                    "foto": p.get('imageUrl'), # Pega a foto do produto 🖼️
-                    "video": p.get('videoUrl')  # Pega o vídeo se existir 🎥
+                    "foto": p.get('imageUrl')
                 })
         else:
-            print(f"Aviso: A API não retornou produtos. Erro: {res}")
+            print(f"Aviso: A API respondeu mas não trouxe produtos. Erro: {res}")
     except Exception as e:
         print(f"Erro de conexão: {e}")
         
     return ofertas_finais
 
 if __name__ == "__main__":
-    print("🚀 Iniciando busca por relevância para destravar o sistema...")
+    print("🚀 Testando busca simplificada...")
     lista = buscar_produtos_em_massa()
     
     with open('links_do_dia.json', 'w', encoding='utf-8') as f:
         if lista:
-            dados = {f"Oferta_{i+1:02d}": o for i, o in enumerate(lista[:25])}
+            dados = {f"Oferta_{i+1:02d}": o for i, o in enumerate(lista)}
             json.dump(dados, f, indent=4, ensure_ascii=False)
-            print(f"✅ SUCESSO! {len(lista[:25])} ofertas encontradas.")
+            print(f"✅ SUCESSO! {len(lista)} produtos encontrados.")
         else:
-            json.dump({"status": "Aguardando", "detalhes": "API conectada, aguardando propagação."}, f)
-            print("❌ Nenhuma oferta encontrada. Verifique se as chaves da API estão corretas.")
+            json.dump({"status": "Aguardando", "detalhes": "Tentativa com query simples falhou."}, f)
+            print("❌ Nenhuma oferta encontrada mesmo com a query simplificada.")
