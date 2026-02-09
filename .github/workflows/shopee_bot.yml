@@ -2,7 +2,7 @@ name: Shopee Auto Bot
 
 on:
   schedule:
-    # Horários: 09:00, 12:00, 15:00, 18:00 e 21:00 (Horário UTC)
+    # 09h, 12h, 15h, 18h e 21h (Horário de Brasília)
     - cron: '0 12,15,18,21,0 * * *' 
   workflow_dispatch: 
 
@@ -12,9 +12,11 @@ jobs:
     steps:
       - name: Checkout do código
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true
 
       - name: Configurar Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: '3.9'
 
@@ -25,18 +27,12 @@ jobs:
         env:
           SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
           SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
-          SHOPEE_AFFILIATE_ID: ${{ secrets.SHOPEE_AFFILIATE_ID }}
         run: python bot_shopee.py
 
-      - name: Salvar alterações (JSON, CSV e Memória)
+      - name: Salvar Memória e Resultados
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          # Adiciona o JSON de links do dia
-          git add links_do_dia.json
-          # Adiciona o CSV de integração para Excel/ManyChat
-          git add integracao_shopee.csv
-          # Adiciona a memória (historico_ids.json) para não repetir produtos
-          git add historico_ids.json
-          git commit -m "Robô atualizou ofertas e memória" || exit 0
+          git config --local user.email "bot@github.com"
+          git config --local user.name "ShopeeBot"
+          git add links_do_dia.json integracao_shopee.csv historico_completo.json
+          git commit -m "Automação: Atualização das $(date +'%d/%m/%Y %H:%M')" || exit 0
           git push
