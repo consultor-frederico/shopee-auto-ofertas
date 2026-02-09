@@ -10,22 +10,20 @@ app_secret = str(os.getenv('SHOPEE_APP_SECRET', 'QQZL7L2MOUXDHZFKRBSHFFWNNGGULBY
 
 API_URL = "https://open-api.affiliate.shopee.com.br/graphql"
 
-def gerar_assinatura(payload, timestamp):
-    # Ordem padrão Shopee: AppID + Timestamp + Payload + Secret
-    base = f"{app_id}{timestamp}{payload}{app_secret}"
-    return hashlib.sha256(base.encode('utf-8')).hexdigest()
-
-def buscar_produtos_em_massa():
-    ofertas_finais = []
+def testar_conexao(ordem_v1=True):
     timestamp = int(time.time())
-    
-    # Query simplificada
-    query = 'query{productOfferList(limit:5){nodes{productName,offerLink,imageUrl}}}'
-    
-    # 🎯 LIMPEZA TOTAL: Removemos todos os espaços do JSON (separators)
+    query = 'query{productOfferList(limit:1){nodes{productName}}}'
     payload = json.dumps({"query": query}, separators=(',', ':'))
     
-    sig = gerar_assinatura(payload, timestamp)
+    # Define a ordem baseada no parâmetro
+    if ordem_v1:
+        base = f"{app_id}{timestamp}{payload}{app_secret}"
+        label = "PADRÃO (Payload antes do Secret)"
+    else:
+        base = f"{app_id}{timestamp}{app_secret}{payload}"
+        label = "INVERTIDA (Secret antes do Payload)"
+        
+    sig = hashlib.sha256(base.encode('utf-8')).hexdigest()
     
     headers = {
         "Authorization": f"SHA256 {sig}",
@@ -33,36 +31,32 @@ def buscar_produtos_em_massa():
         "Content-Type": "application/json"
     }
 
+    print(f"🧪 Testando Ordem: {label}")
     try:
-        print(f"🚀 Enviando requisição (AppID: {app_id})...")
         response = requests.post(API_URL, headers=headers, data=payload)
         res = response.json()
-        
-        if 'data' in res and res.get('data') and res['data'].get('productOfferList'):
-            produtos = res['data']['productOfferList']['nodes']
-            for p in produtos:
-                ofertas_finais.append({
-                    "produto": p['productName'],
-                    "url": p['offerLink'],
-                    "foto": p.get('imageUrl')
-                })
+        if 'data' in res and res.get('data'):
+            print(f"✅ SUCESSO na ordem {label}!")
+            return res['data']['productOfferList']['nodes']
         else:
-            # Mostra o erro real se falhar
-            print(f"❌ Erro da Shopee: {json.dumps(res, indent=2)}")
-            
+            print(f"❌ Falha na ordem {label}: {res.get('errors', [{}])[0].get('message', 'Erro desconhecido')}")
     except Exception as e:
-        print(f"Erro de conexão: {e}")
-        
-    return ofertas_finais
+        print(f"💥 Erro técnico: {e}")
+    return None
 
 if __name__ == "__main__":
-    lista = buscar_produtos_em_massa()
+    print(f"🚀 Iniciando Diagnóstico Duplo para AppID: {app_id}")
     
+    # Tenta o primeiro método
+    resultado = testar_conexao(ordem_v1=True)
+    
+    # Se falhou, tenta o segundo
+    if not resultado:
+        resultado = testar_conexao(ordem_v1=False)
+    
+    # Salva o resultado final
     with open('links_do_dia.json', 'w', encoding='utf-8') as f:
-        if lista:
-            dados = {f"Oferta_{i+1:02d}": o for i, o in enumerate(lista)}
-            json.dump(dados, f, indent=4, ensure_ascii=False)
-            print(f"✅ SUCESSO! {len(lista)} produtos encontrados.")
+        if resultado:
+            json.dump({"status": "Sucesso", "produto": resultado[0]}, f, indent=4)
         else:
-            json.dump({"status": "Erro", "detalhes": "Credenciais rejeitadas pela Shopee."}, f)
-            print("❌ Falha na autenticação.")
+            json.dump({"status": "Erro", "detalhes": "Ambas as ordens de assinatura falharam."}, f)
