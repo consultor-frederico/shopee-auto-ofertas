@@ -18,8 +18,8 @@ def buscar_produtos_em_massa():
     ofertas_finais = []
     timestamp = int(time.time())
     
-    # QUERY ATUALIZADA: Agora pedimos imageUrl e videoUrl 📸🎬
-    query = 'query{productOfferList(limit:50,sortBy:"sales"){nodes{productName,offerLink,imageUrl,videoUrl}}}'
+    # ALTERAÇÃO REALIZADA: sortBy mudado para "relevance" para facilitar a busca inicial 🎯
+    query = 'query{productOfferList(limit:50,sortBy:"relevance"){nodes{productName,offerLink,imageUrl,videoUrl}}}'
     payload = json.dumps({"query": query})
     
     sig = gerar_assinatura(payload, timestamp)
@@ -50,14 +50,14 @@ def buscar_produtos_em_massa():
     return ofertas_finais
 
 if __name__ == "__main__":
-    print("🚀 Iniciando busca com fotos e vídeos para Instagram...")
+    print("🚀 Iniciando busca por relevância para destravar o sistema...")
     lista = buscar_produtos_em_massa()
     
     with open('links_do_dia.json', 'w', encoding='utf-8') as f:
         if lista:
             dados = {f"Oferta_{i+1:02d}": o for i, o in enumerate(lista[:25])}
             json.dump(dados, f, indent=4, ensure_ascii=False)
-            print(f"✅ SUCESSO! {len(lista[:25])} ofertas com mídia geradas.")
+            print(f"✅ SUCESSO! {len(lista[:25])} ofertas encontradas.")
         else:
             json.dump({"status": "Aguardando", "detalhes": "API conectada, aguardando propagação."}, f)
-            print("❌ Nenhuma oferta encontrada.")
+            print("❌ Nenhuma oferta encontrada. Verifique se as chaves da API estão corretas.")
