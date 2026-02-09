@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout do código
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Configurar Python
         uses: actions/setup-python@v2
@@ -32,9 +32,7 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          # Adicionamos o arquivo principal primeiro
           git add links_do_dia.json
-          # O comando abaixo tenta adicionar o histórico. Se não existir, ele não gera erro
           git add historico_*.json || echo "Nenhum histórico encontrado ainda"
           git commit -m "Robô atualizou as ofertas" || exit 0
           git push
