@@ -46,8 +46,12 @@ def buscar_produtos_validos(quantidade=5):
     produtos_filtrados = []
     pagina = 1
     
-    # Casa, Beleza, Cozinha e Eletrônicos
-    categorias_bombando = [11035544, 11035179, 11034471, 11035031]
+    # Lista expandida com as categorias que mais saem (Beleza, Casa, Eletrônicos, Moda, Bebês, etc.)
+    categorias_bombando = [
+        11035544, 11035179, 11034471, 11035031, 11035314, 
+        11034547, 11035017, 11034626, 11034491, 11035238, 
+        11034870, 11034731, 11034493, 11035417, 11035205
+    ]
     
     while len(produtos_filtrados) < quantidade and pagina <= 10:
         timestamp = int(time.time())
