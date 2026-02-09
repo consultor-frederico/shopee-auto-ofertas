@@ -8,7 +8,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # ESSA LINHA RESOLVE O ERRO DE ATUALIZAÇÃO:
     permissions:
       contents: write
     steps:
