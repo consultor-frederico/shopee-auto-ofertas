@@ -19,7 +19,15 @@ def carregar_historico():
     if os.path.exists(ARQUIVO_HISTORICO):
         try:
             with open(ARQUIVO_HISTORICO, 'r', encoding='utf-8') as f:
-                return json.load(f)
+                historico = json.load(f)
+                # --- ACRESCIMO: Limpeza Automática (Remove itens com mais de 7 dias) ---
+                agora = datetime.now()
+                historico_limpo = {}
+                for item_id, dados in historico.items():
+                    data_item = datetime.strptime(dados["data"], "%Y-%m-%d %H:%M:%S")
+                    if agora - data_item <= timedelta(days=7):
+                        historico_limpo[item_id] = dados
+                return historico_limpo
         except:
             return {}
     return {}
@@ -27,7 +35,11 @@ def carregar_historico():
 def salvar_no_historico(historico, novos_produtos):
     data_hoje = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     for p in novos_produtos:
-        historico[str(p['itemId'])] = data_hoje
+        historico[str(p['itemId'])] = {
+            "data": data_hoje,
+            "link_afiliado": p['offerLink'],
+            "status": "postado" # Marcado como postado no histórico
+        }
     
     with open(ARQUIVO_HISTORICO, 'w', encoding='utf-8') as f:
         json.dump(historico, f, indent=4, ensure_ascii=False)
@@ -35,7 +47,11 @@ def salvar_no_historico(historico, novos_produtos):
 def produto_pode_repetir(item_id, historico):
     if item_id not in historico:
         return True
-    data_postagem = datetime.strptime(historico[item_id], "%Y-%m-%d %H:%M:%S")
+    
+    entrada = historico[item_id]
+    data_str = entrada if isinstance(entrada, str) else entrada.get("data")
+    
+    data_postagem = datetime.strptime(data_str, "%Y-%m-%d %H:%M:%S")
     if datetime.now() - data_postagem > timedelta(days=7):
         return True
     return False
@@ -45,7 +61,6 @@ def buscar_produtos_validos(quantidade=5):
     produtos_filtrados = []
     pagina = 1
     
-    # BUSCA ULTRA-PROFUNDA: Olhamos até 50 páginas de TODA a Shopee
     while len(produtos_filtrados) < quantidade and pagina <= 50:
         timestamp = int(time.time())
         query = f"""
@@ -93,12 +108,15 @@ if __name__ == "__main__":
     novos_produtos, historico_base = buscar_produtos_validos(5)
     
     if novos_produtos:
+        # --- ACRESCIMO: Coluna 'status' como 'pendente' ---
         with open('integracao_shopee.csv', 'w', encoding='utf-16') as f:
-            f.write("produto;preco;comissao_rs;vendas;nota;link_foto;link_afiliado\n")
+            f.write("id_shopee;produto;preco;comissao_rs;vendas;nota;link_foto;link_afiliado;data_geracao;status\n")
             for p in novos_produtos:
                 nome = p['productName'].replace(';', ' ').replace('\n', '')
                 comissao = f"{float(p['commission']):.2f}"
-                f.write(f"{nome};{p['priceMin']};{comissao};{p['sales']};{p['ratingStar']};{p['imageUrl']};{p['offerLink']}\n")
+                data_agora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                # Escreve 'pendente' para o n8n saber que deve postar
+                f.write(f"{p['itemId']};{nome};{p['priceMin']};{comissao};{p['sales']};{p['ratingStar']};{p['imageUrl']};{p['offerLink']};{data_agora};pendente\n")
         
         with open('links_do_dia.json', 'w', encoding='utf-8') as j:
             json.dump({
@@ -107,6 +125,6 @@ if __name__ == "__main__":
             }, j, indent=4, ensure_ascii=False)
         
         salvar_no_historico(historico_base, novos_produtos)
-        print("✅ Dados prontos para o Make!")
+        print("✅ Dados prontos para o n8n via GitHub!")
     else:
         print("❌ Nenhum produto novo encontrado mesmo após 50 páginas.")
