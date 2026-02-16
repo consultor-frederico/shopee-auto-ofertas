@@ -16,7 +16,8 @@ ARQUIVO_HISTORICO = 'historico_completo.json'
 def gerar_legenda_ia(nome_produto, preco):
     """ Chama a Groq para transformar o nome feio da Shopee em uma legenda magnética """
     if not GROQ_KEY:
-        return nome_produto # Fallback caso a chave não esteja configurada
+        print("DEBUG: Chave GROQ_API_KEY não encontrada nas variáveis de ambiente!")
+        return nome_produto 
     
     url = "https://api.groq.com/openai/v1/chat/completions"
     headers = {
@@ -27,15 +28,20 @@ def gerar_legenda_ia(nome_produto, preco):
     prompt = f"Você é um social media profissional. Transforme este produto da Shopee em uma legenda curta, matadora e com emojis para o Instagram. Use gatilhos de achadinho e promoção. Produto: {nome_produto} - Preço: R$ {preco}"
     
     data = {
-        "model": "llama3-8b-8192", # Modelo rápido e excelente para legendas
+        "model": "llama3-8b-8192",
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.7
     }
     
     try:
         response = requests.post(url, headers=headers, json=data)
+        if response.status_code != 200:
+            print(f"DEBUG: Erro na Groq! Status: {response.status_code} - Resposta: {response.text}")
+            return nome_produto
+            
         return response.json()['choices'][0]['message']['content'].strip()
-    except:
+    except Exception as e:
+        print(f"DEBUG: Falha crítica na requisição da IA: {e}")
         return nome_produto
 
 def gerar_assinatura_v2(payload, timestamp):
@@ -96,7 +102,6 @@ def buscar_produtos_validos(quantidade=5):
             for p in nodes:
                 item_id = str(p['itemId'])
                 if item_id not in historico and len(produtos_filtrados) < quantidade:
-                    # AQUI ENTRA A IA: Geramos a legenda antes de adicionar à lista
                     p['legenda_ia'] = gerar_legenda_ia(p['productName'], p['priceMin'])
                     produtos_filtrados.append(p)
             pagina += 1
@@ -110,8 +115,7 @@ if __name__ == "__main__":
         with open('integracao_shopee.csv', 'w', encoding='utf-16', newline='') as f:
             f.write("id_shopee;produto;preco;comissao_rs;vendas;nota;link_foto;link_afiliado;data_geracao;status\n")
             for p in novos_produtos:
-                # Agora o CSV leva a legenda da IA no lugar do nome bruto
                 f.write(f"{p['itemId']};{p['legenda_ia']};{p['priceMin']};{float(p['commission']):.2f};{p['sales']};{p['ratingStar']};{p['imageUrl']};{p['offerLink']};{datetime.now().strftime('%Y-%m-%d %H:%M:%S')};pendente\n")
         
         salvar_no_historico(historico_base, novos_produtos)
-        print("✅ Garimpo com IA (Groq) finalizado!")
+        print("✅ Garimpo finalizado!")
