@@ -116,7 +116,8 @@ if __name__ == "__main__":
     novos_produtos, historico_base = buscar_produtos_validos(5)
     
     if novos_produtos:
-        with open('integracao_shopee.csv', 'w', newline='', encoding='utf-16') as f:
+        # ALTERAÇÃO REALIZADA AQUI: Mudado para encoding='utf-8-sig'
+        with open('integracao_shopee.csv', 'w', newline='', encoding='utf-8-sig') as f:
             f.write("id_shopee;produto;preco;comissao_rs;vendas;nota;link_foto;link_afiliado;data_geracao;status\n")
             for p in novos_produtos:
                 f.write(f"{p['itemId']};{p['legenda_ia']};{p['priceMin']};{float(p['commission']):.2f};{p['sales']};{p['ratingStar']};{p['imageUrl']};{p['offerLink']};{datetime.now().strftime('%Y-%m-%d %H:%M:%S')};pendente\n")
