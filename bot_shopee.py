@@ -3,6 +3,7 @@ import time
 import hashlib
 import json
 import requests
+import csv
 from datetime import datetime, timedelta
 
 # 1. CREDENCIAIS 🔐
@@ -20,11 +21,13 @@ def carregar_historico():
         try:
             with open(ARQUIVO_HISTORICO, 'r', encoding='utf-8') as f:
                 historico = json.load(f)
-                # --- ACRESCIMO: Limpeza Automática (Remove itens com mais de 7 dias) ---
+                # --- MELHORIA 1: Limpeza Automática Estrita ---
+                # Garante que o histórico não cresça infinitamente e permita repetir itens após 7 dias
                 agora = datetime.now()
                 historico_limpo = {}
                 for item_id, dados in historico.items():
-                    data_item = datetime.strptime(dados["data"], "%Y-%m-%d %H:%M:%S")
+                    data_str = dados["data"] if isinstance(dados, dict) else dados
+                    data_item = datetime.strptime(data_str, "%Y-%m-%d %H:%M:%S")
                     if agora - data_item <= timedelta(days=7):
                         historico_limpo[item_id] = dados
                 return historico_limpo
@@ -38,23 +41,15 @@ def salvar_no_historico(historico, novos_produtos):
         historico[str(p['itemId'])] = {
             "data": data_hoje,
             "link_afiliado": p['offerLink'],
-            "status": "postado" # Marcado como postado no histórico
+            "status": "postado"
         }
-    
     with open(ARQUIVO_HISTORICO, 'w', encoding='utf-8') as f:
         json.dump(historico, f, indent=4, ensure_ascii=False)
 
 def produto_pode_repetir(item_id, historico):
-    if item_id not in historico:
-        return True
-    
-    entrada = historico[item_id]
-    data_str = entrada if isinstance(entrada, str) else entrada.get("data")
-    
-    data_postagem = datetime.strptime(data_str, "%Y-%m-%d %H:%M:%S")
-    if datetime.now() - data_postagem > timedelta(days=7):
-        return True
-    return False
+    # --- MELHORIA 2: Controle de Ineditismo ---
+    # Se não está no histórico (que agora só mantém itens dos últimos 7 dias), pode postar
+    return item_id not in historico
 
 def buscar_produtos_validos(quantidade=5):
     historico = carregar_historico()
@@ -94,6 +89,7 @@ def buscar_produtos_validos(quantidade=5):
             
             for p in nodes:
                 item_id = str(p['itemId'])
+                # Aplica a lógica de ineditismo
                 if produto_pode_repetir(item_id, historico) and len(produtos_filtrados) < quantidade:
                     produtos_filtrados.append(p)
             
@@ -108,14 +104,14 @@ if __name__ == "__main__":
     novos_produtos, historico_base = buscar_produtos_validos(5)
     
     if novos_produtos:
-        # --- ACRESCIMO: Coluna 'status' como 'pendente' ---
-        with open('integracao_shopee.csv', 'w', encoding='utf-16') as f:
+        # --- MELHORIA 3: Sobrescrita do CSV para controle do n8n ---
+        # Abrimos com 'w' para que o n8n veja apenas os 5 itens inéditos do dia
+        with open('integracao_shopee.csv', 'w', encoding='utf-16', newline='') as f:
             f.write("id_shopee;produto;preco;comissao_rs;vendas;nota;link_foto;link_afiliado;data_geracao;status\n")
             for p in novos_produtos:
                 nome = p['productName'].replace(';', ' ').replace('\n', '')
                 comissao = f"{float(p['commission']):.2f}"
                 data_agora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                # Escreve 'pendente' para o n8n saber que deve postar
                 f.write(f"{p['itemId']};{nome};{p['priceMin']};{comissao};{p['sales']};{p['ratingStar']};{p['imageUrl']};{p['offerLink']};{data_agora};pendente\n")
         
         with open('links_do_dia.json', 'w', encoding='utf-8') as j:
