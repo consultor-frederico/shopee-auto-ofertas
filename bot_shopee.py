@@ -9,8 +9,34 @@ from datetime import datetime, timedelta
 # 1. CREDENCIAIS 🔐
 APP_ID = str(os.getenv('SHOPEE_APP_ID')).strip()
 APP_SECRET = str(os.getenv('SHOPEE_APP_SECRET')).strip()
+GROQ_KEY = os.getenv('GROQ_API_KEY') # Atualizado para usar sua chave do Groq
 API_URL = "https://open-api.affiliate.shopee.com.br/graphql"
 ARQUIVO_HISTORICO = 'historico_completo.json'
+
+def gerar_legenda_ia(nome_produto, preco):
+    """ Chama a Groq para transformar o nome feio da Shopee em uma legenda magnética """
+    if not GROQ_KEY:
+        return nome_produto # Fallback caso a chave não esteja configurada
+    
+    url = "https://api.groq.com/openai/v1/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {GROQ_KEY}",
+        "Content-Type": "application/json"
+    }
+    
+    prompt = f"Você é um social media profissional. Transforme este produto da Shopee em uma legenda curta, matadora e com emojis para o Instagram. Use gatilhos de achadinho e promoção. Produto: {nome_produto} - Preço: R$ {preco}"
+    
+    data = {
+        "model": "llama3-8b-8192", # Modelo rápido e excelente para legendas
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": 0.7
+    }
+    
+    try:
+        response = requests.post(url, headers=headers, json=data)
+        return response.json()['choices'][0]['message']['content'].strip()
+    except:
+        return nome_produto
 
 def gerar_assinatura_v2(payload, timestamp):
     base = f"{APP_ID}{timestamp}{payload}{APP_SECRET}"
@@ -21,8 +47,6 @@ def carregar_historico():
         try:
             with open(ARQUIVO_HISTORICO, 'r', encoding='utf-8') as f:
                 historico = json.load(f)
-                # --- MELHORIA 1: Limpeza Automática Estrita ---
-                # Garante que o histórico não cresça infinitamente e permita repetir itens após 7 dias
                 agora = datetime.now()
                 historico_limpo = {}
                 for item_id, dados in historico.items():
@@ -46,11 +70,6 @@ def salvar_no_historico(historico, novos_produtos):
     with open(ARQUIVO_HISTORICO, 'w', encoding='utf-8') as f:
         json.dump(historico, f, indent=4, ensure_ascii=False)
 
-def produto_pode_repetir(item_id, historico):
-    # --- MELHORIA 2: Controle de Ineditismo ---
-    # Se não está no histórico (que agora só mantém itens dos últimos 7 dias), pode postar
-    return item_id not in historico
-
 def buscar_produtos_validos(quantidade=5):
     historico = carregar_historico()
     produtos_filtrados = []
@@ -62,65 +81,37 @@ def buscar_produtos_validos(quantidade=5):
         query {{
           productOfferV2(limit: 40, sortType: 5, page: {pagina}) {{
             nodes {{
-              itemId
-              productName
-              imageUrl
-              offerLink
-              priceMin
-              commission
-              sales
-              ratingStar
+              itemId, productName, imageUrl, offerLink, priceMin, commission, sales, ratingStar
             }}
           }}
         }}
         """
         payload = json.dumps({"query": query}, separators=(',', ':'))
         sig = gerar_assinatura_v2(payload, timestamp)
-        
-        headers = {
-            "Authorization": f"SHA256 Credential={APP_ID}, Signature={sig}, Timestamp={timestamp}",
-            "Content-Type": "application/json"
-        }
+        headers = {"Authorization": f"SHA256 Credential={APP_ID}, Signature={sig}, Timestamp={timestamp}", "Content-Type": "application/json"}
         
         try:
             response = requests.post(API_URL, headers=headers, data=payload)
-            res = response.json()
-            nodes = res.get('data', {}).get('productOfferV2', {}).get('nodes', [])
-            
+            nodes = response.json().get('data', {}).get('productOfferV2', {}).get('nodes', [])
             for p in nodes:
                 item_id = str(p['itemId'])
-                # Aplica a lógica de ineditismo
-                if produto_pode_repetir(item_id, historico) and len(produtos_filtrados) < quantidade:
+                if item_id not in historico and len(produtos_filtrados) < quantidade:
+                    # AQUI ENTRA A IA: Geramos a legenda antes de adicionar à lista
+                    p['legenda_ia'] = gerar_legenda_ia(p['productName'], p['priceMin'])
                     produtos_filtrados.append(p)
-            
             pagina += 1
-        except Exception as e:
-            print(f"Erro: {e}")
-            break
-
+        except: break
     return produtos_filtrados, historico
 
 if __name__ == "__main__":
     novos_produtos, historico_base = buscar_produtos_validos(5)
     
     if novos_produtos:
-        # --- MELHORIA 3: Sobrescrita do CSV para controle do n8n ---
-        # Abrimos com 'w' para que o n8n veja apenas os 5 itens inéditos do dia
         with open('integracao_shopee.csv', 'w', encoding='utf-16', newline='') as f:
             f.write("id_shopee;produto;preco;comissao_rs;vendas;nota;link_foto;link_afiliado;data_geracao;status\n")
             for p in novos_produtos:
-                nome = p['productName'].replace(';', ' ').replace('\n', '')
-                comissao = f"{float(p['commission']):.2f}"
-                data_agora = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                f.write(f"{p['itemId']};{nome};{p['priceMin']};{comissao};{p['sales']};{p['ratingStar']};{p['imageUrl']};{p['offerLink']};{data_agora};pendente\n")
-        
-        with open('links_do_dia.json', 'w', encoding='utf-8') as j:
-            json.dump({
-                "ultima_atualizacao": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                "produtos": novos_produtos
-            }, j, indent=4, ensure_ascii=False)
+                # Agora o CSV leva a legenda da IA no lugar do nome bruto
+                f.write(f"{p['itemId']};{p['legenda_ia']};{p['priceMin']};{float(p['commission']):.2f};{p['sales']};{p['ratingStar']};{p['imageUrl']};{p['offerLink']};{datetime.now().strftime('%Y-%m-%d %H:%M:%S')};pendente\n")
         
         salvar_no_historico(historico_base, novos_produtos)
-        print("✅ Dados prontos para o n8n via GitHub!")
-    else:
-        print("❌ Nenhum produto novo encontrado mesmo após 50 páginas.")
+        print("✅ Garimpo com IA (Groq) finalizado!")
