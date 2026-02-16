@@ -28,7 +28,7 @@ def gerar_legenda_ia(nome_produto, preco):
     prompt = f"Você é um social media profissional. Transforme este produto da Shopee em uma legenda curta, matadora e com emojis para o Instagram. Use gatilhos de achadinho e promoção. Produto: {nome_produto} - Preço: R$ {preco}"
     
     data = {
-        "model": "llama3-8b-8192",
+        "model": "llama-3.1-8b-instant", # ATUALIZADO: Modelo novo e funcional
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.7
     }
