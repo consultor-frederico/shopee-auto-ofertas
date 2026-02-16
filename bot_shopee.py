@@ -76,7 +76,7 @@ def salvar_no_historico(historico, novos_produtos):
     with open(ARQUIVO_HISTORICO, 'w', encoding='utf-8') as f:
         json.dump(historico, f, indent=4, ensure_ascii=False)
 
-def buscar_produtos_validos(quantidade=10): # <--- MUDADO PARA 10 AQUI TAMBÉM
+def buscar_produtos_validos(quantidade=5): # <--- VOLTAMOS PARA 5 AQUI
     historico = carregar_historico()
     produtos_filtrados = []
     pagina = 1
@@ -109,8 +109,8 @@ def buscar_produtos_validos(quantidade=10): # <--- MUDADO PARA 10 AQUI TAMBÉM
     return produtos_filtrados, historico
 
 if __name__ == "__main__":
-    # --- ALTERAÇÃO AQUI: Mudamos de 5 para 10 ---
-    novos_produtos, historico_base = buscar_produtos_validos(10) 
+    # --- ALTERAÇÃO AQUI: Mudamos de 10 para 5 ---
+    novos_produtos, historico_base = buscar_produtos_validos(5) 
     
     if novos_produtos:
         with open('integracao_shopee.csv', 'w', newline='', encoding='utf-8-sig') as f:
