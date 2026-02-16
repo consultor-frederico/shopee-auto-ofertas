@@ -116,11 +116,12 @@ if __name__ == "__main__":
     novos_produtos, historico_base = buscar_produtos_validos(5)
     
     if novos_produtos:
-        # ALTERAÇÃO REALIZADA AQUI: Mudado para encoding='utf-8-sig'
+        # AQUI FOI ADICIONADO O ;id_instagram NO FINAL DO CABEÇALHO
         with open('integracao_shopee.csv', 'w', newline='', encoding='utf-8-sig') as f:
-            f.write("id_shopee;produto;preco;comissao_rs;vendas;nota;link_foto;link_afiliado;data_geracao;status\n")
+            f.write("id_shopee;produto;preco;comissao_rs;vendas;nota;link_foto;link_afiliado;data_geracao;status;id_instagram\n")
             for p in novos_produtos:
-                f.write(f"{p['itemId']};{p['legenda_ia']};{p['priceMin']};{float(p['commission']):.2f};{p['sales']};{p['ratingStar']};{p['imageUrl']};{p['offerLink']};{datetime.now().strftime('%Y-%m-%d %H:%M:%S')};pendente\n")
+                # AQUI FOI ADICIONADO UM ; VAZIO NO FINAL DA LINHA PARA A COLUNA id_instagram
+                f.write(f"{p['itemId']};{p['legenda_ia']};{p['priceMin']};{float(p['commission']):.2f};{p['sales']};{p['ratingStar']};{p['imageUrl']};{p['offerLink']};{datetime.now().strftime('%Y-%m-%d %H:%M:%S')};pendente;\n")
         
         salvar_no_historico(historico_base, novos_produtos)
         print("✅ Garimpo finalizado!")
