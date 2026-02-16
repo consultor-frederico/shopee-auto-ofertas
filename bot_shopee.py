@@ -25,10 +25,14 @@ def gerar_legenda_ia(nome_produto, preco):
         "Content-Type": "application/json"
     }
     
-    prompt = f"Você é um social media profissional. Transforme este produto da Shopee em uma legenda curta, matadora e com emojis para o Instagram. Use gatilhos de achadinho e promoção. Produto: {nome_produto} - Preço: R$ {preco}"
+    # PROMPT ATUALIZADO: Focado em CTA e estrutura de linha única
+    prompt = (f"Você é um social media profissional. Escreva uma legenda curta e persuasiva para o Instagram "
+              f"sobre este produto: {nome_produto} - Preço: R$ {preco}. "
+              f"Use emojis e finalize com a frase: 'Comente EU QUERO que te envio o link!'. "
+              f"REGRA CRÍTICA: Escreva tudo em uma única linha, sem quebras de linha ou parágrafos.")
     
     data = {
-        "model": "llama-3.1-8b-instant", # ATUALIZADO: Modelo novo e funcional
+        "model": "llama-3.1-8b-instant",
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.7
     }
@@ -39,7 +43,7 @@ def gerar_legenda_ia(nome_produto, preco):
             print(f"DEBUG: Erro na Groq! Status: {response.status_code} - Resposta: {response.text}")
             return nome_produto
             
-        return response.json()['choices'][0]['message']['content'].strip()
+        return response.json()['choices'][0]['message']['content'].strip().replace('\n', ' ')
     except Exception as e:
         print(f"DEBUG: Falha crítica na requisição da IA: {e}")
         return nome_produto
@@ -112,7 +116,7 @@ if __name__ == "__main__":
     novos_produtos, historico_base = buscar_produtos_validos(5)
     
     if novos_produtos:
-        with open('integracao_shopee.csv', 'w', encoding='utf-16', newline='') as f:
+        with open('integracao_shopee.csv', 'w', newline='', encoding='utf-16') as f:
             f.write("id_shopee;produto;preco;comissao_rs;vendas;nota;link_foto;link_afiliado;data_geracao;status\n")
             for p in novos_produtos:
                 f.write(f"{p['itemId']};{p['legenda_ia']};{p['priceMin']};{float(p['commission']):.2f};{p['sales']};{p['ratingStar']};{p['imageUrl']};{p['offerLink']};{datetime.now().strftime('%Y-%m-%d %H:%M:%S')};pendente\n")
