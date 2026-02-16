@@ -9,14 +9,14 @@ from datetime import datetime, timedelta
 # 1. CREDENCIAIS 🔐
 APP_ID = str(os.getenv('SHOPEE_APP_ID')).strip()
 APP_SECRET = str(os.getenv('SHOPEE_APP_SECRET')).strip()
-GROQ_KEY = os.getenv('GROQ_API_KEY') # Atualizado para usar sua chave do Groq
+GROQ_KEY = os.getenv('GROQ_API_KEY') 
 API_URL = "https://open-api.affiliate.shopee.com.br/graphql"
 ARQUIVO_HISTORICO = 'historico_completo.json'
 
 def gerar_legenda_ia(nome_produto, preco):
     """ Chama a Groq para transformar o nome feio da Shopee em uma legenda magnética """
     if not GROQ_KEY:
-        print("DEBUG: Chave GROQ_API_KEY não encontrada nas variáveis de ambiente!")
+        print("DEBUG: Chave GROQ_API_KEY não encontrada!")
         return nome_produto 
     
     url = "https://api.groq.com/openai/v1/chat/completions"
@@ -25,7 +25,6 @@ def gerar_legenda_ia(nome_produto, preco):
         "Content-Type": "application/json"
     }
     
-    # PROMPT ATUALIZADO: Focado em CTA e estrutura de linha única
     prompt = (f"Você é um social media profissional. Escreva uma legenda curta e persuasiva para o Instagram "
               f"sobre este produto: {nome_produto} - Preço: R$ {preco}. "
               f"Use emojis e finalize com a frase: 'Comente EU QUERO que te envio o link!'. "
@@ -40,12 +39,9 @@ def gerar_legenda_ia(nome_produto, preco):
     try:
         response = requests.post(url, headers=headers, json=data)
         if response.status_code != 200:
-            print(f"DEBUG: Erro na Groq! Status: {response.status_code} - Resposta: {response.text}")
             return nome_produto
-            
         return response.json()['choices'][0]['message']['content'].strip().replace('\n', ' ')
     except Exception as e:
-        print(f"DEBUG: Falha crítica na requisição da IA: {e}")
         return nome_produto
 
 def gerar_assinatura_v2(payload, timestamp):
@@ -80,7 +76,7 @@ def salvar_no_historico(historico, novos_produtos):
     with open(ARQUIVO_HISTORICO, 'w', encoding='utf-8') as f:
         json.dump(historico, f, indent=4, ensure_ascii=False)
 
-def buscar_produtos_validos(quantidade=5):
+def buscar_produtos_validos(quantidade=10): # <--- MUDADO PARA 10 AQUI TAMBÉM
     historico = carregar_historico()
     produtos_filtrados = []
     pagina = 1
@@ -113,15 +109,14 @@ def buscar_produtos_validos(quantidade=5):
     return produtos_filtrados, historico
 
 if __name__ == "__main__":
-    novos_produtos, historico_base = buscar_produtos_validos(5)
+    # --- ALTERAÇÃO AQUI: Mudamos de 5 para 10 ---
+    novos_produtos, historico_base = buscar_produtos_validos(10) 
     
     if novos_produtos:
-        # AQUI FOI ADICIONADO O ;id_instagram NO FINAL DO CABEÇALHO
         with open('integracao_shopee.csv', 'w', newline='', encoding='utf-8-sig') as f:
             f.write("id_shopee;produto;preco;comissao_rs;vendas;nota;link_foto;link_afiliado;data_geracao;status;id_instagram\n")
             for p in novos_produtos:
-                # AQUI FOI ADICIONADO UM ; VAZIO NO FINAL DA LINHA PARA A COLUNA id_instagram
                 f.write(f"{p['itemId']};{p['legenda_ia']};{p['priceMin']};{float(p['commission']):.2f};{p['sales']};{p['ratingStar']};{p['imageUrl']};{p['offerLink']};{datetime.now().strftime('%Y-%m-%d %H:%M:%S')};pendente;\n")
         
         salvar_no_historico(historico_base, novos_produtos)
-        print("✅ Garimpo finalizado!")
+        print(f"✅ Garimpo finalizado! {len(novos_produtos)} produtos encontrados.")
