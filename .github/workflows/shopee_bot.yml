@@ -2,8 +2,11 @@ name: Shopee Auto Bot
 
 on:
   schedule:
-    # Rodar todos os dias às 19:00 (Horário de Brasília é UTC-3, então usamos 22:00 UTC)
-    - cron: '0 22 * * *' 
+    # Rodar toda SEGUNDA-FEIRA às 19:00 (Horário de Brasília)
+    # 22:00 UTC equivale a 19:00 Horário de Brasília (UTC-3)
+    # O formato cron é: 'minutos horas dia-do-mês mês dia-da-semana'
+    # 1 representa Segunda-feira
+    - cron: '0 22 * * 1' 
   workflow_dispatch: 
 
 jobs:
@@ -29,7 +32,7 @@ jobs:
         env:
           SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
           SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
-          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}  # <--- ADICIONADO AQUI
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         run: python bot_shopee.py
 
       - name: Salvar Memória e Resultados
@@ -37,5 +40,5 @@ jobs:
           git config --local user.email "bot@github.com"
           git config --local user.name "ShopeeBot"
           git add links_do_dia.json integracao_shopee.csv historico_completo.json
-          git commit -m "Automação: Atualização das $(date +'%d/%m/%Y %H:%M')" || exit 0
+          git commit -m "Automação Semanal: Atualização das $(date +'%d/%m/%Y %H:%M')" || exit 0
           git push
