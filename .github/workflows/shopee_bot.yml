@@ -2,11 +2,13 @@ name: Shopee Auto Bot
 
 on:
   schedule:
-    # Rodar toda SEGUNDA-FEIRA às 19:00 (Horário de Brasília)
-    # 22:00 UTC equivale a 19:00 Horário de Brasília (UTC-3)
-    # O formato cron é: 'minutos horas dia-do-mês mês dia-da-semana'
-    # 1 representa Segunda-feira
-    - cron: '0 22 * * 1' 
+    # Rodar 3 vezes ao dia (Horário de Brasília UTC-3)
+    # 11:30 UTC = 08:30 Brasília (Manhã)
+    # 16:00 UTC = 13:00 Brasília (Tarde)
+    # 22:30 UTC = 19:30 Brasília (Noite)
+    - cron: '30 11 * * *'
+    - cron: '0 16 * * *'
+    - cron: '30 22 * * *'
   workflow_dispatch: 
 
 jobs:
@@ -39,6 +41,7 @@ jobs:
         run: |
           git config --local user.email "bot@github.com"
           git config --local user.name "ShopeeBot"
-          git add links_do_dia.json integracao_shopee.csv historico_completo.json
-          git commit -m "Automação Semanal: Atualização das $(date +'%d/%m/%Y %H:%M')" || exit 0
+          # Adicionamos todos os arquivos que o seu script Python gera/atualiza
+          git add integracao_shopee.csv historico_completo.json
+          git commit -m "🤖 5 Novas Ofertas: $(date +'%d/%m/%Y %H:%M')" || exit 0
           git push
