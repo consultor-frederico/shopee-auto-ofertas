@@ -12,6 +12,7 @@ APP_SECRET = str(os.getenv('SHOPEE_APP_SECRET')).strip()
 GROQ_KEY = os.getenv('GROQ_API_KEY') 
 API_URL = "https://open-api.affiliate.shopee.com.br/graphql"
 ARQUIVO_HISTORICO = 'historico_completo.json'
+ARQUIVO_CSV = 'integracao_shopee.csv' # Nome do arquivo que o n8n lê
 
 def gerar_legenda_ia(nome_produto, preco):
     """ Chama a Groq para transformar o nome feio da Shopee em uma legenda magnética """
@@ -76,7 +77,7 @@ def salvar_no_historico(historico, novos_produtos):
     with open(ARQUIVO_HISTORICO, 'w', encoding='utf-8') as f:
         json.dump(historico, f, indent=4, ensure_ascii=False)
 
-def buscar_produtos_validos(quantidade=5): # <--- VOLTAMOS PARA 5 AQUI
+def buscar_produtos_validos(quantidade=5):
     historico = carregar_historico()
     produtos_filtrados = []
     pagina = 1
@@ -108,15 +109,55 @@ def buscar_produtos_validos(quantidade=5): # <--- VOLTAMOS PARA 5 AQUI
         except: break
     return produtos_filtrados, historico
 
+# --- NOVA FUNÇÃO DE LIMPEZA E ATUALIZAÇÃO DO CSV ---
+def atualizar_csv_com_limpeza(novos_produtos):
+    agora = datetime.now()
+    linhas_validas = []
+    cabecalho = "id_shopee;produto;preco;comissao_rs;vendas;nota;link_foto;link_afiliado;data_geracao;status;id_instagram"
+
+    # 1. LER O ARQUIVO EXISTENTE E FILTRAR (APENAR O QUE TEM MENOS DE 7 DIAS)
+    if os.path.exists(ARQUIVO_CSV):
+        with open(ARQUIVO_CSV, 'r', encoding='utf-8-sig') as f:
+            reader = csv.DictReader(f, delimiter=';')
+            for row in reader:
+                try:
+                    data_geracao = datetime.strptime(row['data_geracao'], "%Y-%m-%d %H:%M:%S")
+                    if agora - data_geracao <= timedelta(days=7):
+                        linhas_validas.append(row)
+                except:
+                    continue # Pula se a data estiver errada
+
+    # 2. ADICIONAR OS 5 NOVOS PRODUTOS À LISTA
+    for p in novos_produtos:
+        nova_linha = {
+            "id_shopee": p['itemId'],
+            "produto": p['legenda_ia'],
+            "preco": p['priceMin'],
+            "comissao_rs": f"{float(p['commission']):.2f}",
+            "vendas": p['sales'],
+            "nota": p['ratingStar'],
+            "link_foto": p['imageUrl'],
+            "link_afiliado": p['offerLink'],
+            "data_geracao": agora.strftime('%Y-%m-%d %H:%M:%S'),
+            "status": "pendente",
+            "id_instagram": ""
+        }
+        linhas_validas.append(nova_linha)
+
+    # 3. SALVAR TUDO DE VOLTA NO CSV (SOBRESCREVENDO COM A LISTA LIMPA + NOVOS)
+    with open(ARQUIVO_CSV, 'w', newline='', encoding='utf-8-sig') as f:
+        writer = csv.DictWriter(f, fieldnames=cabecalho.split(';'), delimiter=';')
+        writer.writeheader()
+        writer.writerows(linhas_validas)
+
 if __name__ == "__main__":
-    # --- ALTERAÇÃO AQUI: Mudamos de 10 para 5 ---
     novos_produtos, historico_base = buscar_produtos_validos(5) 
     
     if novos_produtos:
-        with open('integracao_shopee.csv', 'w', newline='', encoding='utf-8-sig') as f:
-            f.write("id_shopee;produto;preco;comissao_rs;vendas;nota;link_foto;link_afiliado;data_geracao;status;id_instagram\n")
-            for p in novos_produtos:
-                f.write(f"{p['itemId']};{p['legenda_ia']};{p['priceMin']};{float(p['commission']):.2f};{p['sales']};{p['ratingStar']};{p['imageUrl']};{p['offerLink']};{datetime.now().strftime('%Y-%m-%d %H:%M:%S')};pendente;\n")
+        # Chama a função que limpa o CSV (7 dias) e adiciona os 5 novos
+        atualizar_csv_com_limpeza(novos_produtos)
         
+        # Mantém o histórico JSON funcionando para o bot não repetir produto
         salvar_no_historico(historico_base, novos_produtos)
-        print(f"✅ Garimpo finalizado! {len(novos_produtos)} produtos encontrados.")
+        
+        print(f"✅ Sucesso! CSV atualizado com {len(novos_produtos)} novas ofertas. Antigas (+7 dias) removidas.")
