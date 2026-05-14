@@ -3,9 +3,6 @@ name: Shopee Auto Bot
 on:
   schedule:
     # Rodar 3 vezes ao dia (Horário de Brasília UTC-3)
-    # 11:30 UTC = 08:30 Brasília (Manhã)
-    # 16:00 UTC = 13:00 Brasília (Tarde)
-    # 22:30 UTC = 19:30 Brasília (Noite)
     - cron: '30 11 * * *'
     - cron: '0 16 * * *'
     - cron: '30 22 * * *'
@@ -16,6 +13,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    # Força o uso do Node 24 para todas as ações do job
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     steps:
       - name: Checkout do código
         uses: actions/checkout@v4
@@ -35,14 +35,12 @@ jobs:
           SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
           SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
         run: python bot_shopee.py
 
       - name: Salvar Memória e Resultados
         run: |
           git config --local user.email "bot@github.com"
           git config --local user.name "ShopeeBot"
-          # Adicionamos todos os arquivos que o seu script Python gera/atualiza
           git add integracao_shopee.csv historico_completo.json
           git commit -m "🤖 5 Novas Ofertas: $(date +'%d/%m/%Y %H:%M')" || exit 0
           git push
