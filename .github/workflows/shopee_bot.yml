@@ -23,7 +23,7 @@ jobs:
           persist-credentials: true
 
       - name: Configurar Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.9'
 
@@ -35,6 +35,7 @@ jobs:
           SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
           SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
         run: python bot_shopee.py
 
       - name: Salvar Memória e Resultados
