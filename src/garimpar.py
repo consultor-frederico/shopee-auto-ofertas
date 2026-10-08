@@ -151,11 +151,19 @@ def selecionar(candidatos, n):
     por_cat = {}
     for o in sorted(candidatos, key=lambda x: x["pontos"], reverse=True):
         por_cat.setdefault(o["categoria"], []).append(o)
-    escolhidos = []
-    while len(escolhidos) < n and any(por_cat.values()):
-        for cat in list(por_cat):
-            if por_cat[cat] and len(escolhidos) < n:
-                escolhidos.append(por_cat[cat].pop(0))
+    escolhidos, palavras = [], set()
+    # 1ª passada: no máximo 1 oferta por palavra-chave (evita 3 produtos iguais)
+    for unico in (True, False):
+        restos = {c: list(v) for c, v in por_cat.items()}
+        while len(escolhidos) < n and any(restos.values()):
+            for cat in list(restos):
+                while restos[cat] and len(escolhidos) < n:
+                    o = restos[cat].pop(0)
+                    if o in escolhidos or (unico and o["palavra"] in palavras):
+                        continue
+                    escolhidos.append(o)
+                    palavras.add(o["palavra"])
+                    break
     return escolhidos
 
 
