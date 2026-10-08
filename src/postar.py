@@ -1,0 +1,151 @@
+"""Etapa 2 — Postagem no Instagram, em duas fases dentro do mesmo job do GitHub Actions:
+
+  python -m src.postar preparar   → escolhe a oferta, gera foto ou Reels em site/ (vai para o GitHub Pages)
+  python -m src.postar publicar   → com o site no ar, cria o post no Instagram e atualiza a fila
+
+O formato alterna entre foto e Reels (ou force com FORMATO=foto|reels).
+"""
+import json
+import os
+import sys
+import time
+from datetime import datetime, timedelta
+
+import requests
+
+from . import config, imagem, instagram, reels
+from .garimpar import BRT, FMT, agora, carregar_fila, salvar_fila
+
+PASTA_SITE = config.RAIZ / "site"
+ARQ_PROXIMO = config.PASTA_DADOS / "proximo.json"
+MAX_TENTATIVAS = 2
+
+
+def _saida(chave, valor):
+    arq = os.getenv("GITHUB_OUTPUT")
+    if arq:
+        with open(arq, "a") as f:
+            f.write(f"{chave}={valor}\n")
+
+
+def _validos(fila):
+    limite = agora() - timedelta(days=config.DIAS_VALIDADE_PENDENTE)
+    return [o for o in fila["ofertas"].values()
+            if o.get("status") == "pendente"
+            and datetime.strptime(o["criado_em"], FMT).replace(tzinfo=BRT) >= limite]
+
+
+def _ultimos_postados(fila, n=3):
+    post = [o for o in fila["ofertas"].values() if o.get("status") == "postado" and o.get("postado_em")]
+    return sorted(post, key=lambda o: (o["postado_em"], o.get("postado_ts", 0)), reverse=True)[:n]
+
+
+def candidatos_ordenados(fila):
+    """Melhor pontuação primeiro, jogando para o fim as categorias dos últimos posts."""
+    candidatos = sorted(_validos(fila), key=lambda o: o.get("pontos", 0), reverse=True)
+    recentes = {o["categoria"] for o in _ultimos_postados(fila)}
+    return [o for o in candidatos if o["categoria"] not in recentes] + \
+           [o for o in candidatos if o["categoria"] in recentes]
+
+
+def formato_da_vez(fila):
+    forcado = (os.getenv("FORMATO") or "").strip().lower()
+    if forcado in ("foto", "reels"):
+        return forcado
+    ult = _ultimos_postados(fila, 1)
+    return "foto" if ult and ult[0].get("formato") == "reels" else "reels"
+
+
+def preparar():
+    _saida("tem_post", "false")
+    if not instagram.tem_token():
+        print("⏸️  IG_ACCESS_TOKEN ainda não configurado — postagem em espera.")
+        return
+    fila = carregar_fila()
+    formato = formato_da_vez(fila)
+    pasta = PASTA_SITE / "midia"
+    pasta.mkdir(parents=True, exist_ok=True)
+    (PASTA_SITE / ".nojekyll").write_text("")
+    (PASTA_SITE / "index.html").write_text("<!doctype html><title>Garimpo VIP</title>Garimpo VIP")
+    oferta = None
+    for cand in candidatos_ordenados(fila)[:3]:
+        nome = f"{cand['id']}-{int(time.time())}.{'mp4' if formato == 'reels' else 'jpg'}"
+        try:
+            foto = imagem._baixar_foto(cand["imagem"])
+            if formato == "reels":
+                reels.gerar(cand, pasta / nome, foto=foto)
+            else:
+                imagem.gerar(cand, pasta / nome, foto=foto)
+            oferta = cand
+            break
+        except Exception as e:
+            print(f"⚠️  Falha ao preparar {cand['id']} ({e}); tentando a próxima.")
+            cand["tentativas"] = cand.get("tentativas", 0) + 1
+            cand["ultimo_erro"] = str(e)[:300]
+            if cand["tentativas"] >= MAX_TENTATIVAS:
+                cand["status"] = "erro"
+    salvar_fila(fila)
+    if not oferta:
+        print("⚠️  Nenhuma oferta pendente válida na fila.")
+        return
+    ARQ_PROXIMO.write_text(json.dumps({"id": oferta["id"], "formato": formato,
+                                       "arquivo": f"midia/{nome}"}), encoding="utf-8")
+    print(f"🎬 Preparado {formato}: {oferta['titulo']} (R$ {oferta['preco_fmt']}, {oferta['categoria']})")
+    _saida("tem_post", "true")
+
+
+def _esperar_url(url, limite_s=180):
+    inicio = time.time()
+    while time.time() - inicio < limite_s:
+        try:
+            if requests.head(url, timeout=20, allow_redirects=True).status_code == 200:
+                return
+        except requests.RequestException:
+            pass
+        time.sleep(10)
+    raise RuntimeError(f"A mídia não ficou acessível em {url}")
+
+
+def publicar():
+    prox = json.loads(ARQ_PROXIMO.read_text(encoding="utf-8"))
+    base = (os.getenv("PAGES_URL") or "").rstrip("/")
+    if not base:
+        raise RuntimeError("PAGES_URL ausente — o GitHub Pages está ativado (Settings → Pages → GitHub Actions)?")
+    url = f"{base}/{prox['arquivo']}"
+    fila = carregar_fila()
+    oferta = fila["ofertas"][prox["id"]]
+    try:
+        _esperar_url(url)
+        ig_id = instagram.conta()["user_id"]
+        if prox["formato"] == "reels":
+            cont = instagram.criar_container(ig_id, oferta["legenda"], video_url=url)
+        else:
+            cont = instagram.criar_container(ig_id, oferta["legenda"], imagem_url=url)
+        instagram.aguardar_container(cont)
+        media_id = instagram.publicar(ig_id, cont)
+    except Exception as e:
+        oferta["tentativas"] = oferta.get("tentativas", 0) + 1
+        oferta["ultimo_erro"] = str(e)[:300]
+        if oferta["tentativas"] >= MAX_TENTATIVAS:
+            oferta["status"] = "erro"
+        salvar_fila(fila)
+        ARQ_PROXIMO.unlink(missing_ok=True)
+        raise
+    oferta.update({"status": "postado", "id_post": media_id, "formato": prox["formato"],
+                   "postado_em": agora().strftime(FMT), "postado_ts": time.time(), "permalink": instagram.permalink(media_id)})
+    salvar_fila(fila)
+    ARQ_PROXIMO.unlink(missing_ok=True)
+    print(f"✅ Publicado ({prox['formato']}): {oferta['titulo']} → {oferta['permalink'] or media_id}")
+
+
+if __name__ == "__main__":
+    fase = sys.argv[1] if len(sys.argv) > 1 else ""
+    acao = {"preparar": preparar, "publicar": publicar}.get(fase)
+    if not acao:
+        print("Uso: python -m src.postar preparar|publicar")
+        sys.exit(2)
+    try:
+        acao()
+    except Exception as e:
+        print(f"::error::{e}")
+        sys.exit(1)

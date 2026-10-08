@@ -1,4 +1,4 @@
-"""Etapa 1 — Garimpo: busca ofertas no nicho, filtra, gera legenda + arte e põe na fila.
+"""Etapa 1 — Garimpo: busca ofertas no nicho, filtra, gera a legenda e põe na fila.
 
 Uso: python -m src.garimpar
 """
@@ -7,7 +7,7 @@ import random
 import sys
 from datetime import datetime, timedelta, timezone
 
-from . import config, imagem, legenda, shopee
+from . import config, legenda, shopee
 
 BRT = timezone(timedelta(hours=-3))
 FMT = "%Y-%m-%d %H:%M:%S"
@@ -98,16 +98,9 @@ def limpar_fila(fila):
     for item_id, reg in list(fila["ofertas"].items()):
         criado = datetime.strptime(reg["criado_em"], FMT).replace(tzinfo=BRT)
         if criado < limite_hist:
-            arte = config.RAIZ / reg.get("arte", "")
-            if reg.get("arte") and arte.exists():
-                arte.unlink()
             del fila["ofertas"][item_id]
         elif reg["status"] == "pendente" and criado < limite_pend:
             reg["status"] = "vencido"
-            arte = config.RAIZ / reg.get("arte", "")
-            if reg.get("arte") and arte.exists():
-                arte.unlink()
-            reg["arte"] = ""
 
 
 def coletar_candidatos(fila, buscar=shopee.buscar_ofertas):
@@ -167,20 +160,18 @@ def selecionar(candidatos, n):
     return escolhidos
 
 
-def garimpar(buscar=shopee.buscar_ofertas, foto_fake=None):
+def garimpar(buscar=shopee.buscar_ofertas):
     fila = carregar_fila()
     limpar_fila(fila)
     candidatos = coletar_candidatos(fila, buscar)
     escolhidos = selecionar(candidatos, config.OFERTAS_POR_GARIMPO)
-    config.PASTA_POSTS.mkdir(exist_ok=True)
     fontes_ia = 0
     for o in escolhidos:
         texto = legenda.gerar(o)
         o["titulo"], o["legenda"] = texto["titulo"], texto["legenda"]
         fontes_ia += texto["fonte"] == "ia"
-        arte = config.PASTA_POSTS / f"{o['id']}.jpg"
-        imagem.gerar(o, arte, foto=foto_fake)
-        o.update({"arte": str(arte.relative_to(config.RAIZ)), "status": "pendente",
+        # a arte/Reels é gerada só na hora de postar (não ocupa espaço no repositório)
+        o.update({"status": "pendente",
                   "criado_em": agora().strftime(FMT), "postado_em": "", "id_post": ""})
         fila["ofertas"][o["id"]] = o
         print(f"✅ {o['categoria']:<11} R$ {o['preco_fmt']:>8}  comissão R$ {o['comissao']:.2f}  {o['titulo']}")

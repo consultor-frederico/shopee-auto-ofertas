@@ -138,15 +138,20 @@ def _mix(c1, c2, k):
 
 
 def gerar(oferta: dict, destino, foto: Image.Image = None):
-    if not shutil.which("ffmpeg"):
-        raise RuntimeError("ffmpeg não encontrado.")
+    ffmpeg = shutil.which("ffmpeg")
+    if not ffmpeg:
+        try:
+            import imageio_ffmpeg
+            ffmpeg = imageio_ffmpeg.get_ffmpeg_exe()
+        except Exception:
+            raise RuntimeError("ffmpeg não encontrado (instale ffmpeg ou imageio-ffmpeg).")
     if foto is None:
         try:
             foto = _baixar_foto(oferta["imagem"])
         except Exception as e:
             print(f"⚠️  Reels sem foto ({e}).")
     base = _fundo_estatico(oferta, foto)
-    cmd = ["ffmpeg", "-y", "-loglevel", "error",
+    cmd = [ffmpeg, "-y", "-loglevel", "error",
            "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{L}x{A}", "-r", str(FPS), "-i", "-",
            "-f", "lavfi", "-i", "anullsrc=channel_layout=stereo:sample_rate=44100",
            "-shortest", "-c:v", "libx264", "-preset", "medium", "-crf", "20",

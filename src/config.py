@@ -4,7 +4,6 @@ from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent
 PASTA_DADOS = RAIZ / "data"
-PASTA_POSTS = RAIZ / "posts"
 ARQ_FILA = PASTA_DADOS / "fila.json"          # ofertas garimpadas e seu status
 FONTE = RAIZ / "assets" / "Montserrat.ttf"
 LOGO = RAIZ / "assets" / "logo.png"

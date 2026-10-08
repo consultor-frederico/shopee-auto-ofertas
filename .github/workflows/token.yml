@@ -1,0 +1,35 @@
+name: 4 - Renovar token do Instagram
+
+on:
+  schedule:
+    - cron: '37 11 * * 1'   # toda segunda, 08:37 em Brasília
+  workflow_dispatch:
+
+jobs:
+  renovar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - run: pip install requests
+
+      - name: Renovar token
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+        run: python -m src.renovar_token
+
+      - name: Atualizar segredo IG_ACCESS_TOKEN
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          [ -f "$RUNNER_TEMP/ig_token.txt" ] || exit 0
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::warning::Segredo GH_PAT ausente: o token foi renovado mas não pôde ser salvo. Cadastre o GH_PAT."
+            exit 0
+          fi
+          gh secret set IG_ACCESS_TOKEN -R "${{ github.repository }}" < "$RUNNER_TEMP/ig_token.txt"
+          echo "✅ Segredo atualizado."
