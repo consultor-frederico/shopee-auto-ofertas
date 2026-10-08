@@ -62,6 +62,31 @@ def _estrela(d, cx, cy, r, cor):
     d.polygon(pts, fill=cor)
 
 
+# Lojas (plataformas) e a cor do selo de cada uma
+LOJAS = {
+    "shopee": {"nome": "SHOPEE", "cor": "#EE4D2D"},
+    "aliexpress": {"nome": "ALIEXPRESS", "cor": "#E43225"},
+}
+
+
+def plataforma(oferta):
+    return oferta.get("plataforma") or "shopee"
+
+
+def selo_loja(d, oferta, x, y, escala=1.0):
+    """Selo "OFERTA <LOJA>" em pílula, com canto superior esquerdo em (x, y)."""
+    info = LOJAS.get(plataforma(oferta), {"nome": plataforma(oferta).upper(), "cor": "#24150A"})
+    f1, f2 = _fonte(int(26 * escala), "SemiBold"), _fonte(int(34 * escala), "Black")
+    t1, t2 = "OFERTA ", info["nome"]
+    w = d.textlength(t1, font=f1) + d.textlength(t2, font=f2)
+    px, h = int(26 * escala), int(64 * escala)
+    d.rounded_rectangle([x, y, x + w + 2 * px, y + h], h // 2, fill=info["cor"])
+    d.text((x + px, y + (h - 26 * escala) / 2 - 3 * escala), t1, font=f1, fill="#FFFFFF")
+    d.text((x + px + d.textlength(t1, font=f1), y + (h - 34 * escala) / 2 - 5 * escala), t2,
+           font=f2, fill="#FFFFFF")
+    return w + 2 * px
+
+
 def _brl(v):
     return f"{v:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
@@ -97,6 +122,9 @@ def gerar(oferta: dict, destino, foto: Image.Image = None):
         f = _fonte(60, "Bold")
         t = "Oferta Shopee"
         d.text(((L - d.textlength(t, font=f)) / 2, (cy0 + cy1) / 2 - 30), t, font=f, fill=CINZA)
+
+    # Selo da loja (canto superior esquerdo do cartão)
+    selo_loja(d, oferta, cx0 + 28, cy0 + 28)
 
     # Selo de desconto
     if oferta.get("desconto"):

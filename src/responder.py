@@ -21,9 +21,10 @@ RESPOSTA_PUBLICA = True         # também responde no próprio comentário ("te 
 GATILHO = re.compile(r"\b(eu\s*quero|quero|link|eu\s*quero\s*o\s*link|manda)\b")
 
 DM_BOTAO = ("Oi! 😊 Aqui está a oferta {titulo} 👇\n"
-            "Toque no botão para abrir na Shopee. Corre que preço de oferta muda rápido! 🛒\n"
+            "Toque no botão para abrir a oferta ({loja}). Corre que preço de oferta muda rápido! 🛒\n"
             "(link de afiliado: você paga o mesmo e ajuda o Garimpo VIP)")
 TITULO_BOTAO = "🛒 Ver oferta"
+NOME_LOJA = {"shopee": "Shopee", "aliexpress": "AliExpress"}
 
 # Plano B, se o Instagram recusar o botão
 DM = ("Oi! 😊 Aqui está o link da oferta {titulo} 👇\n{link}\n\n"
@@ -100,7 +101,7 @@ def responder(api=instagram):
                    "autor": autor, "em": agora().strftime(FMT)}
             try:
                 try:
-                    api.resposta_privada_botao(minha["user_id"], cid, DM_BOTAO.format(titulo=o["titulo"]),
+                    api.resposta_privada_botao(minha["user_id"], cid, DM_BOTAO.format(titulo=o["titulo"], loja=NOME_LOJA.get(o.get("plataforma") or "shopee", "loja")),
                                                o["link_afiliado"], TITULO_BOTAO)
                     reg["formato"] = "botao"
                 except Exception as e:

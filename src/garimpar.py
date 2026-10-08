@@ -55,6 +55,7 @@ def normalizar(no, categoria, palavra):
         "vendas": int(_num(no.get("sales"))),
         "nota": round(_num(no.get("ratingStar")), 1),
         "loja": no.get("shopName") or "",
+        "plataforma": "shopee",
         "imagem": no.get("imageUrl") or "",
         "link_afiliado": no.get("offerLink") or "",
     }

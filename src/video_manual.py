@@ -18,7 +18,7 @@ from PIL import Image, ImageDraw, ImageOps
 from . import config, legenda, shopee
 from .garimpar import FMT, agora, normalizar
 from .imagem import (BRANCO, CINZA, DOURADO, DOURADO_CLARO, ESCURO, LARANJA,
-                     _brl, _estrela, _fonte, _quebrar)
+                     _brl, _estrela, _fonte, _quebrar, selo_loja)
 
 PASTA = config.RAIZ / "videos"
 LISTA = PASTA / "lista.txt"
@@ -136,6 +136,7 @@ def _moldura(oferta):
     except Exception:
         pass
     d.rectangle([0, BASE, L, A], fill=FUNDO)
+    selo_loja(d, oferta, 40, TOPO + 24, escala=1.1)
     y = BASE + 40
     f_tit = _fonte(58, "ExtraBold")
     for linha in _quebrar(d, oferta["titulo"], f_tit, L - 140, max_linhas=1):

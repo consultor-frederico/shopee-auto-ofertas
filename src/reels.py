@@ -16,7 +16,7 @@ from PIL import Image, ImageDraw, ImageOps
 
 from . import config
 from .imagem import (BRANCO, CINZA, DOURADO, DOURADO_CLARO, ESCURO, LARANJA,
-                     _baixar_foto, _brl, _estrela, _fonte)
+                     _baixar_foto, _brl, _estrela, _fonte, selo_loja)
 
 L, A = 1080, 1920
 FPS = 30
@@ -63,6 +63,9 @@ def _quadro(t, base, foto, oferta):
         ox, oy = max(0, (f.width - jan_w) // 2), max(0, (f.height - jan_h) // 2)
         f = f.crop((ox, oy, ox + min(f.width, jan_w), oy + min(f.height, jan_h)))
         img.paste(f, (cx0 + (cx1 - cx0 - f.width) // 2, cy0 + (cy1 - cy0 - f.height) // 2))
+
+    # Selo da loja
+    selo_loja(d, oferta, cx0 + 30, cy0 + 30, escala=1.1)
 
     # Selo de desconto
     if oferta.get("desconto") and t >= 2.2:
