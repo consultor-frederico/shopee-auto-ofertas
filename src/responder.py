@@ -20,6 +20,12 @@ RESPOSTA_PUBLICA = True         # também responde no próprio comentário ("te 
 
 GATILHO = re.compile(r"\b(eu\s*quero|quero|link|eu\s*quero\s*o\s*link|manda)\b")
 
+DM_BOTAO = ("Oi! 😊 Aqui está a oferta {titulo} 👇\n"
+            "Toque no botão para abrir na Shopee. Corre que preço de oferta muda rápido! 🛒\n"
+            "(link de afiliado: você paga o mesmo e ajuda o Garimpo VIP)")
+TITULO_BOTAO = "🛒 Ver oferta"
+
+# Plano B, se o Instagram recusar o botão
 DM = ("Oi! 😊 Aqui está o link da oferta {titulo} 👇\n{link}\n\n"
       "Corre que preço de oferta muda rápido! 🛒\n"
       "(link de afiliado — você paga o mesmo e ajuda o Garimpo VIP a continuar garimpando)")
@@ -93,8 +99,15 @@ def responder(api=instagram):
             reg = {"post": o["id_post"], "oferta": o["id"], "usuario": usuario,
                    "autor": autor, "em": agora().strftime(FMT)}
             try:
-                api.resposta_privada(minha["user_id"], cid,
-                                     DM.format(titulo=o["titulo"], link=o["link_afiliado"]))
+                try:
+                    api.resposta_privada_botao(minha["user_id"], cid, DM_BOTAO.format(titulo=o["titulo"]),
+                                               o["link_afiliado"], TITULO_BOTAO)
+                    reg["formato"] = "botao"
+                except Exception as e:
+                    print(f"   (botão recusado: {e}; enviando como texto)")
+                    api.resposta_privada(minha["user_id"], cid,
+                                         DM.format(titulo=o["titulo"], link=o["link_afiliado"]))
+                    reg["formato"] = "texto"
                 reg["dm"] = "ok"
                 enviados += 1
                 if RESPOSTA_PUBLICA:

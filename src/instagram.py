@@ -95,6 +95,15 @@ def resposta_privada(ig_id, comment_id, texto):
                 json={"recipient": {"comment_id": comment_id}, "message": {"text": texto}})
 
 
+def resposta_privada_botao(ig_id, comment_id, texto, url, titulo_botao):
+    """Resposta privada com botão clicável (template de botão)."""
+    return _req("POST", f"{ig_id}/messages", json={
+        "recipient": {"comment_id": comment_id},
+        "message": {"attachment": {"type": "template", "payload": {
+            "template_type": "button", "text": texto[:640],
+            "buttons": [{"type": "web_url", "url": url, "title": titulo_botao}]}}}})
+
+
 def responder_comentario(comment_id, texto):
     return _req("POST", f"{comment_id}/replies", params={"message": texto})
 
