@@ -42,6 +42,21 @@ NICHO = {
         "prancha alisadora", "brinco feminino", "relógio feminino", "vestido feminino",
         "organizador de maquiagem", "kit pincel maquiagem", "sandália feminina", "colar feminino",
     ],
+    "pet": [
+        "caminha pet", "comedouro automático", "brinquedo para cachorro", "tapete higiênico",
+        "arranhador gato", "bebedouro fonte pet", "coleira peitoral", "escova pet removedor pelos",
+        "caixa de transporte pet", "roupa para cachorro",
+    ],
+    "automotivo": [
+        "aspirador automotivo", "suporte veicular celular", "câmera de ré", "organizador porta malas",
+        "carregador veicular", "capa banco carro", "compressor de ar portátil", "kit limpeza automotiva",
+        "lâmpada led farol", "tapete automotivo",
+    ],
+    "masculino": [
+        "máquina de barbear", "carteira masculina", "relógio masculino", "kit barba",
+        "aparador de pelos", "mochila masculina", "boné masculino", "perfume masculino",
+        "camiseta masculina", "tênis masculino",
+    ],
 }
 
 # --- Filtros de qualidade ---
@@ -56,8 +71,8 @@ PALAVRAS_PROIBIDAS = [
 ]
 
 # --- Ritmo ---
-OFERTAS_POR_GARIMPO = int(os.getenv("OFERTAS_POR_GARIMPO", "8"))
-PALAVRAS_POR_GARIMPO = int(os.getenv("PALAVRAS_POR_GARIMPO", "8"))
+OFERTAS_POR_GARIMPO = int(os.getenv("OFERTAS_POR_GARIMPO", "10"))
+PALAVRAS_POR_GARIMPO = int(os.getenv("PALAVRAS_POR_GARIMPO", "12"))
 DIAS_SEM_REPETIR = 30          # não repete o mesmo produto dentro desse prazo
 DIAS_VALIDADE_PENDENTE = 3     # oferta não postada vence depois disso (preço muda)
 
