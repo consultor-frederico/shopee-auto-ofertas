@@ -1,0 +1,46 @@
+name: 1 - Garimpo de ofertas
+
+on:
+  schedule:
+    # Horários em UTC: 09:47 e 17:47 UTC = 06:47 e 14:47 em Brasília
+    - cron: '47 9 * * *'
+    - cron: '47 17 * * *'
+  workflow_dispatch:
+
+# Impede que dois robôs gravem no repositório ao mesmo tempo
+concurrency:
+  group: grava-repositorio
+  cancel-in-progress: false
+
+jobs:
+  garimpar:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Garimpar ofertas
+        env:
+          SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
+          SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: python -m src.garimpar
+
+      - name: Salvar fila e artes
+        run: |
+          git config user.name "GarimpoBot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A data posts
+          git diff --cached --quiet && exit 0
+          git commit -m "🤖 Garimpo $(TZ=America/Sao_Paulo date +'%d/%m/%Y %H:%M')"
+          git pull --rebase
+          git push
