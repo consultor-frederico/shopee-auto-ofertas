@@ -37,6 +37,11 @@ NICHO = {
         "boneca", "quebra cabeça infantil", "massinha de modelar", "pista hot wheels",
         "brinquedo montessori", "kit slime", "jogo de tabuleiro",
     ],
+    "feminino": [
+        "bolsa feminina", "kit maquiagem", "skincare", "escova secadora",
+        "prancha alisadora", "brinco feminino", "relógio feminino", "vestido feminino",
+        "organizador de maquiagem", "kit pincel maquiagem", "sandália feminina", "colar feminino",
+    ],
 }
 
 # --- Filtros de qualidade ---

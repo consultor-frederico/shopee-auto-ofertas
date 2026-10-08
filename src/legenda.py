@@ -13,6 +13,7 @@ HASHTAGS = {
     "eletronicos": "#achadinhos #shopee #ofertas #eletronicos #tecnologia #promoção #garimpovip",
     "lar": "#achadinhos #shopee #ofertas #casa #organização #utilidades #garimpovip",
     "brinquedos": "#achadinhos #shopee #ofertas #brinquedos #presente #criança #garimpovip",
+    "feminino": "#achadinhos #shopee #ofertas #moda #beleza #achadinhosfemininos #garimpovip",
 }
 
 PROMPT = """Você é social media de uma página de achadinhos da Shopee chamada Garimpo VIP.
