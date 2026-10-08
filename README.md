@@ -24,6 +24,9 @@ Horários de Brasília. Todos também podem ser disparados em **Actions → Run 
 - A mídia (`src/imagem.py` foto 1080x1350, `src/reels.py` Reels 1080x1920) é gerada na hora e servida pelo **GitHub Pages**, de onde o Instagram a busca.
 - Evita repetir a categoria dos últimos 3 posts.
 
+## Vídeos manuais
+Suba um `.mp4` em `videos/` e anote em `videos/lista.txt` o link do produto. O robô busca a oferta, monta o Reels com o vídeo e publica no próximo horário, com prioridade. Instruções em `videos/LEIA-ME.md`.
+
 ## Respostas
 `python -m src.responder`
 - Gatilhos: "eu quero", "quero", "link", "manda".

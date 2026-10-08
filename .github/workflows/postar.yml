@@ -45,6 +45,9 @@ jobs:
         id: prep
         env:
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
+          SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           FORMATO: ${{ github.event.inputs.formato != 'auto' && github.event.inputs.formato || '' }}
         run: python -m src.postar preparar
 
@@ -71,7 +74,7 @@ jobs:
         run: |
           git config user.name "GarimpoBot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/fila.json
+          git add -A data/fila.json videos
           git diff --cached --quiet && exit 0
           git commit -m "📸 Post $(TZ=America/Sao_Paulo date +'%d/%m/%Y %H:%M')"
           git pull --rebase

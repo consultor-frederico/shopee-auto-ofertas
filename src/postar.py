@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 
 import requests
 
-from . import config, imagem, instagram, reels
+from . import config, imagem, instagram, reels, video_manual
 from .garimpar import BRT, FMT, agora, carregar_fila, salvar_fila
 
 PASTA_SITE = config.RAIZ / "site"
@@ -44,8 +44,10 @@ def candidatos_ordenados(fila):
     """Melhor pontuação primeiro, jogando para o fim as categorias dos últimos posts."""
     candidatos = sorted(_validos(fila), key=lambda o: o.get("pontos", 0), reverse=True)
     recentes = {o["categoria"] for o in _ultimos_postados(fila)}
-    return [o for o in candidatos if o["categoria"] not in recentes] + \
-           [o for o in candidatos if o["categoria"] in recentes]
+    manuais = [o for o in candidatos if o.get("video_manual")]
+    resto = [o for o in candidatos if not o.get("video_manual")]
+    return manuais + [o for o in resto if o["categoria"] not in recentes] + \
+        [o for o in resto if o["categoria"] in recentes]
 
 
 def formato_da_vez(fila):
@@ -62,15 +64,24 @@ def preparar():
         print("⏸️  IG_ACCESS_TOKEN ainda não configurado — postagem em espera.")
         return
     fila = carregar_fila()
-    formato = formato_da_vez(fila)
+    try:
+        video_manual.registrar_na_fila(fila)
+    except Exception as e:
+        print(f"::warning::Falha ao ler videos/: {e}")
+    formato_padrao = formato_da_vez(fila)
     pasta = PASTA_SITE / "midia"
     pasta.mkdir(parents=True, exist_ok=True)
     (PASTA_SITE / ".nojekyll").write_text("")
     (PASTA_SITE / "index.html").write_text("<!doctype html><title>Garimpo VIP</title>Garimpo VIP")
     oferta = None
     for cand in candidatos_ordenados(fila)[:3]:
+        formato = "reels" if cand.get("video_manual") else formato_padrao
         nome = f"{cand['id']}-{int(time.time())}.{'mp4' if formato == 'reels' else 'jpg'}"
         try:
+            if cand.get("video_manual"):
+                video_manual.gerar_reels(cand, config.RAIZ / cand["video_manual"], pasta / nome)
+                oferta = cand
+                break
             foto = imagem._baixar_foto(cand["imagem"])
             if formato == "reels":
                 reels.gerar(cand, pasta / nome, foto=foto)
@@ -131,6 +142,8 @@ def publicar():
         salvar_fila(fila)
         ARQ_PROXIMO.unlink(missing_ok=True)
         raise
+    if oferta.get("video_manual"):
+        video_manual.baixar_da_pasta(oferta)
     oferta.update({"status": "postado", "id_post": media_id, "formato": prox["formato"],
                    "postado_em": agora().strftime(FMT), "postado_ts": time.time(), "permalink": instagram.permalink(media_id)})
     salvar_fila(fila)

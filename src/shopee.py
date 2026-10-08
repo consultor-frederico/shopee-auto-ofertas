@@ -47,3 +47,10 @@ def buscar_ofertas(palavra: str, pagina: int = 1, limite: int = 50, ordem: int =
              f"page:{pagina},limit:{limite}){{nodes{{{CAMPOS}}}}}}}")
     dados = consultar(query)
     return (dados.get("productOfferV2") or {}).get("nodes") or []
+
+
+def buscar_por_item(item_id) -> list:
+    """Oferta de um produto específico (pelo ID do item)."""
+    query = f"query{{productOfferV2(itemId:{int(item_id)},limit:1){{nodes{{{CAMPOS}}}}}}}"
+    dados = consultar(query)
+    return (dados.get("productOfferV2") or {}).get("nodes") or []
