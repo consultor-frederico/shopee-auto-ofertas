@@ -7,11 +7,13 @@ from PIL import Image, ImageDraw, ImageFont, ImageOps
 from . import config
 
 L, A = 1080, 1350
-FUNDO = "#FFF6EC"
-ESCURO = "#17171C"
-DOURADO = "#F5B700"
-LARANJA = "#EE4D2D"
-CINZA = "#6B6B75"
+# Paleta tirada do logo do Garimpo VIP
+FUNDO = "#EEEDE9"
+ESCURO = "#24150A"
+DOURADO = "#A07E30"
+DOURADO_CLARO = "#E2BE68"
+LARANJA = "#24150A"   # cor do preço
+CINZA = "#6E6458"
 BRANCO = "#FFFFFF"
 
 
@@ -68,15 +70,20 @@ def gerar(oferta: dict, destino, foto: Image.Image = None):
     img = Image.new("RGB", (L, A), FUNDO)
     d = ImageDraw.Draw(img)
 
-    # Faixa superior com a marca
-    d.rectangle([0, 0, L, 120], fill=ESCURO)
-    f_marca = _fonte(52, "Black")
-    marca = config.MARCA
-    d.text(((L - d.textlength(marca, font=f_marca)) / 2, 30), marca, font=f_marca, fill=DOURADO)
+    # Logo no topo (PNG com fundo transparente)
+    try:
+        logo = Image.open(config.LOGO).convert("RGBA")
+        logo = ImageOps.contain(logo, (300, 165), Image.LANCZOS)
+        img.paste(logo, ((L - logo.width) // 2, 20), logo)
+    except Exception as e:
+        print(f"⚠️  Logo não encontrado ({e}); usando a marca em texto.")
+        f_marca = _fonte(56, "Black")
+        d.text(((L - d.textlength(config.MARCA, font=f_marca)) / 2, 70), config.MARCA,
+               font=f_marca, fill=ESCURO)
 
     # Foto do produto num cartão branco
-    cx0, cy0, cx1, cy1 = 90, 160, L - 90, 160 + 760
-    d.rounded_rectangle([cx0 + 6, cy0 + 10, cx1 + 6, cy1 + 10], 40, fill="#EADFD2")
+    cx0, cy0, cx1, cy1 = 90, 205, L - 90, 205 + 715
+    d.rounded_rectangle([cx0 + 6, cy0 + 10, cx1 + 6, cy1 + 10], 40, fill="#DCD6CB")
     d.rounded_rectangle([cx0, cy0, cx1, cy1], 40, fill=BRANCO)
     if foto is None:
         try:
@@ -95,7 +102,7 @@ def gerar(oferta: dict, destino, foto: Image.Image = None):
     if oferta.get("desconto"):
         r = 105
         sx, sy = cx1 - 40, cy0 + 40
-        d.ellipse([sx - r, sy - r, sx + r, sy + r], fill=LARANJA, outline=BRANCO, width=8)
+        d.ellipse([sx - r, sy - r, sx + r, sy + r], fill=DOURADO, outline=BRANCO, width=8)
         f1, f2 = _fonte(64, "Black"), _fonte(34, "Bold")
         t1, t2 = f"-{oferta['desconto']}%", "OFF"
         d.text((sx - d.textlength(t1, font=f1) / 2, sy - 55), t1, font=f1, fill=BRANCO)
@@ -118,7 +125,7 @@ def gerar(oferta: dict, destino, foto: Image.Image = None):
         w = d.textlength(de, font=f_de)
         d.line([x - 4, y + 56, x + w + 4, y + 56], fill=CINZA, width=4)
         x += w + 26
-    d.text((x, y + 30), "R$", font=f_rs, fill=LARANJA)
+    d.text((x, y + 30), "R$", font=f_rs, fill=DOURADO)
     x += d.textlength("R$", font=f_rs) + 10
     d.text((x, y - 18), oferta["preco_fmt"], font=f_preco, fill=LARANJA)
 
@@ -134,7 +141,7 @@ def gerar(oferta: dict, destino, foto: Image.Image = None):
     # Faixa de chamada
     d.rectangle([0, A - 100, L, A], fill=ESCURO)
     f_cta = _fonte(42, "ExtraBold")
-    partes = [("COMENTE ", BRANCO), ("EU QUERO", DOURADO), (" E RECEBA O LINK", BRANCO)]
+    partes = [("COMENTE ", BRANCO), ("EU QUERO", DOURADO_CLARO), (" E RECEBA O LINK", BRANCO)]
     x = (L - sum(d.textlength(t, font=f_cta) for t, _ in partes)) / 2
     for t, cor in partes:
         d.text((x, A - 76), t, font=f_cta, fill=cor)

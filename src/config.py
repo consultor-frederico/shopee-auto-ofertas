@@ -7,6 +7,7 @@ PASTA_DADOS = RAIZ / "data"
 PASTA_POSTS = RAIZ / "posts"
 ARQ_FILA = PASTA_DADOS / "fila.json"          # ofertas garimpadas e seu status
 FONTE = RAIZ / "assets" / "Montserrat.ttf"
+LOGO = RAIZ / "assets" / "logo.png"
 
 # --- Credenciais (segredos do GitHub) ---
 SHOPEE_APP_ID = (os.getenv("SHOPEE_APP_ID") or "").strip()
