@@ -79,7 +79,7 @@ def permalink(media_id):
 
 def comentarios(media_id):
     """Todos os comentários de um post (com paginação)."""
-    itens, url, params = [], None, {"fields": "id,text,timestamp,username,from", "limit": 50}
+    itens, url, params = [], None, {"fields": "id,text,timestamp,username,from{id,username}", "limit": 50}
     caminho = f"{media_id}/comments"
     while True:
         corpo = _req("GET", caminho, params=params, url=url)

@@ -81,10 +81,17 @@ def responder(api=instagram):
                 continue
             if not pediu_link(c.get("text", "")):
                 continue
+            usuario = c.get("username") or (c.get("from") or {}).get("username", "")
+            ja_recebeu = any(r.get("post") == o["id_post"] and r.get("dm") == "ok" and autor
+                             and r.get("autor") == autor for r in respondidos.values())
+            if ja_recebeu:
+                respondidos[cid] = {"post": o["id_post"], "oferta": o["id"], "usuario": usuario,
+                                    "autor": autor, "em": agora().strftime(FMT), "dm": "repetido"}
+                continue
             if enviados >= MAX_POR_EXECUCAO:
                 break
-            reg = {"post": o["id_post"], "oferta": o["id"], "usuario": c.get("username", ""),
-                   "em": agora().strftime(FMT)}
+            reg = {"post": o["id_post"], "oferta": o["id"], "usuario": usuario,
+                   "autor": autor, "em": agora().strftime(FMT)}
             try:
                 api.resposta_privada(minha["user_id"], cid,
                                      DM.format(titulo=o["titulo"], link=o["link_afiliado"]))
