@@ -1,9 +1,6 @@
 name: 8 - Chamada do Telegram no Instagram
 
 on:
-  schedule:
-    # Terça e sexta, 19:37 em Brasília (22:37 UTC)
-    - cron: '37 22 * * 2,5'
   workflow_dispatch:
 
 concurrency:

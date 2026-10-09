@@ -1,8 +1,6 @@
 name: 3 - Responder EU QUERO
 
 on:
-  schedule:
-    - cron: '*/15 * * * *'
   workflow_dispatch:
 
 concurrency:

@@ -1,8 +1,6 @@
 name: 4 - Renovar token do Instagram
 
 on:
-  schedule:
-    - cron: '37 11 * * 1'   # toda segunda, 08:37 em Brasília
   workflow_dispatch:
 
 jobs:

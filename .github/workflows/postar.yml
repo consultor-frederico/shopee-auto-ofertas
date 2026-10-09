@@ -1,14 +1,6 @@
 name: 2 - Postar no Instagram
 
 on:
-  schedule:
-    # UTC → Brasília: 10:52=07:52 | 13:52=10:52 | 15:52=12:52 | 18:52=15:52 | 21:52=18:52 | 23:52=20:52
-    - cron: '52 10 * * *'
-    - cron: '52 13 * * *'
-    - cron: '52 15 * * *'
-    - cron: '52 18 * * *'
-    - cron: '52 21 * * *'
-    - cron: '52 23 * * *'
   workflow_dispatch:
     inputs:
       formato:

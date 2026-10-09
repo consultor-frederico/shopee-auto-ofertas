@@ -1,11 +1,6 @@
 name: 1 - Garimpo de ofertas
 
 on:
-  schedule:
-    # Horários em UTC → Brasília: 09:47=06:47 | 14:47=11:47 | 20:47=17:47
-    - cron: '47 9 * * *'
-    - cron: '47 14 * * *'
-    - cron: '47 20 * * *'
   workflow_dispatch:
 
 # Impede que dois robôs gravem no repositório ao mesmo tempo

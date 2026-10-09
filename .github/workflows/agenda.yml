@@ -1,0 +1,42 @@
+name: 0 - Agenda (relógio do robô)
+
+# Este é o ÚNICO arquivo com horários. Ele dispara as outras rotinas.
+# Horários em UTC (Brasília = UTC-3).
+on:
+  schedule:
+    - cron: '45 9 * * *'                     # garimpo 06:45
+    - cron: '47 14 * * *'                    # garimpo 11:47
+    - cron: '47 20 * * *'                    # garimpo 17:47
+    - cron: '52 10,13,15,18,21,23 * * *'     # post Instagram 07:52 10:52 12:52 15:52 18:52 20:52
+    - cron: '*/15 * * * *'                   # responder EU QUERO
+    - cron: '22 11-23 * * *'                 # Telegram 08:22–20:22
+    - cron: '22 0,1 * * *'                   # Telegram 21:22–22:22
+    - cron: '13 3,11,15,21 * * *'            # campanhas 00:13 08:13 12:13 18:13
+    - cron: '37 22 * * 2,5'                  # chamada do Telegram ter/sex 19:37
+    - cron: '37 11 * * 1'                    # renovar token seg 08:37
+  workflow_dispatch:
+
+permissions:
+  actions: write
+
+jobs:
+  disparar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Disparar a rotina do horário
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CRON: ${{ github.event.schedule }}
+        run: |
+          case "$CRON" in
+            '45 9 * * *'|'47 9 * * *'|'47 14 * * *'|'47 20 * * *') WF=garimpo.yml ;;
+            '52 10,13,15,18,21,23 * * *') WF=postar.yml ;;
+            '*/15 * * * *') WF=responder.yml ;;
+            '22 11-23 * * *'|'22 0,1 * * *') WF=telegram-ofertas.yml ;;
+            '13 3,11,15,21 * * *') WF=campanhas.yml ;;
+            '37 22 * * 2,5') WF=chamada.yml ;;
+            '37 11 * * 1') WF=token.yml ;;
+            *) echo "Disparo manual: nada a fazer (o relógio está funcionando)."; exit 0 ;;
+          esac
+          echo "⏰ $CRON → $WF"
+          gh api -X POST "repos/${{ github.repository }}/actions/workflows/$WF/dispatches" -f ref=main
