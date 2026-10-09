@@ -1,0 +1,33 @@
+name: 16 - Atualizar páginas do site
+
+# Publica só as páginas fixas (início, privacidade, termos) no GitHub Pages.
+# Os posts também publicam essas páginas junto com a mídia, então isto é só para atualizar fora de hora.
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: grava-repositorio
+  cancel-in-progress: false
+
+jobs:
+  site:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Montar site
+        run: |
+          mkdir -p site && cp assets/paginas/*.html site/ && touch site/.nojekyll
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deploy
+        uses: actions/deploy-pages@v4
+      - run: echo "::notice::Site no ar em ${{ steps.deploy.outputs.page_url }}"
