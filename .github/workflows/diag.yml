@@ -1,0 +1,36 @@
+name: 9 - Diagnóstico temporário (calibrar filtro)
+on:
+  workflow_dispatch:
+concurrency:
+  group: grava-repositorio
+  cancel-in-progress: false
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements.txt
+      - name: Amostra
+        env:
+          SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
+          SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: |
+          PERFIL=garimpo python -m src.diagnostico &
+          PERFIL=ana python -m src.diagnostico &
+          wait
+      - name: Salvar
+        run: |
+          git config user.name "GarimpoBot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A data/diag
+          git commit -m "Diagnóstico temporário do filtro"
+          git pull --rebase
+          git push
