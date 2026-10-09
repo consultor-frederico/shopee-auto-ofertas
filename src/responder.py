@@ -114,8 +114,10 @@ def responder(api=instagram):
                 if RESPOSTA_PUBLICA:
                     try:
                         api.responder_comentario(cid, random.choice(PUBLICAS))
+                        reg["publica"] = "ok"
                     except Exception as e:
-                        print(f"   (resposta pública falhou: {e})")
+                        reg["publica"] = f"erro: {str(e)[:300]}"
+                        print(f"::warning::Resposta pública falhou: {e}")
                 print(f"📩 Link enviado para @{reg['usuario']} — {o['titulo']}")
             except Exception as e:
                 falhas += 1
