@@ -83,7 +83,7 @@
   "carteira masculina": {
    "cat": "masculino",
    "origem": "fixa",
-   "usos": 2,
+   "usos": 3,
    "achados": 0,
    "criado": "2026-10-09",
    "ultimo_uso": "2026-10-09"
@@ -99,8 +99,8 @@
   "câmera wifi": {
    "cat": "eletronicos",
    "origem": "fixa",
-   "usos": 1,
-   "achados": 3,
+   "usos": 2,
+   "achados": 9,
    "criado": "2026-10-09",
    "ultimo_uso": "2026-10-09"
   },
@@ -115,7 +115,7 @@
   "tapete higiênico": {
    "cat": "pet",
    "origem": "fixa",
-   "usos": 2,
+   "usos": 3,
    "achados": 0,
    "criado": "2026-10-09",
    "ultimo_uso": "2026-10-09"
@@ -163,8 +163,8 @@
   "projetor estrelas": {
    "cat": "brinquedos",
    "origem": "fixa",
-   "usos": 1,
-   "achados": 0,
+   "usos": 2,
+   "achados": 1,
    "criado": "2026-10-09",
    "ultimo_uso": "2026-10-09"
   },
@@ -299,15 +299,15 @@
   "umidificador": {
    "cat": "lar",
    "origem": "fixa",
-   "usos": 1,
-   "achados": 0,
+   "usos": 2,
+   "achados": 1,
    "criado": "2026-10-09",
    "ultimo_uso": "2026-10-09"
   },
   "organizador multifuncional": {
    "cat": "lar",
    "origem": "fixa",
-   "usos": 1,
+   "usos": 2,
    "achados": 0,
    "criado": "2026-10-09",
    "ultimo_uso": "2026-10-09"
@@ -315,7 +315,7 @@
   "gadget carro": {
    "cat": "automotivo",
    "origem": "fixa",
-   "usos": 1,
+   "usos": 2,
    "achados": 0,
    "criado": "2026-10-09",
    "ultimo_uso": "2026-10-09"
@@ -451,7 +451,7 @@
   "brinquedo para cachorro": {
    "cat": "pet",
    "origem": "fixa",
-   "usos": 1,
+   "usos": 2,
    "achados": 0,
    "criado": "2026-10-09",
    "ultimo_uso": "2026-10-09"
@@ -459,7 +459,7 @@
   "kit limpeza automotiva": {
    "cat": "automotivo",
    "origem": "fixa",
-   "usos": 1,
+   "usos": 2,
    "achados": 0,
    "criado": "2026-10-09",
    "ultimo_uso": "2026-10-09"
@@ -505,6 +505,126 @@
    "ultimo_uso": "2026-10-09"
   },
   "utensílios cozinha": {
+   "cat": "lar",
+   "origem": "fixa",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "carregador solar dobrável": {
+   "cat": "eletronicos",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "escova de limpeza de patas automática": {
+   "cat": "pet",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "sensor de estacionamento com áudio": {
+   "cat": "automotivo",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "puzzle de metal flexível": {
+   "cat": "brinquedos",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "abridor de garrafas multifuncional de titânio": {
+   "cat": "masculino",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "dispensador de sachês para temperos": {
+   "cat": "lar",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "cama dobrável para gato com aquecimento": {
+   "cat": "pet",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "capa de volante com aquecimento usb": {
+   "cat": "automotivo",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "mini scanner portátil": {
+   "cat": "eletronicos",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "cinto de ferramentas compacto para carro": {
+   "cat": "masculino",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "mouse sem fio": {
+   "cat": "eletronicos",
+   "origem": "fixa",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "kit slime": {
+   "cat": "brinquedos",
+   "origem": "fixa",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "teclado sem fio": {
+   "cat": "eletronicos",
+   "origem": "fixa",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "máquina de barbear": {
+   "cat": "masculino",
+   "origem": "fixa",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "organizador cozinha": {
    "cat": "lar",
    "origem": "fixa",
    "usos": 1,
