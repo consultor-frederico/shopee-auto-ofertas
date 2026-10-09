@@ -70,8 +70,8 @@ PALAVRAS_PROIBIDAS = [
 ]
 
 # --- Ritmo ---
-OFERTAS_POR_GARIMPO = int(os.getenv("OFERTAS_POR_GARIMPO", "10"))
-PALAVRAS_POR_GARIMPO = int(os.getenv("PALAVRAS_POR_GARIMPO", "12"))
+OFERTAS_POR_GARIMPO = int(os.getenv("OFERTAS_POR_GARIMPO", "15"))
+PALAVRAS_POR_GARIMPO = int(os.getenv("PALAVRAS_POR_GARIMPO", "16"))
 DIAS_SEM_REPETIR = 30          # não repete o mesmo produto dentro desse prazo
 DIAS_VALIDADE_PENDENTE = 3     # oferta não postada vence depois disso (preço muda)
 

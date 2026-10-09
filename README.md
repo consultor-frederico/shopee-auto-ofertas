@@ -4,7 +4,7 @@ Robô que roda 100% no GitHub Actions e alimenta o Instagram **@garimpovip4**.
 
 | Workflow | O que faz | Quando |
 |---|---|---|
-| 1 - Garimpo de ofertas | Busca ofertas em 7 nichos, filtra por qualidade, gera a legenda com IA e põe na fila | 06:47 e 14:47 |
+| 1 - Garimpo de ofertas | Busca 15 ofertas em 7 nichos, filtra por qualidade, gera a legenda com IA e põe na fila | 06:47, 11:47 e 17:47 |
 | 2 - Postar no Instagram | Pega a melhor oferta da fila, gera a arte (foto) ou o Reels e publica, alternando os formatos | 07:52, 10:52, 12:52, 15:52, 18:52, 20:52 |
 | 3 - Responder EU QUERO | Lê os comentários dos posts dos últimos 7 dias e manda o link de afiliado no direct | a cada 15 min |
 | 4 - Renovar token | Renova o token do Instagram (vale 60 dias) e atualiza o segredo | toda segunda |
@@ -15,7 +15,7 @@ Horários de Brasília. Todos também podem ser disparados em **Actions → Run 
 `python -m src.garimpar`
 - Nichos: eletrônicos, lar, brinquedos, feminino, pet, automotivo e masculino (`src/config.py`).
 - Filtros: nota ≥ 4,7, ≥ 100 vendas, comissão ≥ R$ 2, preço ≤ R$ 300, sem palavras proibidas, sem repetir produto em 30 dias.
-- Escolhe as 10 melhores por pontuação (comissão, vendas, nota, desconto), no máximo 1 por palavra-chave.
+- Escolhe as 15 melhores por pontuação (comissão, vendas, nota, desconto), no máximo 1 por palavra-chave.
 - Legenda pela Groq; se falhar, usa uma legenda padrão e avisa no log.
 - Fila em `data/fila.json`. Pendentes vencem em 3 dias.
 
@@ -28,7 +28,7 @@ Horários de Brasília. Todos também podem ser disparados em **Actions → Run 
 Suba um `.mp4` em `videos/` e anote em `videos/lista.txt` o link do produto. O robô busca a oferta, monta o Reels com o vídeo e publica no próximo horário, com prioridade. Instruções em `videos/LEIA-ME.md`.
 
 ## Telegram
-Cada oferta publicada no Instagram também vai para o canal do Telegram, com a arte ou o Reels, o preço e um botão com o link direto. Segredos: `TELEGRAM_BOT_TOKEN` e `TELEGRAM_CHAT_ID`. Teste em **Actions → 5 - Testar Telegram**.
+Ritmo próprio, mais intenso que o Instagram: **2 ofertas por hora, das 8h às 22h** (workflow 6, ~30/dia), com a arte, o preço e um botão com o link direto. As ofertas publicadas no Instagram também vão para o canal (sem repetir). Segredos: `TELEGRAM_BOT_TOKEN` e `TELEGRAM_CHAT_ID`. Teste em **Actions → 5 - Testar Telegram**.
 
 ## Respostas
 `python -m src.responder`

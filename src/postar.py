@@ -149,7 +149,7 @@ def publicar():
     salvar_fila(fila)
     ARQ_PROXIMO.unlink(missing_ok=True)
     print(f"✅ Publicado ({prox['formato']}): {oferta['titulo']} → {oferta['permalink'] or media_id}")
-    if telegram.configurado():
+    if telegram.configurado() and oferta.get("telegram") != "ok":
         try:
             telegram.enviar_oferta(oferta, PASTA_SITE / prox["arquivo"], prox["formato"])
             oferta["telegram"] = "ok"
