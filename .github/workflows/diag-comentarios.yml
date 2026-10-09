@@ -1,0 +1,31 @@
+name: 9 - Diagnóstico temporário (comentários)
+on:
+  workflow_dispatch:
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install requests
+      - env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+        run: |
+          python - <<'PY'
+          import requests, os
+          from src import instagram, responder
+          from src.garimpar import carregar_fila
+          ig = instagram.conta()["user_id"]
+          ativos = {o["id_post"]: o["titulo"] for o in responder.posts_ativos(carregar_fila())}
+          r = requests.get(f"{instagram.API}/{ig}/media", params={"fields": "id,timestamp,caption,comments_count", "limit": 25, "access_token": instagram.token()}, timeout=30).json()
+          for m in r.get("data", []):
+              tag = "ATIVO" if m["id"] in ativos else "fora da lista"
+              print(f"::notice::POST {m['id']} {m['timestamp']} [{tag}] {m.get('comments_count')} coment. {(m.get('caption') or '')[:40]!r}")
+              if m.get("comments_count"):
+                  for c in instagram.comentarios(m["id"]):
+                      print(f"::notice::   @{c.get('username')}: {c.get('text')!r} pediu={responder.pediu_link(c.get('text',''))}")
+          PY
