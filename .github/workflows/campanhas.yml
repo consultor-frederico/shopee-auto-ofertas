@@ -23,7 +23,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: pip install requests
+      - run: pip install -r requirements.txt
       - name: Procurar campanhas novas
         env:
           SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
