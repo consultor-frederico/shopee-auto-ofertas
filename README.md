@@ -14,7 +14,12 @@ Horários de Brasília. Todos também podem ser disparados em **Actions → Run 
 ## Garimpo
 `python -m src.garimpar`
 - Nichos: eletrônicos, lar, brinquedos, feminino, pet, automotivo e masculino (`src/config.py`).
-- Filtros: nota ≥ 4,7, ≥ 100 vendas, comissão ≥ R$ 2, preço ≤ R$ 300, sem palavras proibidas, sem repetir produto em 30 dias.
+- Filtro em dois níveis (calibrado com amostra de 7.161 produtos):
+  - 🏅 **Ouro** (Instagram): ≥ 1.000 vendas, comissão ≥ R$ 8 e ≥ 10%, "fator uau" da IA ≥ 7.
+  - 🥈 **Prata** (Telegram): ≥ 500 vendas, comissão ≥ R$ 5 e ≥ 8%, "fator uau" ≥ 6.
+  - Sempre: nota ≥ 4,7, preço ≤ R$ 300, sem palavras proibidas.
+- Anti-repetição: descarta nomes muito parecidos ou mesma loja + mesmo preço; não repete no Instagram em 30 dias (Telegram: 14).
+- Busca 2 páginas dos mais vendidos + a página de maior comissão de cada palavra-chave.
 - Escolhe as 15 melhores por pontuação (comissão, vendas, nota, desconto), no máximo 1 por palavra-chave.
 - Legenda pela Groq; se falhar, usa uma legenda padrão e avisa no log.
 - Fila em `data/fila.json`. Pendentes vencem em 3 dias.

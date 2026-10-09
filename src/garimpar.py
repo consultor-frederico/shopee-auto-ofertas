@@ -7,7 +7,7 @@ import random
 import sys
 from datetime import datetime, timedelta, timezone
 
-from . import config, legenda, shopee
+from . import config, curadoria, legenda, shopee
 
 BRT = timezone(timedelta(hours=-3))
 FMT = "%Y-%m-%d %H:%M:%S"
@@ -62,14 +62,16 @@ def normalizar(no, categoria, palavra):
 
 
 def motivo_recusa(o):
+    """Corte duro do nível Prata (o mínimo para entrar na fila)."""
+    prata = config.NIVEIS["prata"]
     nome = o["nome"].lower()
     if not o["link_afiliado"] or not o["imagem"]:
         return "sem link ou imagem"
     if o["nota"] < config.NOTA_MINIMA:
         return "nota baixa"
-    if o["vendas"] < config.VENDAS_MINIMAS:
+    if o["vendas"] < prata["vendas"]:
         return "poucas vendas"
-    if o["comissao"] < config.COMISSAO_MINIMA_RS:
+    if o["comissao"] < prata["comissao_rs"] or o["comissao_pct"] < prata["comissao_pct"]:
         return "comissão baixa"
     if o["preco"] <= 0 or o["preco"] > config.PRECO_MAXIMO:
         return "preço fora da faixa"
@@ -78,18 +80,37 @@ def motivo_recusa(o):
     return None
 
 
+def nivel(o):
+    """'ouro', 'prata' ou None, combinando números e fator uau."""
+    for nome in ("ouro", "prata"):
+        n = config.NIVEIS[nome]
+        if (o["vendas"] >= n["vendas"] and o["comissao"] >= n["comissao_rs"]
+                and o["comissao_pct"] >= n["comissao_pct"] and o.get("uau", 0) >= n["uau"]):
+            return nome
+    return None
+
+
 def pontuar(o):
-    """Prioriza o que converte (nota e vendas) e o que paga (comissão)."""
-    return round(o["comissao"] * 2 + min(o["vendas"], 20000) / 1000
+    """Prioriza o que é diferente (uau), o que paga (comissão) e o que converte (vendas, nota)."""
+    return round(o.get("uau", 5) * 3 + min(o["comissao"], 60) * 1.2 + min(o["vendas"], 20000) / 800
                  + (o["nota"] - 4.5) * 10 + o["desconto"] / 10, 2)
 
 
+def _dias(reg):
+    return (agora() - datetime.strptime(reg["criado_em"], FMT).replace(tzinfo=BRT)).days
+
+
 def ja_usado(fila, item_id):
+    """True = bloqueado. Entre 14 e 30 dias, o produto pode voltar só para o Telegram."""
     reg = fila["ofertas"].get(item_id)
     if not reg:
         return False
-    return agora() - datetime.strptime(reg["criado_em"], FMT).replace(tzinfo=BRT) \
-        <= timedelta(days=config.DIAS_SEM_REPETIR)
+    return _dias(reg) < config.DIAS_SEM_REPETIR_TELEGRAM
+
+
+def so_telegram(fila, item_id):
+    reg = fila["ofertas"].get(item_id)
+    return bool(reg) and _dias(reg) < config.DIAS_SEM_REPETIR
 
 
 def limpar_fila(fila):
@@ -117,11 +138,18 @@ def coletar_candidatos(fila, buscar=shopee.buscar_ofertas):
 
     candidatos, recusas, erros = {}, {}, 0
     for cat, palavra in escolhidas:
-        try:
-            nos = buscar(palavra)
-        except Exception as e:
+        nos, falhou = [], 0
+        for pagina, ordem in ((1, 2), (2, 2), (1, 5)):   # 2 páginas dos mais vendidos + maior comissão
+            try:
+                nos += buscar(palavra, pagina=pagina, ordem=ordem)
+            except TypeError:
+                nos += buscar(palavra)
+                break
+            except Exception as e:
+                falhou += 1
+                print(f"❌ Busca '{palavra}' (pág. {pagina}, ordem {ordem}): {e}")
+        if falhou == 3:
             erros += 1
-            print(f"❌ Busca '{palavra}': {e}")
             continue
         print(f"🔎 '{palavra}' ({cat}): {len(nos)} resultados")
         for no in nos:
@@ -132,9 +160,9 @@ def coletar_candidatos(fila, buscar=shopee.buscar_ofertas):
             if m:
                 recusas[m] = recusas.get(m, 0) + 1
                 continue
-            o["pontos"] = pontuar(o)
+            o["so_telegram"] = so_telegram(fila, o["id"])
             candidatos[o["id"]] = o
-    print(f"📊 Aprovados: {len(candidatos)} | Recusados: {recusas}")
+    print(f"📊 Passaram nos números: {len(candidatos)} | Recusados: {recusas}")
     if erros == len(escolhidas):
         raise RuntimeError("Todas as buscas na Shopee falharam — verifique os segredos e a API.")
     return list(candidatos.values())
@@ -161,10 +189,44 @@ def selecionar(candidatos, n):
     return escolhidos
 
 
+def curar(fila, candidatos, max_ia=80):
+    """Remove repetidos/parecidos, pede a nota de uau à IA e classifica em ouro/prata."""
+    recentes = [r.get("nome", "") for r in fila["ofertas"].values()
+                if r.get("nome") and r.get("status") in ("pendente", "postado")]
+    mesmas = {(r.get("loja"), r.get("preco")) for r in fila["ofertas"].values()
+              if r.get("loja") and r.get("status") in ("pendente", "postado")}
+    unicos = []
+    for o in sorted(candidatos, key=lambda x: (x["comissao"], x["vendas"]), reverse=True):
+        chave = (o.get("loja"), o.get("preco"))
+        if (o.get("loja") and chave in mesmas) or \
+                any(curadoria.parecido(o["nome"], n, config.SIMILARIDADE_MAX) for n in recentes):
+            continue
+        unicos.append(o)
+        recentes.append(o["nome"])
+        mesmas.add(chave)
+    print(f"🔁 Sem repetidos/parecidos: {len(unicos)} de {len(candidatos)}")
+    unicos = unicos[:max_ia]
+    notas = curadoria.notas_uau(unicos)
+    if not notas:
+        print(f"::warning::Curadoria por IA indisponível — usando nota de uau padrão {config.UAU_SEM_IA}.")
+    aprovados, cont = [], {"ouro": 0, "prata": 0, "descartado": 0}
+    for o in unicos:
+        o["uau"] = notas.get(o["id"], config.UAU_SEM_IA)
+        o["nivel"] = nivel(o)
+        if not o["nivel"]:
+            cont["descartado"] += 1
+            continue
+        cont[o["nivel"]] += 1
+        o["pontos"] = pontuar(o) + (15 if o["nivel"] == "ouro" else 0)
+        aprovados.append(o)
+    print(f"🏅 Ouro: {cont['ouro']} | 🥈 Prata: {cont['prata']} | descartados pela curadoria: {cont['descartado']}")
+    return aprovados
+
+
 def garimpar(buscar=shopee.buscar_ofertas):
     fila = carregar_fila()
     limpar_fila(fila)
-    candidatos = coletar_candidatos(fila, buscar)
+    candidatos = curar(fila, coletar_candidatos(fila, buscar))
     escolhidos = selecionar(candidatos, config.OFERTAS_POR_GARIMPO)
     fontes_ia = 0
     for o in escolhidos:
@@ -175,7 +237,9 @@ def garimpar(buscar=shopee.buscar_ofertas):
         o.update({"status": "pendente",
                   "criado_em": agora().strftime(FMT), "postado_em": "", "id_post": ""})
         fila["ofertas"][o["id"]] = o
-        print(f"✅ {o['categoria']:<11} R$ {o['preco_fmt']:>8}  comissão R$ {o['comissao']:.2f}  {o['titulo']}")
+        selo = "🏅" if o["nivel"] == "ouro" else "🥈"
+        print(f"{selo} {o['categoria']:<11} R$ {o['preco_fmt']:>8}  comissão R$ {o['comissao']:.2f} "
+              f"({o['comissao_pct']:.0f}%)  {o['vendas']} vendas  uau {o['uau']:.0f}  {o['titulo']}")
     fila["ultimo_garimpo"] = agora().strftime(FMT)
     salvar_fila(fila)
     pend = sum(1 for r in fila["ofertas"].values() if r["status"] == "pendente")

@@ -41,13 +41,15 @@ def _ultimos_postados(fila, n=3):
 
 
 def candidatos_ordenados(fila):
-    """Melhor pontuação primeiro, jogando para o fim as categorias dos últimos posts."""
+    """Vídeo manual primeiro; depois Ouro (Prata só se faltar Ouro), evitando repetir categoria."""
     candidatos = sorted(_validos(fila), key=lambda o: o.get("pontos", 0), reverse=True)
     recentes = {o["categoria"] for o in _ultimos_postados(fila)}
     manuais = [o for o in candidatos if o.get("video_manual")]
-    resto = [o for o in candidatos if not o.get("video_manual")]
-    return manuais + [o for o in resto if o["categoria"] not in recentes] + \
-        [o for o in resto if o["categoria"] in recentes]
+    resto = [o for o in candidatos if not o.get("video_manual") and not o.get("so_telegram")]
+    ouro = [o for o in resto if o.get("nivel", "ouro") == "ouro"]
+    base = ouro or resto
+    return manuais + [o for o in base if o["categoria"] not in recentes] + \
+        [o for o in base if o["categoria"] in recentes]
 
 
 def formato_da_vez(fila):
