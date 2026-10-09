@@ -33,7 +33,7 @@ PROMPT = """Você é social media de uma página de achadinhos da Shopee chamada
 Público: {publico}. {tom}
 Produto: {nome}
 Preço: R$ {preco}{desconto}
-Avaliação: {nota} estrelas, {vendas} vendidos.
+Avaliação: {nota} estrelas, {vendas} vendidos.{achado}
 
 Responda APENAS com um JSON válido, sem texto antes ou depois, no formato:
 {{"titulo": "...", "legenda": "..."}}
@@ -55,6 +55,10 @@ def _modelos_disponiveis(headers):
     except Exception as e:
         print(f"⚠️  Não consegui listar modelos da Groq: {e}")
         return []
+
+
+ACHADO = ("\nEste produto é um 💎 ACHADO ESCONDIDO: excelente avaliação, mas pouca gente conhece ainda. "
+          "Use isso no gancho da linha 1 (ex.: \"Achado que quase ninguém conhece 💎\"), sem exagerar.")
 
 
 def _chamar_groq(prompt):
@@ -99,6 +103,8 @@ def _legenda_padrao(oferta):
     nota = f"{oferta['nota']:.1f}".replace(".", ",")
     vendas = f"{oferta['vendas']:,}".replace(",", ".")
     abre = "✨ Achadinho que separei:" if config.PERFIL == "ana" else "🔥 Achadinho do dia:"
+    if oferta.get("nivel") == "achado":
+        abre = "💎 Achado escondido que pouca gente conhece:"
     return (f"{abre} {oferta['titulo']}\n"
             f"⭐ Nota {nota} e mais de {vendas} vendidos\n"
             f"💰 Por R$ {oferta['preco_fmt']}{desconto}\n"
@@ -115,7 +121,8 @@ def gerar(oferta: dict) -> dict:
         desconto = f" ({oferta['desconto']}% OFF)" if oferta.get("desconto") else ""
         prompt = PROMPT.format(cta=CTA, marca=config.NOME_MARCA, publico=config.PUBLICO, tom=config.TOM,
                                nome=oferta["nome"], preco=oferta["preco_fmt"], desconto=desconto,
-                               nota=oferta["nota"], vendas=oferta["vendas"])
+                               nota=oferta["nota"], vendas=oferta["vendas"],
+                               achado=ACHADO if oferta.get("nivel") == "achado" else "")
         try:
             bruto = _chamar_groq(prompt)
             dados = json.loads(re.search(r"\{.*\}", bruto, re.S).group(0))

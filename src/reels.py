@@ -16,7 +16,8 @@ from PIL import Image, ImageDraw, ImageOps
 
 from . import config
 from .imagem import (FUNDO, SOMBRA, BRANCO, CINZA, DOURADO, DOURADO_CLARO, ESCURO, LARANJA,
-                     _baixar_foto, _brl, _estrela, _fonte, selo_loja)
+                     _baixar_foto, _brl, _estrela, _fonte, eh_achado,
+                     moldura_achado, selo_achado, selo_loja)
 
 L, A = 1080, 1920
 FPS = 30
@@ -66,6 +67,9 @@ def _quadro(t, base, foto, oferta):
 
     # Selo da loja
     selo_loja(d, oferta, cx0 + 30, cy0 + 30, escala=1.1)
+    if eh_achado(oferta):   # 💎 achado escondido: moldura turquesa + faixa no pé da foto
+        moldura_achado(d, (cx0, cy0, cx1, cy1), 44, escala=1.1)
+        selo_achado(d, cx0 + 30, cy1 - 30 - int(92 * 1.1), escala=1.1)
 
     # Selo de desconto
     if oferta.get("desconto") and t >= 2.2:

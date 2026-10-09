@@ -88,6 +88,47 @@ def selo_loja(d, oferta, x, y, escala=1.0):
     return w + 2 * px
 
 
+ACHADO_COR = "#0E7C86"        # azul-turquesa "diamante": não existe em nenhum outro selo da página
+ACHADO_CLARO = "#7FE7EE"
+
+
+def eh_achado(oferta):
+    return oferta.get("nivel") == "achado"
+
+
+def _diamante(d, cx, cy, r, cor, brilho):
+    """Pedra lapidada: topo reto, ponta embaixo, com facetas."""
+    topo, meio, ponta = cy - r * 0.62, cy - r * 0.18, cy + r * 0.85
+    d.polygon([(cx - r * 0.55, topo), (cx + r * 0.55, topo), (cx + r, meio), (cx, ponta), (cx - r, meio)], fill=cor)
+    d.polygon([(cx - r * 0.55, topo), (cx - r * 0.15, topo), (cx - r * 0.35, meio), (cx - r, meio)], fill=brilho)
+    d.line([(cx - r, meio), (cx + r, meio)], fill=brilho, width=max(2, int(r * 0.08)))
+    d.line([(cx - r * 0.35, meio), (cx, ponta), (cx + r * 0.35, meio)], fill=brilho, width=max(2, int(r * 0.07)))
+
+
+def selo_achado(d, x, y, escala=1.0):
+    """Faixa "💎 ACHADO ESCONDIDO" (pílula turquesa com diamante), canto superior esquerdo em (x, y)."""
+    f1, f2 = _fonte(int(34 * escala), "Black"), _fonte(int(22 * escala), "SemiBold")
+    t1, t2 = "ACHADO ESCONDIDO", "POUCA GENTE CONHECE"
+    h = int(92 * escala)
+    ic = int(30 * escala)
+    px = int(24 * escala)
+    w = 2 * ic + int(16 * escala) + max(d.textlength(t1, font=f1), d.textlength(t2, font=f2)) + 2 * px
+    d.rounded_rectangle([x + 4, y + 6, x + w + 4, y + h + 6], h // 2, fill="#06484E")
+    d.rounded_rectangle([x, y, x + w, y + h], h // 2, fill=ACHADO_COR, outline="#FFFFFF", width=max(3, int(4 * escala)))
+    _diamante(d, x + px + ic, y + h / 2 + 2 * escala, ic, "#FFFFFF", ACHADO_CLARO)
+    tx = x + px + 2 * ic + int(16 * escala)
+    d.text((tx, y + int(12 * escala)), t1, font=f1, fill="#FFFFFF")
+    d.text((tx, y + int(54 * escala)), t2, font=f2, fill=ACHADO_CLARO)
+    return w
+
+
+def moldura_achado(d, caixa, raio, escala=1.0):
+    """Contorno turquesa no cartão da foto — o post de achado se destaca no feed."""
+    x0, y0, x1, y1 = caixa
+    e = int(10 * escala)
+    d.rounded_rectangle([x0 - e, y0 - e, x1 + e, y1 + e], raio + e, outline=ACHADO_COR, width=e)
+
+
 def _brl(v):
     return f"{v:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
@@ -134,6 +175,9 @@ def gerar(oferta: dict, destino, foto: Image.Image = None):
 
     # Selo da loja (canto superior esquerdo do cartão)
     selo_loja(d, oferta, cx0 + 28, cy0 + 28)
+    if eh_achado(oferta):   # 💎 achado escondido: moldura turquesa + faixa no pé da foto
+        moldura_achado(d, (cx0, cy0, cx1, cy1), 40)
+        selo_achado(d, cx0 + 28, cy1 - 28 - 92)
 
     # Selo de desconto
     if oferta.get("desconto"):

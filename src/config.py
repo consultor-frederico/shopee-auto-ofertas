@@ -68,6 +68,10 @@ NIVEIS = {
     "prata": {"vendas": 500, "comissao_rs": 5.0, "comissao_pct": 8.0, "uau": 6},
 }
 COMISSAO_PCT_ALIEXPRESS = 7.0  # AliExpress paga 7% padrão; o corte em R$ (5 prata / 6 ouro) segue igual
+# 💎 Achado escondido: produto excelente e muito diferente que ainda não viralizou (poucas vendas).
+# Pouca prova social → só entra com nota alta e uau altíssimo, e no máximo ACHADOS_POR_DIA no Instagram.
+NIVEL_ACHADO = {"vendas_min": 100, "nota": 4.8, "uau": 9, "comissao_rs": 5.0, "comissao_pct": 8.0}
+ACHADOS_POR_DIA = int(os.getenv("ACHADOS_POR_DIA", "1"))
 NOTA_MINIMA = float(os.getenv("NOTA_MINIMA", "4.7"))
 PRECO_MAXIMO = float(os.getenv("PRECO_MAXIMO", "300"))
 UAU_SEM_IA = 6                 # nota padrão se a IA de curadoria estiver fora do ar
@@ -80,7 +84,15 @@ PALAVRAS_PROIBIDAS = [
 
 # --- Ritmo ---
 OFERTAS_POR_GARIMPO = int(os.getenv("OFERTAS_POR_GARIMPO", "15"))
-PALAVRAS_POR_GARIMPO = int(os.getenv("PALAVRAS_POR_GARIMPO", "24"))
+PALAVRAS_POR_GARIMPO = int(os.getenv("PALAVRAS_POR_GARIMPO", "24"))   # total de buscas por rodada
+# Garimpo profundo: parte das buscas é inventada pela IA a cada rodada (termos específicos e curiosos)
+# e parte vem da memória (termos que já trouxeram Ouro/Achado). O resto são as palavras fixas do nicho.
+PALAVRAS_IA_POR_GARIMPO = int(os.getenv("PALAVRAS_IA_POR_GARIMPO", "10"))
+PALAVRAS_MEMORIA_POR_GARIMPO = int(os.getenv("PALAVRAS_MEMORIA_POR_GARIMPO", "4"))
+# Páginas da Shopee por busca (página, ordem): 1 relevância, 2 mais vendidos, 5 maior comissão.
+# As páginas 3–4 dos mais vendidos e a ordem "relevância" mostram o que fica escondido do topo.
+PAGINAS_FIXAS = ((1, 2), (2, 2), (3, 2), (4, 2), (1, 1), (1, 5))
+PAGINAS_PROFUNDAS = ((1, 2), (2, 2), (3, 2), (1, 1), (2, 1), (1, 5))
 DIAS_SEM_REPETIR = 30          # Instagram: não repete o mesmo produto dentro desse prazo
 DIAS_SEM_REPETIR_TELEGRAM = 14 # Telegram: campeão de vendas pode voltar depois disso
 DIAS_APAGAR_POSTS = int(os.getenv("DIAS_APAGAR_POSTS", "15"))  # posts de oferta somem depois disso
@@ -170,3 +182,4 @@ TELEGRAM_ATIVO = _P["telegram"]
 PALAVRAS_PROIBIDAS = PALAVRAS_PROIBIDAS + _P.get("proibidas", [])
 PASTA_PERFIL = _P["pasta_dados"]                 # fila e respostas de cada conta
 ARQ_FILA = PASTA_PERFIL / "fila.json"            # ofertas garimpadas e seu status
+ARQ_PALAVRAS = PASTA_PERFIL / "palavras.json"    # memória das buscas: quais termos trazem achados

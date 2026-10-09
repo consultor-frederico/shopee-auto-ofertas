@@ -49,8 +49,14 @@ def candidatos_ordenados(fila):
     manuais = [o for o in candidatos if o.get("video_manual")]
     resto = [o for o in candidatos if not o.get("video_manual") and not o.get("so_telegram")
              and o["categoria"] in config.NICHO]   # categoria que passou para outra conta fica de fora
-    ouro = [o for o in resto if o.get("nivel", "ouro") == "ouro"]
-    base = ouro or resto
+    # 💎 Achado escondido: entra junto com o Ouro, mas no máximo config.ACHADOS_POR_DIA por dia
+    hoje = agora().strftime("%Y-%m-%d")
+    achados_hoje = sum(1 for o in fila["ofertas"].values() if o.get("nivel") == "achado"
+                       and str(o.get("postado_em") or "").startswith(hoje))
+    pode_achado = achados_hoje < config.ACHADOS_POR_DIA
+    ouro = [o for o in resto if o.get("nivel", "ouro") == "ouro"
+            or (pode_achado and o.get("nivel") == "achado")]
+    base = ouro or [o for o in resto if o.get("nivel") != "achado"] or resto
     return manuais + [o for o in base if o["categoria"] not in recentes] + \
         [o for o in base if o["categoria"] in recentes]
 

@@ -16,6 +16,7 @@ import requests
 
 URL = "https://api-sg.aliexpress.com/sync"
 METODO_BUSCA = "aliexpress.affiliate.product.query"
+METODO_EM_ALTA = "aliexpress.affiliate.hotproduct.query"   # produtos em alta (lista separada)
 DIAS_ENTREGA_MAX = 7          # "já está no Brasil": entrega rápida para o Brasil
 AVALIACAO_MIN_PCT = 95.0      # vendedor confiável: ≥ 95% de avaliações positivas
 
@@ -63,19 +64,22 @@ def _num(v):
         return 0.0
 
 
-def buscar_produtos(palavra, pagina=1, ordem="LAST_VOLUME_DESC", limite=50):
-    """Produtos crus da API (lista de dicionários)."""
-    dados = chamar(METODO_BUSCA, keywords=palavra, page_no=pagina, page_size=limite, sort=ordem,
+def buscar_produtos(palavra, pagina=1, ordem="LAST_VOLUME_DESC", limite=50, metodo=METODO_BUSCA):
+    """Produtos crus da API (lista de dicionários). metodo: busca comum ou METODO_EM_ALTA."""
+    dados = chamar(metodo, keywords=palavra, page_no=pagina, page_size=limite, sort=ordem,
                    target_currency="BRL", target_language="PT", ship_to_country="BR",
                    delivery_days=DIAS_ENTREGA_MAX, tracking_id=_env("ALIEXPRESS_TRACKING_ID"),
                    fields=("product_id,product_title,product_main_image_url,product_video_url,"
                            "target_sale_price,target_original_price,discount,evaluate_rate,"
                            "lastest_volume,commission_rate,hot_product_commission_rate,"
                            "promotion_link,shop_name,shop_id,ship_to_days"))
-    resp = (dados.get("aliexpress_affiliate_product_query_response") or {}).get("resp_result") or {}
+    resp = (dados.get(metodo.replace(".", "_") + "_response") or {}).get("resp_result") or {}
     if str(resp.get("resp_code")) not in ("200", "None") and resp.get("resp_code") is not None:
         raise RuntimeError(f"AliExpress resp_code {resp.get('resp_code')}: {resp.get('resp_msg')}")
-    return ((resp.get("result") or {}).get("products") or {}).get("product") or []
+    produtos = ((resp.get("result") or {}).get("products") or {}).get("product") or []
+    if metodo == METODO_EM_ALTA:   # garante a regra "já está no Brasil" mesmo se a lista ignorar o filtro
+        produtos = [p for p in produtos if 0 < _num(p.get("ship_to_days")) <= DIAS_ENTREGA_MAX]
+    return produtos
 
 
 def normalizar(p, categoria, palavra):
@@ -128,6 +132,12 @@ if __name__ == "__main__":   # teste: python -m src.aliexpress "fone bluetooth"
         sys.exit(0)
     try:
         produtos = buscar_produtos(palavra, limite=20)
+        em_alta = buscar_produtos(palavra, limite=20, metodo=METODO_EM_ALTA)
+        print(f"🔥 Em alta: {len(em_alta)} produtos")
+        for p in em_alta[:5]:
+            o = normalizar(p, "teste", palavra)
+            print(f"::notice::[EM ALTA] {o['nome'][:60]} | R$ {o['preco_fmt']} | {o['vendas']} vendas | "
+                  f"comissão {o['comissao_pct']}%")
     except Exception as e:
         print(f"::error::{e}")
         sys.exit(1)

@@ -50,6 +50,8 @@ def legenda(oferta):
     vendas = f"{oferta.get('vendas', 0):,}".replace(",", ".")
     loja = NOME_LOJA.get(plataforma(oferta), plataforma(oferta).title())
     partes = [f"🔥 <b>{html.escape(oferta['titulo'])}</b>", ""]
+    if oferta.get("nivel") == "achado":
+        partes = ["💎 <b>ACHADO ESCONDIDO</b> — pouca gente conhece", ""] + partes
     partes += linhas + [""] if linhas else []
     partes += [preco, f"⭐ {nota}  •  {vendas}+ vendidos", f"🏷️ Oferta {loja}", "",
                "<i>Link de afiliado: você paga o mesmo e ajuda o Garimpo VIP 💛</i>"]

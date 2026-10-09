@@ -3,11 +3,10 @@
 Uso: python -m src.garimpar
 """
 import json
-import random
 import sys
 from datetime import datetime, timedelta, timezone
 
-from . import aliexpress, config, curadoria, legenda, shopee
+from . import aliexpress, busca_profunda, config, curadoria, legenda, shopee
 
 BRT = timezone(timedelta(hours=-3))
 FMT = "%Y-%m-%d %H:%M:%S"
@@ -78,7 +77,10 @@ def motivo_recusa(o):
     if o["nota"] < config.NOTA_MINIMA:
         return "nota baixa"
     if o["vendas"] < prata["vendas"]:
-        return "poucas vendas"
+        # poucas vendas só passa como possível 💎 Achado escondido (nota alta; o uau decide depois)
+        ach = config.NIVEL_ACHADO
+        if o["vendas"] < ach["vendas_min"] or o["nota"] < ach["nota"]:
+            return "poucas vendas"
     if o["comissao"] < prata["comissao_rs"] or o["comissao_pct"] < _pct_min(o, prata):
         return "comissão baixa"
     if o["preco"] <= 0 or o["preco"] > config.PRECO_MAXIMO:
@@ -89,13 +91,21 @@ def motivo_recusa(o):
 
 
 def nivel(o):
-    """'ouro', 'prata' ou None, combinando números e fator uau."""
+    """'ouro', 'prata', 'achado' (💎 escondido) ou None, combinando números e fator uau."""
     for nome in ("ouro", "prata"):
         n = config.NIVEIS[nome]
         if (o["vendas"] >= n["vendas"] and o["comissao"] >= n["comissao_rs"]
                 and o["comissao_pct"] >= _pct_min(o, n) and o.get("uau", 0) >= n["uau"]):
             return nome
+    a = config.NIVEL_ACHADO
+    if (o["vendas"] >= a["vendas_min"] and o["nota"] >= a["nota"] and o.get("uau", 0) >= a["uau"]
+            and o["comissao"] >= a["comissao_rs"] and o["comissao_pct"] >= _pct_min(o, a)):
+        return "achado"
     return None
+
+
+BONUS_NIVEL = {"ouro": 15, "achado": 18, "prata": 0}
+SELO = {"ouro": "🏅", "achado": "💎", "prata": "🥈"}
 
 
 def pontuar(o):
@@ -133,39 +143,51 @@ def limpar_fila(fila):
             reg["status"] = "vencido"
 
 
-def coletar_candidatos(fila, buscar=shopee.buscar_ofertas):
-    # mesma quantidade de palavras-chave por categoria (rodízio), sorteadas a cada garimpo
-    filas = {cat: random.sample(palavras, len(palavras)) for cat, palavras in config.NICHO.items()}
-    escolhidas = []
-    while len(escolhidas) < config.PALAVRAS_POR_GARIMPO and any(filas.values()):
-        for cat in random.sample(list(filas), len(filas)):
-            if filas[cat] and len(escolhidas) < config.PALAVRAS_POR_GARIMPO:
-                escolhidas.append((cat, filas[cat].pop()))
+def _buscar_paginas(buscar, palavra, paginas):
+    """Busca várias páginas/ordens; para de descer quando a página vem incompleta."""
+    nos, falhou, esgotou = [], 0, set()
+    for pagina, ordem in paginas:
+        if ordem in esgotou:
+            continue
+        try:
+            r = buscar(palavra, pagina=pagina, ordem=ordem)
+        except TypeError:
+            return buscar(palavra), 0
+        except Exception as e:
+            falhou += 1
+            print(f"❌ Busca '{palavra}' (pág. {pagina}, ordem {ordem}): {e}")
+            continue
+        nos += r
+        if len(r) < 50:
+            esgotou.add(ordem)
+    return nos, falhou == len(paginas)
 
+
+def coletar_candidatos(fila, buscar=shopee.buscar_ofertas, escolhidas=None):
+    if escolhidas is None:
+        escolhidas = busca_profunda.escolher_palavras(busca_profunda.carregar())
     candidatos, recusas, erros = {}, {}, 0
-    for cat, palavra in escolhidas:
-        nos, falhou = [], 0
-        for pagina, ordem in ((1, 2), (2, 2), (1, 5)):   # 2 páginas dos mais vendidos + maior comissão
-            try:
-                nos += buscar(palavra, pagina=pagina, ordem=ordem)
-            except TypeError:
-                nos += buscar(palavra)
-                break
-            except Exception as e:
-                falhou += 1
-                print(f"❌ Busca '{palavra}' (pág. {pagina}, ordem {ordem}): {e}")
-        if falhou == 3:
+    for cat, palavra, origem in escolhidas:
+        profunda = origem != "fixa"
+        nos, falhou_tudo = _buscar_paginas(
+            buscar, palavra, config.PAGINAS_PROFUNDAS if profunda else config.PAGINAS_FIXAS)
+        if falhou_tudo:
             erros += 1
             continue
-        print(f"🔎 '{palavra}' ({cat}): {len(nos)} resultados")
+        print(f"🔎 '{palavra}' ({cat}{', ' + origem if profunda else ''}): {len(nos)} resultados")
         ofertas = [normalizar(no, cat, palavra) for no in nos]
         if aliexpress.configurado():
-            try:
-                ae = aliexpress.buscar_produtos(palavra)
+            ae = []
+            buscas_ae = [("busca", 1)] + ([("alta", 1), ("busca", 2)] if profunda else [])
+            for tipo, pag in buscas_ae:
+                try:
+                    metodo = aliexpress.METODO_EM_ALTA if tipo == "alta" else aliexpress.METODO_BUSCA
+                    ae += aliexpress.buscar_produtos(palavra, pagina=pag, metodo=metodo)
+                except Exception as e:
+                    print(f"⚠️  AliExpress '{palavra}' ({tipo}, pág. {pag}): {e}")
+            if ae:
                 print(f"   🅰️ AliExpress: {len(ae)} resultados com entrega rápida")
-                ofertas += [aliexpress.normalizar(p, cat, palavra) for p in ae]
-            except Exception as e:
-                print(f"⚠️  AliExpress '{palavra}': {e}")
+            ofertas += [aliexpress.normalizar(p, cat, palavra) for p in ae]
         for o in ofertas:
             if o["id"] in candidatos or ja_usado(fila, o["id"]):
                 continue
@@ -174,9 +196,10 @@ def coletar_candidatos(fila, buscar=shopee.buscar_ofertas):
                 recusas[m] = recusas.get(m, 0) + 1
                 continue
             o["so_telegram"] = so_telegram(fila, o["id"])
+            o["origem_busca"] = origem
             candidatos[o["id"]] = o
     print(f"📊 Passaram nos números: {len(candidatos)} | Recusados: {recusas}")
-    if erros == len(escolhidas):
+    if escolhidas and erros == len(escolhidas):
         raise RuntimeError("Todas as buscas na Shopee falharam — verifique os segredos e a API.")
     return list(candidatos.values())
 
@@ -216,7 +239,7 @@ def tipo_produto(nome):
     return nome.lower()[:10]
 
 
-def curar(fila, candidatos, max_ia=80):
+def curar(fila, candidatos, max_ia=120, max_achado=30):
     """Remove repetidos/parecidos, pede a nota de uau à IA e classifica em ouro/prata."""
     recentes = [r.get("nome", "") for r in fila["ofertas"].values()
                 if r.get("nome") and r.get("status") in ("pendente", "postado")]
@@ -232,11 +255,15 @@ def curar(fila, candidatos, max_ia=80):
         recentes.append(o["nome"])
         mesmas.add(chave)
     print(f"🔁 Sem repetidos/parecidos: {len(unicos)} de {len(candidatos)}")
-    unicos = unicos[:max_ia]
+    # vaga reservada para possíveis 💎 achados (poucas vendas ficariam no fim da fila da IA)
+    poucos = sorted((o for o in unicos if o["vendas"] < config.NIVEIS["prata"]["vendas"]),
+                    key=lambda x: (x["nota"], x["comissao"]), reverse=True)[:max_achado]
+    normais = [o for o in unicos if o["vendas"] >= config.NIVEIS["prata"]["vendas"]]
+    unicos = normais[:max_ia - len(poucos)] + poucos
     notas = curadoria.notas_uau(unicos)
     if not notas:
         print(f"::warning::Curadoria por IA indisponível — usando nota de uau padrão {config.UAU_SEM_IA}.")
-    aprovados, cont = [], {"ouro": 0, "prata": 0, "descartado": 0}
+    aprovados, cont = [], {"ouro": 0, "achado": 0, "prata": 0, "descartado": 0}
     for o in unicos:
         o["uau"] = notas.get(o["id"], config.UAU_SEM_IA)
         o["nivel"] = nivel(o)
@@ -244,16 +271,21 @@ def curar(fila, candidatos, max_ia=80):
             cont["descartado"] += 1
             continue
         cont[o["nivel"]] += 1
-        o["pontos"] = pontuar(o) + (15 if o["nivel"] == "ouro" else 0)
+        o["pontos"] = pontuar(o) + BONUS_NIVEL[o["nivel"]]
         aprovados.append(o)
-    print(f"🏅 Ouro: {cont['ouro']} | 🥈 Prata: {cont['prata']} | descartados pela curadoria: {cont['descartado']}")
+    print(f"🏅 Ouro: {cont['ouro']} | 💎 Achado escondido: {cont['achado']} | 🥈 Prata: {cont['prata']} | "
+          f"descartados pela curadoria: {cont['descartado']}")
     return aprovados
 
 
 def garimpar(buscar=shopee.buscar_ofertas):
     fila = carregar_fila()
     limpar_fila(fila)
-    candidatos = curar(fila, coletar_candidatos(fila, buscar))
+    memoria = busca_profunda.carregar()
+    escolhidas = busca_profunda.escolher_palavras(memoria)
+    candidatos = curar(fila, coletar_candidatos(fila, buscar, escolhidas))
+    busca_profunda.registrar(memoria, escolhidas, candidatos)
+    busca_profunda.salvar(memoria)
     escolhidos = selecionar(candidatos, config.OFERTAS_POR_GARIMPO)
     fontes_ia = 0
     for o in escolhidos:
@@ -264,7 +296,7 @@ def garimpar(buscar=shopee.buscar_ofertas):
         o.update({"status": "pendente",
                   "criado_em": agora().strftime(FMT), "postado_em": "", "id_post": ""})
         fila["ofertas"][o["id"]] = o
-        selo = "🏅" if o["nivel"] == "ouro" else "🥈"
+        selo = SELO[o["nivel"]]
         print(f"{selo} {o['categoria']:<11} R$ {o['preco_fmt']:>8}  comissão R$ {o['comissao']:.2f} "
               f"({o['comissao_pct']:.0f}%)  {o['vendas']} vendas  uau {o['uau']:.0f}  {o['titulo']}")
     fila["ultimo_garimpo"] = agora().strftime(FMT)

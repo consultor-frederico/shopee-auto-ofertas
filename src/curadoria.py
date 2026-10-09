@@ -1,6 +1,7 @@
 """Curadoria: nota de "fator uau" pela IA e detecção de produtos repetidos/parecidos."""
 import json
 import re
+import time
 import unicodedata
 
 from . import config, legenda
@@ -15,8 +16,10 @@ Notas BAIXAS (0-4): itens básicos, de reposição ou commodity — camiseta/cal
 cueca, tapete higiênico, papel, sacos, cabos simples, capinha comum, refil, bobina ou peça de reposição, produto de higiene
 comum, material escolar simples.
 Notas MÉDIAS (5-6): úteis e bem vendidos, mas comuns.
-Notas ALTAS (7-10): gadgets curiosos, soluções criativas para casa/carro/pet, itens com efeito
+Notas ALTAS (7-8): gadgets curiosos, soluções criativas para casa/carro/pet, itens com efeito
 visual, "não sabia que precisava disso", presentes legais.
+Notas 9-10: RARAS — só para o que é realmente surpreendente e quase ninguém conhece
+(a pessoa para de rolar o feed para ver). No máximo 1 em cada 10 produtos.
 
 Produtos:
 {lista}
@@ -50,6 +53,8 @@ def notas_uau(ofertas, lote=40):
         return {}
     notas = {}
     for i in range(0, len(ofertas), lote):
+        if i:
+            time.sleep(6)   # respeita o limite de tokens por minuto do plano gratuito da Groq
         parte = ofertas[i:i + lote]
         lista = "\n".join(f'- id {o["id"]}: {o["nome"][:110]}' for o in parte)
         try:
