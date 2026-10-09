@@ -92,7 +92,11 @@ if __name__ == "__main__":   # teste: python -m src.youtube
     if not configurado():
         print("⏸️  YT_CLIENT_ID / YT_CLIENT_SECRET / YT_REFRESH_TOKEN ainda não cadastrados.")
     else:
-        tok = _token()
+        try:
+            tok = _token()
+        except Exception as e:
+            print(f"::error::{e}")
+            raise SystemExit(1)
         r = requests.get("https://www.googleapis.com/youtube/v3/channels",
                          params={"part": "snippet,statistics", "mine": "true"},
                          headers={"Authorization": f"Bearer {tok}"}, timeout=30)
