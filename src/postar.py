@@ -78,7 +78,13 @@ def preparar():
     (PASTA_SITE / ".nojekyll").write_text("")
     (PASTA_SITE / "index.html").write_text(f"<!doctype html><title>{config.NOME_MARCA}</title>{config.NOME_MARCA}")
     oferta = None
-    for cand in candidatos_ordenados(fila)[:3]:
+    forcada = (os.getenv("OFERTA_ID") or "").strip()
+    lista = candidatos_ordenados(fila)
+    if forcada:   # teste manual: posta exatamente esta oferta
+        lista = [o for o in fila["ofertas"].values() if o["id"] == forcada and o.get("status") == "pendente"]
+        if not lista:
+            print(f"::warning::Oferta {forcada} não está pendente na fila.")
+    for cand in lista[:3]:
         formato = "reels" if cand.get("video_manual") else formato_padrao
         nome = f"{cand['id']}-{int(time.time())}.{'mp4' if formato == 'reels' else 'jpg'}"
         try:

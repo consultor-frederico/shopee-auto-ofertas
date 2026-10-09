@@ -9,6 +9,10 @@ on:
         type: choice
         options: [auto, foto, reels]
         default: auto
+      oferta_id:
+        description: 'Código de uma oferta da fila (opcional, para teste)'
+        required: false
+        default: ''
       perfil:
         description: 'Conta do Instagram'
         type: choice
@@ -52,6 +56,7 @@ jobs:
           SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           FORMATO: ${{ github.event.inputs.formato != 'auto' && github.event.inputs.formato || '' }}
+          OFERTA_ID: ${{ inputs.oferta_id }}
         run: python -m src.postar preparar
 
       - name: Enviar mídia ao GitHub Pages
