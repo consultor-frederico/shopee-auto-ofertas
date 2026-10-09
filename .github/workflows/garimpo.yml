@@ -44,7 +44,11 @@ jobs:
           ALIEXPRESS_APP_KEY: ${{ secrets.ALIEXPRESS_APP_KEY }}
           ALIEXPRESS_APP_SECRET: ${{ secrets.ALIEXPRESS_APP_SECRET }}
           ALIEXPRESS_TRACKING_ID: ${{ secrets.ALIEXPRESS_TRACKING_ID }}
-        run: python -m src.garimpar
+        run: |
+          # relatório da rodada salvo no repositório (para conferir o que a busca profunda achou)
+          set -o pipefail
+          mkdir -p data/relatorios
+          python -u -m src.garimpar 2>&1 | tee "data/relatorios/garimpo_${PERFIL}.txt"
 
       - name: Salvar fila
         run: |

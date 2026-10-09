@@ -20,24 +20,45 @@ def _assinatura(payload: str, timestamp: int) -> str:
     return hashlib.sha256(base.encode("utf-8")).hexdigest()
 
 
-def consultar(query: str) -> dict:
+_ultima = [0.0]
+INTERVALO_MIN = 0.4      # segundos entre chamadas (o garimpo profundo faz ~150 buscas por rodada)
+
+
+def _limite_de_taxa(texto):
+    t = str(texto).lower()
+    return any(k in t for k in ("rate limit", "too many", "frequen", "limit exceeded", "10030", "429"))
+
+
+def consultar(query: str, tentativas: int = 4) -> dict:
     if not config.SHOPEE_APP_ID or not config.SHOPEE_APP_SECRET:
         raise ErroShopee("Segredos SHOPEE_APP_ID / SHOPEE_APP_SECRET não configurados no GitHub.")
     payload = json.dumps({"query": query}, separators=(",", ":"))
-    ts = int(time.time())
-    headers = {
-        "Authorization": f"SHA256 Credential={config.SHOPEE_APP_ID}, "
-                         f"Signature={_assinatura(payload, ts)}, Timestamp={ts}",
-        "Content-Type": "application/json",
-    }
-    resp = requests.post(config.SHOPEE_API_URL, headers=headers, data=payload, timeout=30)
-    try:
-        corpo = resp.json()
-    except ValueError:
-        raise ErroShopee(f"Resposta inválida da Shopee (HTTP {resp.status_code}): {resp.text[:300]}")
-    if corpo.get("errors"):
-        raise ErroShopee(f"Shopee retornou erro: {corpo['errors']}")
-    return corpo.get("data") or {}
+    for n in range(tentativas):
+        espera = INTERVALO_MIN - (time.time() - _ultima[0])
+        if espera > 0:
+            time.sleep(espera)
+        _ultima[0] = time.time()
+        ts = int(time.time())
+        headers = {
+            "Authorization": f"SHA256 Credential={config.SHOPEE_APP_ID}, "
+                             f"Signature={_assinatura(payload, ts)}, Timestamp={ts}",
+            "Content-Type": "application/json",
+        }
+        resp = requests.post(config.SHOPEE_API_URL, headers=headers, data=payload, timeout=30)
+        try:
+            corpo = resp.json()
+        except ValueError:
+            corpo = {"errors": f"HTTP {resp.status_code}: {resp.text[:300]}"}
+        erro = corpo.get("errors") or (f"HTTP {resp.status_code}" if resp.status_code == 429 else None)
+        if not erro:
+            return corpo.get("data") or {}
+        if _limite_de_taxa(erro) and n < tentativas - 1:
+            pausa = 5 * (2 ** n)
+            print(f"⏳ Shopee pediu para ir mais devagar — esperando {pausa}s ({erro})")
+            time.sleep(pausa)
+            continue
+        raise ErroShopee(f"Shopee retornou erro: {erro}")
+    raise ErroShopee("Shopee não respondeu depois de várias tentativas.")
 
 
 def buscar_ofertas(palavra: str, pagina: int = 1, limite: int = 50, ordem: int = 2) -> list:

@@ -26,7 +26,11 @@ para o dia a dia, itens com efeito visual, "não sabia que precisava disso", pre
 Crie termos de busca em português do Brasil, como uma pessoa digitaria na busca da Shopee:
 - específicos, de 2 a 5 palavras, nomeando um TIPO de produto (ex.: "mini seladora a vácuo",
   "luminária de lua 3d", "porta tempero giratório", "suporte magnético para cabo");
-- nada genérico como "fone bluetooth", "organizador", "brinquedo";
+- nada genérico ou "de vitrine": NÃO quero "fone bluetooth", "câmera de ação 4k", "suporte celular
+  ventosa", "capa de volante", "cama pet", "mochila" — isso todo mundo já posta;
+- pense no inusitado e engenhoso, como: "despertador projetor de teto", "lixeira com sensor de
+  presença", "escova de dedo para cachorro", "vela de led com sopro", "chaveiro rastreador de item",
+  "porta copo térmico para carro", "massageador de couro cabeludo elétrico";
 - sem marca, sem preço, sem adjetivos vazios ("barato", "promoção");
 - nunca: {proibidas}.
 
