@@ -3,22 +3,19 @@ import json
 
 from . import config, shopee
 
+campos = "commissionRate offerLink originalLink offerName offerType collectionId periodStartTime periodEndTime"
 saida = {}
-for tipo in ("ShopeeOfferV2", "ShopeeOfferV2Node", "Query"):
+for pagina in (2, 3, 4):
     try:
-        d = shopee.consultar('query{__type(name:"%s"){fields{name args{name}}}}' % tipo)
-        saida[tipo] = (d.get("__type") or {}).get("fields")
+        saida[f"pagina{pagina}"] = shopee.consultar(
+            "query{shopeeOfferV2(sortType:1,page:%d,limit:50){nodes{%s}}}" % (pagina, campos))
     except Exception as e:
-        saida[tipo] = str(e)
-campos = "commissionRate imageUrl offerLink originalLink offerName offerType categoryId collectionId periodStartTime periodEndTime"
-for nome, q in (("recentes", "sortType:1"), ("maior_comissao", "sortType:2")):
-    for tentativa in (campos, "commissionRate imageUrl offerLink offerName periodStartTime periodEndTime"):
-        try:
-            d = shopee.consultar("query{shopeeOfferV2(%s,page:1,limit:30){nodes{%s}}}" % (q, tentativa))
-            saida[nome] = d
-            break
-        except Exception as e:
-            saida[nome] = str(e)
-config.PASTA_DADOS.mkdir(exist_ok=True)
+        saida[f"pagina{pagina}"] = str(e)
+for kw in ("cupom", "cupons", "frete", "11.11", "black", "oferta", "voucher", "desconto"):
+    try:
+        saida[f"kw_{kw}"] = shopee.consultar(
+            'query{shopeeOfferV2(keyword:"%s",sortType:1,page:1,limit:50){nodes{%s}}}' % (kw, campos))
+    except Exception as e:
+        saida[f"kw_{kw}"] = str(e)
 (config.PASTA_DADOS / "diag_campanhas.json").write_text(json.dumps(saida, ensure_ascii=False, indent=1))
 print("::notice::ok")
