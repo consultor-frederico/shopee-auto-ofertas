@@ -71,7 +71,7 @@ NIVEIS = {
 COMISSAO_PCT_ALIEXPRESS = 7.0  # AliExpress paga 7% padrão; o corte em R$ (5 prata / 6 ouro) segue igual
 # 💎 Achado escondido: produto excelente e muito diferente que ainda não viralizou (poucas vendas).
 # Pouca prova social → só entra com nota alta e uau altíssimo, e no máximo ACHADOS_POR_DIA no Instagram.
-NIVEL_ACHADO = {"vendas_min": 50, "nota": 4.8, "uau": 8, "comissao_rs": 5.0, "comissao_pct": 8.0}
+NIVEL_ACHADO = {"vendas_min": 50, "nota": 4.8, "uau": 8, "comissao_rs": 3.0, "comissao_pct": 8.0}  # R$3 liberado pelo Fred em 09/10/2026
 ACHADOS_POR_DIA = int(os.getenv("ACHADOS_POR_DIA", "1"))
 NOTA_MINIMA = float(os.getenv("NOTA_MINIMA", "4.7"))
 PRECO_MAXIMO = float(os.getenv("PRECO_MAXIMO", "300"))

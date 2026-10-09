@@ -68,20 +68,25 @@ def _pct_min(o, nivel_cfg):
     return nivel_cfg["comissao_pct"]
 
 
+def candidato_achado(o):
+    """Poucas vendas (abaixo do Prata) e nota alta: pode virar 💎 Achado escondido se o uau for alto."""
+    a = config.NIVEL_ACHADO
+    return a["vendas_min"] <= o["vendas"] < config.NIVEIS["prata"]["vendas"] and o["nota"] >= a["nota"]
+
+
 def motivo_recusa(o):
-    """Corte duro do nível Prata (o mínimo para entrar na fila)."""
+    """Corte duro: o mínimo para entrar na fila (Prata, ou possível 💎 Achado com regras próprias)."""
     prata = config.NIVEIS["prata"]
     nome = o["nome"].lower()
     if not o["link_afiliado"] or not o["imagem"]:
         return "sem link ou imagem"
     if o["nota"] < config.NOTA_MINIMA:
         return "nota baixa"
-    if o["vendas"] < prata["vendas"]:
-        # poucas vendas só passa como possível 💎 Achado escondido (nota alta; o uau decide depois)
-        ach = config.NIVEL_ACHADO
-        if o["vendas"] < ach["vendas_min"] or o["nota"] < ach["nota"]:
-            return "poucas vendas"
-    if o["comissao"] < prata["comissao_rs"] or o["comissao_pct"] < _pct_min(o, prata):
+    achado = candidato_achado(o)
+    if o["vendas"] < prata["vendas"] and not achado:
+        return "poucas vendas"
+    minimo = config.NIVEL_ACHADO if achado else prata   # achado: comissão a partir de R$ 3
+    if o["comissao"] < minimo["comissao_rs"] or o["comissao_pct"] < _pct_min(o, minimo):
         return "comissão baixa"
     if o["preco"] <= 0 or o["preco"] > config.PRECO_MAXIMO:
         return "preço fora da faixa"
@@ -98,7 +103,7 @@ def nivel(o):
                 and o["comissao_pct"] >= _pct_min(o, n) and o.get("uau", 0) >= n["uau"]):
             return nome
     a = config.NIVEL_ACHADO
-    if (o["vendas"] >= a["vendas_min"] and o["nota"] >= a["nota"] and o.get("uau", 0) >= a["uau"]
+    if (candidato_achado(o) and o.get("uau", 0) >= a["uau"]
             and o["comissao"] >= a["comissao_rs"] and o["comissao_pct"] >= _pct_min(o, a)):
         return "achado"
     return None
