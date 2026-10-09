@@ -1,0 +1,1008 @@
+{
+ "ShopeeOfferV2": [
+  {
+   "name": "commissionRate",
+   "args": []
+  },
+  {
+   "name": "imageUrl",
+   "args": []
+  },
+  {
+   "name": "offerLink",
+   "args": []
+  },
+  {
+   "name": "originalLink",
+   "args": []
+  },
+  {
+   "name": "offerName",
+   "args": []
+  },
+  {
+   "name": "offerType",
+   "args": []
+  },
+  {
+   "name": "categoryId",
+   "args": []
+  },
+  {
+   "name": "collectionId",
+   "args": []
+  },
+  {
+   "name": "periodStartTime",
+   "args": []
+  },
+  {
+   "name": "periodEndTime",
+   "args": []
+  }
+ ],
+ "ShopeeOfferV2Node": null,
+ "Query": [
+  {
+   "name": "shopOfferV2",
+   "args": [
+    {
+     "name": "keyword"
+    },
+    {
+     "name": "shopType"
+    },
+    {
+     "name": "sortType"
+    },
+    {
+     "name": "sellerCommCoveRatio"
+    },
+    {
+     "name": "page"
+    },
+    {
+     "name": "limit"
+    },
+    {
+     "name": "shopId"
+    },
+    {
+     "name": "isKeySeller"
+    }
+   ]
+  },
+  {
+   "name": "shopeeOfferV2",
+   "args": [
+    {
+     "name": "keyword"
+    },
+    {
+     "name": "sortType"
+    },
+    {
+     "name": "page"
+    },
+    {
+     "name": "limit"
+    }
+   ]
+  },
+  {
+   "name": "productOfferV2",
+   "args": [
+    {
+     "name": "listType"
+    },
+    {
+     "name": "matchId"
+    },
+    {
+     "name": "keyword"
+    },
+    {
+     "name": "sortType"
+    },
+    {
+     "name": "page"
+    },
+    {
+     "name": "limit"
+    },
+    {
+     "name": "itemId"
+    },
+    {
+     "name": "shopId"
+    },
+    {
+     "name": "productCatId"
+    },
+    {
+     "name": "isAMSOffer"
+    },
+    {
+     "name": "isKeySeller"
+    }
+   ]
+  },
+  {
+   "name": "conversionReport",
+   "args": [
+    {
+     "name": "purchaseTimeStart"
+    },
+    {
+     "name": "purchaseTimeEnd"
+    },
+    {
+     "name": "completeTimeStart"
+    },
+    {
+     "name": "completeTimeEnd"
+    },
+    {
+     "name": "shopName"
+    },
+    {
+     "name": "shopId"
+    },
+    {
+     "name": "shopType"
+    },
+    {
+     "name": "conversionId"
+    },
+    {
+     "name": "conversionStatus"
+    },
+    {
+     "name": "checkoutId"
+    },
+    {
+     "name": "orderId"
+    },
+    {
+     "name": "productName"
+    },
+    {
+     "name": "productId"
+    },
+    {
+     "name": "categoryLv1Id"
+    },
+    {
+     "name": "categoryLv2Id"
+    },
+    {
+     "name": "categoryLv3Id"
+    },
+    {
+     "name": "categoryType"
+    },
+    {
+     "name": "orderStatus"
+    },
+    {
+     "name": "buyerType"
+    },
+    {
+     "name": "productType"
+    },
+    {
+     "name": "fraudStatus"
+    },
+    {
+     "name": "device"
+    },
+    {
+     "name": "attributionType"
+    },
+    {
+     "name": "campaignPartnerName"
+    },
+    {
+     "name": "campaignType"
+    },
+    {
+     "name": "limit"
+    },
+    {
+     "name": "scrollId"
+    }
+   ]
+  },
+  {
+   "name": "validatedReport",
+   "args": [
+    {
+     "name": "validationId"
+    },
+    {
+     "name": "limit"
+    },
+    {
+     "name": "scrollId"
+    }
+   ]
+  },
+  {
+   "name": "partnerOrderReport",
+   "args": [
+    {
+     "name": "purchaseTimeStart"
+    },
+    {
+     "name": "purchaseTimeEnd"
+    },
+    {
+     "name": "completeTimeStart"
+    },
+    {
+     "name": "completeTimeEnd"
+    },
+    {
+     "name": "limit"
+    },
+    {
+     "name": "searchNextToken"
+    }
+   ]
+  },
+  {
+   "name": "listItemFeeds",
+   "args": [
+    {
+     "name": "feedMode"
+    }
+   ]
+  },
+  {
+   "name": "getItemFeedData",
+   "args": [
+    {
+     "name": "datafeedId"
+    },
+    {
+     "name": "offset"
+    },
+    {
+     "name": "limit"
+    }
+   ]
+  }
+ ],
+ "recentes": {
+  "shopeeOfferV2": {
+   "nodes": [
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-e36aea6b03c72d17710e5c1880067be0",
+     "offerLink": "https://s.shopee.com.br/6L54EGFvqz",
+     "originalLink": "https://shopee.com.br/Health-cat.11059981",
+     "offerName": "- - Health",
+     "offerType": 2,
+     "categoryId": 100001,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-3a92b15549fcbb1ba5e5558dfdb72b61",
+     "offerLink": "https://s.shopee.com.br/6Ale1xGZBy",
+     "originalLink": "https://shopee.com.br/Fashion-Accessories-cat.11059978",
+     "offerName": "- - Fashion Accessories",
+     "offerType": 2,
+     "categoryId": 100009,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-95f61dbceab2e978e67235030a9932b4",
+     "offerLink": "https://s.shopee.com.br/60SDpeHCWx",
+     "originalLink": "https://shopee.com.br/Home-Appliances-cat.11059984",
+     "offerName": "- - Home Appliances",
+     "offerType": 2,
+     "categoryId": 100010,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-ddde92a5906baa3bfe6d6ebd3832d202",
+     "offerLink": "https://s.shopee.com.br/5q8ndLHprw",
+     "originalLink": "https://shopee.com.br/Men-Clothes-cat.11059986",
+     "offerName": "- - Men Clothes",
+     "offerType": 2,
+     "categoryId": 100011,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-f95f82fd3a325a3a994cda7263b145e9",
+     "offerLink": "https://s.shopee.com.br/5fpNR2ITCv",
+     "originalLink": "https://shopee.com.br/Men-Shoes-cat.11059987",
+     "offerName": "- - Men Shoes",
+     "offerType": 2,
+     "categoryId": 100012,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-8227fa610864a8efb18c7ee15290dd7b",
+     "offerLink": "https://s.shopee.com.br/5VVxEjJ6Xu",
+     "originalLink": "https://shopee.com.br/Mobile-Gadgets-cat.11059988",
+     "offerName": "- - Mobile & Gadgets",
+     "offerType": 2,
+     "categoryId": 100013,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-b005c919c42aa6cd9e4b4ea7ad8434cb",
+     "offerLink": "https://s.shopee.com.br/5LCX2QJjst",
+     "originalLink": "https://shopee.com.br/Travel-Luggage-cat.11059995",
+     "offerName": "- - Travel & Luggage",
+     "offerType": 2,
+     "categoryId": 100015,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-4010464ec3643b7e4e6f48f612f8592e",
+     "offerLink": "https://s.shopee.com.br/7pts11ADoO",
+     "originalLink": "https://shopee.com.br/Women-Bags-cat.11059997",
+     "offerName": "- - Women Bags",
+     "offerType": 2,
+     "categoryId": 100016,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-111d4ee81a591253da7f8a9fc2775860",
+     "offerLink": "https://s.shopee.com.br/7faRoiAr9N",
+     "originalLink": "https://shopee.com.br/Women-Clothes-cat.11059998",
+     "offerName": "- - Women Clothes",
+     "offerType": 2,
+     "categoryId": 100017,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "",
+     "offerLink": "https://s.shopee.com.br/7VH1cPBUUM",
+     "originalLink": "https://shopee.com.br/Food-Delivery-cat.11062201",
+     "offerName": "- - Food Delivery",
+     "offerType": 2,
+     "categoryId": 100531,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-773325c18738086306fabc0b9e54e0b6",
+     "offerLink": "https://s.shopee.com.br/7KxbQ6C7pL",
+     "originalLink": "https://shopee.com.br/Women-Shoes-cat.11059999",
+     "offerName": "- - Women Shoes",
+     "offerType": 2,
+     "categoryId": 100532,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-571b6860aecc1480985022660b8ec622",
+     "offerLink": "https://s.shopee.com.br/7AeBDnClAK",
+     "originalLink": "https://shopee.com.br/Men-Bags-cat.11059985",
+     "offerName": "- - Men Bags",
+     "offerType": 2,
+     "categoryId": 100533,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-41d8fa483dba9777a5ea31f72736ebb2",
+     "offerLink": "https://s.shopee.com.br/70Kl1UDOVJ",
+     "originalLink": "https://shopee.com.br/Watches-cat.11059996",
+     "offerName": "- - Watches",
+     "offerType": 2,
+     "categoryId": 100534,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-a3689d12b70b379edaff062e303b2125",
+     "offerLink": "https://s.shopee.com.br/6q1KpBE1qI",
+     "originalLink": "https://shopee.com.br/Audio-cat.11059971",
+     "offerName": "- - Audio",
+     "offerType": 2,
+     "categoryId": 100535,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-6bf219814386c28bc6638208b22e62d1",
+     "offerLink": "https://s.shopee.com.br/6fhucsEfBH",
+     "originalLink": "https://shopee.com.br/Food-Beverages-cat.11059979",
+     "offerName": "- - Food & Beverages",
+     "offerType": 2,
+     "categoryId": 100629,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-6a8d385a65f7683d87446cc79f1e10dd",
+     "offerLink": "https://s.shopee.com.br/9APFbT596m",
+     "originalLink": "https://shopee.com.br/Beauty-cat.11059974",
+     "offerName": "- - Beauty",
+     "offerType": 2,
+     "categoryId": 100630,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-12e45bb7e438ca328d11c3153c009fe7",
+     "offerLink": "https://s.shopee.com.br/905pPA5mRl",
+     "originalLink": "https://shopee.com.br/Pets-cat.11059991",
+     "offerName": "- - Pets",
+     "offerType": 2,
+     "categoryId": 100631,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-d0c33a566139eb229b8b467915cc8a85",
+     "offerLink": "https://s.shopee.com.br/8pmPCr6Pmk",
+     "originalLink": "https://shopee.com.br/Mom-Baby-cat.11059989",
+     "offerName": "- - Mom & Baby",
+     "offerType": 2,
+     "categoryId": 100632,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-ec8b334cc84f8c9db7932d6f49003051",
+     "offerLink": "https://s.shopee.com.br/8fSz0Y737j",
+     "originalLink": "https://shopee.com.br/Baby-Kids-Fashion-cat.11059973",
+     "offerName": "- - Baby & Kids Fashion",
+     "offerType": 2,
+     "categoryId": 100633,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-b3a21ba2259bc0ad9cdd17c2ff6b2e14",
+     "offerLink": "https://s.shopee.com.br/8V9YoF7gSi",
+     "originalLink": "https://shopee.com.br/Gaming-Consoles-cat.11059980",
+     "offerName": "- - Gaming & Consoles",
+     "offerType": 2,
+     "categoryId": 100634,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-f75dafaf3bb9337529bb3cf30c262ba4",
+     "offerLink": "https://s.shopee.com.br/8Kq8bw8Jnh",
+     "originalLink": "https://shopee.com.br/Cameras-Drones-cat.11059976",
+     "offerName": "- - Cameras & Drones",
+     "offerType": 2,
+     "categoryId": 100635,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-69c63b2deabe837ed5f41fd5d9b84762",
+     "offerLink": "https://s.shopee.com.br/8AWiPd8x8g",
+     "originalLink": "https://shopee.com.br/Home-Construction-cat.11059983",
+     "offerName": "- - Home & Construction",
+     "offerType": 2,
+     "categoryId": 100636,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-a389e344f21bbd6a0903a38a0e30def0",
+     "offerLink": "https://s.shopee.com.br/80DIDK9aTf",
+     "originalLink": "https://shopee.com.br/Sports-Outdoors-cat.11059992",
+     "offerName": "- - Sports & Outdoors",
+     "offerType": 2,
+     "categoryId": 100637,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-3eebbad66328a08f5b8baca5f2acc98b",
+     "offerLink": "https://s.shopee.com.br/AUudBv04PA",
+     "originalLink": "https://shopee.com.br/Stationery-cat.11059993",
+     "offerName": "- - Stationery",
+     "offerType": 2,
+     "categoryId": 100638,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-3372b5b1d85ce6313c01eca39ab1702f",
+     "offerLink": "https://s.shopee.com.br/AKbCzc0hk9",
+     "originalLink": "https://shopee.com.br/Toys-Hobbies-cat.11059982",
+     "offerName": "- - Toys & Hobbies",
+     "offerType": 2,
+     "categoryId": 100639,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-0ddb67a5e66260e6d434d6b4033af5b1",
+     "offerLink": "https://s.shopee.com.br/AAHmnJ1L58",
+     "originalLink": "https://shopee.com.br/Automobiles-cat.11059972",
+     "offerName": "- - Automobiles",
+     "offerType": 2,
+     "categoryId": 100640,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-304a622284c12489ec5b1c182b5d9c6a",
+     "offerLink": "https://s.shopee.com.br/9zyMb01yQ7",
+     "originalLink": "https://shopee.com.br/Motorcycles-cat.11059990",
+     "offerName": "- - Motorcycles",
+     "offerType": 2,
+     "categoryId": 100641,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-cebc87a2a93ff3c088068201b5282539",
+     "offerLink": "https://s.shopee.com.br/9pewOh2bl6",
+     "originalLink": "https://shopee.com.br/Tickets-Vouchers-Services-cat.11059994",
+     "offerName": "- - Tickets, Vouchers & Services",
+     "offerType": 2,
+     "categoryId": 100642,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-9367ea336ddf9cc4d4be3538ff70b5d0",
+     "offerLink": "https://s.shopee.com.br/9fLWCO3F65",
+     "originalLink": "https://shopee.com.br/Books-Magazines-cat.11059975",
+     "offerName": "- - Books & Magazines",
+     "offerType": 2,
+     "categoryId": 100643,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-3954d5e52cc8b3db4c50d0015e9b7ac7",
+     "offerLink": "https://s.shopee.com.br/9V26053sR4",
+     "originalLink": "https://shopee.com.br/Computers-Accessories-cat.11059977",
+     "offerName": "- - Computers & Accessories",
+     "offerType": 2,
+     "categoryId": 100644,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    }
+   ]
+  }
+ },
+ "maior_comissao": {
+  "shopeeOfferV2": {
+   "nodes": [
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-e36aea6b03c72d17710e5c1880067be0",
+     "offerLink": "https://s.shopee.com.br/5VVxEjJ2Hi",
+     "originalLink": "https://shopee.com.br/Health-cat.11059981",
+     "offerName": "- - Health",
+     "offerType": 2,
+     "categoryId": 100001,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-3a92b15549fcbb1ba5e5558dfdb72b61",
+     "offerLink": "https://s.shopee.com.br/5LCX2QJfch",
+     "originalLink": "https://shopee.com.br/Fashion-Accessories-cat.11059978",
+     "offerName": "- - Fashion Accessories",
+     "offerType": 2,
+     "categoryId": 100009,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-95f61dbceab2e978e67235030a9932b4",
+     "offerLink": "https://s.shopee.com.br/6VOUQZFEFw",
+     "originalLink": "https://shopee.com.br/Home-Appliances-cat.11059984",
+     "offerName": "- - Home Appliances",
+     "offerType": 2,
+     "categoryId": 100010,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-ddde92a5906baa3bfe6d6ebd3832d202",
+     "offerLink": "https://s.shopee.com.br/6L54EGFrav",
+     "originalLink": "https://shopee.com.br/Men-Clothes-cat.11059986",
+     "offerName": "- - Men Clothes",
+     "offerType": 2,
+     "categoryId": 100011,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-f95f82fd3a325a3a994cda7263b145e9",
+     "offerLink": "https://s.shopee.com.br/6Ale1xGUvu",
+     "originalLink": "https://shopee.com.br/Men-Shoes-cat.11059987",
+     "offerName": "- - Men Shoes",
+     "offerType": 2,
+     "categoryId": 100012,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-8227fa610864a8efb18c7ee15290dd7b",
+     "offerLink": "https://s.shopee.com.br/60SDpeH8Gt",
+     "originalLink": "https://shopee.com.br/Mobile-Gadgets-cat.11059988",
+     "offerName": "- - Mobile & Gadgets",
+     "offerType": 2,
+     "categoryId": 100013,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-b005c919c42aa6cd9e4b4ea7ad8434cb",
+     "offerLink": "https://s.shopee.com.br/9pewOh2XUe",
+     "originalLink": "https://shopee.com.br/Travel-Luggage-cat.11059995",
+     "offerName": "- - Travel & Luggage",
+     "offerType": 2,
+     "categoryId": 100015,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-4010464ec3643b7e4e6f48f612f8592e",
+     "offerLink": "https://s.shopee.com.br/9fLWCO3Apd",
+     "originalLink": "https://shopee.com.br/Women-Bags-cat.11059997",
+     "offerName": "- - Women Bags",
+     "offerType": 2,
+     "categoryId": 100016,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-111d4ee81a591253da7f8a9fc2775860",
+     "offerLink": "https://s.shopee.com.br/9V26053oAc",
+     "originalLink": "https://shopee.com.br/Women-Clothes-cat.11059998",
+     "offerName": "- - Women Clothes",
+     "offerType": 2,
+     "categoryId": 100017,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "",
+     "offerLink": "https://s.shopee.com.br/9Kifnm4RVb",
+     "originalLink": "https://shopee.com.br/Food-Delivery-cat.11062201",
+     "offerName": "- - Food Delivery",
+     "offerType": 2,
+     "categoryId": 100531,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-773325c18738086306fabc0b9e54e0b6",
+     "offerLink": "https://s.shopee.com.br/AUudBv008q",
+     "originalLink": "https://shopee.com.br/Women-Shoes-cat.11059999",
+     "offerName": "- - Women Shoes",
+     "offerType": 2,
+     "categoryId": 100532,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-571b6860aecc1480985022660b8ec622",
+     "offerLink": "https://s.shopee.com.br/AKbCzc0dTp",
+     "originalLink": "https://shopee.com.br/Men-Bags-cat.11059985",
+     "offerName": "- - Men Bags",
+     "offerType": 2,
+     "categoryId": 100533,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-41d8fa483dba9777a5ea31f72736ebb2",
+     "offerLink": "https://s.shopee.com.br/AAHmnJ1Goo",
+     "originalLink": "https://shopee.com.br/Watches-cat.11059996",
+     "offerName": "- - Watches",
+     "offerType": 2,
+     "categoryId": 100534,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-a3689d12b70b379edaff062e303b2125",
+     "offerLink": "https://s.shopee.com.br/9zyMb01u9n",
+     "originalLink": "https://shopee.com.br/Audio-cat.11059971",
+     "offerName": "- - Audio",
+     "offerType": 2,
+     "categoryId": 100535,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-6bf219814386c28bc6638208b22e62d1",
+     "offerLink": "https://s.shopee.com.br/8V9YoF7cCW",
+     "originalLink": "https://shopee.com.br/Food-Beverages-cat.11059979",
+     "offerName": "- - Food & Beverages",
+     "offerType": 2,
+     "categoryId": 100629,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-6a8d385a65f7683d87446cc79f1e10dd",
+     "offerLink": "https://s.shopee.com.br/8Kq8bw8FXV",
+     "originalLink": "https://shopee.com.br/Beauty-cat.11059974",
+     "offerName": "- - Beauty",
+     "offerType": 2,
+     "categoryId": 100630,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-12e45bb7e438ca328d11c3153c009fe7",
+     "offerLink": "https://s.shopee.com.br/8AWiPd8ssU",
+     "originalLink": "https://shopee.com.br/Pets-cat.11059991",
+     "offerName": "- - Pets",
+     "offerType": 2,
+     "categoryId": 100631,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-d0c33a566139eb229b8b467915cc8a85",
+     "offerLink": "https://s.shopee.com.br/80DIDK9WDT",
+     "originalLink": "https://shopee.com.br/Mom-Baby-cat.11059989",
+     "offerName": "- - Mom & Baby",
+     "offerType": 2,
+     "categoryId": 100632,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-ec8b334cc84f8c9db7932d6f49003051",
+     "offerLink": "https://s.shopee.com.br/9APFbT54qi",
+     "originalLink": "https://shopee.com.br/Baby-Kids-Fashion-cat.11059973",
+     "offerName": "- - Baby & Kids Fashion",
+     "offerType": 2,
+     "categoryId": 100633,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-b3a21ba2259bc0ad9cdd17c2ff6b2e14",
+     "offerLink": "https://s.shopee.com.br/905pPA5iBh",
+     "originalLink": "https://shopee.com.br/Gaming-Consoles-cat.11059980",
+     "offerName": "- - Gaming & Consoles",
+     "offerType": 2,
+     "categoryId": 100634,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-f75dafaf3bb9337529bb3cf30c262ba4",
+     "offerLink": "https://s.shopee.com.br/8pmPCr6LWg",
+     "originalLink": "https://shopee.com.br/Cameras-Drones-cat.11059976",
+     "offerName": "- - Cameras & Drones",
+     "offerType": 2,
+     "categoryId": 100635,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-69c63b2deabe837ed5f41fd5d9b84762",
+     "offerLink": "https://s.shopee.com.br/8fSz0Y6yrf",
+     "originalLink": "https://shopee.com.br/Home-Construction-cat.11059983",
+     "offerName": "- - Home & Construction",
+     "offerType": 2,
+     "categoryId": 100636,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-a389e344f21bbd6a0903a38a0e30def0",
+     "offerLink": "https://s.shopee.com.br/1qcerzWzjM",
+     "originalLink": "https://shopee.com.br/Sports-Outdoors-cat.11059992",
+     "offerName": "- - Sports & Outdoors",
+     "offerType": 2,
+     "categoryId": 100637,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-3eebbad66328a08f5b8baca5f2acc98b",
+     "offerLink": "https://s.shopee.com.br/1gJEfgXd4L",
+     "originalLink": "https://shopee.com.br/Stationery-cat.11059993",
+     "offerName": "- - Stationery",
+     "offerType": 2,
+     "categoryId": 100638,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-3372b5b1d85ce6313c01eca39ab1702f",
+     "offerLink": "https://s.shopee.com.br/1VzoTNYGPK",
+     "originalLink": "https://shopee.com.br/Toys-Hobbies-cat.11059982",
+     "offerName": "- - Toys & Hobbies",
+     "offerType": 2,
+     "categoryId": 100639,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-0ddb67a5e66260e6d434d6b4033af5b1",
+     "offerLink": "https://s.shopee.com.br/1LgOH4YtkJ",
+     "originalLink": "https://shopee.com.br/Automobiles-cat.11059972",
+     "offerName": "- - Automobiles",
+     "offerType": 2,
+     "categoryId": 100640,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-304a622284c12489ec5b1c182b5d9c6a",
+     "offerLink": "https://s.shopee.com.br/2VsLfDUSNY",
+     "originalLink": "https://shopee.com.br/Motorcycles-cat.11059990",
+     "offerName": "- - Motorcycles",
+     "offerType": 2,
+     "categoryId": 100641,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-cebc87a2a93ff3c088068201b5282539",
+     "offerLink": "https://s.shopee.com.br/2LYvSuV5iX",
+     "originalLink": "https://shopee.com.br/Tickets-Vouchers-Services-cat.11059994",
+     "offerName": "- - Tickets, Vouchers & Services",
+     "offerType": 2,
+     "categoryId": 100642,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-9367ea336ddf9cc4d4be3538ff70b5d0",
+     "offerLink": "https://s.shopee.com.br/2BFVGbVj3W",
+     "originalLink": "https://shopee.com.br/Books-Magazines-cat.11059975",
+     "offerName": "- - Books & Magazines",
+     "offerType": 2,
+     "categoryId": 100643,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    },
+    {
+     "commissionRate": "0.03",
+     "imageUrl": "https://cf.shopee.com.br/file/br-50009109-3954d5e52cc8b3db4c50d0015e9b7ac7",
+     "offerLink": "https://s.shopee.com.br/20w54IWMOV",
+     "originalLink": "https://shopee.com.br/Computers-Accessories-cat.11059977",
+     "offerName": "- - Computers & Accessories",
+     "offerType": 2,
+     "categoryId": 100644,
+     "collectionId": null,
+     "periodStartTime": 1787713200,
+     "periodEndTime": 32503651199
+    }
+   ]
+  }
+ }
+}
