@@ -173,20 +173,34 @@ def selecionar(candidatos, n):
     por_cat = {}
     for o in sorted(candidatos, key=lambda x: x["pontos"], reverse=True):
         por_cat.setdefault(o["categoria"], []).append(o)
-    escolhidos, palavras = [], set()
-    # 1ª passada: no máximo 1 oferta por palavra-chave (evita 3 produtos iguais)
-    for unico in (True, False):
+    escolhidos, palavras, tipos = [], set(), {}
+    # 1ª passada: no máximo 1 oferta por palavra-chave e 2 do mesmo tipo (ex.: "espelho");
+    # 2ª passada completa o que faltar, ainda com no máximo 3 do mesmo tipo.
+    for unico, max_tipo in ((True, 2), (False, 3)):
         restos = {c: list(v) for c, v in por_cat.items()}
         while len(escolhidos) < n and any(restos.values()):
             for cat in list(restos):
                 while restos[cat] and len(escolhidos) < n:
                     o = restos[cat].pop(0)
-                    if o in escolhidos or (unico and o["palavra"] in palavras):
+                    t = tipo_produto(o["nome"])
+                    if o in escolhidos or (unico and o["palavra"] in palavras) or tipos.get(t, 0) >= max_tipo:
                         continue
                     escolhidos.append(o)
                     palavras.add(o["palavra"])
+                    tipos[t] = tipos.get(t, 0) + 1
                     break
     return escolhidos
+
+
+_GENERICAS = {"mini", "super", "premium", "conjunto", "jogo", "par", "oferta", "moderno", "moderna", "pares", "peças", "pecas"}
+
+
+def tipo_produto(nome):
+    """Primeira palavra significativa do nome ("Espelho Oval LED" → "espelho")."""
+    for p in curadoria._norm(nome):   # palavras em ordem, sem acento
+        if p not in _GENERICAS and p not in curadoria.PARADAS and not p.isdigit():
+            return p
+    return nome.lower()[:10]
 
 
 def curar(fila, candidatos, max_ia=80):

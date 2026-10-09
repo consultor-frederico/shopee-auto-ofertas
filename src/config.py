@@ -141,6 +141,7 @@ PERFIS = {
         "pasta_dados": PASTA_DADOS / "ana",
         "logo": RAIZ / "assets" / "ana" / "logo.png",
         "telegram": False,
+        "proibidas": ["infantil", "criança", "crianca", "bebê", "bebe", "menina", "menino", "kids"],
         "tom": ("Tom acolhedor, divertido e inclusivo, como uma amiga que indica achadinhos. "
                 "Fale com mulheres e com o público LGBTQIA+ com carinho e sem estereótipos; "
                 "prefira linguagem neutra no tratamento (\"você\", \"pra quem ama...\")."),
@@ -162,5 +163,6 @@ LOGO = _P["logo"]
 CORES = _P["cores"]
 TOM, PUBLICO = _P["tom"], _P["publico"]
 TELEGRAM_ATIVO = _P["telegram"]
+PALAVRAS_PROIBIDAS = PALAVRAS_PROIBIDAS + _P.get("proibidas", [])
 PASTA_PERFIL = _P["pasta_dados"]                 # fila e respostas de cada conta
 ARQ_FILA = PASTA_PERFIL / "fila.json"            # ofertas garimpadas e seu status
