@@ -1,7 +1,8 @@
 """Gera um Reels (1080x1920, ~8s, MP4 H.264) a partir da foto da oferta, sem música.
 
 Linha do tempo:
-  0,0s  logo + foto com zoom lento
+  0,0s  GANCHO em letras grandes no topo (segura quem está rolando o feed) + foto com zoom lento
+  2,4s  o gancho sobe e o logo aparece
   0,6s  título entra
   1,4s  preço entra deslizando
   2,2s  selo de desconto "salta"
@@ -136,7 +137,39 @@ def _quadro(t, base, foto, oferta):
         f2 = _fonte(36, "SemiBold")
         sub = "que eu te mando o link no direct"
         d.text(((L - d.textlength(sub, font=f2)) / 2, topo + 100), sub, font=f2, fill="#CFC6B8")
+    _gancho(d, t, oferta)
     return img
+
+
+GANCHOS = ["VOCÊ NÃO SABIA|QUE PRECISAVA DISSO", "OLHA O QUE EU|ACHEI NA {loja}", "ISSO AQUI|É GENIAL",
+           "PARA TUDO|E OLHA ISSO", "ACHADO DO DIA|NA {loja}", "QUEM INVENTOU ISSO|MERECE UM PRÊMIO"]
+
+
+def gancho(oferta):
+    """Frase do primeiro segundo (2 linhas). Achado escondido tem a sua própria."""
+    if eh_achado(oferta):
+        return ["ACHADO QUE POUCA", "GENTE CONHECE"]
+    loja = "ALIEXPRESS" if oferta.get("plataforma") == "aliexpress" else "SHOPEE"
+    g = GANCHOS[sum(map(ord, str(oferta.get("id", "")))) % len(GANCHOS)]
+    return g.format(loja=loja).split("|")
+
+
+def _gancho(d, t, oferta):
+    """Faixa do gancho no topo: aparece já no 1º quadro e sobe para fora em 2,4–2,9s."""
+    if t >= 2.9:
+        return
+    k = _ease((t - 2.4) / 0.5) if t > 2.4 else 0
+    linhas = gancho(oferta)
+    f = _fonte(66, "Black")
+    h = 250
+    y0 = 30 - k * (h + 60)
+    cor = "#0E7C86" if eh_achado(oferta) else ESCURO
+    d.rounded_rectangle([40, y0, L - 40, y0 + h], 36, fill=cor)
+    for i, txt in enumerate(linhas):
+        while d.textlength(txt, font=f) > L - 140 and f.size > 40:
+            f = _fonte(f.size - 4, "Black")
+        cor_txt = DOURADO_CLARO if i == 1 and not eh_achado(oferta) else BRANCO
+        d.text(((L - d.textlength(txt, font=f)) / 2, y0 + 38 + i * 92), txt, font=f, fill=cor_txt)
 
 
 def _mix(c1, c2, k):

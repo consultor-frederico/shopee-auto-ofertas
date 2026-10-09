@@ -10,20 +10,22 @@ from . import config
 
 _modelo_escolhido = None
 
+# Poucas hashtags e bem específicas (hoje elas só classificam o post; o que traz alcance é a
+# palavra-chave na legenda e o post ser enviado/salvo).
 _TAGS = {
-    "eletronicos": "#achadinhos #shopee #ofertas #eletronicos #tecnologia #promoção",
-    "lar": "#achadinhos #shopee #ofertas #casa #organização #utilidades",
-    "brinquedos": "#achadinhos #shopee #ofertas #brinquedos #presente #criança",
-    "feminino": "#achadinhos #shopee #ofertas #moda #beleza #achadinhosfemininos",
-    "pet": "#achadinhos #shopee #ofertas #pet #cachorro #gato",
-    "automotivo": "#achadinhos #shopee #ofertas #carro #automotivo #acessórios",
-    "masculino": "#achadinhos #shopee #ofertas #modamasculina #estilo #homem",
-    "manual": "#achadinhos #shopee #ofertas #achadosshopee #promoção",
-    "beleza": "#achadinhos #shopee #beleza #maquiagem #skincare #achadinhosdebeleza",
-    "cabelo": "#achadinhos #shopee #cabelo #cabelocacheado #cuidadoscomcabelo #beleza",
-    "moda": "#achadinhos #shopee #moda #acessórios #lookdodia #estilo",
-    "autocuidado": "#achadinhos #shopee #autocuidado #selfcare #bemestar #skincare",
-    "casa_fofa": "#achadinhos #shopee #decoração #quartoaesthetic #casafofa #aesthetic",
+    "eletronicos": "#achadinhosshopee #gadgets #tecnologia #achadinhos",
+    "lar": "#achadinhosshopee #casaorganizada #utilidadesdomesticas #achadinhos",
+    "brinquedos": "#achadinhosshopee #brinquedos #presentecriativo #achadinhos",
+    "feminino": "#achadinhosshopee #moda #beleza #achadinhos",
+    "pet": "#achadinhosshopee #petlovers #cachorro #gato",
+    "automotivo": "#achadinhosshopee #acessoriosautomotivos #carro #achadinhos",
+    "masculino": "#achadinhosshopee #modamasculina #presenteparahomem #achadinhos",
+    "manual": "#achadinhosshopee #achadinhos #promoção",
+    "beleza": "#achadinhosshopee #beleza #skincare #achadinhos",
+    "cabelo": "#achadinhosshopee #cabelo #cuidadoscomcabelo #achadinhos",
+    "moda": "#achadinhosshopee #moda #lookdodia #achadinhos",
+    "autocuidado": "#achadinhosshopee #autocuidado #selfcare #achadinhos",
+    "casa_fofa": "#achadinhosshopee #decoração #quartoaesthetic #achadinhos",
 }
 EXTRA_PERFIL = {"ana": " #lgbtqia #orgulho"}
 CTA = ("💚 Comenta QUERO que eu te mando o link no direct!" if config.PERFIL == "ana"
@@ -41,7 +43,9 @@ Responda APENAS com um JSON válido, sem texto antes ou depois, no formato:
 
 Regras:
 - "titulo": nome comercial curto do produto, no máximo 32 caracteres, sem emoji, sem marca de loja.
-- "legenda": 3 a 5 linhas curtas separadas por \\n. Linha 1 é um gancho que desperta desejo.
+- "legenda": 3 a 5 linhas curtas separadas por \\n. Linha 1 é um gancho que JÁ TRAZ O NOME do
+  produto do jeito que as pessoas pesquisam no Instagram (ex.: "Porta tempero giratório: cozinha
+  organizada em 1 minuto"), porque é isso que faz o post aparecer na busca.
   Depois, 1 ou 2 benefícios concretos. Mencione o preço uma vez. Use poucos emojis.
   NÃO invente características que não estão no nome do produto. NÃO coloque link nem hashtags.
   A última linha deve ser exatamente: {cta}"""
@@ -83,6 +87,32 @@ def _corpo(modelo, prompt):
     elif "qwen3" in modelo:
         corpo["reasoning_format"] = "hidden"
     return corpo
+
+
+# Linha de "manda/salva": envio por DM e salvamento são os sinais que mais levam o post a quem não
+# nos segue. Vai na penúltima linha (antes do "comente QUERO"), variando para não ficar repetitivo.
+COMPARTILHA = {
+    "pet": "📲 Manda pra quem tem pet em casa 🐾",
+    "automotivo": "📲 Manda pra quem vive dentro do carro 🚗",
+    "brinquedos": "📲 Manda pra quem tem criança em casa",
+    "lar": "📲 Manda pra quem tá montando a casa 🏠",
+    "eletronicos": "📲 Manda pra aquele amigo viciado em tecnologia",
+    "masculino": "📲 Manda pro pai, parceiro ou amigo que ia curtir",
+}
+COMPARTILHA_GERAL = ["📲 Manda pra quem precisa ver isso!", "🔖 Salva pra não perder esse preço",
+                     "📲 Envia pra quem ia amar isso", "🔖 Salva aqui e manda pra quem vai gostar"]
+
+
+def linha_compartilhar(oferta):
+    opcoes = COMPARTILHA_GERAL + ([COMPARTILHA[oferta["categoria"]]] * 2 if oferta.get("categoria") in COMPARTILHA else [])
+    return opcoes[sum(map(ord, str(oferta.get("id", "")))) % len(opcoes)]
+
+
+def com_compartilhar(legenda_txt, oferta):
+    """Põe a linha de compartilhar logo antes da linha do QUERO."""
+    linhas = legenda_txt.split("\n")
+    i = next((k for k in range(len(linhas) - 1, -1, -1) if "QUERO" in linhas[k].upper()), len(linhas))
+    return "\n".join(linhas[:i] + [linha_compartilhar(oferta)] + linhas[i:])
 
 
 def _chamar_groq(prompt):
@@ -167,7 +197,7 @@ def gerar(oferta: dict) -> dict:
             leg = str(dados.get("legenda", "")).strip()
             if leg and "QUERO" in leg.upper():
                 return {"titulo": t or titulo,
-                        "legenda": leg + "\n\n" + HASHTAGS.get(oferta["categoria"], ""),
+                        "legenda": com_compartilhar(leg, oferta) + "\n\n" + HASHTAGS.get(oferta["categoria"], ""),
                         "fonte": "ia"}
             print("⚠️  Legenda da IA veio fora do padrão; usando legenda padrão.")
             if t:
@@ -175,5 +205,5 @@ def gerar(oferta: dict) -> dict:
         except Exception as e:
             print(f"⚠️  Falha na legenda por IA ({e}); usando legenda padrão.")
     oferta_t = dict(oferta, titulo=base["titulo"])
-    base["legenda"] = _legenda_padrao(oferta_t) + "\n\n" + HASHTAGS.get(oferta["categoria"], "")
+    base["legenda"] = com_compartilhar(_legenda_padrao(oferta_t), oferta) + "\n\n" + HASHTAGS.get(oferta["categoria"], "")
     return base

@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 
 import requests
 
-from . import config, facebook, imagem, instagram, reels, story, telegram, video_manual
+from . import config, facebook, imagem, instagram, legenda, reels, story, telegram, video_manual
 from .garimpar import BRT, FMT, agora, carregar_fila, salvar_fila
 
 PASTA_SITE = config.RAIZ / "site"
@@ -151,6 +151,10 @@ def publicar():
     url = f"{base}/{prox['arquivo']}"
     fila = carregar_fila()
     oferta = fila["ofertas"][prox["id"]]
+    # ofertas garimpadas antes da linha "manda/salva" ganham a linha na hora de postar
+    if oferta.get("legenda") and "📲" not in oferta["legenda"] and "🔖" not in oferta["legenda"]:
+        corpo, _, tags = oferta["legenda"].partition("\n\n#")
+        oferta["legenda"] = legenda.com_compartilhar(corpo, oferta) + (f"\n\n#{tags}" if tags else "")
     try:
         _esperar_url(url)
         ig_id = instagram.conferir_conta()["user_id"]

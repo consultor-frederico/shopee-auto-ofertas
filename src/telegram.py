@@ -36,7 +36,7 @@ def legenda(oferta):
     linhas = []
     for linha in (oferta.get("legenda") or "").splitlines():
         t = linha.strip()
-        if not t or t.startswith("#") or "EU QUERO" in t.upper() or "R$" in t:
+        if (not t or t.startswith(("#", "📲", "🔖")) or "QUERO" in t.upper() or "R$" in t):
             continue
         linhas.append(html.escape(t))
     linhas = linhas[:3]
