@@ -13,12 +13,14 @@ from datetime import datetime, timedelta
 
 import requests
 
-from . import config, imagem, instagram, reels, telegram, video_manual
+from . import config, imagem, instagram, reels, story, telegram, video_manual
 from .garimpar import BRT, FMT, agora, carregar_fila, salvar_fila
 
 PASTA_SITE = config.RAIZ / "site"
 ARQ_PROXIMO = config.PASTA_PERFIL / "proximo.json"
 MAX_TENTATIVAS = 2
+# Cada post do feed vai também para o story (só no Garimpo VIP; desligue com STORIES=0)
+STORIES = config.PERFIL == "garimpo" and os.getenv("STORIES", "1") != "0"
 
 
 def _saida(chave, valor):
@@ -109,8 +111,16 @@ def preparar():
     if not oferta:
         print("⚠️  Nenhuma oferta pendente válida na fila.")
         return
-    ARQ_PROXIMO.write_text(json.dumps({"id": oferta["id"], "formato": formato,
-                                       "arquivo": f"midia/{nome}"}), encoding="utf-8")
+    prox = {"id": oferta["id"], "formato": formato, "arquivo": f"midia/{nome}"}
+    if STORIES and formato == "foto":   # story vertical feito a partir da arte do feed
+        try:
+            story.gerar(pasta / nome, pasta / f"story-{nome}")
+            prox["story"] = f"midia/story-{nome}"
+        except Exception as e:
+            print(f"::warning::Arte do story falhou: {e}")
+    elif STORIES:
+        prox["story"] = prox["arquivo"]   # o próprio Reels (já é vertical) vai para o story
+    ARQ_PROXIMO.write_text(json.dumps(prox), encoding="utf-8")
     print(f"🎬 Preparado {formato}: {oferta['titulo']} (R$ {oferta['preco_fmt']}, {oferta['categoria']})")
     _saida("tem_post", "true")
 
@@ -159,6 +169,21 @@ def publicar():
     salvar_fila(fila)
     ARQ_PROXIMO.unlink(missing_ok=True)
     print(f"✅ Publicado ({prox['formato']}): {oferta['titulo']} → {oferta['permalink'] or media_id}")
+    if prox.get("story"):
+        try:
+            surl = f"{base}/{prox['story']}"
+            eh_video = prox["story"].endswith(".mp4")
+            _esperar_url(surl)
+            cont_s = instagram.criar_story(ig_id, video_url=surl if eh_video else None,
+                                           imagem_url=None if eh_video else surl)
+            instagram.aguardar_container(cont_s)
+            instagram.publicar(ig_id, cont_s)
+            oferta["story"] = "ok"
+            print("📲 Também publicado no story.")
+        except Exception as e:
+            oferta["story"] = f"erro: {str(e)[:200]}"
+            print(f"::warning::Story falhou: {e}")
+        salvar_fila(fila)
     if config.TELEGRAM_ATIVO and telegram.configurado() and oferta.get("telegram") != "ok":
         try:
             telegram.enviar_oferta(oferta, PASTA_SITE / prox["arquivo"], prox["formato"])

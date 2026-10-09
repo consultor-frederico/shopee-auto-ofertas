@@ -69,6 +69,13 @@ def criar_container(ig_id, legenda, imagem_url=None, video_url=None):
     return _req("POST", f"{ig_id}/media", params=params)["id"]
 
 
+def criar_story(ig_id, imagem_url=None, video_url=None):
+    """Story (some em 24h). A API não permite adesivo de link."""
+    params = {"media_type": "STORIES"}
+    params.update({"video_url": video_url} if video_url else {"image_url": imagem_url})
+    return _req("POST", f"{ig_id}/media", params=params)["id"]
+
+
 def aguardar_container(container_id, limite_s=600):
     inicio = time.time()
     while time.time() - inicio < limite_s:
