@@ -8,6 +8,10 @@ Robô que roda 100% no GitHub Actions e alimenta o Instagram **@garimpovip4**.
 | 2 - Postar no Instagram | Pega a melhor oferta da fila, gera a arte (foto) ou o Reels e publica, alternando os formatos | 07:52, 10:52, 12:52, 15:52, 18:52, 20:52 |
 | 3 - Responder EU QUERO | Lê os comentários dos posts dos últimos 7 dias e manda o link de afiliado no direct | a cada 15 min |
 | 4 - Renovar token | Renova o token do Instagram (vale 60 dias) e atualiza o segredo | toda segunda |
+| 5 - Testar Telegram | Mensagem de teste no canal | manual |
+| 6 - Ofertas no Telegram | 2 ofertas por hora no canal | 08:22–22:22 |
+| 7 - Campanhas e cupons | Publica campanhas novas da Shopee no canal | 00:13, 08:13, 12:13, 18:13 |
+| 8 - Chamada do Telegram | Post no Instagram chamando para o canal | terça e sexta, 19:37 |
 
 Horários de Brasília. Todos também podem ser disparados em **Actions → Run workflow**.
 
@@ -34,6 +38,12 @@ Suba um `.mp4` em `videos/` e anote em `videos/lista.txt` o link do produto. O r
 
 ## Telegram
 Ritmo próprio, mais intenso que o Instagram: **2 ofertas por hora, das 8h às 22h** (workflow 6, ~30/dia), com a arte, o preço e um botão com o link direto. As ofertas publicadas no Instagram também vão para o canal (sem repetir). Segredos: `TELEGRAM_BOT_TOKEN` e `TELEGRAM_CHAT_ID`. Teste em **Actions → 5 - Testar Telegram**.
+
+## Campanhas e cupons (workflow 7)
+O robô consulta a API de campanhas da Shopee 4x por dia (00:13, 08:13, 12:13, 18:13). As ~30 páginas fixas de categoria são ignoradas; quando aparece campanha nova (cupons, 11.11, Black Friday…), publica no Telegram com botão e o link de afiliado, e avisa de novo nas últimas 12 horas. Registro em `data/campanhas.json`.
+
+## Chamada para o Telegram (workflow 8)
+Terça e sexta às 19:37, um post no Instagram com arte própria chamando para o canal (link na bio). Alterna 3 artes e 3 legendas.
 
 ## Respostas
 `python -m src.responder`

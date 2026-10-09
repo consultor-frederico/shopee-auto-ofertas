@@ -1,0 +1,46 @@
+name: 8 - Chamada do Telegram no Instagram
+
+on:
+  schedule:
+    # Terça e sexta, 19:37 em Brasília (22:37 UTC)
+    - cron: '37 22 * * 2,5'
+  workflow_dispatch:
+
+concurrency:
+  group: grava-repositorio
+  cancel-in-progress: false
+
+jobs:
+  chamada:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Preparar arte
+        id: prep
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+        run: python -m src.chamada preparar
+      - if: steps.prep.outputs.tem_post == 'true'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deploy
+        if: steps.prep.outputs.tem_post == 'true'
+        uses: actions/deploy-pages@v4
+      - name: Publicar no Instagram
+        if: steps.prep.outputs.tem_post == 'true'
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          PAGES_URL: ${{ steps.deploy.outputs.page_url }}
+        run: python -m src.chamada publicar
