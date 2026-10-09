@@ -1,4 +1,4 @@
-"""Apaga do Instagram e da página do Facebook os posts de oferta com mais de N dias.
+"""Apaga do Instagram, da página do Facebook e do YouTube os posts de oferta com mais de N dias.
 
 Preço de oferta muda — post velho com preço antigo confunde quem vê. Só mexe nas ofertas que o
 próprio robô postou (fila); posts manuais, chamadas do Telegram e vídeos do Zé ficam.
@@ -8,7 +8,7 @@ import os
 import sys
 from datetime import datetime, timedelta
 
-from . import config, facebook
+from . import config, facebook, youtube
 from .garimpar import BRT, FMT, agora, carregar_fila, salvar_fila
 
 
@@ -29,11 +29,15 @@ def rodar():
         if teste:
             continue
         ok = True
-        for campo, rede in (("id_post", "Instagram"), ("fb_post", "Facebook")):
+        for campo, rede, apagar in (("id_post", "Instagram", facebook.apagar),
+                                    ("fb_post", "Facebook", facebook.apagar),
+                                    ("yt_video", "YouTube", youtube.apagar)):
             if not o.get(campo) or o.get(f"{campo}_apagado"):
                 continue
+            if campo == "yt_video" and not youtube.configurado():
+                continue
             try:
-                facebook.apagar(o[campo])
+                apagar(o[campo])
                 o[f"{campo}_apagado"] = agora().strftime(FMT)
             except Exception as e:
                 ok = False

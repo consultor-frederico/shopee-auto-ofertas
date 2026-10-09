@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 
 import requests
 
-from . import config, facebook, imagem, instagram, legenda, reels, story, telegram, video_manual
+from . import config, facebook, imagem, instagram, legenda, reels, story, telegram, video_manual, youtube
 from .garimpar import BRT, FMT, agora, carregar_fila, salvar_fila
 
 PASTA_SITE = config.RAIZ / "site"
@@ -215,6 +215,16 @@ def publicar():
         except Exception as e:
             oferta["fb_erro"] = str(e)[:300]
             print(f"::warning::Facebook falhou: {e}")
+        salvar_fila(fila)
+    if (config.PERFIL == "garimpo" and prox["formato"] == "reels" and youtube.configurado()
+            and not oferta.get("yt_video")):
+        try:
+            vid = youtube.enviar_short(PASTA_SITE / prox["arquivo"], oferta)
+            oferta["yt_video"] = vid
+            print(f"▶️  Publicado no YouTube Shorts: https://youtube.com/shorts/{vid}")
+        except Exception as e:
+            oferta["yt_erro"] = str(e)[:300]
+            print(f"::warning::YouTube falhou: {e}")
         salvar_fila(fila)
 
 
