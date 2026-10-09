@@ -211,9 +211,9 @@ def selecionar(candidatos, n):
     for o in sorted(candidatos, key=lambda x: x["pontos"], reverse=True):
         por_cat.setdefault(o["categoria"], []).append(o)
     escolhidos, palavras, tipos = [], set(), {}
-    # 1ª passada: no máximo 1 oferta por palavra-chave e 2 do mesmo tipo (ex.: "espelho");
-    # 2ª passada completa o que faltar, ainda com no máximo 3 do mesmo tipo.
-    for unico, max_tipo in ((True, 2), (False, 3)):
+    # 1ª passada: no máximo 1 oferta por palavra-chave e 1 de cada tipo (ex.: "smartwatch");
+    # 2ª passada completa o que faltar, ainda com no máximo 2 do mesmo tipo.
+    for unico, max_tipo in ((True, 1), (False, 2)):
         restos = {c: list(v) for c, v in por_cat.items()}
         while len(escolhidos) < n and any(restos.values()):
             for cat in list(restos):
@@ -272,7 +272,8 @@ def curar(fila, candidatos, max_ia=120, max_achado=30):
             cont["descartado"] += 1
             continue
         cont[o["nivel"]] += 1
-        o["pontos"] = pontuar(o) + BONUS_NIVEL[o["nivel"]]
+        # bônus para o que veio da busca profunda (termos da IA/memória): é o que dá cara de garimpo
+        o["pontos"] = pontuar(o) + BONUS_NIVEL[o["nivel"]] + (8 if o.get("origem_busca") in ("ia", "memoria") else 0)
         aprovados.append(o)
     print(f"🏅 Ouro: {cont['ouro']} | 💎 Achado escondido: {cont['achado']} | 🥈 Prata: {cont['prata']} | "
           f"descartados pela curadoria: {cont['descartado']}")

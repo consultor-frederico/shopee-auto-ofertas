@@ -15,7 +15,11 @@ só de ver a foto.
 Notas BAIXAS (0-4): itens básicos, de reposição ou commodity — camiseta/calça básica, meia,
 cueca, tapete higiênico, papel, sacos, cabos simples, capinha comum, refil, bobina ou peça de reposição, produto de higiene
 comum, material escolar simples.
-Notas MÉDIAS (5-6): úteis e bem vendidos, mas comuns.
+Notas MÉDIAS (5-6): úteis e bem vendidos, mas comuns — inclusive eletrônico "de vitrine" que todo
+mundo já posta: smartwatch, fone, power bank, carregador, aspirador portátil, mochila, lanterna,
+caixa de som, ring light. Esses só passam de 6 se tiverem algo realmente inusitado.
+Nota 0: produto com nome de franquia, marca ou personagem famoso (filme, série, desenho, anime,
+time, grife) — é risco de réplica.
 Notas ALTAS (7-8): gadgets curiosos, soluções criativas para casa/carro/pet, itens com efeito
 visual, "não sabia que precisava disso", presentes legais.
 Notas 9-10: RARAS — só para o que é realmente surpreendente e quase ninguém conhece
