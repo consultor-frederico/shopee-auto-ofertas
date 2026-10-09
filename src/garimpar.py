@@ -7,7 +7,7 @@ import random
 import sys
 from datetime import datetime, timedelta, timezone
 
-from . import config, curadoria, legenda, shopee
+from . import aliexpress, config, curadoria, legenda, shopee
 
 BRT = timezone(timedelta(hours=-3))
 FMT = "%Y-%m-%d %H:%M:%S"
@@ -150,11 +150,18 @@ def coletar_candidatos(fila, buscar=shopee.buscar_ofertas):
             erros += 1
             continue
         print(f"🔎 '{palavra}' ({cat}): {len(nos)} resultados")
-        for no in nos:
-            o = normalizar(no, cat, palavra)
+        ofertas = [normalizar(no, cat, palavra) for no in nos]
+        if aliexpress.configurado():
+            try:
+                ae = aliexpress.buscar_produtos(palavra)
+                print(f"   🅰️ AliExpress: {len(ae)} resultados com entrega rápida")
+                ofertas += [aliexpress.normalizar(p, cat, palavra) for p in ae]
+            except Exception as e:
+                print(f"⚠️  AliExpress '{palavra}': {e}")
+        for o in ofertas:
             if o["id"] in candidatos or ja_usado(fila, o["id"]):
                 continue
-            m = motivo_recusa(o)
+            m = motivo_recusa(o) or (aliexpress.recusa_extra(o) if o["plataforma"] == "aliexpress" else None)
             if m:
                 recusas[m] = recusas.get(m, 0) + 1
                 continue
