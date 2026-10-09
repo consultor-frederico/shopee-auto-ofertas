@@ -88,7 +88,7 @@ OFERTAS_POR_GARIMPO = int(os.getenv("OFERTAS_POR_GARIMPO", "15"))
 PALAVRAS_POR_GARIMPO = int(os.getenv("PALAVRAS_POR_GARIMPO", "24"))   # total de buscas por rodada
 # Garimpo profundo: parte das buscas é inventada pela IA a cada rodada (termos específicos e curiosos)
 # e parte vem da memória (termos que já trouxeram Ouro/Achado). O resto são as palavras fixas do nicho.
-PALAVRAS_IA_POR_GARIMPO = int(os.getenv("PALAVRAS_IA_POR_GARIMPO", "14"))
+PALAVRAS_IA_POR_GARIMPO = int(os.getenv("PALAVRAS_IA_POR_GARIMPO", "10"))
 PALAVRAS_MEMORIA_POR_GARIMPO = int(os.getenv("PALAVRAS_MEMORIA_POR_GARIMPO", "4"))
 # Páginas da Shopee por busca (página, ordem): 1 relevância, 2 mais vendidos, 5 maior comissão.
 # As páginas 3–4 dos mais vendidos e a ordem "relevância" mostram o que fica escondido do topo.
