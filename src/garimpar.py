@@ -199,20 +199,29 @@ def _por_categoria_aprendida(mem, nos, rotulo):
     return ofertas
 
 
+TERMOS_LOJA = ["utilidades", "variedades", "importados", "store", "shop", "casa", "pet", "tech",
+               "eletronicos", "auto", "brinquedos", "kids", "achados", "presentes", "gadgets", "magazine"]
+
+
 def coletar_extras(fila, mem, candidatos, recusas):
     """Garimpo além das palavras: lojas que já deram achado, lojas de comissão alta e categorias."""
     lojas = busca_profunda.lojas_para_garimpar(mem, config.LOJAS_POR_GARIMPO)
-    if len(lojas) < config.LOJAS_POR_GARIMPO:   # completa com lojas de comissão alta da Shopee
-        termo = random.choice([p for ps in config.NICHO.values() for p in ps])
+    # completa com lojas de comissão alta da Shopee (a busca de lojas procura no NOME da loja)
+    for termo in random.sample(TERMOS_LOJA, 3):
+        if len(lojas) >= config.LOJAS_POR_GARIMPO:
+            break
         try:
-            for l in shopee.buscar_lojas(termo, limite=10):
-                if (float(l.get("commissionRate") or 0) >= 0.15 and float(l.get("ratingStar") or 0) >= 4.7
-                        and str(l["shopId"]) not in dict(lojas)):
-                    lojas.append((str(l["shopId"]), l.get("shopName", "")))
-                if len(lojas) >= config.LOJAS_POR_GARIMPO:
-                    break
+            achadas = shopee.buscar_lojas(termo, limite=20)
         except Exception as e:
             print(f"⚠️  Lojas de comissão alta ('{termo}'): {e}")
+            continue
+        boas = [l for l in achadas if float(l.get("commissionRate") or 0) >= 0.15
+                and float(l.get("ratingStar") or 0) >= 4.7 and str(l["shopId"]) not in dict(lojas)]
+        print(f"🔍 Lojas '{termo}': {len(achadas)} encontradas, {len(boas)} com comissão ≥ 15% e nota ≥ 4,7")
+        for l in random.sample(boas, len(boas)):
+            if len(lojas) >= config.LOJAS_POR_GARIMPO:
+                break
+            lojas.append((str(l["shopId"]), l.get("shopName", "")))
     for shop_id, nome in lojas:
         nos = []
         for pagina in (1, 2):

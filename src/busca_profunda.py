@@ -24,8 +24,9 @@ Quero achar produtos DIFERENTES, que quase ninguém posta: gadgets curiosos, sol
 para o dia a dia, itens com efeito visual, "não sabia que precisava disso", presentes criativos.
 
 Crie termos de busca em português do Brasil, como uma pessoa digitaria na busca da Shopee:
-- específicos, de 2 a 5 palavras, nomeando um TIPO de produto (ex.: "mini seladora a vácuo",
-  "luminária de lua 3d", "porta tempero giratório", "suporte magnético para cabo");
+- curtos, de 2 a 4 palavras, do jeito que o VENDEDOR escreve no título do anúncio (a busca da
+  Shopee é literal: termo comprido demais volta vazio). Ex.: "mini seladora", "luminária lua 3d",
+  "porta tempero giratório", "suporte magnético cabo";
 - nada genérico ou "de vitrine": NÃO quero "fone bluetooth", "câmera de ação 4k", "suporte celular
   ventosa", "capa de volante", "cama pet", "mochila" — isso todo mundo já posta;
 - pense no inusitado e engenhoso, como: "despertador projetor de teto", "lixeira com sensor de
@@ -102,7 +103,7 @@ def termos_da_ia(n_total, mem):
         bons = []
         for t in termos:
             t = _limpo(t)
-            if (2 <= len(t.split()) <= 6 and 5 <= len(t) <= 50 and t not in ja
+            if (2 <= len(t.split()) <= 4 and 5 <= len(t) <= 40 and t not in ja
                     and not any(p in t for p in config.PALAVRAS_PROIBIDAS)):
                 bons.append(t)
                 ja.add(t)
@@ -166,6 +167,8 @@ def aprender_categorias(mem, nos, categoria):
     for no in nos:
         ids = no.get("productCatIds") or []
         for nivel, c in enumerate(ids):
+            if not c:
+                continue
             reg = cats.setdefault(str(c), {"nivel": nivel, "votos": {}})
             reg["votos"][categoria] = reg["votos"].get(categoria, 0) + 1
 
@@ -194,7 +197,7 @@ def categorias_para_garimpar(mem, n):
     """Categorias específicas (nível 2+) com dono claro; as que já renderam achados têm prioridade."""
     hoje = _hoje()
     opcoes = [(c, reg) for c, reg in mem["categorias"].items()
-              if reg.get("nivel", 0) >= 2 and _dono(reg, minimo=15, fatia=0.75)
+              if c != "0" and reg.get("nivel", 0) >= 2 and _dono(reg, minimo=15, fatia=0.75)
               and reg.get("ultimo_uso") != hoje]
     if not opcoes:
         return []
