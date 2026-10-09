@@ -14,8 +14,9 @@ GROQ_API_KEY = (os.getenv("GROQ_API_KEY") or "").strip()
 SHOPEE_API_URL = "https://open-api.affiliate.shopee.com.br/graphql"
 GROQ_URL = "https://api.groq.com/openai/v1"
 # Ordem de preferência; se nenhum existir mais, o robô escolhe sozinho um modelo disponível.
+# (a Groq desligou os modelos Llama em out/2026 — agora o principal é o gpt-oss-120b)
 GROQ_MODELOS = [m.strip() for m in os.getenv(
-    "GROQ_MODELOS", "llama-3.3-70b-versatile,llama-3.1-8b-instant").split(",") if m.strip()]
+    "GROQ_MODELOS", "openai/gpt-oss-120b,openai/gpt-oss-20b,qwen/qwen3.8-27b,llama-3.3-70b-versatile").split(",") if m.strip()]
 
 # --- Nicho: palavras-chave buscadas na Shopee, por categoria ---
 NICHO_GARIMPO = {

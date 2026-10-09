@@ -2,6 +2,7 @@
 Se a IA falhar, usa um modelo de texto fixo — o post nunca sai com o nome cru da Shopee."""
 import json
 import re
+import time
 
 import requests
 
@@ -61,27 +62,63 @@ ACHADO = ("\nEste produto é um 💎 ACHADO ESCONDIDO: excelente avaliação, ma
           "Use isso no gancho da linha 1 (ex.: \"Achado que quase ninguém conhece 💎\"), sem exagerar.")
 
 
+_indisponiveis = set()   # modelos que a Groq disse não existir (não tenta de novo na mesma rodada)
+
+
+def _espera_429(r):
+    """Quantos segundos a Groq pediu para esperar (cabeçalho ou texto 'try again in 7.5s')."""
+    try:
+        return float(r.headers.get("retry-after"))
+    except (TypeError, ValueError):
+        m = re.search(r"try again in ([\d.]+)s", r.text)
+        return float(m.group(1)) if m else 10.0
+
+
+def _corpo(modelo, prompt):
+    corpo = {"model": modelo, "temperature": 0.7,
+             "messages": [{"role": "user", "content": prompt}],
+             "response_format": {"type": "json_object"}}
+    if "gpt-oss" in modelo:        # modelos que "pensam": pouco raciocínio, resposta direta
+        corpo["reasoning_effort"] = "low"
+    elif "qwen3" in modelo:
+        corpo["reasoning_format"] = "hidden"
+    return corpo
+
+
 def _chamar_groq(prompt):
     global _modelo_escolhido
     headers = {"Authorization": f"Bearer {config.GROQ_API_KEY}", "Content-Type": "application/json"}
-    candidatos = [_modelo_escolhido] if _modelo_escolhido else list(config.GROQ_MODELOS)
+    candidatos = [m for m in ([_modelo_escolhido] if _modelo_escolhido else []) + list(config.GROQ_MODELOS)
+                  if m not in _indisponiveis]
+    candidatos = list(dict.fromkeys(candidatos))
     tentou_listar = False
     while candidatos:
         modelo = candidatos.pop(0)
-        r = requests.post(f"{config.GROQ_URL}/chat/completions", headers=headers, timeout=40, json={
-            "model": modelo, "temperature": 0.7,
-            "messages": [{"role": "user", "content": prompt}],
-            "response_format": {"type": "json_object"},
-        })
-        if r.status_code == 200:
-            _modelo_escolhido = modelo
-            return r.json()["choices"][0]["message"]["content"]
+        for tentativa in range(3):
+            r = requests.post(f"{config.GROQ_URL}/chat/completions", headers=headers, timeout=60,
+                              json=_corpo(modelo, prompt))
+            if r.status_code == 200:
+                _modelo_escolhido = modelo
+                return r.json()["choices"][0]["message"]["content"]
+            if r.status_code == 429 and tentativa < 2:     # limite por minuto: espera e tenta de novo
+                espera = min(_espera_429(r) + 1, 30)
+                print(f"⏳ Groq/{modelo}: limite por minuto — esperando {espera:.0f}s")
+                time.sleep(espera)
+                continue
+            if r.status_code == 400 and "json_validate_failed" in r.text and tentativa < 1:
+                continue                                    # resposta fora do JSON: tenta mais uma vez
+            break
         print(f"⚠️  Groq/{modelo} respondeu HTTP {r.status_code}: {r.text[:200]}")
         if r.status_code in (401, 403):
             raise RuntimeError("GROQ_API_KEY inválida ou sem permissão.")
+        if r.status_code == 404:
+            _indisponiveis.add(modelo)
+            if _modelo_escolhido == modelo:
+                _modelo_escolhido = None
         if not candidatos and not tentou_listar:
             tentou_listar = True
-            candidatos = [m for m in _modelos_disponiveis(headers) if m not in config.GROQ_MODELOS]
+            candidatos = [m for m in _modelos_disponiveis(headers)
+                          if m not in config.GROQ_MODELOS and m not in _indisponiveis]
             if candidatos:
                 print(f"ℹ️  Tentando modelos disponíveis na Groq: {candidatos[:3]}")
                 candidatos = candidatos[:3]

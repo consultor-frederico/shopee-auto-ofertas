@@ -184,7 +184,8 @@ def coletar_candidatos(fila, buscar=shopee.buscar_ofertas, escolhidas=None):
                     metodo = aliexpress.METODO_EM_ALTA if tipo == "alta" else aliexpress.METODO_BUSCA
                     ae += aliexpress.buscar_produtos(palavra, pagina=pag, metodo=metodo)
                 except Exception as e:
-                    print(f"⚠️  AliExpress '{palavra}' ({tipo}, pág. {pag}): {e}")
+                    if "result is empty" not in str(e).lower():   # busca sem resultado não é erro
+                        print(f"⚠️  AliExpress '{palavra}' ({tipo}, pág. {pag}): {e}")
             if ae:
                 print(f"   🅰️ AliExpress: {len(ae)} resultados com entrega rápida")
             ofertas += [aliexpress.normalizar(p, cat, palavra) for p in ae]
