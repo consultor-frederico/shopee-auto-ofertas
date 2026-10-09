@@ -1,0 +1,43 @@
+name: 13 - Publicar no Facebook os últimos posts
+
+on:
+  workflow_dispatch:
+    inputs:
+      quantos:
+        description: 'Quantas ofertas recentes (que ainda não estão no Facebook)'
+        default: '1'
+
+concurrency:
+  group: grava-repositorio
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements.txt
+      - name: Publicar
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          FB_PAGE_TOKEN: ${{ secrets.FB_PAGE_TOKEN }}
+          QUANTOS: ${{ inputs.quantos }}
+        run: python -m src.facebook_recentes
+      - name: Salvar fila
+        if: always()
+        run: |
+          git config user.name "GarimpoBot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A data
+          git diff --cached --quiet && exit 0
+          git commit -m "📘 Facebook $(TZ=America/Sao_Paulo date +'%d/%m/%Y %H:%M')"
+          git pull --rebase
+          git push
