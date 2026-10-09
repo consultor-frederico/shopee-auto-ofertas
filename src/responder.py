@@ -11,7 +11,7 @@ import time
 import unicodedata
 from datetime import datetime, timedelta
 
-from . import config, facebook, instagram
+from . import config, facebook, instagram, youtube
 from .garimpar import BRT, FMT, agora, carregar_fila
 
 ARQ_RESPONDIDOS = config.PASTA_PERFIL / "respondidos.json"
@@ -144,6 +144,11 @@ def responder(api=instagram):
             enviados += responder_facebook(posts, respondidos)
         except Exception as e:
             print(f"::warning::Respostas no Facebook falharam: {e}")
+    if config.PERFIL == "garimpo" and youtube.configurado():
+        try:
+            enviados += responder_youtube(respondidos)
+        except Exception as e:
+            print(f"::warning::Respostas no YouTube falharam: {e}")
     salvar_respondidos(respondidos)
     print(f"🏁 {enviados} links enviados, {falhas} falhas, {len(posts)} posts verificados.")
     return enviados
@@ -196,6 +201,40 @@ def responder_facebook(posts, respondidos):
                 print(f"::warning::Messenger para {nome} falhou: {e}")
             respondidos[cid] = reg
             time.sleep(2)
+    return enviados
+
+
+# No YouTube não existe direct: a resposta vai no próprio comentário, com o link da oferta.
+RESPOSTA_YT = ("Oi, {nome}! 😊 Aqui está o link do {titulo} 👉 {link}\n"
+               "Corre que preço de oferta muda rápido! Todos os achados também no Telegram: t.me/garimpovipofertas\n"
+               f"(link de afiliado: você paga o mesmo e ajuda o {config.NOME_MARCA})")
+
+
+def responder_youtube(respondidos):
+    from .garimpar import carregar_fila
+    por_video = {o["yt_video"]: o for o in carregar_fila()["ofertas"].values() if o.get("yt_video")}
+    if not por_video:
+        return 0
+    enviados = 0
+    for c in youtube.comentarios_recentes():
+        cid = f"yt_{c['id']}"
+        o = por_video.get(c["video"])
+        if (not o or cid in respondidos or c["autor_canal"] == youtube.CANAL_ID
+                or not pediu_link(c["texto"]) or not o.get("link_afiliado")):
+            continue
+        reg = {"post": c["video"], "oferta": o["id"], "usuario": c["autor"], "autor": c["autor_canal"],
+               "em": agora().strftime(FMT), "rede": "youtube"}
+        nome = (c["autor"] or "").lstrip("@").split()[0] if c["autor"] else "tudo bem"
+        try:
+            youtube.responder_comentario(c["id"], RESPOSTA_YT.format(nome=nome, titulo=o.get("titulo", "produto"),
+                                                                   link=o["link_afiliado"]))
+            reg["dm"] = "ok"
+            enviados += 1
+            print(f"▶️  Link respondido no YouTube para {c['autor']} — {o.get('titulo')}")
+        except Exception as e:
+            reg["dm"] = f"erro: {str(e)[:200]}"
+            print(f"::warning::Resposta no YouTube para {c['autor']} falhou: {e}")
+        respondidos[cid] = reg
     return enviados
 
 

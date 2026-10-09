@@ -80,6 +80,45 @@ def enviar_short(caminho_mp4, oferta):
     return up.json().get("id")
 
 
+CANAL_ID = os.getenv("YT_CHANNEL_ID", "UCVgPSlZGC3iydugIP81hl9Q")   # canal Garimpo VIP (@garimpoVIP4)
+_tok_cache = {}
+
+
+def _token_cache():
+    if "t" not in _tok_cache:
+        _tok_cache["t"] = _token()
+    return _tok_cache["t"]
+
+
+def comentarios_recentes(limite=50):
+    """Comentários mais recentes de TODOS os vídeos do canal numa chamada só (1 unidade de cota).
+    Devolve [{id, video, texto, autor, autor_canal}]."""
+    r = requests.get("https://www.googleapis.com/youtube/v3/commentThreads", timeout=30,
+                     headers={"Authorization": f"Bearer {_token_cache()}"},
+                     params={"part": "snippet", "allThreadsRelatedToChannelId": CANAL_ID,
+                             "order": "time", "maxResults": limite, "textFormat": "plainText"})
+    if r.status_code != 200:
+        raise RuntimeError(f"YouTube comentários (HTTP {r.status_code}): {' '.join(r.text.split())[:200]}")
+    saida = []
+    for item in r.json().get("items", []):
+        top = item["snippet"]["topLevelComment"]
+        sn = top["snippet"]
+        saida.append({"id": top["id"], "video": item["snippet"].get("videoId"),
+                      "texto": sn.get("textOriginal") or sn.get("textDisplay") or "",
+                      "autor": sn.get("authorDisplayName", ""),
+                      "autor_canal": (sn.get("authorChannelId") or {}).get("value", "")})
+    return saida
+
+
+def responder_comentario(comment_id, texto):
+    r = requests.post("https://www.googleapis.com/youtube/v3/comments", params={"part": "snippet"}, timeout=30,
+                      headers={"Authorization": f"Bearer {_token_cache()}", "Content-Type": "application/json"},
+                      data=json.dumps({"snippet": {"parentId": comment_id, "textOriginal": texto}}))
+    if r.status_code not in (200, 201):
+        raise RuntimeError(f"YouTube resposta (HTTP {r.status_code}): {' '.join(r.text.split())[:200]}")
+    return r.json().get("id")
+
+
 def apagar(video_id):
     tok = _token()
     r = requests.delete("https://www.googleapis.com/youtube/v3/videos", params={"id": video_id},
