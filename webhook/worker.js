@@ -4,6 +4,11 @@
 //
 // Segredos do Worker: GITHUB_TOKEN (token com Actions: Read and write no repositório)
 //                     IG_APP_SECRET (chave secreta do app do Instagram, painel da Meta)
+//                     YT_API_KEY    (chave de API do Google, projeto garimpo-vip — só leitura)
+//
+// YouTube não avisa quando alguém comenta. Por isso o Worker também tem um "despertador"
+// (Cron Trigger a cada 2 minutos): olha os comentários novos do canal e, se alguém pediu o link,
+// toca a mesma rotina de respostas.
 const VERIFY_TOKEN = "garimpovip-verifica";   // o mesmo texto vai no campo "Verificar token" da Meta
 const REPO = "consultor-frederico/shopee-auto-ofertas";
 const WORKFLOW = "responder.yml";
@@ -36,7 +41,35 @@ async function tocarResponder(env) {
   console.log("GitHub respondeu", r.status);
 }
 
+const CANAL_YT = "UCVgPSlZGC3iydugIP81hl9Q";   // Garimpo VIP (@garimpoVIP4)
+const GATILHO = /\b(eu\s*quero|quero|link|manda)\b/i;
+const JANELA_MS = 3 * 60 * 1000;               // comentários dos últimos 3 min (cron de 2 em 2)
+
+async function conferirYoutube(env) {
+  if (!env.YT_API_KEY) return;
+  const u = new URL("https://www.googleapis.com/youtube/v3/commentThreads");
+  u.search = new URLSearchParams({ part: "snippet", allThreadsRelatedToChannelId: CANAL_YT,
+    order: "time", maxResults: "20", textFormat: "plainText", key: env.YT_API_KEY }).toString();
+  const r = await fetch(u);
+  if (!r.ok) { console.log("YouTube respondeu", r.status, (await r.text()).slice(0, 200)); return; }
+  const agora = Date.now();
+  const novos = ((await r.json()).items || []).filter(it => {
+    const sn = it.snippet.topLevelComment.snippet;
+    const autor = (sn.authorChannelId || {}).value;
+    return autor !== CANAL_YT && agora - Date.parse(sn.publishedAt) < JANELA_MS
+      && GATILHO.test((sn.textOriginal || "").normalize("NFD").replace(/[\u0300-\u036f]/g, ""));
+  });
+  if (novos.length) {
+    console.log(`YouTube: ${novos.length} pedido(s) de link — tocando o responder`);
+    await tocarResponder(env);
+  }
+}
+
 export default {
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(conferirYoutube(env));
+  },
+
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     if (request.method === "GET") {
