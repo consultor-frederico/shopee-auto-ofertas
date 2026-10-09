@@ -64,15 +64,35 @@ def _num(v):
         return 0.0
 
 
+_sem_permissao = set()   # métodos que a conta ainda não liberou (ex.: lista "em alta")
+
+
 def buscar_produtos(palavra, pagina=1, ordem="LAST_VOLUME_DESC", limite=50, metodo=METODO_BUSCA):
     """Produtos crus da API (lista de dicionários). metodo: busca comum ou METODO_EM_ALTA."""
-    dados = chamar(metodo, keywords=palavra, page_no=pagina, page_size=limite, sort=ordem,
+    if metodo in _sem_permissao:
+        return []
+    try:
+        dados = _chamar_busca(metodo, palavra, pagina, ordem, limite)
+    except RuntimeError as e:
+        if metodo != METODO_BUSCA and "InsufficientPermission" in str(e):
+            _sem_permissao.add(metodo)
+            print(f"ℹ️  AliExpress: a lista '{metodo}' ainda não foi liberada para a conta — seguindo só com a busca.")
+            return []
+        raise
+    return _produtos(dados, metodo)
+
+
+def _chamar_busca(metodo, palavra, pagina, ordem, limite):
+    return chamar(metodo, keywords=palavra, page_no=pagina, page_size=limite, sort=ordem,
                    target_currency="BRL", target_language="PT", ship_to_country="BR",
                    delivery_days=DIAS_ENTREGA_MAX, tracking_id=_env("ALIEXPRESS_TRACKING_ID"),
                    fields=("product_id,product_title,product_main_image_url,product_video_url,"
                            "target_sale_price,target_original_price,discount,evaluate_rate,"
                            "lastest_volume,commission_rate,hot_product_commission_rate,"
                            "promotion_link,shop_name,shop_id,ship_to_days"))
+
+
+def _produtos(dados, metodo):
     resp = (dados.get(metodo.replace(".", "_") + "_response") or {}).get("resp_result") or {}
     if str(resp.get("resp_code")) not in ("200", "None") and resp.get("resp_code") is not None:
         raise RuntimeError(f"AliExpress resp_code {resp.get('resp_code')}: {resp.get('resp_msg')}")
