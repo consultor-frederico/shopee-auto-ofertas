@@ -99,8 +99,8 @@
   "câmera wifi": {
    "cat": "eletronicos",
    "origem": "fixa",
-   "usos": 2,
-   "achados": 9,
+   "usos": 3,
+   "achados": 10,
    "criado": "2026-10-09",
    "ultimo_uso": "2026-10-09"
   },
@@ -115,7 +115,7 @@
   "tapete higiênico": {
    "cat": "pet",
    "origem": "fixa",
-   "usos": 3,
+   "usos": 4,
    "achados": 0,
    "criado": "2026-10-09",
    "ultimo_uso": "2026-10-09"
@@ -155,7 +155,7 @@
   "aspirador automotivo": {
    "cat": "automotivo",
    "origem": "fixa",
-   "usos": 2,
+   "usos": 3,
    "achados": 0,
    "criado": "2026-10-09",
    "ultimo_uso": "2026-10-09"
@@ -291,7 +291,7 @@
   "tomada inteligente": {
    "cat": "eletronicos",
    "origem": "fixa",
-   "usos": 1,
+   "usos": 2,
    "achados": 0,
    "criado": "2026-10-09",
    "ultimo_uso": "2026-10-09"
@@ -467,8 +467,8 @@
   "blocos de montar": {
    "cat": "brinquedos",
    "origem": "fixa",
-   "usos": 1,
-   "achados": 1,
+   "usos": 2,
+   "achados": 2,
    "criado": "2026-10-09",
    "ultimo_uso": "2026-10-09"
   },
@@ -491,7 +491,7 @@
   "massinha de modelar": {
    "cat": "brinquedos",
    "origem": "fixa",
-   "usos": 1,
+   "usos": 2,
    "achados": 0,
    "criado": "2026-10-09",
    "ultimo_uso": "2026-10-09"
@@ -619,7 +619,7 @@
   "máquina de barbear": {
    "cat": "masculino",
    "origem": "fixa",
-   "usos": 1,
+   "usos": 2,
    "achados": 0,
    "criado": "2026-10-09",
    "ultimo_uso": "2026-10-09"
@@ -771,7 +771,7 @@
   "carregador veicular": {
    "cat": "automotivo",
    "origem": "fixa",
-   "usos": 1,
+   "usos": 2,
    "achados": 0,
    "criado": "2026-10-09",
    "ultimo_uso": "2026-10-09"
@@ -781,6 +781,134 @@
    "origem": "fixa",
    "usos": 1,
    "achados": 1,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "puzzle 3d de animais marinhos": {
+   "cat": "brinquedos",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "carregador solar portátil dobrável": {
+   "cat": "eletronicos",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "brinquedo de catnip automático para gato": {
+   "cat": "pet",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "dispensador automático de cápsulas de café": {
+   "cat": "lar",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "porta-cartões rfid anti-clonagem": {
+   "cat": "masculino",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "suporte de tablet giratório para painel": {
+   "cat": "automotivo",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "tapete antiderrapante para cama de cachorro": {
+   "cat": "pet",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "canivete multiuso com chaveiro integrado": {
+   "cat": "masculino",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "organizador de talheres magnético para gaveta": {
+   "cat": "lar",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "labirinto de luz para bolas magnéticas": {
+   "cat": "brinquedos",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "mini seladora": {
+   "cat": "lar",
+   "origem": "fixa",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "jogo de panelas": {
+   "cat": "lar",
+   "origem": "fixa",
+   "usos": 1,
+   "achados": 1,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "arranhador gato": {
+   "cat": "pet",
+   "origem": "fixa",
+   "usos": 1,
+   "achados": 1,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "relógio masculino": {
+   "cat": "masculino",
+   "origem": "fixa",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "lâmpada inteligente": {
+   "cat": "eletronicos",
+   "origem": "fixa",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "brinquedo interativo gato": {
+   "cat": "pet",
+   "origem": "fixa",
+   "usos": 1,
+   "achados": 0,
    "criado": "2026-10-09",
    "ultimo_uso": "2026-10-09"
   }
