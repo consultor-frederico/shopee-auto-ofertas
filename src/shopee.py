@@ -8,7 +8,7 @@ import requests
 from . import config
 
 CAMPOS = ("itemId productName imageUrl offerLink productLink priceMin priceMax "
-          "priceDiscountRate commission commissionRate sales ratingStar shopName")
+          "priceDiscountRate commission commissionRate sales ratingStar shopName shopId productCatIds")
 
 
 class ErroShopee(RuntimeError):
@@ -61,13 +61,35 @@ def consultar(query: str, tentativas: int = 4) -> dict:
     raise ErroShopee("Shopee não respondeu depois de várias tentativas.")
 
 
-def buscar_ofertas(palavra: str, pagina: int = 1, limite: int = 50, ordem: int = 2) -> list:
-    """ordem: 1 relevância, 2 mais vendidos, 3 maior preço, 4 menor preço, 5 maior comissão."""
-    palavra_json = json.dumps(palavra, ensure_ascii=False)
-    query = (f"query{{productOfferV2(keyword:{palavra_json},sortType:{ordem},"
+def _nos(filtro: str, pagina: int, limite: int, ordem: int) -> list:
+    query = (f"query{{productOfferV2({filtro}sortType:{ordem},"
              f"page:{pagina},limit:{limite}){{nodes{{{CAMPOS}}}}}}}")
     dados = consultar(query)
     return (dados.get("productOfferV2") or {}).get("nodes") or []
+
+
+def buscar_ofertas(palavra: str, pagina: int = 1, limite: int = 50, ordem: int = 2, ams: bool = False) -> list:
+    """ordem: 1 relevância, 2 mais vendidos, 3 maior preço, 4 menor preço, 5 maior comissão.
+    ams=True: só ofertas em que o VENDEDOR paga comissão extra (costuma ser 20–40%)."""
+    filtro = f"keyword:{json.dumps(palavra, ensure_ascii=False)}," + ("isAMSOffer:true," if ams else "")
+    return _nos(filtro, pagina, limite, ordem)
+
+
+def buscar_loja(shop_id, pagina: int = 1, limite: int = 50, ordem: int = 2) -> list:
+    """Outros produtos de uma loja (para cavar nas lojas que já deram achado)."""
+    return _nos(f"shopId:{int(shop_id)},", pagina, limite, ordem)
+
+
+def buscar_categoria(cat_id, pagina: int = 1, limite: int = 50, ordem: int = 2, ams: bool = False) -> list:
+    """Produtos de uma categoria da Shopee, sem palavra-chave."""
+    return _nos(f"productCatId:{int(cat_id)}," + ("isAMSOffer:true," if ams else ""), pagina, limite, ordem)
+
+
+def buscar_lojas(palavra: str, limite: int = 10) -> list:
+    """Lojas com comissão (shopOfferV2): [{shopId, shopName, commissionRate, ratingStar}]."""
+    query = (f"query{{shopOfferV2(keyword:{json.dumps(palavra, ensure_ascii=False)},sortType:2,page:1,"
+             f"limit:{limite}){{nodes{{shopId shopName commissionRate ratingStar}}}}}}")
+    return (consultar(query).get("shopOfferV2") or {}).get("nodes") or []
 
 
 def buscar_por_item(item_id) -> list:

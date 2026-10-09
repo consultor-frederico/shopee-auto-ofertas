@@ -52,15 +52,21 @@ def _limpo(t):
 
 
 def carregar():
+    mem = {}
     if config.ARQ_PALAVRAS.exists():
         try:
-            return json.loads(config.ARQ_PALAVRAS.read_text(encoding="utf-8"))
+            mem = json.loads(config.ARQ_PALAVRAS.read_text(encoding="utf-8"))
         except ValueError:
             pass
-    return {"palavras": {}}
+    for chave in ("palavras", "categorias", "lojas"):
+        mem.setdefault(chave, {})
+    return mem
 
 
 def salvar(mem):
+    if len(mem["lojas"]) > 300:   # guarda só as melhores lojas
+        melhores = sorted(mem["lojas"].items(), key=lambda kv: -kv[1].get("achados", 0))[:300]
+        mem["lojas"] = dict(melhores)
     pal = mem["palavras"]
     if len(pal) > MAX_MEMORIA:   # esquece primeiro os descartados e os mais antigos
         ordem = sorted(pal, key=lambda k: (not pal[k].get("descartado"), pal[k].get("ultimo_uso", "")))
@@ -152,13 +158,87 @@ def escolher_palavras(mem):
     return escolhidas
 
 
+# --- Categorias da Shopee: o robô aprende sozinho qual categoria da Shopee é de qual nicho nosso ---
+
+def aprender_categorias(mem, nos, categoria):
+    """Cada busca por palavra ensina: os produtos de 'fone bluetooth' (eletronicos) têm tais cat_ids."""
+    cats = mem["categorias"]
+    for no in nos:
+        ids = no.get("productCatIds") or []
+        for nivel, c in enumerate(ids):
+            reg = cats.setdefault(str(c), {"nivel": nivel, "votos": {}})
+            reg["votos"][categoria] = reg["votos"].get(categoria, 0) + 1
+
+
+def _dono(reg, minimo=5, fatia=0.7):
+    votos = reg.get("votos") or {}
+    total = sum(votos.values())
+    if total < minimo:
+        return None
+    cat, n = max(votos.items(), key=lambda kv: kv[1])
+    return cat if n / total >= fatia and cat in config.NICHO else None
+
+
+def categoria_de(mem, cat_ids):
+    """Nosso nicho para um produto, pela categoria mais específica que o robô já conhece."""
+    for c in reversed(cat_ids or []):
+        reg = mem["categorias"].get(str(c))
+        if reg:
+            dono = _dono(reg)
+            if dono:
+                return dono
+    return None
+
+
+def categorias_para_garimpar(mem, n):
+    """Categorias específicas (nível 2+) com dono claro; as que já renderam achados têm prioridade."""
+    hoje = _hoje()
+    opcoes = [(c, reg) for c, reg in mem["categorias"].items()
+              if reg.get("nivel", 0) >= 2 and _dono(reg, minimo=15, fatia=0.75)
+              and reg.get("ultimo_uso") != hoje]
+    if not opcoes:
+        return []
+    peso = [1 + 3 * reg.get("achados", 0) for _, reg in opcoes]
+    escolha, vistos = [], set()
+    while len(escolha) < n and len(vistos) < len(opcoes):
+        c, reg = random.choices(opcoes, weights=peso)[0]
+        if c not in vistos:
+            vistos.add(c)
+            escolha.append((c, _dono(reg, minimo=15, fatia=0.75)))
+    return escolha
+
+
+# --- Lojas garimpeiras: loja que já deu Ouro/Achado costuma ter outros produtos diferentes ---
+
+def lojas_para_garimpar(mem, n):
+    hoje = _hoje()
+    lojas = [(k, v) for k, v in mem["lojas"].items() if v.get("ultimo_uso") != hoje]
+    lojas.sort(key=lambda kv: kv[1].get("achados", 0) / max(1, kv[1].get("usos", 0) + 1), reverse=True)
+    topo = lojas[:max(n * 3, n)]
+    return [(k, v.get("nome", "")) for k, v in random.sample(topo, min(n, len(topo)))]
+
+
+def marcar_uso(mem, tipo, chave):
+    reg = mem[tipo].setdefault(str(chave), {})
+    reg["usos"] = reg.get("usos", 0) + 1
+    reg["ultimo_uso"] = _hoje()
+
+
 def registrar(mem, escolhidas, aprovados):
     """Atualiza a memória com o resultado da rodada."""
     hoje = _hoje()
     ganhos = {}
     for o in aprovados:
-        if o.get("nivel") in ("ouro", "achado"):
-            ganhos[_limpo(o["palavra"])] = ganhos.get(_limpo(o["palavra"]), 0) + 1
+        if o.get("nivel") not in ("ouro", "achado"):
+            continue
+        ganhos[_limpo(o["palavra"])] = ganhos.get(_limpo(o["palavra"]), 0) + 1
+        if o.get("loja_id"):
+            reg = mem["lojas"].setdefault(str(o["loja_id"]), {"nome": o.get("loja", ""), "achados": 0,
+                                                               "usos": 0, "desde": hoje})
+            reg["achados"] = reg.get("achados", 0) + 1
+        for c in (o.get("cat_ids") or [])[2:]:
+            if str(c) in mem["categorias"]:
+                mem["categorias"][str(c)]["achados"] = mem["categorias"][str(c)].get("achados", 0) + 1
     for cat, termo, origem in escolhidas:
         k = _limpo(termo)
         reg = mem["palavras"].setdefault(k, {"cat": cat, "origem": origem, "usos": 0, "achados": 0,

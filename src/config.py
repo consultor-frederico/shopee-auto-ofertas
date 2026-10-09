@@ -92,8 +92,13 @@ PALAVRAS_IA_POR_GARIMPO = int(os.getenv("PALAVRAS_IA_POR_GARIMPO", "10"))
 PALAVRAS_MEMORIA_POR_GARIMPO = int(os.getenv("PALAVRAS_MEMORIA_POR_GARIMPO", "4"))
 # Páginas da Shopee por busca (página, ordem): 1 relevância, 2 mais vendidos, 5 maior comissão.
 # As páginas 3–4 dos mais vendidos e a ordem "relevância" mostram o que fica escondido do topo.
-PAGINAS_FIXAS = ((1, 2), (2, 2), (3, 2), (4, 2), (1, 1), (1, 5))
-PAGINAS_PROFUNDAS = ((1, 2), (2, 2), (3, 2), (1, 1), (2, 1), (1, 5))
+# "ams" = só ofertas em que o vendedor paga comissão extra (20–40%): barato e diferente passa no filtro.
+PAGINAS_FIXAS = ((1, 2), (2, 2), (3, 2), (4, 2), (1, 1), (1, 5), (1, 2, "ams"))
+PAGINAS_PROFUNDAS = ((1, 2), (2, 2), (3, 2), (1, 1), (2, 1), (1, 5), (1, 2, "ams"), (2, 2, "ams"))
+# Além das palavras: cavar nas lojas que já deram achado e garimpar direto por categoria da Shopee
+LOJAS_POR_GARIMPO = int(os.getenv("LOJAS_POR_GARIMPO", "4"))
+CATEGORIAS_POR_GARIMPO = int(os.getenv("CATEGORIAS_POR_GARIMPO", "4"))
+PAGINAS_CATEGORIA = ((2, 2), (3, 2), (4, 2), (1, 1), (1, 2, "ams"), (2, 2, "ams"))
 DIAS_SEM_REPETIR = 30          # Instagram: não repete o mesmo produto dentro desse prazo
 DIAS_SEM_REPETIR_TELEGRAM = 14 # Telegram: campeão de vendas pode voltar depois disso
 DIAS_APAGAR_POSTS = int(os.getenv("DIAS_APAGAR_POSTS", "15"))  # posts de oferta somem depois disso

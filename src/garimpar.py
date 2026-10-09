@@ -3,6 +3,7 @@
 Uso: python -m src.garimpar
 """
 import json
+import random
 import sys
 from datetime import datetime, timedelta, timezone
 
@@ -54,6 +55,8 @@ def normalizar(no, categoria, palavra):
         "vendas": int(_num(no.get("sales"))),
         "nota": round(_num(no.get("ratingStar")), 1),
         "loja": no.get("shopName") or "",
+        "loja_id": no.get("shopId"),
+        "cat_ids": no.get("productCatIds") or [],
         "plataforma": "shopee",
         "imagem": no.get("imageUrl") or "",
         "link_afiliado": no.get("offerLink") or "",
@@ -148,29 +151,97 @@ def limpar_fila(fila):
             reg["status"] = "vencido"
 
 
-def _buscar_paginas(buscar, palavra, paginas):
-    """Busca várias páginas/ordens; para de descer quando a página vem incompleta."""
+def _buscar_paginas(buscar, alvo, paginas):
+    """Busca várias páginas/ordens; para de descer quando a página vem incompleta.
+    Cada item de 'paginas' é (página, ordem) ou (página, ordem, "ams")."""
     nos, falhou, esgotou = [], 0, set()
-    for pagina, ordem in paginas:
-        if ordem in esgotou:
+    for pagina, ordem, *extra in paginas:
+        ams = "ams" in extra
+        chave = (ordem, ams)
+        if chave in esgotou:
             continue
         try:
-            r = buscar(palavra, pagina=pagina, ordem=ordem)
+            r = buscar(alvo, pagina=pagina, ordem=ordem, ams=True) if ams else buscar(alvo, pagina=pagina, ordem=ordem)
         except TypeError:
-            return buscar(palavra), 0
+            if ams:
+                continue
+            return buscar(alvo), False
         except Exception as e:
             falhou += 1
-            print(f"❌ Busca '{palavra}' (pág. {pagina}, ordem {ordem}): {e}")
+            print(f"❌ Busca '{alvo}' (pág. {pagina}, ordem {ordem}{', ams' if ams else ''}): {e}")
             continue
         nos += r
         if len(r) < 50:
-            esgotou.add(ordem)
+            esgotou.add(chave)
     return nos, falhou == len(paginas)
 
 
-def coletar_candidatos(fila, buscar=shopee.buscar_ofertas, escolhidas=None):
+def _filtrar(fila, ofertas, origem, candidatos, recusas):
+    for o in ofertas:
+        if o["id"] in candidatos or ja_usado(fila, o["id"]):
+            continue
+        m = motivo_recusa(o) or (aliexpress.recusa_extra(o) if o["plataforma"] == "aliexpress" else None)
+        if m:
+            recusas[m] = recusas.get(m, 0) + 1
+            continue
+        o["so_telegram"] = so_telegram(fila, o["id"])
+        o["origem_busca"] = origem
+        candidatos[o["id"]] = o
+
+
+def _por_categoria_aprendida(mem, nos, rotulo):
+    """Produtos de loja/categoria não têm palavra: o nicho vem das categorias que o robô aprendeu."""
+    ofertas = []
+    for no in nos:
+        cat = busca_profunda.categoria_de(mem, no.get("productCatIds"))
+        if cat:
+            ofertas.append(normalizar(no, cat, rotulo))
+    return ofertas
+
+
+def coletar_extras(fila, mem, candidatos, recusas):
+    """Garimpo além das palavras: lojas que já deram achado, lojas de comissão alta e categorias."""
+    lojas = busca_profunda.lojas_para_garimpar(mem, config.LOJAS_POR_GARIMPO)
+    if len(lojas) < config.LOJAS_POR_GARIMPO:   # completa com lojas de comissão alta da Shopee
+        termo = random.choice([p for ps in config.NICHO.values() for p in ps])
+        try:
+            for l in shopee.buscar_lojas(termo, limite=10):
+                if (float(l.get("commissionRate") or 0) >= 0.15 and float(l.get("ratingStar") or 0) >= 4.7
+                        and str(l["shopId"]) not in dict(lojas)):
+                    lojas.append((str(l["shopId"]), l.get("shopName", "")))
+                if len(lojas) >= config.LOJAS_POR_GARIMPO:
+                    break
+        except Exception as e:
+            print(f"⚠️  Lojas de comissão alta ('{termo}'): {e}")
+    for shop_id, nome in lojas:
+        nos = []
+        for pagina in (1, 2):
+            try:
+                r = shopee.buscar_loja(shop_id, pagina=pagina)
+            except Exception as e:
+                print(f"❌ Loja {nome or shop_id}: {e}")
+                break
+            nos += r
+            if len(r) < 50:
+                break
+        busca_profunda.marcar_uso(mem, "lojas", shop_id)
+        mem["lojas"][str(shop_id)].setdefault("nome", nome)
+        ofertas = _por_categoria_aprendida(mem, nos, f"loja {nome or shop_id}")
+        print(f"🏪 Loja '{nome or shop_id}': {len(nos)} produtos ({len(ofertas)} do nosso nicho)")
+        _filtrar(fila, ofertas, "loja", candidatos, recusas)
+    for cat_id, nicho in busca_profunda.categorias_para_garimpar(mem, config.CATEGORIAS_POR_GARIMPO):
+        nos, _ = _buscar_paginas(lambda alvo, **kw: shopee.buscar_categoria(alvo, **kw), cat_id,
+                                 config.PAGINAS_CATEGORIA)
+        busca_profunda.marcar_uso(mem, "categorias", cat_id)
+        ofertas = [normalizar(no, nicho, f"categoria {cat_id}") for no in nos]
+        print(f"🗂️  Categoria {cat_id} ({nicho}): {len(nos)} produtos")
+        _filtrar(fila, ofertas, "categoria", candidatos, recusas)
+
+
+def coletar_candidatos(fila, buscar=shopee.buscar_ofertas, escolhidas=None, mem=None):
+    mem = mem if mem is not None else busca_profunda.carregar()
     if escolhidas is None:
-        escolhidas = busca_profunda.escolher_palavras(busca_profunda.carregar())
+        escolhidas = busca_profunda.escolher_palavras(mem)
     candidatos, recusas, erros = {}, {}, 0
     for cat, palavra, origem in escolhidas:
         profunda = origem != "fixa"
@@ -180,6 +251,7 @@ def coletar_candidatos(fila, buscar=shopee.buscar_ofertas, escolhidas=None):
             erros += 1
             continue
         print(f"🔎 '{palavra}' ({cat}{', ' + origem if profunda else ''}): {len(nos)} resultados")
+        busca_profunda.aprender_categorias(mem, nos, cat)
         ofertas = [normalizar(no, cat, palavra) for no in nos]
         if aliexpress.configurado():
             ae = []
@@ -194,22 +266,18 @@ def coletar_candidatos(fila, buscar=shopee.buscar_ofertas, escolhidas=None):
             if ae:
                 print(f"   🅰️ AliExpress: {len(ae)} resultados com entrega rápida")
             ofertas += [aliexpress.normalizar(p, cat, palavra) for p in ae]
-        for o in ofertas:
-            if o["id"] in candidatos or ja_usado(fila, o["id"]):
-                continue
-            m = motivo_recusa(o) or (aliexpress.recusa_extra(o) if o["plataforma"] == "aliexpress" else None)
-            if m:
-                recusas[m] = recusas.get(m, 0) + 1
-                continue
-            o["so_telegram"] = so_telegram(fila, o["id"])
-            o["origem_busca"] = origem
-            candidatos[o["id"]] = o
+        _filtrar(fila, ofertas, origem, candidatos, recusas)
+    if escolhidas and erros == len(escolhidas):
+        raise RuntimeError("Todas as buscas na Shopee falharam — verifique os segredos e a API.")
+    if buscar is shopee.buscar_ofertas:   # (nos testes com busca simulada, pula as lojas/categorias)
+        try:
+            coletar_extras(fila, mem, candidatos, recusas)
+        except Exception as e:
+            print(f"⚠️  Garimpo em lojas/categorias falhou ({e}) — seguindo com as palavras.")
     por_origem = {}
     for o in candidatos.values():
         por_origem[o["origem_busca"]] = por_origem.get(o["origem_busca"], 0) + 1
     print(f"📊 Passaram nos números: {len(candidatos)} {por_origem} | Recusados: {recusas}")
-    if escolhidas and erros == len(escolhidas):
-        raise RuntimeError("Todas as buscas na Shopee falharam — verifique os segredos e a API.")
     return list(candidatos.values())
 
 
@@ -283,7 +351,7 @@ def curar(fila, candidatos, max_ia=120, max_achado=30):
             continue
         cont[o["nivel"]] += 1
         # bônus para o que veio da busca profunda (termos da IA/memória): é o que dá cara de garimpo
-        o["pontos"] = pontuar(o) + BONUS_NIVEL[o["nivel"]] + (8 if o.get("origem_busca") in ("ia", "memoria") else 0)
+        o["pontos"] = pontuar(o) + BONUS_NIVEL[o["nivel"]] + (8 if o.get("origem_busca") in ("ia", "memoria", "loja", "categoria") else 0)
         aprovados.append(o)
     orig = {}
     for o in aprovados:
@@ -300,7 +368,7 @@ def garimpar(buscar=shopee.buscar_ofertas):
     limpar_fila(fila)
     memoria = busca_profunda.carregar()
     escolhidas = busca_profunda.escolher_palavras(memoria)
-    candidatos = curar(fila, coletar_candidatos(fila, buscar, escolhidas))
+    candidatos = curar(fila, coletar_candidatos(fila, buscar, escolhidas, memoria))
     busca_profunda.registrar(memoria, escolhidas, candidatos)
     busca_profunda.salvar(memoria)
     escolhidos = selecionar(candidatos, config.OFERTAS_POR_GARIMPO)
