@@ -84,7 +84,8 @@ def preparar():
     pasta = PASTA_SITE / "midia"
     pasta.mkdir(parents=True, exist_ok=True)
     (PASTA_SITE / ".nojekyll").write_text("")
-    (PASTA_SITE / "index.html").write_text(f"<!doctype html><title>{config.NOME_MARCA}</title>{config.NOME_MARCA}")
+    for fixo in (config.RAIZ / "assets" / "paginas").glob("*.html"):   # página inicial e privacidade
+        (PASTA_SITE / fixo.name).write_text(fixo.read_text(encoding="utf-8"), encoding="utf-8")
     oferta = None
     forcada = (os.getenv("OFERTA_ID") or "").strip()
     lista = candidatos_ordenados(fila)

@@ -116,7 +116,8 @@ def preparar():
     pasta = PASTA_SITE / "midia"
     pasta.mkdir(parents=True, exist_ok=True)
     (PASTA_SITE / ".nojekyll").write_text("")
-    (PASTA_SITE / "index.html").write_text("<!doctype html><title>Garimpo VIP</title>Garimpo VIP")
+    for fixo in (config.RAIZ / "assets" / "paginas").glob("*.html"):   # página inicial e privacidade
+        (PASTA_SITE / fixo.name).write_text(fixo.read_text(encoding="utf-8"), encoding="utf-8")
     nome = f"chamada-{int(time.time())}.jpg"
     gerar_arte(pasta / nome, variante, ofertas_na_semana(fila))
     legenda = LEGENDAS[variante % len(LEGENDAS)] + "\n\n" + HASHTAGS
