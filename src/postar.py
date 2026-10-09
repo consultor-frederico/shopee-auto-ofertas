@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 
 import requests
 
-from . import config, imagem, instagram, reels, video_manual
+from . import config, imagem, instagram, reels, telegram, video_manual
 from .garimpar import BRT, FMT, agora, carregar_fila, salvar_fila
 
 PASTA_SITE = config.RAIZ / "site"
@@ -149,6 +149,15 @@ def publicar():
     salvar_fila(fila)
     ARQ_PROXIMO.unlink(missing_ok=True)
     print(f"✅ Publicado ({prox['formato']}): {oferta['titulo']} → {oferta['permalink'] or media_id}")
+    if telegram.configurado():
+        try:
+            telegram.enviar_oferta(oferta, PASTA_SITE / prox["arquivo"], prox["formato"])
+            oferta["telegram"] = "ok"
+            print("📣 Enviado ao canal do Telegram.")
+        except Exception as e:
+            oferta["telegram"] = f"erro: {str(e)[:200]}"
+            print(f"::warning::Telegram falhou: {e}")
+        salvar_fila(fila)
 
 
 if __name__ == "__main__":

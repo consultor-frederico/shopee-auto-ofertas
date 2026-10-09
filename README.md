@@ -27,6 +27,9 @@ Horários de Brasília. Todos também podem ser disparados em **Actions → Run 
 ## Vídeos manuais
 Suba um `.mp4` em `videos/` e anote em `videos/lista.txt` o link do produto. O robô busca a oferta, monta o Reels com o vídeo e publica no próximo horário, com prioridade. Instruções em `videos/LEIA-ME.md`.
 
+## Telegram
+Cada oferta publicada no Instagram também vai para o canal do Telegram, com a arte ou o Reels, o preço e um botão com o link direto. Segredos: `TELEGRAM_BOT_TOKEN` e `TELEGRAM_CHAT_ID`. Teste em **Actions → 5 - Testar Telegram**.
+
 ## Respostas
 `python -m src.responder`
 - Gatilhos: "eu quero", "quero", "link", "manda".
