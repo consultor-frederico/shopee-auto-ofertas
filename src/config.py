@@ -83,6 +83,7 @@ OFERTAS_POR_GARIMPO = int(os.getenv("OFERTAS_POR_GARIMPO", "15"))
 PALAVRAS_POR_GARIMPO = int(os.getenv("PALAVRAS_POR_GARIMPO", "24"))
 DIAS_SEM_REPETIR = 30          # Instagram: não repete o mesmo produto dentro desse prazo
 DIAS_SEM_REPETIR_TELEGRAM = 14 # Telegram: campeão de vendas pode voltar depois disso
+DIAS_APAGAR_POSTS = int(os.getenv("DIAS_APAGAR_POSTS", "15"))  # posts de oferta somem depois disso
 DIAS_VALIDADE_PENDENTE = 3     # oferta não postada vence depois disso (preço muda)
 
 

@@ -3,6 +3,7 @@
 Uso: python -m src.responder
 """
 import json
+import os
 import random
 import re
 import sys
@@ -10,7 +11,7 @@ import time
 import unicodedata
 from datetime import datetime, timedelta
 
-from . import config, instagram
+from . import config, facebook, instagram
 from .garimpar import BRT, FMT, agora, carregar_fila
 
 ARQ_RESPONDIDOS = config.PASTA_PERFIL / "respondidos.json"
@@ -33,6 +34,8 @@ DM = ("Oi! 😊 Aqui está o link da oferta {titulo} 👇\n{link}\n\n"
 
 PUBLICAS = ["Te mandei no direct! 📩", "Enviado no seu direct! 💌", "Já está no seu direct! 😉",
             "Confere o direct, te mandei o link! 📲", "Link enviado no direct! 🛍️"]
+
+PUBLICAS_FB = ["Te mandei no Messenger! 📩", "Enviado no seu Messenger! 💌", "Confere o Messenger, te mandei o link! 📲"]
 
 if config.PERFIL == "ana":   # a Ana fala do jeito dela (contas independentes)
     DM_BOTAO = ("Oiê! 💚 Separei pra você: {titulo} ✨\n"
@@ -136,8 +139,63 @@ def responder(api=instagram):
                 print(f"⚠️  DM para @{reg['usuario']} falhou: {e}")
             respondidos[cid] = reg
             time.sleep(2)
+    if config.PERFIL == "garimpo" and facebook.configurado():
+        try:
+            enviados += responder_facebook(posts, respondidos)
+        except Exception as e:
+            print(f"::warning::Respostas no Facebook falharam: {e}")
     salvar_respondidos(respondidos)
     print(f"🏁 {enviados} links enviados, {falhas} falhas, {len(posts)} posts verificados.")
+    return enviados
+
+
+def responder_facebook(posts, respondidos):
+    """Mesmo esquema do Instagram, nos comentários dos posts da página: link pelo Messenger."""
+    pagina = (os.getenv("FB_PAGE_ID") or "").strip()
+    enviados = 0
+    for o in posts:
+        if not o.get("fb_post"):
+            continue
+        try:
+            coms = facebook.comentarios(o["fb_post"])
+        except Exception as e:
+            print(f"⚠️  Comentários do Facebook {o['fb_post']}: {e}")
+            continue
+        for c in coms:
+            cid = f"fb_{c['id']}"
+            autor = (c.get("from") or {}).get("id")
+            if cid in respondidos or autor == pagina or not pediu_link(c.get("message", "")):
+                continue
+            nome = (c.get("from") or {}).get("name", "")
+            reg = {"post": o["fb_post"], "oferta": o["id"], "usuario": nome, "autor": autor,
+                   "em": agora().strftime(FMT), "rede": "facebook"}
+            if autor and any(r.get("post") == o["fb_post"] and r.get("dm") == "ok" and r.get("autor") == autor
+                             for r in respondidos.values()):
+                respondidos[cid] = dict(reg, dm="repetido")
+                continue
+            loja = NOME_LOJA.get(o.get("plataforma") or "shopee", "loja")
+            try:
+                try:
+                    facebook.resposta_privada_botao(c["id"], DM_BOTAO.format(titulo=o["titulo"], loja=loja),
+                                                    o["link_afiliado"], TITULO_BOTAO)
+                    reg["formato"] = "botao"
+                except Exception as e:
+                    print(f"   (botão recusado no Facebook: {e}; enviando como texto)")
+                    facebook.resposta_privada(c["id"], DM.format(titulo=o["titulo"], link=o["link_afiliado"]))
+                    reg["formato"] = "texto"
+                reg["dm"] = "ok"
+                enviados += 1
+                try:
+                    facebook.responder_comentario(c["id"], random.choice(PUBLICAS_FB))
+                    reg["publica"] = "ok"
+                except Exception as e:
+                    reg["publica"] = f"erro: {str(e)[:300]}"
+                print(f"📘 Link enviado no Messenger para {nome} — {o['titulo']}")
+            except Exception as e:
+                reg["dm"] = f"erro: {str(e)[:200]}"
+                print(f"::warning::Messenger para {nome} falhou: {e}")
+            respondidos[cid] = reg
+            time.sleep(2)
     return enviados
 
 

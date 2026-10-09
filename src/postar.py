@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 
 import requests
 
-from . import config, imagem, instagram, reels, story, telegram, video_manual
+from . import config, facebook, imagem, instagram, reels, story, telegram, video_manual
 from .garimpar import BRT, FMT, agora, carregar_fila, salvar_fila
 
 PASTA_SITE = config.RAIZ / "site"
@@ -193,6 +193,24 @@ def publicar():
             oferta["telegram"] = f"erro: {str(e)[:200]}"
             print(f"::warning::Telegram falhou: {e}")
         salvar_fila(fila)
+    if config.PERFIL == "garimpo" and facebook.configurado() and not oferta.get("fb_post"):
+        try:
+            leg = legenda_facebook(oferta["legenda"])
+            if prox["formato"] == "reels":
+                pid = facebook.postar_video(url, leg)
+            else:
+                pid = facebook.postar_foto(url, leg)
+            oferta["fb_post"] = pid
+            print(f"📘 Publicado na página do Facebook ({pid}).")
+        except Exception as e:
+            oferta["fb_erro"] = str(e)[:300]
+            print(f"::warning::Facebook falhou: {e}")
+        salvar_fila(fila)
+
+
+def legenda_facebook(leg):
+    """No Facebook o link vai pelo Messenger, não pelo direct."""
+    return leg.replace("no direct", "no Messenger").replace("no Direct", "no Messenger")
 
 
 if __name__ == "__main__":

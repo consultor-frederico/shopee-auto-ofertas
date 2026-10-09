@@ -59,6 +59,11 @@ O robô consulta a API de campanhas da Shopee 4x por dia (00:13, 08:13, 12:13, 1
 ## Chamada para o Telegram (workflow 8)
 Terça e sexta às 19:37, um post no Instagram com arte própria chamando para o canal (link na bio). Alterna 3 artes e 3 legendas.
 
+## Facebook, stories e limpeza
+- **Página do Facebook (Garimpo VIP):** cada oferta do Instagram também é publicada na página (foto ou vídeo). Quem comenta "quero" lá recebe o link pelo **Messenger**. Segredos: `FB_PAGE_ID`, `FB_PAGE_TOKEN` (token de página, não expira). Teste em **Actions → 11 - Testar Facebook**.
+- **Stories:** cada post do feed vai também para o story (arte vertical ou o próprio Reels). A API não permite adesivo de link.
+- **Limpeza (workflow 12):** todo dia às 03:15 apaga do Instagram e do Facebook as ofertas postadas há mais de 15 dias (`DIAS_APAGAR_POSTS`), porque o preço muda. Só as ofertas do robô; posts manuais ficam.
+
 ## Respostas
 `python -m src.responder`
 - Gatilhos: "eu quero", "quero", "link", "manda".

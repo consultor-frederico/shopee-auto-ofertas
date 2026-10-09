@@ -28,6 +28,8 @@ jobs:
         env:
           TOKEN_GARIMPO: ${{ secrets.IG_ACCESS_TOKEN }}
           TOKEN_ANA: ${{ secrets.IG_ACCESS_TOKEN_ANA }}
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          FB_PAGE_TOKEN: ${{ secrets.FB_PAGE_TOKEN }}
         run: |
           PERFIL=garimpo IG_ACCESS_TOKEN="$TOKEN_GARIMPO" python -m src.responder & P1=$!
           PERFIL=ana IG_ACCESS_TOKEN_ANA="$TOKEN_ANA" python -m src.responder & P2=$!
