@@ -1,0 +1,38 @@
+name: 14 - Testar recursos da Shopee
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: grava-repositorio
+  cancel-in-progress: false
+
+jobs:
+  testar:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install requests
+      - name: Testar API da Shopee
+        env:
+          SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
+          SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
+        run: |
+          mkdir -p data/relatorios
+          python -u -m src.teste_shopee 2>&1 | tee data/relatorios/teste_shopee.txt
+      - name: Salvar relatório
+        run: |
+          git config user.name "GarimpoBot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/relatorios
+          git diff --cached --quiet && exit 0
+          git commit -m "🧪 Teste da API da Shopee"
+          git pull --rebase
+          git push
