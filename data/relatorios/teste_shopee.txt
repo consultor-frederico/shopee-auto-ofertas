@@ -1,0 +1,83 @@
+
+=== Busca comum (controle)
+query{productOfferV2(keyword:"porta tempero",sortType:2,page:1,limit:10){nodes{itemId productName priceMin commission commissionRate sales ratingStar shopName shopId productCatIds}}}
+✅ 10 itens | pageInfo: None
+   {"itemId": 58266286408, "productName": "Porta Condimentos Giratório 360° com 6 Potes de Vidro – Organizador de Temperos Cozinha Preto", "priceMin": "24.99", "commission": "0.7497", "commissionRate": "0.03", "sales": 2084, "ratingStar": "4.9", "shopName": "AZ-VARIEDADES", "shopId": 1265262682, "produ
+   {"itemId": 23398776792, "productName": "Pote Porta Temperos Porta Condimentos com 4 conchas. Organizador com 4 divisórias", "priceMin": "14.22", "commission": "1.8486", "commissionRate": "0.13", "sales": 2363, "ratingStar": "4.8", "shopName": "Club Vip", "shopId": 384582961, "productCatIds": [100636
+   {"itemId": 22794711985, "productName": "Porta Temperos Profissional Giratório Potes Vidro com Tampa Dosadora Condimentos", "priceMin": "29.9", "commission": "2.99", "commissionRate": "0.1", "sales": 2460, "ratingStar": "4.9", "shopName": "MUNDIMIX.", "shopId": 1596059671, "productCatIds": [100636, 1
+   {"itemId": 58213134129, "productName": "Porta Temperos Saleiro Premium em Plástico Resistente com Colher Inclusa", "priceMin": "19.98", "commission": "2.1978", "commissionRate": "0.11", "sales": 1132, "ratingStar": "4.8", "shopName": "NEJ SHOP", "shopId": 416325880, "productCatIds": [100636, 100717,
+   {"itemId": 58258048889, "productName": "Porta Temperos Giratório Profissional 9 Potes de Vidro com Tampa Dosadora Condimentos", "priceMin": "37.79", "commission": "4.5348", "commissionRate": "0.12", "sales": 1677, "ratingStar": "4.9", "shopName": "RD ECOM", "shopId": 1459511958, "productCatIds": [10
+   {"itemId": 23498312989, "productName": "Descanso De Panela Suporte Tampas De Panelas Talheres E Acessórios Organizador Porta Tempero Cozinha", "priceMin": "11.8", "commission": "0.354", "commissionRate": "0.03", "sales": 1977, "ratingStar": "4.9", "shopName": "Yan Shop", "shopId": 412899544, "produc
+
+=== Comissão extra do vendedor (isAMSOffer)
+query{productOfferV2(keyword:"porta tempero",isAMSOffer:true,sortType:5,page:1,limit:10){nodes{itemId productName priceMin commission commissionRate sales ratingStar shopName shopId productCatIds}pageInfo{page limit hasN
+✅ 10 itens | pageInfo: {'page': 1, 'limit': 10, 'hasNextPage': True}
+   {"itemId": 58267113719, "productName": "Porta-Temperos Giratório com 6 Potes de Vidro Preto para Condimentos", "priceMin": "39", "commission": "16.77", "commissionRate": "0.43", "sales": 0, "ratingStar": "0", "shopName": "GPzen", "shopId": 1828721871, "productCatIds": [100636, 100717, 101237]}
+   {"itemId": 58256416831, "productName": "Porta Temperos com Colher Magnética – Pote ou Kit 3 Potes com Base", "priceMin": "35.99", "commission": "11.8767", "commissionRate": "0.33", "sales": 4, "ratingStar": "5", "shopName": "DeinShop", "shopId": 916652740, "productCatIds": [100636, 100717, 101220]}
+   {"itemId": 21259653255, "productName": "Nicho Porta Tempero com Gancho Para Cozinha Prateleira(13)", "priceMin": "99.99", "commission": "32.9967", "commissionRate": "0.33", "sales": 138, "ratingStar": "4.8", "shopName": "Casas e Parafusos", "shopId": 844790476, "productCatIds": [100636, 100721, 1012
+   {"itemId": 21559653312, "productName": "Nicho de Cozinha Porta Tempero com Gancho prateleira  (13)", "priceMin": "99.99", "commission": "32.9967", "commissionRate": "0.33", "sales": 77, "ratingStar": "4.9", "shopName": "Casas e Parafusos", "shopId": 844790476, "productCatIds": [100636, 100713, 10117
+   {"itemId": 21159653282, "productName": "Nicho de Cozinha Porta Tempero com Gancho Prateleira (13)", "priceMin": "99.99", "commission": "32.9967", "commissionRate": "0.33", "sales": 72, "ratingStar": "4.8", "shopName": "Casas e Parafusos", "shopId": 844790476, "productCatIds": [100636, 100713, 101174
+   {"itemId": 23500633595, "productName": "Porta tempero Nicho Prateleira Organizador e Papel toalha - 13", "priceMin": "102.6", "commission": "33.858", "commissionRate": "0.33", "sales": 174, "ratingStar": "4.8", "shopName": "MoveisKZA", "shopId": 779134443, "productCatIds": [100636, 100713, 101174]}
+
+=== Vendedores-chave (isKeySeller)
+query{productOfferV2(keyword:"porta tempero",isKeySeller:true,sortType:2,page:1,limit:10){nodes{itemId productName priceMin commission commissionRate sales ratingStar shopName shopId productCatIds}}}
+✅ 10 itens | pageInfo: None
+   {"itemId": 23897603951, "productName": "Porta Temperos e Condimentos Giratório Com 6, 8, 9 ou 12 Potes de Vidro", "priceMin": "31.89", "commission": "1.9134", "commissionRate": "0.06", "sales": 1303, "ratingStar": "4.9", "shopName": "Pratitudo Essencial", "shopId": 332059670, "productCatIds": [10063
+   {"itemId": 58200124685, "productName": "Kit até 2 Organizador Porta Detergente Condimentos Prateleira Suspensa Moderna Rack Suporte cozinha Preto Sem Furo", "priceMin": "22.99", "commission": "1.8392", "commissionRate": "0.08", "sales": 981, "ratingStar": "4.8", "shopName": "A Rainha Do La", "shopId
+   {"itemId": 58216601427, "productName": "Porta Temperos Giratório 360 Graus 6, 9 ou 12 Potes de Vidro Organizador Cozinha Tampa Dosadora", "priceMin": "27.99", "commission": "3.3588", "commissionRate": "0.12", "sales": 631, "ratingStar": "4.9", "shopName": "@LVSHOP", "shopId": 998773037, "productCatI
+   {"itemId": 23698179357, "productName": "Porta Tempero Inox Giratório Vidro 12 Potes 360", "priceMin": "58.9", "commission": "7.657", "commissionRate": "0.13", "sales": 815, "ratingStar": "4.9", "shopName": "SELLNEEDS", "shopId": 408653169, "productCatIds": [100636, 100717, 101220]}
+   {"itemId": 22294063536, "productName": "Moedor De Tempero 210ML Com Regulador Sal Pimenta Porta Condimentos Especiarias De Vidro", "priceMin": "15.99", "commission": "1.2792", "commissionRate": "0.08", "sales": 449, "ratingStar": "4.9", "shopName": "MaisKCompra Store", "shopId": 1429781525, "product
+   {"itemId": 41858744430, "productName": "Porta Tempero Giratório Vidro 12 Potes 360 Preto", "priceMin": "48.9", "commission": "6.357", "commissionRate": "0.13", "sales": 308, "ratingStar": "4.9", "shopName": "SELLNEEDS", "shopId": 408653169, "productCatIds": [100636, 100717, 101220]}
+
+=== Lista Top performing (listType:1)
+query{productOfferV2(listType:1,sortType:2,page:1,limit:10){nodes{itemId productName priceMin commission commissionRate sales ratingStar shopName shopId productCatIds}}}
+✅ 0 itens | pageInfo: None
+
+=== Lista Landing category (listType:2)
+query{productOfferV2(listType:2,sortType:2,page:1,limit:10){nodes{itemId productName priceMin commission commissionRate sales ratingStar shopName shopId productCatIds}}}
+✅ 10 itens | pageInfo: None
+   {"itemId": 58217601055, "productName": "Parafusadeira Furadeira 25V Nakasaki Sem Fio a Bateria Profissional Kit Completo com Maleta", "priceMin": "89.99", "commission": "11.6987", "commissionRate": "0.13", "sales": 1016, "ratingStar": "4.8", "shopName": "MAQ TOOLS", "shopId": 728389176, "productCatI
+   {"itemId": 22499247158, "productName": "Carregador Portátil Mini Power Bank 10000mAh Com 02 Saídas Tipo-C / Lightning", "priceMin": "31.99", "commission": "8.9572", "commissionRate": "0.28", "sales": 3680, "ratingStar": "4.6", "shopName": "SHR ELETRONICOS", "shopId": 408715442, "productCatIds": [100
+   {"itemId": 21897981294, "productName": "Attracione Men (Perfume Masculino com Feromônios Ativados)", "priceMin": "59", "commission": "15.34", "commissionRate": "0.26", "sales": 3132, "ratingStar": "4.8", "shopName": "Attracione Men & Attracione", "shopId": 1266325318, "productCatIds": [100630, 10066
+   {"itemId": 23497309877, "productName": "Espremedor Elétrico Laranja Limão Frutas Fazer Sucos Recarregável Usb Cozinha", "priceMin": "61.69", "commission": "11.7211", "commissionRate": "0.19", "sales": 3702, "ratingStar": "4.6", "shopName": "BIG MO", "shopId": 807597901, "productCatIds": [100010, 100
+   {"itemId": 18699254225, "productName": "Creatina Monohidratada Pura 300g Dark Lab - 100% Pura", "priceMin": "39.9", "commission": "10.374", "commissionRate": "0.26", "sales": 6215, "ratingStar": "4.9", "shopName": "Dark Lab Oficial", "shopId": 1242044379, "productCatIds": [100001, 100002, 100005]}
+   {"itemId": 22892833180, "productName": "40 Peças / 46 Peças Jogo De Chave Catraca Caixa De Ferramentas para Reparo de Carros / Conjuntos de Chaves", "priceMin": "28.99", "commission": "5.5081", "commissionRate": "0.19", "sales": 14614, "ratingStar": "4.8", "shopName": "RISESHOP_brasil", "shopId": 83
+
+=== Outros produtos da loja 1265262682 (shopId)
+query{productOfferV2(shopId:1265262682,sortType:2,page:1,limit:10){nodes{itemId productName priceMin commission commissionRate sales ratingStar shopName shopId productCatIds}}}
+✅ 10 itens | pageInfo: None
+   {"itemId": 58266286408, "productName": "Porta Condimentos Giratório 360° com 6 Potes de Vidro – Organizador de Temperos Cozinha Preto", "priceMin": "24.99", "commission": "0.7497", "commissionRate": "0.03", "sales": 2084, "ratingStar": "4.9", "shopName": "AZ-VARIEDADES", "shopId": 1265262682, "produ
+   {"itemId": 58204026245, "productName": "Porta Tempero Belovidro Giratório - 18 e 9 Potes Preto", "priceMin": "43.9", "commission": "1.317", "commissionRate": "0.03", "sales": 878, "ratingStar": "4.9", "shopName": "AZ-VARIEDADES", "shopId": 1265262682, "productCatIds": [100636, 100717, 101220]}
+   {"itemId": 58266731854, "productName": "Conjunto 4 Taças Cameratta Gamma 360ml de Vidro Transparente Canelado", "priceMin": "25.49", "commission": "0.7647", "commissionRate": "0.03", "sales": 456, "ratingStar": "4.9", "shopName": "AZ-VARIEDADES", "shopId": 1265262682, "productCatIds": [100636, 10071
+   {"itemId": 58202487080, "productName": "Jogo de 6 Taças Diamante Vidro Transparente - Elegância e Sofisticação em Design Diamante", "priceMin": "30.99", "commission": "0.9297", "commissionRate": "0.03", "sales": 680, "ratingStar": "4.9", "shopName": "AZ-VARIEDADES", "shopId": 1265262682, "productCat
+   {"itemId": 58219197388, "productName": "Cartão De Memória 128 Gb Para Câmeras Wi-fi Drones Micro Sd", "priceMin": "26.99", "commission": "0.8097", "commissionRate": "0.03", "sales": 110, "ratingStar": "5", "shopName": "AZ-VARIEDADES", "shopId": 1265262682, "productCatIds": [100013, 100075, 100281]}
+   {"itemId": 23894374517, "productName": "Garrafa Térmica Inox 1,9L Bomba de Pressão Ampola de Vidro para Café Chá Quente Frio Casa e Escritório", "priceMin": "78.99", "commission": "2.3697", "commissionRate": "0.03", "sales": 168, "ratingStar": "4.9", "shopName": "AZ-VARIEDADES", "shopId": 1265262682
+
+=== Por categoria 100717 (productCatId)
+query{productOfferV2(productCatId:100717,sortType:2,page:1,limit:10){nodes{itemId productName priceMin commission commissionRate sales ratingStar shopName shopId productCatIds}}}
+✅ 10 itens | pageInfo: None
+   {"itemId": 58203349505, "productName": "Porta Frios Duplo Preto para Presunto e Queijo Com Fundo Removível Para Conservar e Organizar a Geladeira Hermetico", "priceMin": "17.7", "commission": "2.301", "commissionRate": "0.13", "sales": 14080, "ratingStar": "4.6", "shopName": "Vip  Todo Dia", "shopId
+   {"itemId": 22693895539, "productName": "Bolsa Térmica Portátil de Mão Lancheira Marmita Viagem Piquenique Prático", "priceMin": "8.59", "commission": "0.2577", "commissionRate": "0.03", "sales": 12454, "ratingStar": "4.9", "shopName": "HUAJIE LOJA", "shopId": 1501374495, "productCatIds": [100636, 10
+   {"itemId": 58211510076, "productName": "Kit 10 Marmita 900ml - Travas Hermética Premium BPA FREE Alta Vedação Freezer Microondas Lava Louças", "priceMin": "31.99", "commission": "0.9597", "commissionRate": "0.03", "sales": 11990, "ratingStar": "4.9", "shopName": "GL MIX Store", "shopId": 589696155, 
+   {"itemId": 58207182636, "productName": "Kit Com 12 potes 800ml Tampa Com Trava Marmita Fitness Lavavel Freezer Microondas Durável BPAFree", "priceMin": "37.5", "commission": "1.125", "commissionRate": "0.03", "sales": 12645, "ratingStar": "4.7", "shopName": "Razec Utilidades", "shopId": 1754158017, 
+   {"itemId": 23794330101, "productName": "Porta Ovos 4 Andares Rolante em Plástico para Geladeira Organizador 20 a 30 Ovos", "priceMin": "13.08", "commission": "0.3924", "commissionRate": "0.03", "sales": 11459, "ratingStar": "4.8", "shopName": "3 PAO", "shopId": 462426918, "productCatIds": [100636, 1
+   {"itemId": 22594205202, "productName": "Fatiador Profissional Multifuncional De Aço Inoxidável 16 Em 1 Para Vegetais/Frutas/Legumes", "priceMin": "33.99", "commission": "2.0394", "commissionRate": "0.06", "sales": 9743, "ratingStar": "4.8", "shopName": "VIVALAR SHOP", "shopId": 1357069533, "productC
+
+=== Por categoria 101220 (productCatId)
+query{productOfferV2(productCatId:101220,sortType:2,page:1,limit:10){nodes{itemId productName priceMin commission commissionRate sales ratingStar shopName shopId productCatIds}}}
+✅ 10 itens | pageInfo: None
+   {"itemId": 58203349505, "productName": "Porta Frios Duplo Preto para Presunto e Queijo Com Fundo Removível Para Conservar e Organizar a Geladeira Hermetico", "priceMin": "17.7", "commission": "2.301", "commissionRate": "0.13", "sales": 14080, "ratingStar": "4.6", "shopName": "Vip  Todo Dia", "shopId
+   {"itemId": 22693895539, "productName": "Bolsa Térmica Portátil de Mão Lancheira Marmita Viagem Piquenique Prático", "priceMin": "8.59", "commission": "0.2577", "commissionRate": "0.03", "sales": 12454, "ratingStar": "4.9", "shopName": "HUAJIE LOJA", "shopId": 1501374495, "productCatIds": [100636, 10
+   {"itemId": 58211510076, "productName": "Kit 10 Marmita 900ml - Travas Hermética Premium BPA FREE Alta Vedação Freezer Microondas Lava Louças", "priceMin": "31.99", "commission": "0.9597", "commissionRate": "0.03", "sales": 11990, "ratingStar": "4.9", "shopName": "GL MIX Store", "shopId": 589696155, 
+   {"itemId": 58207182636, "productName": "Kit Com 12 potes 800ml Tampa Com Trava Marmita Fitness Lavavel Freezer Microondas Durável BPAFree", "priceMin": "37.5", "commission": "1.125", "commissionRate": "0.03", "sales": 12645, "ratingStar": "4.7", "shopName": "Razec Utilidades", "shopId": 1754158017, 
+   {"itemId": 23794330101, "productName": "Porta Ovos 4 Andares Rolante em Plástico para Geladeira Organizador 20 a 30 Ovos", "priceMin": "13.08", "commission": "0.3924", "commissionRate": "0.03", "sales": 11459, "ratingStar": "4.8", "shopName": "3 PAO", "shopId": 462426918, "productCatIds": [100636, 1
+   {"itemId": 21399888983, "productName": "Pote Hermético 2.5L Com Copo Medidor Bico Dosador Cozinha Mantimentos Lavanderia Multiuso Organizado", "priceMin": "17.88", "commission": "0.7152", "commissionRate": "0.04", "sales": 8764, "ratingStar": "4.9", "shopName": "Store import‘s", "shopId": 392545055,
+
+=== Lojas com comissão (shopOfferV2)
+query{shopOfferV2(keyword:"utilidades",sortType:2,page:1,limit:5){nodes{shopId shopName commissionRate ratingStar shopType}}}
+✅ 5 itens | pageInfo: None
+   {"shopId": 442495038, "shopName": "JOLI Utilidades", "commissionRate": "0.5", "ratingStar": "4.7", "shopType": []}
+   {"shopId": 1733992657, "shopName": "B.A. UTILIDADES OFICIAL", "commissionRate": "0.44", "ratingStar": "4.8", "shopType": [2]}
+   {"shopId": 1252838558, "shopName": "Flog Utilidades", "commissionRate": "0.4", "ratingStar": "4.9", "shopType": [2]}
+   {"shopId": 1387203333, "shopName": "JLF Utilidades Do Lar", "commissionRate": "0.38", "ratingStar": "4.8", "shopType": [2]}
+   {"shopId": 494311139, "shopName": "M.A.S UTILIDADES", "commissionRate": "0.36", "ratingStar": "4.8", "shopType": []}
