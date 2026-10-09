@@ -1,0 +1,107 @@
+⚠️  Groq/llama-3.3-70b-versatile respondeu HTTP 404: {"error":{"message":"The model `llama-3.3-70b-versatile` does not exist or you do not have access to it.","type":"invalid_request_error","code":"model_not_found"}}
+
+⚠️  Groq/llama-3.1-8b-instant respondeu HTTP 404: {"error":{"message":"The model `llama-3.1-8b-instant` does not exist or you do not have access to it.","type":"invalid_request_error","code":"model_not_found"}}
+
+ℹ️  Tentando modelos disponíveis na Groq: ['openai/gpt-oss-20b', 'qwen/qwen3.8-27b', 'openai/gpt-oss-120b']
+⚠️  Groq/openai/gpt-oss-20b respondeu HTTP 400: {"error":{"message":"Failed to validate JSON. Please adjust your prompt. See 'failed_generation' for more details.","type":"invalid_request_error","code":"json_validate_failed","failed_generation":""}
+🧭 Buscas da rodada: 10 novas da IA, 0 da memória, 14 fixas
+   ✨ lar: escovinha limpa teclado
+   ✨ automotivo: aspirador portátil carro
+   ✨ eletronicos: carregador magnético portátil
+   ✨ brinquedos: quebra cabeça neon
+   ✨ pet: brinquedo bola interativa
+   ✨ masculino: protetor de ouvido
+   ✨ pet: tapete antiestresse gato
+   ✨ automotivo: organizador porta copo
+   ✨ lar: fita adesiva removível
+   ✨ brinquedos: jogo dominó eletrônico
+🔎 'escovinha limpa teclado' (lar, ia): 6 resultados
+⚠️  AliExpress 'escovinha limpa teclado' (busca, pág. 1): AliExpress resp_code 405: The result is empty
+ℹ️  AliExpress: a lista 'aliexpress.affiliate.hotproduct.query' ainda não foi liberada para a conta — seguindo só com a busca.
+⚠️  AliExpress 'escovinha limpa teclado' (busca, pág. 2): AliExpress resp_code 405: The result is empty
+🔎 'aspirador portátil carro' (automotivo, ia): 300 resultados
+   🅰️ AliExpress: 100 resultados com entrega rápida
+🔎 'carregador magnético portátil' (eletronicos, ia): 300 resultados
+   🅰️ AliExpress: 98 resultados com entrega rápida
+🔎 'quebra cabeça neon' (brinquedos, ia): 234 resultados
+⚠️  AliExpress 'quebra cabeça neon' (busca, pág. 2): AliExpress resp_code 405: The result is empty
+   🅰️ AliExpress: 6 resultados com entrega rápida
+🔎 'brinquedo bola interativa' (pet, ia): 300 resultados
+⚠️  AliExpress 'brinquedo bola interativa' (busca, pág. 1): AliExpress resp_code 405: The result is empty
+⚠️  AliExpress 'brinquedo bola interativa' (busca, pág. 2): AliExpress resp_code 405: The result is empty
+🔎 'protetor de ouvido' (masculino, ia): 300 resultados
+   🅰️ AliExpress: 100 resultados com entrega rápida
+🔎 'tapete antiestresse gato' (pet, ia): 264 resultados
+⚠️  AliExpress 'tapete antiestresse gato' (busca, pág. 1): AliExpress resp_code 405: The result is empty
+⚠️  AliExpress 'tapete antiestresse gato' (busca, pág. 2): AliExpress resp_code 405: The result is empty
+🔎 'organizador porta copo' (automotivo, ia): 200 resultados
+⚠️  AliExpress 'organizador porta copo' (busca, pág. 1): AliExpress resp_code 405: The result is empty
+⚠️  AliExpress 'organizador porta copo' (busca, pág. 2): AliExpress resp_code 405: The result is empty
+🔎 'fita adesiva removível' (lar, ia): 300 resultados
+⚠️  AliExpress 'fita adesiva removível' (busca, pág. 1): AliExpress resp_code 405: The result is empty
+⚠️  AliExpress 'fita adesiva removível' (busca, pág. 2): AliExpress resp_code 405: The result is empty
+🔎 'jogo dominó eletrônico' (brinquedos, ia): 0 resultados
+⚠️  AliExpress 'jogo dominó eletrônico' (busca, pág. 1): AliExpress resp_code 405: The result is empty
+⚠️  AliExpress 'jogo dominó eletrônico' (busca, pág. 2): AliExpress resp_code 405: The result is empty
+🔎 'carteira masculina' (masculino): 300 resultados
+   🅰️ AliExpress: 49 resultados com entrega rápida
+🔎 'lousa mágica' (brinquedos): 300 resultados
+   🅰️ AliExpress: 5 resultados com entrega rápida
+🔎 'suporte veicular celular' (automotivo): 300 resultados
+   🅰️ AliExpress: 50 resultados com entrega rápida
+🔎 'tomada inteligente' (eletronicos): 300 resultados
+   🅰️ AliExpress: 49 resultados com entrega rápida
+🔎 'umidificador' (lar): 300 resultados
+   🅰️ AliExpress: 50 resultados com entrega rápida
+🔎 'caixa de transporte pet' (pet): 300 resultados
+   🅰️ AliExpress: 14 resultados com entrega rápida
+🔎 'organizador multifuncional' (lar): 300 resultados
+   🅰️ AliExpress: 50 resultados com entrega rápida
+🔎 'gadget carro' (automotivo): 300 resultados
+   🅰️ AliExpress: 48 resultados com entrega rápida
+🔎 'carteira inteligente' (masculino): 300 resultados
+   🅰️ AliExpress: 47 resultados com entrega rápida
+🔎 'smartwatch' (eletronicos): 300 resultados
+   🅰️ AliExpress: 48 resultados com entrega rápida
+🔎 'comedouro automático' (pet): 300 resultados
+   🅰️ AliExpress: 49 resultados com entrega rápida
+🔎 'boneca' (brinquedos): 300 resultados
+   🅰️ AliExpress: 47 resultados com entrega rápida
+🔎 'brinquedo criativo' (brinquedos): 300 resultados
+   🅰️ AliExpress: 50 resultados com entrega rápida
+🔎 'kit barba' (masculino): 300 resultados
+   🅰️ AliExpress: 50 resultados com entrega rápida
+📊 Passaram nos números: 244 | Recusados: {'nota baixa': 2802, 'comissão baixa': 1896, 'poucas vendas': 2315, 'vendedor pouco avaliado': 6, 'preço fora da faixa': 14, 'palavra proibida': 4}
+🔁 Sem repetidos/parecidos: 198 de 244
+⚠️  Groq/qwen/qwen3.8-27b respondeu HTTP 429: {"error":{"message":"Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01kgsd8c9wfyp8bzvj0rjxeeg4` service tier `on_demand` on output tokens per minute (OTPM): Limit 1000, Used 690,
+ℹ️  Tentando modelos disponíveis na Groq: ['openai/gpt-oss-120b', 'openai/gpt-oss-20b', 'qwen/qwen3.8-27b']
+🏅 Ouro: 5 | 💎 Achado escondido: 1 | 🥈 Prata: 14 | descartados pela curadoria: 93
+🏆 Buscas que mais renderam nesta rodada: boneca (2), organizador porta copo (1), protetor de ouvido (1), aspirador portátil carro (1), smartwatch (1)
+⚠️  Groq/openai/gpt-oss-120b respondeu HTTP 429: {"error":{"message":"Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kgsd8c9wfyp8bzvj0rjxeeg4` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 6522, Req
+ℹ️  Tentando modelos disponíveis na Groq: ['openai/gpt-oss-120b', 'qwen/qwen3.8-27b', 'openai/gpt-oss-20b']
+⚠️  Groq/openai/gpt-oss-120b respondeu HTTP 429: {"error":{"message":"Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kgsd8c9wfyp8bzvj0rjxeeg4` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 6489, Req
+💎 eletronicos R$   169,89  comissão R$ 18.69 (11%)  319 vendas  uau 9  Smartwatch W11 Mini PRO
+⚠️  Groq/qwen/qwen3.8-27b respondeu HTTP 429: {"error":{"message":"Rate limit reached for model `qwen/qwen3.8-27b` in organization `org_01kgsd8c9wfyp8bzvj0rjxeeg4` service tier `on_demand` on output tokens per minute (OTPM): Limit 1000, Used 449,
+ℹ️  Tentando modelos disponíveis na Groq: ['openai/gpt-oss-20b', 'openai/gpt-oss-120b', 'qwen/qwen3.8-27b']
+🏅 brinquedos  R$    88,90  comissão R$ 18.67 (21%)  636 vendas  uau 8  Bebê Reborn 50cm
+🏅 masculino   R$    90,89  comissão R$ 6.36 (7%)  2637 vendas  uau 7  Protetores Auriculares Táticos
+🏅 automotivo  R$    55,88  comissão R$ 6.71 (12%)  520 vendas  uau 7  Fone Intercomunicador Bluetooth
+🥈 pet         R$   216,99  comissão R$ 15.19 (7%)  1358 vendas  uau 6  Comedouro Inteligente Automático
+🥈 eletronicos R$    77,09  comissão R$ 5.40 (7%)  1177 vendas  uau 9  Fingerbot Smart Bot
+🥈 brinquedos  R$    38,51  comissão R$ 5.01 (13%)  888 vendas  uau 7  Livro Bilíngue Interativo
+🏅 automotivo  R$    88,09  comissão R$ 6.17 (7%)  892 vendas  uau 7  Aspirador Carro 95000PA
+🥈 eletronicos R$    42,99  comissão R$ 7.74 (18%)  1746 vendas  uau 6  Smartwatch Tela Infinita
+⚠️  Groq/openai/gpt-oss-20b respondeu HTTP 429: {"error":{"message":"Rate limit reached for model `openai/gpt-oss-20b` in organization `org_01kgsd8c9wfyp8bzvj0rjxeeg4` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 7461, Requ
+ℹ️  Tentando modelos disponíveis na Groq: ['openai/gpt-oss-120b', 'qwen/qwen3.8-27b', 'openai/gpt-oss-20b']
+🏅 brinquedos  R$    79,89  comissão R$ 19.17 (24%)  733 vendas  uau 7  Boneca Reborn Angel
+⚠️  Groq/openai/gpt-oss-120b respondeu HTTP 429: {"error":{"message":"Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kgsd8c9wfyp8bzvj0rjxeeg4` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 5951, Req
+ℹ️  Tentando modelos disponíveis na Groq: ['openai/gpt-oss-120b', 'qwen/qwen3.8-27b', 'openai/gpt-oss-20b']
+🥈 automotivo  R$   105,51  comissão R$ 7.39 (7%)  7546 vendas  uau 6  Aspirador Sem Fio TINSOL
+🥈 pet         R$    85,49  comissão R$ 5.98 (7%)  721 vendas  uau 8  Comedouro & Bebedouro 3kg/3L
+⚠️  Groq/openai/gpt-oss-120b respondeu HTTP 429: {"error":{"message":"Rate limit reached for model `openai/gpt-oss-120b` in organization `org_01kgsd8c9wfyp8bzvj0rjxeeg4` service tier `on_demand` on tokens per minute (TPM): Limit 8000, Used 7701, Req
+ℹ️  Tentando modelos disponíveis na Groq: ['qwen/qwen3.8-27b', 'openai/gpt-oss-20b', 'openai/gpt-oss-120b']
+🥈 eletronicos R$    90,99  comissão R$ 6.37 (7%)  1675 vendas  uau 6  Tomada Inteligente com Wattímetro
+🥈 brinquedos  R$   139,00  comissão R$ 12.51 (9%)  2224 vendas  uau 6  Casinha de Boneca com Luz
+🥈 automotivo  R$   119,99  comissão R$ 8.40 (7%)  1382 vendas  uau 6  Mini Aspirador de Pó para Café
+
+🏁 15 novas ofertas (15 com legenda da IA). Pendentes na fila: 101.
