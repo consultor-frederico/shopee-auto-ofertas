@@ -1,42 +1,39 @@
 name: 0 - Agenda (relógio do robô)
 
-# Este é o ÚNICO arquivo com horários. Ele dispara as outras rotinas.
-# Horários em UTC (Brasília = UTC-3).
+# O cron-job.org "toca" este relógio a cada 15 minutos (00, 15, 30, 45) — o agendamento
+# do próprio GitHub atrasa horas, por isso não é usado. A cada toque, o relógio olha a hora
+# de Brasília e dispara as rotinas daquele quarto de hora.
 on:
-  schedule:
-    - cron: '47 9 * * *'                     # garimpo 06:47
-    - cron: '47 14 * * *'                    # garimpo 11:47
-    - cron: '47 20 * * *'                    # garimpo 17:47
-    - cron: '52 10,13,15,18,21,23 * * *'     # post Instagram 07:52 10:52 12:52 15:52 18:52 20:52
-    - cron: '*/15 * * * *'                   # responder EU QUERO
-    - cron: '22 11-23 * * *'                 # Telegram 08:22–20:22
-    - cron: '22 0,1 * * *'                   # Telegram 21:22–22:22
-    - cron: '13 3,11,15,21 * * *'            # campanhas 00:13 08:13 12:13 18:13
-    - cron: '37 22 * * 2,5'                  # chamada do Telegram ter/sex 19:37
-    - cron: '37 11 * * 1'                    # renovar token seg 08:37
   workflow_dispatch:
 
 permissions:
   actions: write
 
+concurrency:
+  group: relogio
+  cancel-in-progress: false
+
 jobs:
   disparar:
     runs-on: ubuntu-latest
     steps:
-      - name: Disparar a rotina do horário
+      - name: Disparar as rotinas deste horário
         env:
           GH_TOKEN: ${{ github.token }}
-          CRON: ${{ github.event.schedule }}
+          REPO: ${{ github.repository }}
         run: |
-          case "$CRON" in
-            '45 9 * * *'|'47 9 * * *'|'47 14 * * *'|'47 20 * * *') WF=garimpo.yml ;;
-            '52 10,13,15,18,21,23 * * *') WF=postar.yml ;;
-            '*/15 * * * *') WF=responder.yml ;;
-            '22 11-23 * * *'|'22 0,1 * * *') WF=telegram-ofertas.yml ;;
-            '13 3,11,15,21 * * *') WF=campanhas.yml ;;
-            '37 22 * * 2,5') WF=chamada.yml ;;
-            '37 11 * * 1') WF=token.yml ;;
-            *) echo "Disparo manual: nada a fazer (o relógio está funcionando)."; exit 0 ;;
-          esac
-          echo "⏰ $CRON → $WF"
-          gh api -X POST "repos/${{ github.repository }}/actions/workflows/$WF/dispatches" -f ref=main
+          export TZ=America/Sao_Paulo
+          H=$(date +%H); M=$(date +%M); DOW=$(date +%u)   # DOW: 1=seg ... 7=dom
+          Q=$(( (10#$M / 15) * 15 )); HQ=$(printf '%02d:%02d' $((10#$H)) $Q)
+          echo "⏰ Agora: $(date +'%d/%m %H:%M') → quarto de hora $HQ (dia $DOW)"
+          WFS="responder.yml"                                        # sempre: respostas EU QUERO
+          case "$HQ" in 06:45|11:45|17:45) WFS="$WFS garimpo.yml" ;; esac
+          case "$HQ" in 07:45|10:45|12:45|15:45|18:45|20:45) WFS="$WFS postar.yml" ;; esac
+          if [ "$Q" = "15" ] && [ $((10#$H)) -ge 8 ] && [ $((10#$H)) -le 22 ]; then WFS="$WFS telegram-ofertas.yml"; fi
+          case "$HQ" in 00:15|08:15|12:15|18:15) WFS="$WFS campanhas.yml" ;; esac
+          if [ "$HQ" = "19:30" ] && { [ "$DOW" = "2" ] || [ "$DOW" = "5" ]; }; then WFS="$WFS chamada.yml"; fi
+          if [ "$HQ" = "08:30" ] && [ "$DOW" = "1" ]; then WFS="$WFS token.yml"; fi
+          for WF in $WFS; do
+            echo "▶️  $WF"
+            gh api -X POST "repos/$REPO/actions/workflows/$WF/dispatches" -f ref=main || echo "::warning::falhou $WF"
+          done
