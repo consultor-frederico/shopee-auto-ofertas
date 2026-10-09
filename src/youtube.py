@@ -33,7 +33,7 @@ def _token():
         "client_id": _env("YT_CLIENT_ID"), "client_secret": _env("YT_CLIENT_SECRET"),
         "refresh_token": _env("YT_REFRESH_TOKEN"), "grant_type": "refresh_token"})
     if r.status_code != 200:
-        raise RuntimeError(f"Google não renovou o acesso (HTTP {r.status_code}): {r.text[:200]}")
+        raise RuntimeError(f"Google não renovou o acesso (HTTP {r.status_code}): {' '.join(r.text.split())[:200]}")
     return r.json()["access_token"]
 
 
@@ -85,7 +85,7 @@ def apagar(video_id):
     r = requests.delete("https://www.googleapis.com/youtube/v3/videos", params={"id": video_id},
                         headers={"Authorization": f"Bearer {tok}"}, timeout=30)
     if r.status_code not in (204, 404):
-        raise RuntimeError(f"YouTube não apagou {video_id} (HTTP {r.status_code}): {r.text[:200]}")
+        raise RuntimeError(f"YouTube não apagou {video_id} (HTTP {r.status_code}): {' '.join(r.text.split())[:200]}")
 
 
 if __name__ == "__main__":   # teste: python -m src.youtube
