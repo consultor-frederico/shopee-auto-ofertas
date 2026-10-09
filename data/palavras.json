@@ -115,7 +115,7 @@
   "tapete higiênico": {
    "cat": "pet",
    "origem": "fixa",
-   "usos": 1,
+   "usos": 2,
    "achados": 0,
    "criado": "2026-10-09",
    "ultimo_uso": "2026-10-09"
@@ -131,8 +131,8 @@
   "lanterna tática": {
    "cat": "masculino",
    "origem": "fixa",
-   "usos": 1,
-   "achados": 0,
+   "usos": 2,
+   "achados": 2,
    "criado": "2026-10-09",
    "ultimo_uso": "2026-10-09"
   },
@@ -179,7 +179,7 @@
   "mini projetor portátil": {
    "cat": "eletronicos",
    "origem": "fixa",
-   "usos": 1,
+   "usos": 2,
    "achados": 0,
    "criado": "2026-10-09",
    "ultimo_uso": "2026-10-09"
@@ -331,8 +331,8 @@
   "smartwatch": {
    "cat": "eletronicos",
    "origem": "fixa",
-   "usos": 1,
-   "achados": 1,
+   "usos": 2,
+   "achados": 5,
    "criado": "2026-10-09",
    "ultimo_uso": "2026-10-09"
   },
@@ -354,6 +354,158 @@
   },
   "kit barba": {
    "cat": "masculino",
+   "origem": "fixa",
+   "usos": 2,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "porta-cartões de couro com trava": {
+   "cat": "masculino",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "carregador solar portátil": {
+   "cat": "eletronicos",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 1,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "cubo de lógica magnética": {
+   "cat": "brinquedos",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "organizador de porta-malas inflável": {
+   "cat": "automotivo",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "brinquedo dispensador de petiscos giratório": {
+   "cat": "pet",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "dispensador de papel toalha automático": {
+   "cat": "lar",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "cortina blackout magnética": {
+   "cat": "lar",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "cinto de segurança ajustável para bicicleta": {
+   "cat": "masculino",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "caminho luminoso de corrida": {
+   "cat": "brinquedos",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "mini projetor holográfico": {
+   "cat": "eletronicos",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "aspirador portátil": {
+   "cat": "lar",
+   "origem": "fixa",
+   "usos": 1,
+   "achados": 1,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "brinquedo para cachorro": {
+   "cat": "pet",
+   "origem": "fixa",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "kit limpeza automotiva": {
+   "cat": "automotivo",
+   "origem": "fixa",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "blocos de montar": {
+   "cat": "brinquedos",
+   "origem": "fixa",
+   "usos": 1,
+   "achados": 1,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "mochila masculina": {
+   "cat": "masculino",
+   "origem": "fixa",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "mop giratório": {
+   "cat": "lar",
+   "origem": "fixa",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "massinha de modelar": {
+   "cat": "brinquedos",
+   "origem": "fixa",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "organizador banco carro": {
+   "cat": "automotivo",
+   "origem": "fixa",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-09",
+   "ultimo_uso": "2026-10-09"
+  },
+  "utensílios cozinha": {
+   "cat": "lar",
    "origem": "fixa",
    "usos": 1,
    "achados": 0,
