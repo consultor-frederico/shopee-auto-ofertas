@@ -4,6 +4,8 @@ on:
 jobs:
   diag:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -15,7 +17,7 @@ jobs:
       - env:
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
         run: |
-          python - <<'PY'
+          python - > diag_comentarios.txt <<'PY'
           import requests, os
           from src import instagram, responder
           from src.garimpar import carregar_fila
@@ -24,10 +26,14 @@ jobs:
           r = requests.get(f"{instagram.API}/{ig}/media", params={"fields": "id,timestamp,caption,comments_count", "limit": 25, "access_token": instagram.token()}, timeout=30).json()
           for m in r.get("data", []):
               tag = "ATIVO" if m["id"] in ativos else "fora da lista"
-              print(f"::notice::POST {m['id']} {m['timestamp']} [{tag}] {m.get('comments_count')} coment. {(m.get('caption') or '')[:40]!r}")
+              print(f"POST {m['id']} {m['timestamp']} [{tag}] {m.get('comments_count')} coment. {(m.get('caption') or '')[:40]!r}")
               if m.get("comments_count"):
                   cs = instagram.comentarios(m["id"])
-                  print(f"::notice::   {len(cs)} comentários de 1º nível retornados")
+                  print(f"   {len(cs)} comentários de 1º nível retornados")
                   for c in cs:
-                      print(f"::notice::   {c.get('id')} {c.get('timestamp')} @{(c.get('from') or {}).get('username')} / {c.get('username')}: {c.get('text')!r} pediu={responder.pediu_link(c.get('text',''))}")
+                      print(f"   {c.get('id')} {c.get('timestamp')} @{(c.get('from') or {}).get('username')} / {c.get('username')}: {c.get('text')!r} pediu={responder.pediu_link(c.get('text',''))}")
           PY
+      - run: |
+          git config user.name "GarimpoBot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add diag_comentarios.txt && git commit -m "diag" && git pull --rebase && git push
