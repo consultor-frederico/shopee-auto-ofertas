@@ -97,6 +97,17 @@ if __name__ == "__main__":   # teste: python -m src.facebook
     if not configurado():
         print("⏸️  FB_PAGE_ID / FB_PAGE_TOKEN ainda não cadastrados.")
     else:
-        p = pagina()
-        print(f"::notice::Página: {p.get('name')} ({p.get('id')}) — Instagram vinculado: "
-              f"{(p.get('instagram_business_account') or {}).get('username')}")
+        try:
+            p = pagina()
+            print(f"::notice::Página: {p.get('name')} ({p.get('id')}) — Instagram vinculado: "
+                  f"{(p.get('instagram_business_account') or {}).get('username')}")
+            ig = (p.get("instagram_business_account") or {}).get("id")
+            if ig:
+                m = _req("GET", f"{ig}/media", params={"fields": "id,timestamp", "limit": 3})
+                print(f"::notice::Acesso às mídias do Instagram pelo Facebook: ok ({len(m.get('data', []))} posts lidos)")
+            me = _req("GET", "me", params={"fields": "id,name"})
+            print(f"::notice::Token pertence a: {me.get('name')} ({me.get('id')}) — "
+                  f"{'token de PÁGINA ✔' if me.get('id') == _env('FB_PAGE_ID') else 'ATENÇÃO: não é token da página'}")
+        except Exception as e:
+            print(f"::error::{e}")
+            raise SystemExit(1)
