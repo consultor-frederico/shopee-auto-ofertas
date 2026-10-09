@@ -59,10 +59,12 @@ NICHO_GARIMPO = {
     ],
 }
 
-# --- Filtros de qualidade (calibrados com amostra de 7.161 produtos, out/2026) ---
-# Ouro: vai para o Instagram. Prata: vai para o Telegram. Abaixo de Prata: descartado.
+# --- Filtros de qualidade (recalibrados em 09/10/2026 com 21.858 produtos dos dois perfis) ---
+# Ouro: vai para o Instagram. Prata: completa o Instagram e vai para o Telegram. Abaixo: descartado.
+# O que mais segura o Ouro é o "fator uau" (mantido em 7); vendas e comissão do Ouro foram
+# afrouxadas (1000→500 vendas, R$8/10%→R$6/8%), o que ~triplica as ofertas Ouro sem perder qualidade.
 NIVEIS = {
-    "ouro": {"vendas": 1000, "comissao_rs": 8.0, "comissao_pct": 10.0, "uau": 7},
+    "ouro": {"vendas": 500, "comissao_rs": 6.0, "comissao_pct": 8.0, "uau": 7},
     "prata": {"vendas": 500, "comissao_rs": 5.0, "comissao_pct": 8.0, "uau": 6},
 }
 NOTA_MINIMA = float(os.getenv("NOTA_MINIMA", "4.7"))
@@ -77,7 +79,7 @@ PALAVRAS_PROIBIDAS = [
 
 # --- Ritmo ---
 OFERTAS_POR_GARIMPO = int(os.getenv("OFERTAS_POR_GARIMPO", "15"))
-PALAVRAS_POR_GARIMPO = int(os.getenv("PALAVRAS_POR_GARIMPO", "16"))
+PALAVRAS_POR_GARIMPO = int(os.getenv("PALAVRAS_POR_GARIMPO", "24"))
 DIAS_SEM_REPETIR = 30          # Instagram: não repete o mesmo produto dentro desse prazo
 DIAS_SEM_REPETIR_TELEGRAM = 14 # Telegram: campeão de vendas pode voltar depois disso
 DIAS_VALIDADE_PENDENTE = 3     # oferta não postada vence depois disso (preço muda)

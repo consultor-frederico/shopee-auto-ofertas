@@ -126,15 +126,13 @@ def limpar_fila(fila):
 
 
 def coletar_candidatos(fila, buscar=shopee.buscar_ofertas):
-    pares = [(cat, p) for cat, palavras in config.NICHO.items() for p in palavras]
-    random.shuffle(pares)
-    # garante as três categorias em cada garimpo
-    escolhidas, vistas = [], set()
-    for cat, p in pares:
-        if cat not in vistas:
-            escolhidas.append((cat, p))
-            vistas.add(cat)
-    escolhidas += [x for x in pares if x not in escolhidas][: max(0, config.PALAVRAS_POR_GARIMPO - len(escolhidas))]
+    # mesma quantidade de palavras-chave por categoria (rodízio), sorteadas a cada garimpo
+    filas = {cat: random.sample(palavras, len(palavras)) for cat, palavras in config.NICHO.items()}
+    escolhidas = []
+    while len(escolhidas) < config.PALAVRAS_POR_GARIMPO and any(filas.values()):
+        for cat in random.sample(list(filas), len(filas)):
+            if filas[cat] and len(escolhidas) < config.PALAVRAS_POR_GARIMPO:
+                escolhidas.append((cat, filas[cat].pop()))
 
     candidatos, recusas, erros = {}, {}, 0
     for cat, palavra in escolhidas:
