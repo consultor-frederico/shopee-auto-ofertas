@@ -162,7 +162,8 @@ def _moldura(oferta):
         d.text((sx - d.textlength("OFF", font=f2) / 2, sy + 20), "OFF", font=f2, fill=BRANCO)
     yi = y + 160
     _estrela(d, 92, yi + 25, 24, DOURADO)
-    nota = f"{oferta['nota']:.1f}".replace(".", ",")
+    nota = (f"{oferta['avaliacao_pct']:.0f}% aprovação" if oferta.get("avaliacao_pct")
+                else f"{oferta['nota']:.1f}".replace(".", ","))
     vendas = f"{oferta['vendas']:,}".replace(",", ".")
     d.text((124, yi), f"{nota}   •   {vendas}+ vendidos", font=_fonte(40, "SemiBold"), fill=CINZA)
     d.rectangle([0, A - 170, L, A], fill=ESCURO)

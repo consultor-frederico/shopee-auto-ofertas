@@ -111,7 +111,8 @@ def _quadro(t, base, foto, oferta):
         yi = y2 + 175
         cor = _mix(FUNDO, CINZA, k)
         _estrela(d, 70 + 22, yi + 25, 24, _mix(FUNDO, DOURADO, k))
-        nota = f"{oferta['nota']:.1f}".replace(".", ",")
+        nota = (f"{oferta['avaliacao_pct']:.0f}% aprovação" if oferta.get("avaliacao_pct")
+                else f"{oferta['nota']:.1f}".replace(".", ","))
         vendas = f"{oferta['vendas']:,}".replace(",", ".")
         d.text((70 + 54, yi), f"{nota}   •   {vendas}+ vendidos", font=_fonte(40, "SemiBold"), fill=cor)
 

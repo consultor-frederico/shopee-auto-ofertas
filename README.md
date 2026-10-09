@@ -36,6 +36,12 @@ Horários de Brasília. Todos também podem ser disparados em **Actions → Run 
 - Legenda pela Groq; se falhar, usa uma legenda padrão e avisa no log.
 - Fila em `data/fila.json`. Pendentes vencem em 3 dias.
 
+## AliExpress
+`src/aliexpress.py` — API de Afiliados (app **Garimpo VIP**, AppKey 552254). Em cada garimpo, cada palavra-chave também é buscada na AliExpress e as ofertas entram na mesma curadoria (uau, ouro/prata).
+- Só produtos com entrega em até 7 dias para o Brasil, ≥ 95% de avaliações positivas e comissão ≥ R$ 5 (prata) / R$ 6 (ouro). A AliExpress paga 7% padrão, então o mínimo em % lá é 7%.
+- Na arte aparece o selo "OFERTA ALIEXPRESS" e "% aprovação" no lugar das estrelas.
+- Segredos: `ALIEXPRESS_APP_KEY`, `ALIEXPRESS_APP_SECRET`, `ALIEXPRESS_TRACKING_ID`. Teste em **Actions → 10 - Testar AliExpress**.
+
 ## Postagem
 `python -m src.postar preparar` → `publicar`
 - A mídia (`src/imagem.py` foto 1080x1350, `src/reels.py` Reels 1080x1920) é gerada na hora e servida pelo **GitHub Pages**, de onde o Instagram a busca.
