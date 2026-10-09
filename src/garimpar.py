@@ -199,7 +199,10 @@ def coletar_candidatos(fila, buscar=shopee.buscar_ofertas, escolhidas=None):
             o["so_telegram"] = so_telegram(fila, o["id"])
             o["origem_busca"] = origem
             candidatos[o["id"]] = o
-    print(f"📊 Passaram nos números: {len(candidatos)} | Recusados: {recusas}")
+    por_origem = {}
+    for o in candidatos.values():
+        por_origem[o["origem_busca"]] = por_origem.get(o["origem_busca"], 0) + 1
+    print(f"📊 Passaram nos números: {len(candidatos)} {por_origem} | Recusados: {recusas}")
     if escolhidas and erros == len(escolhidas):
         raise RuntimeError("Todas as buscas na Shopee falharam — verifique os segredos e a API.")
     return list(candidatos.values())
@@ -210,7 +213,7 @@ def selecionar(candidatos, n):
     por_cat = {}
     for o in sorted(candidatos, key=lambda x: x["pontos"], reverse=True):
         por_cat.setdefault(o["categoria"], []).append(o)
-    escolhidos, palavras, tipos = [], set(), {}
+    escolhidos, palavras, tipos, por_palavra = [], set(), {}, {}
     # 1ª passada: no máximo 1 oferta por palavra-chave e 1 de cada tipo (ex.: "smartwatch");
     # 2ª passada completa o que faltar, ainda com no máximo 2 do mesmo tipo.
     for unico, max_tipo in ((True, 1), (False, 2)):
@@ -220,10 +223,12 @@ def selecionar(candidatos, n):
                 while restos[cat] and len(escolhidos) < n:
                     o = restos[cat].pop(0)
                     t = tipo_produto(o["nome"])
-                    if o in escolhidos or (unico and o["palavra"] in palavras) or tipos.get(t, 0) >= max_tipo:
+                    if (o in escolhidos or (unico and o["palavra"] in palavras) or tipos.get(t, 0) >= max_tipo
+                            or por_palavra.get(o["palavra"], 0) >= 2):
                         continue
                     escolhidos.append(o)
                     palavras.add(o["palavra"])
+                    por_palavra[o["palavra"]] = por_palavra.get(o["palavra"], 0) + 1
                     tipos[t] = tipos.get(t, 0) + 1
                     break
     return escolhidos
@@ -275,6 +280,11 @@ def curar(fila, candidatos, max_ia=120, max_achado=30):
         # bônus para o que veio da busca profunda (termos da IA/memória): é o que dá cara de garimpo
         o["pontos"] = pontuar(o) + BONUS_NIVEL[o["nivel"]] + (8 if o.get("origem_busca") in ("ia", "memoria") else 0)
         aprovados.append(o)
+    orig = {}
+    for o in aprovados:
+        if o["nivel"] in ("ouro", "achado"):
+            orig[o.get("origem_busca", "?")] = orig.get(o.get("origem_busca", "?"), 0) + 1
+    print(f"🧭 Ouro/Achado por origem da busca: {orig}")
     print(f"🏅 Ouro: {cont['ouro']} | 💎 Achado escondido: {cont['achado']} | 🥈 Prata: {cont['prata']} | "
           f"descartados pela curadoria: {cont['descartado']}")
     return aprovados
