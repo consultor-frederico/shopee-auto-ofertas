@@ -2,19 +2,50 @@ name: 15 - Testar YouTube
 
 on:
   workflow_dispatch:
+    inputs:
+      enviar:
+        description: 'Enviar um Short de teste (o último Reels postado)?'
+        type: boolean
+        default: false
+      oferta_id:
+        description: 'Código de uma oferta específica (opcional)'
+        required: false
+        default: ''
+
+concurrency:
+  group: grava-repositorio
+  cancel-in-progress: false
 
 jobs:
   testar:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+      YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+      YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: pip install requests
+          cache: pip
+      - run: pip install -r requirements.txt
       - name: Conferir acesso ao canal
-        env:
-          YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
-          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
-          YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
         run: python -m src.youtube
+      - name: Enviar Short de teste
+        if: ${{ inputs.enviar }}
+        run: python -m src.youtube enviar "${{ inputs.oferta_id }}"
+      - name: Salvar fila
+        if: ${{ inputs.enviar }}
+        run: |
+          git config user.name "GarimpoBot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A data
+          git diff --cached --quiet && exit 0
+          git commit -m "▶️ Short de teste no YouTube"
+          git pull --rebase
+          git push

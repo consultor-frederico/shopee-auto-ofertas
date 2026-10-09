@@ -88,7 +88,38 @@ def apagar(video_id):
         raise RuntimeError(f"YouTube não apagou {video_id} (HTTP {r.status_code}): {' '.join(r.text.split())[:200]}")
 
 
-if __name__ == "__main__":   # teste: python -m src.youtube
+def enviar_oferta_da_fila(oferta_id=""):
+    """Teste manual: gera o Reels de uma oferta já postada e sobe como Short (padrão: o último Reels)."""
+    import tempfile
+    from pathlib import Path
+    from . import reels
+    from .garimpar import carregar_fila, salvar_fila
+    fila = carregar_fila()
+    if oferta_id:
+        oferta = fila["ofertas"][oferta_id]
+    else:
+        feitos = [o for o in fila["ofertas"].values()
+                  if o.get("status") == "postado" and o.get("formato") == "reels" and not o.get("yt_video")]
+        if not feitos:
+            raise SystemExit("Nenhum Reels postado sem Short ainda.")
+        oferta = max(feitos, key=lambda o: o.get("postado_em", ""))
+    destino = Path(tempfile.mkdtemp()) / "short.mp4"
+    reels.gerar(oferta, destino)
+    vid = enviar_short(destino, oferta)
+    oferta["yt_video"] = vid
+    salvar_fila(fila)
+    print(f"::notice::Short publicado: https://youtube.com/shorts/{vid} — {oferta.get('titulo')}")
+
+
+if __name__ == "__main__":   # teste: python -m src.youtube  |  envio de teste: python -m src.youtube enviar [id]
+    import sys
+    if len(sys.argv) > 1 and sys.argv[1] == "enviar":
+        try:
+            enviar_oferta_da_fila(sys.argv[2] if len(sys.argv) > 2 else "")
+        except Exception as e:
+            print(f"::error::{e}")
+            raise SystemExit(1)
+        raise SystemExit(0)
     if not configurado():
         print("⏸️  YT_CLIENT_ID / YT_CLIENT_SECRET / YT_REFRESH_TOKEN ainda não cadastrados.")
     else:
