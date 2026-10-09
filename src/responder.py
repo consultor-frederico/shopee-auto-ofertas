@@ -83,7 +83,7 @@ def responder(api=instagram):
     if not posts:
         print("Nenhum post nos últimos 7 dias.")
         return -1
-    minha = api.conta()
+    minha = api.conferir_conta() if hasattr(api, "conferir_conta") else api.conta()
     respondidos = carregar_respondidos()
     enviados = falhas = 0
     for o in posts:

@@ -12,15 +12,31 @@ class ErroInstagram(RuntimeError):
     pass
 
 
+def _nome_token():
+    """Cada conta tem o seu segredo — nunca cai no token de outra conta."""
+    from . import config
+    return "IG_ACCESS_TOKEN_ANA" if config.PERFIL == "ana" else "IG_ACCESS_TOKEN"
+
+
 def token():
-    t = (os.getenv("IG_ACCESS_TOKEN") or "").strip()
+    t = (os.getenv(_nome_token()) or "").strip()
     if not t:
-        raise ErroInstagram("Segredo IG_ACCESS_TOKEN não configurado.")
+        raise ErroInstagram(f"Segredo {_nome_token()} não configurado.")
     return t
 
 
 def tem_token():
-    return bool((os.getenv("IG_ACCESS_TOKEN") or "").strip())
+    return bool((os.getenv(_nome_token()) or "").strip())
+
+
+def conferir_conta():
+    """Trava de segurança: o token tem que ser da conta deste perfil (ex.: @garimpovip4)."""
+    from . import config
+    c = conta()
+    esperado = config.ARROBA.lstrip("@").lower()
+    if (c.get("username") or "").lower() != esperado:
+        raise ErroInstagram(f"Token é da conta @{c.get('username')}, mas o perfil {config.PERFIL} é @{esperado}. Nada foi publicado.")
+    return c
 
 
 def _req(metodo, caminho, params=None, json=None, url=None):

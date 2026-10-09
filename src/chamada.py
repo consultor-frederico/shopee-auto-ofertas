@@ -130,7 +130,7 @@ def publicar():
     prox = json.loads(ARQ_PROX.read_text(encoding="utf-8"))
     url = f"{os.getenv('PAGES_URL', '').rstrip('/')}/{prox['arquivo']}"
     _esperar_url(url)
-    ig_id = instagram.conta()["user_id"]
+    ig_id = instagram.conferir_conta()["user_id"]
     cont = instagram.criar_container(ig_id, prox["legenda"], imagem_url=url)
     instagram.aguardar_container(cont)
     media = instagram.publicar(ig_id, cont)

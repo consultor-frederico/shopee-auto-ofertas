@@ -131,7 +131,7 @@ def publicar():
     oferta = fila["ofertas"][prox["id"]]
     try:
         _esperar_url(url)
-        ig_id = instagram.conta()["user_id"]
+        ig_id = instagram.conferir_conta()["user_id"]
         if prox["formato"] == "reels":
             cont = instagram.criar_container(ig_id, oferta["legenda"], video_url=url)
         else:

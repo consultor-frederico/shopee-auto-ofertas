@@ -46,7 +46,8 @@ jobs:
       - name: Preparar mídia
         id: prep
         env:
-          IG_ACCESS_TOKEN: ${{ (inputs.perfil || 'garimpo') == 'ana' && secrets.IG_ACCESS_TOKEN_ANA || secrets.IG_ACCESS_TOKEN }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_ACCESS_TOKEN_ANA: ${{ secrets.IG_ACCESS_TOKEN_ANA }}
           SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
           SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
@@ -67,7 +68,8 @@ jobs:
       - name: Publicar no Instagram
         if: steps.prep.outputs.tem_post == 'true'
         env:
-          IG_ACCESS_TOKEN: ${{ (inputs.perfil || 'garimpo') == 'ana' && secrets.IG_ACCESS_TOKEN_ANA || secrets.IG_ACCESS_TOKEN }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_ACCESS_TOKEN_ANA: ${{ secrets.IG_ACCESS_TOKEN_ANA }}
           PAGES_URL: ${{ steps.deploy.outputs.page_url }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}

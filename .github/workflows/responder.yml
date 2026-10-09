@@ -30,7 +30,7 @@ jobs:
           TOKEN_ANA: ${{ secrets.IG_ACCESS_TOKEN_ANA }}
         run: |
           PERFIL=garimpo IG_ACCESS_TOKEN="$TOKEN_GARIMPO" python -m src.responder & P1=$!
-          PERFIL=ana IG_ACCESS_TOKEN="$TOKEN_ANA" python -m src.responder & P2=$!
+          PERFIL=ana IG_ACCESS_TOKEN_ANA="$TOKEN_ANA" python -m src.responder & P2=$!
           OK=0
           wait $P1 || OK=1
           wait $P2 || OK=1
