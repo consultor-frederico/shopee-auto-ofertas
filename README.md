@@ -50,6 +50,7 @@ Terça e sexta às 19:37, um post no Instagram com arte própria chamando para o
 - Gatilhos: "eu quero", "quero", "link", "manda".
 - Manda o link na resposta privada (direct) e responde publicamente "te mandei no direct".
 - Registro em `data/respondidos.json` para não repetir.
+- **Instantâneo:** o webhook do Instagram chama o Cloudflare Worker (`webhook/worker.js`), que dispara esta rotina na hora (~30–60 s). A cada 15 min ela também roda como reserva.
 
 ## Configuração (uma vez)
 1. **Settings → Pages → Source: GitHub Actions**.

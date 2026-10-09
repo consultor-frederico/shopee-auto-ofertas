@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: grava-repositorio
+  group: responder          # fila própria: não espera atrás de post/garimpo
   cancel-in-progress: false
 
 jobs:
