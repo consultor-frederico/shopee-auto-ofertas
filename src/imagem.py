@@ -16,16 +16,6 @@ LARANJA = config.CORES["preco"]             # cor do preço
 CINZA = config.CORES["cinza"]
 SOMBRA = config.CORES["sombra"]
 BRANCO = "#FFFFFF"
-ARCO_IRIS = ["#E40303", "#FF8C00", "#FFED00", "#008026", "#004DFF", "#750787"]
-
-
-def faixa_arco_iris(d, y, altura=10, largura=L):
-    """Listra fina com as cores do orgulho (só nas contas com arco_iris=True)."""
-    if not config.CORES.get("arco_iris"):
-        return
-    passo = largura / len(ARCO_IRIS)
-    for i, cor in enumerate(ARCO_IRIS):
-        d.rectangle([int(i * passo), y, int((i + 1) * passo), y + altura], fill=cor)
 
 
 def _fonte(tam, peso="Bold"):
@@ -103,6 +93,14 @@ def _brl(v):
 
 
 def gerar(oferta: dict, destino, foto: Image.Image = None):
+    if config.PERFIL == "ana":   # a Ana tem visual próprio (src/layout_ana.py)
+        from . import layout_ana
+        if foto is None:
+            try:
+                foto = _baixar_foto(oferta["imagem"])
+            except Exception as e:
+                print(f"⚠️  Não baixei a foto ({e}); usando arte sem foto.")
+        return layout_ana.gerar_foto(oferta, destino, foto)
     img = Image.new("RGB", (L, A), FUNDO)
     d = ImageDraw.Draw(img)
 
@@ -179,7 +177,6 @@ def gerar(oferta: dict, destino, foto: Image.Image = None):
 
     # Faixa de chamada
     d.rectangle([0, A - 100, L, A], fill=ESCURO)
-    faixa_arco_iris(d, A - 108, 8)
     f_cta = _fonte(42, "ExtraBold")
     partes = [("COMENTE ", BRANCO), ("EU QUERO", DOURADO_CLARO), (" E RECEBA O LINK", BRANCO)]
     x = (L - sum(d.textlength(t, font=f_cta) for t, _ in partes)) / 2

@@ -25,6 +25,8 @@ _TAGS = {
     "casa_fofa": "#achadinhos #shopee #decoração #quartoaesthetic #casafofa #aesthetic",
 }
 EXTRA_PERFIL = {"ana": " #lgbtqia #orgulho"}
+CTA = ("💚 Comenta QUERO que eu te mando o link no direct!" if config.PERFIL == "ana"
+       else "👇 Comente EU QUERO que eu te envio o link no direct!")
 HASHTAGS = {k: v + EXTRA_PERFIL.get(config.PERFIL, "") + " " + config.HASHTAG_MARCA for k, v in _TAGS.items()}
 
 PROMPT = """Você é social media de uma página de achadinhos da Shopee chamada {marca}.
@@ -41,7 +43,7 @@ Regras:
 - "legenda": 3 a 5 linhas curtas separadas por \\n. Linha 1 é um gancho que desperta desejo.
   Depois, 1 ou 2 benefícios concretos. Mencione o preço uma vez. Use poucos emojis.
   NÃO invente características que não estão no nome do produto. NÃO coloque link nem hashtags.
-  A última linha deve ser exatamente: 👇 Comente EU QUERO que eu te envio o link no direct!"""
+  A última linha deve ser exatamente: {cta}"""
 
 
 def _modelos_disponiveis(headers):
@@ -96,10 +98,11 @@ def _legenda_padrao(oferta):
     desconto = f" ({oferta['desconto']}% OFF)" if oferta.get("desconto") else ""
     nota = f"{oferta['nota']:.1f}".replace(".", ",")
     vendas = f"{oferta['vendas']:,}".replace(",", ".")
-    return (f"🔥 Achadinho do dia: {oferta['titulo']}\n"
+    abre = "✨ Achadinho que separei:" if config.PERFIL == "ana" else "🔥 Achadinho do dia:"
+    return (f"{abre} {oferta['titulo']}\n"
             f"⭐ Nota {nota} e mais de {vendas} vendidos\n"
             f"💰 Por R$ {oferta['preco_fmt']}{desconto}\n"
-            f"👇 Comente EU QUERO que eu te envio o link no direct!")
+            f"{CTA}")
 
 
 def gerar(oferta: dict) -> dict:
@@ -110,7 +113,7 @@ def gerar(oferta: dict) -> dict:
         print("⚠️  GROQ_API_KEY não configurada: usando legenda padrão.")
     else:
         desconto = f" ({oferta['desconto']}% OFF)" if oferta.get("desconto") else ""
-        prompt = PROMPT.format(marca=config.NOME_MARCA, publico=config.PUBLICO, tom=config.TOM,
+        prompt = PROMPT.format(cta=CTA, marca=config.NOME_MARCA, publico=config.PUBLICO, tom=config.TOM,
                                nome=oferta["nome"], preco=oferta["preco_fmt"], desconto=desconto,
                                nota=oferta["nota"], vendas=oferta["vendas"])
         try:
@@ -118,7 +121,7 @@ def gerar(oferta: dict) -> dict:
             dados = json.loads(re.search(r"\{.*\}", bruto, re.S).group(0))
             t = str(dados.get("titulo", "")).strip()[:40]
             leg = str(dados.get("legenda", "")).strip()
-            if leg and "EU QUERO" in leg.upper():
+            if leg and "QUERO" in leg.upper():
                 return {"titulo": t or titulo,
                         "legenda": leg + "\n\n" + HASHTAGS.get(oferta["categoria"], ""),
                         "fonte": "ia"}

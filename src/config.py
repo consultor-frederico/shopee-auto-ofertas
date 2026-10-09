@@ -130,7 +130,7 @@ PERFIS = {
         "publico": "público geral que ama achadinhos",
         "cores": {"fundo": "#EEEDE9", "escuro": "#24150A", "destaque": "#A07E30",
                   "destaque_claro": "#E2BE68", "preco": "#24150A", "cinza": "#6E6458",
-                  "sombra": "#DCD6CB", "arco_iris": False},
+                  "sombra": "#DCD6CB"},
     },
     "ana": {
         "nicho": NICHO_ANA,
@@ -145,9 +145,10 @@ PERFIS = {
                 "Fale com mulheres e com o público LGBTQIA+ com carinho e sem estereótipos; "
                 "prefira linguagem neutra no tratamento (\"você\", \"pra quem ama...\")."),
         "publico": "público feminino e LGBTQIA+ que ama beleza, moda, autocuidado e casa aesthetic",
-        "cores": {"fundo": "#F8EEF4", "escuro": "#3B1340", "destaque": "#D6337F",
-                  "destaque_claro": "#FF9CCB", "preco": "#3B1340", "cinza": "#7A6478",
-                  "sombra": "#EAD3E2", "arco_iris": True},
+        # cores do logo da Ana (a arte própria fica em src/layout_ana.py)
+        "cores": {"fundo": "#12111F", "escuro": "#12111F", "destaque": "#7CDACA",
+                  "destaque_claro": "#7CDACA", "preco": "#12111F", "cinza": "#9B99B5",
+                  "sombra": "#1E1C36"},
     },
 }
 

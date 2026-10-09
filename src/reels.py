@@ -15,7 +15,7 @@ import subprocess
 from PIL import Image, ImageDraw, ImageOps
 
 from . import config
-from .imagem import (FUNDO, SOMBRA, faixa_arco_iris, BRANCO, CINZA, DOURADO, DOURADO_CLARO, ESCURO, LARANJA,
+from .imagem import (FUNDO, SOMBRA, BRANCO, CINZA, DOURADO, DOURADO_CLARO, ESCURO, LARANJA,
                      _baixar_foto, _brl, _estrela, _fonte, selo_loja)
 
 L, A = 1080, 1920
@@ -121,7 +121,6 @@ def _quadro(t, base, foto, oferta):
         h = 170
         topo = A - h * k
         d.rectangle([0, topo, L, A], fill=ESCURO)
-        faixa_arco_iris(d, int(topo) - 10, 10)
         pulso = 1 + 0.05 * math.sin((t - 4.0) * 2 * math.pi * 1.1) if t > 4.0 else 1
         f_cta = _fonte(int(52 * pulso), "ExtraBold")
         partes = [("COMENTE ", BRANCO), ("EU QUERO", DOURADO_CLARO)]
@@ -154,6 +153,9 @@ def gerar(oferta: dict, destino, foto: Image.Image = None):
             foto = _baixar_foto(oferta["imagem"])
         except Exception as e:
             print(f"⚠️  Reels sem foto ({e}).")
+    if config.PERFIL == "ana":   # a Ana tem visual próprio (src/layout_ana.py)
+        from . import layout_ana
+        return layout_ana.gerar_reels(oferta, destino, foto, duracao=DURACAO, fps=FPS)
     base = _fundo_estatico(oferta, foto)
     cmd = [ffmpeg, "-y", "-loglevel", "error",
            "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{L}x{A}", "-r", str(FPS), "-i", "-",

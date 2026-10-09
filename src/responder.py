@@ -34,6 +34,17 @@ DM = ("Oi! 😊 Aqui está o link da oferta {titulo} 👇\n{link}\n\n"
 PUBLICAS = ["Te mandei no direct! 📩", "Enviado no seu direct! 💌", "Já está no seu direct! 😉",
             "Confere o direct, te mandei o link! 📲", "Link enviado no direct! 🛍️"]
 
+if config.PERFIL == "ana":   # a Ana fala do jeito dela (contas independentes)
+    DM_BOTAO = ("Oiê! 💚 Separei pra você: {titulo} ✨\n"
+                "É só tocar no botão pra ver na {loja}. Corre que achadinho bom acaba rápido!\n"
+                "(link de afiliada: você paga o mesmo e apoia a Ana Novo Achados)")
+    TITULO_BOTAO = "💚 Quero ver"
+    DM = ("Oiê! 💚 Separei pra você: {titulo} ✨\n{link}\n\n"
+          "Corre que achadinho bom acaba rápido!\n"
+          "(link de afiliada: você paga o mesmo e apoia a Ana Novo Achados)")
+    PUBLICAS = ["Corre no direct, te mandei! 💚", "Mandei no seu direct ✨", "Tá no seu direct, amore! 💌",
+                "Link enviado no direct 💚", "Olha o direct! ✨"]
+
 
 def _normalizar(txt):
     txt = unicodedata.normalize("NFKD", txt or "").encode("ascii", "ignore").decode()

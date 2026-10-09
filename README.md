@@ -5,7 +5,7 @@ Robô que roda 100% no GitHub Actions e alimenta duas contas do Instagram:
 | Perfil (`PERFIL`) | Conta | Nichos | Identidade |
 |---|---|---|---|
 | `garimpo` (padrão) | **@garimpovip4** | eletrônicos, casa, brinquedos, pet, automotivo, masculino | marrom e dourado, `assets/logo.png`, Telegram |
-| `ana` | **@ananovoachados** | beleza, cabelo, moda, autocuidado, casa fofa — público feminino e LGBTQIA+ | rosa e roxo com listra arco-íris, `assets/ana/logo.png` |
+| `ana` | **@ananovoachados** | beleza, cabelo, moda, autocuidado, casa fofa — público feminino e LGBTQIA+ | azul-noite e verde-menta, moldura em arco, `src/layout_ana.py` e `assets/ana/` |
 
 Cada conta tem sua fila e seu registro de respostas (`data/` e `data/ana/`), seu token (`IG_ACCESS_TOKEN` e `IG_ACCESS_TOKEN_ANA`) e horários próprios no `agenda.yml`. Os workflows 1, 2 e 4 têm a opção **perfil** ao rodar manualmente; o 3 responde as duas contas de uma vez.
 
