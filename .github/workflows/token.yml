@@ -1,7 +1,15 @@
 name: 4 - Renovar token do Instagram
 
+run-name: 4 - Renovar token do Instagram (${{ inputs.perfil || 'garimpo' }})
+
 on:
   workflow_dispatch:
+    inputs:
+      perfil:
+        description: 'Conta do Instagram'
+        type: choice
+        options: [garimpo, ana]
+        default: garimpo
 
 jobs:
   renovar:
@@ -17,17 +25,18 @@ jobs:
 
       - name: Renovar token
         env:
-          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_ACCESS_TOKEN: ${{ (inputs.perfil || 'garimpo') == 'ana' && secrets.IG_ACCESS_TOKEN_ANA || secrets.IG_ACCESS_TOKEN }}
         run: python -m src.renovar_token
 
-      - name: Atualizar segredo IG_ACCESS_TOKEN
+      - name: Atualizar segredo do token
         env:
           GH_TOKEN: ${{ secrets.GH_PAT }}
+          SEGREDO: ${{ (inputs.perfil || 'garimpo') == 'ana' && 'IG_ACCESS_TOKEN_ANA' || 'IG_ACCESS_TOKEN' }}
         run: |
           [ -f "$RUNNER_TEMP/ig_token.txt" ] || exit 0
           if [ -z "$GH_TOKEN" ]; then
             echo "::warning::Segredo GH_PAT ausente: o token foi renovado mas não pôde ser salvo. Cadastre o GH_PAT."
             exit 0
           fi
-          gh secret set IG_ACCESS_TOKEN -R "${{ github.repository }}" < "$RUNNER_TEMP/ig_token.txt"
+          gh secret set "$SEGREDO" -R "${{ github.repository }}" < "$RUNNER_TEMP/ig_token.txt"
           echo "✅ Segredo atualizado."

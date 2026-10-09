@@ -17,7 +17,7 @@ from . import config, imagem, instagram, reels, telegram, video_manual
 from .garimpar import BRT, FMT, agora, carregar_fila, salvar_fila
 
 PASTA_SITE = config.RAIZ / "site"
-ARQ_PROXIMO = config.PASTA_DADOS / "proximo.json"
+ARQ_PROXIMO = config.PASTA_PERFIL / "proximo.json"
 MAX_TENTATIVAS = 2
 
 
@@ -45,7 +45,8 @@ def candidatos_ordenados(fila):
     candidatos = sorted(_validos(fila), key=lambda o: o.get("pontos", 0), reverse=True)
     recentes = {o["categoria"] for o in _ultimos_postados(fila)}
     manuais = [o for o in candidatos if o.get("video_manual")]
-    resto = [o for o in candidatos if not o.get("video_manual") and not o.get("so_telegram")]
+    resto = [o for o in candidatos if not o.get("video_manual") and not o.get("so_telegram")
+             and o["categoria"] in config.NICHO]   # categoria que passou para outra conta fica de fora
     ouro = [o for o in resto if o.get("nivel", "ouro") == "ouro"]
     base = ouro or resto
     return manuais + [o for o in base if o["categoria"] not in recentes] + \
@@ -66,15 +67,16 @@ def preparar():
         print("⏸️  IG_ACCESS_TOKEN ainda não configurado — postagem em espera.")
         return
     fila = carregar_fila()
-    try:
-        video_manual.registrar_na_fila(fila)
-    except Exception as e:
-        print(f"::warning::Falha ao ler videos/: {e}")
+    if config.PERFIL == "garimpo":   # vídeos manuais (pasta videos/) são do Garimpo VIP
+        try:
+            video_manual.registrar_na_fila(fila)
+        except Exception as e:
+            print(f"::warning::Falha ao ler videos/: {e}")
     formato_padrao = formato_da_vez(fila)
     pasta = PASTA_SITE / "midia"
     pasta.mkdir(parents=True, exist_ok=True)
     (PASTA_SITE / ".nojekyll").write_text("")
-    (PASTA_SITE / "index.html").write_text("<!doctype html><title>Garimpo VIP</title>Garimpo VIP")
+    (PASTA_SITE / "index.html").write_text(f"<!doctype html><title>{config.NOME_MARCA}</title>{config.NOME_MARCA}")
     oferta = None
     for cand in candidatos_ordenados(fila)[:3]:
         formato = "reels" if cand.get("video_manual") else formato_padrao
@@ -151,7 +153,7 @@ def publicar():
     salvar_fila(fila)
     ARQ_PROXIMO.unlink(missing_ok=True)
     print(f"✅ Publicado ({prox['formato']}): {oferta['titulo']} → {oferta['permalink'] or media_id}")
-    if telegram.configurado() and oferta.get("telegram") != "ok":
+    if config.TELEGRAM_ATIVO and telegram.configurado() and oferta.get("telegram") != "ok":
         try:
             telegram.enviar_oferta(oferta, PASTA_SITE / prox["arquivo"], prox["formato"])
             oferta["telegram"] = "ok"

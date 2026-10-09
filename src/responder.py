@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 from . import config, instagram
 from .garimpar import BRT, FMT, agora, carregar_fila
 
-ARQ_RESPONDIDOS = config.PASTA_DADOS / "respondidos.json"
+ARQ_RESPONDIDOS = config.PASTA_PERFIL / "respondidos.json"
 DIAS_JANELA = 7                 # o Instagram só aceita resposta privada até 7 dias após o comentário
 MAX_POR_EXECUCAO = 40
 RESPOSTA_PUBLICA = True         # também responde no próprio comentário ("te mandei no direct")
@@ -22,14 +22,14 @@ GATILHO = re.compile(r"\b(eu\s*quero|quero|link|eu\s*quero\s*o\s*link|manda)\b")
 
 DM_BOTAO = ("Oi! 😊 Aqui está a oferta {titulo} 👇\n"
             "Toque no botão para abrir a oferta ({loja}). Corre que preço de oferta muda rápido! 🛒\n"
-            "(link de afiliado: você paga o mesmo e ajuda o Garimpo VIP)")
+            f"(link de afiliado: você paga o mesmo e ajuda a página {config.NOME_MARCA})")
 TITULO_BOTAO = "🛒 Ver oferta"
 NOME_LOJA = {"shopee": "Shopee", "aliexpress": "AliExpress"}
 
 # Plano B, se o Instagram recusar o botão
 DM = ("Oi! 😊 Aqui está o link da oferta {titulo} 👇\n{link}\n\n"
       "Corre que preço de oferta muda rápido! 🛒\n"
-      "(link de afiliado — você paga o mesmo e ajuda o Garimpo VIP a continuar garimpando)")
+      f"(link de afiliado — você paga o mesmo e ajuda a página {config.NOME_MARCA} a continuar garimpando)")
 
 PUBLICAS = ["Te mandei no direct! 📩", "Enviado no seu direct! 💌", "Já está no seu direct! 😉",
             "Confere o direct, te mandei o link! 📲", "Link enviado no direct! 🛍️"]

@@ -24,17 +24,24 @@ jobs:
       - name: Instalar dependências
         run: pip install requests
 
-      - name: Enviar links no direct
+      - name: Enviar links no direct (todas as contas ao mesmo tempo)
         env:
-          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
-        run: python -m src.responder
+          TOKEN_GARIMPO: ${{ secrets.IG_ACCESS_TOKEN }}
+          TOKEN_ANA: ${{ secrets.IG_ACCESS_TOKEN_ANA }}
+        run: |
+          PERFIL=garimpo IG_ACCESS_TOKEN="$TOKEN_GARIMPO" python -m src.responder & P1=$!
+          PERFIL=ana IG_ACCESS_TOKEN="$TOKEN_ANA" python -m src.responder & P2=$!
+          OK=0
+          wait $P1 || OK=1
+          wait $P2 || OK=1
+          exit $OK
 
       - name: Salvar respondidos
         if: always()
         run: |
           git config user.name "GarimpoBot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/respondidos.json 2>/dev/null || exit 0
+          git add -A data
           git diff --cached --quiet && exit 0
           git commit -m "📩 Respostas $(TZ=America/Sao_Paulo date +'%d/%m/%Y %H:%M')"
           git pull --rebase

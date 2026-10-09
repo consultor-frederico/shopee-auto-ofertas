@@ -5,13 +5,14 @@ import unicodedata
 
 from . import config, legenda
 
-PROMPT_UAU = """Você é curador de uma página de achadinhos da Shopee chamada Garimpo VIP.
+PROMPT_UAU = """Você é curador de uma página de achadinhos da Shopee chamada {marca}
+(público: {publico}).
 Dê uma nota de 0 a 10 para o "fator uau" de cada produto: o quanto ele é DIFERENTE,
 criativo ou surpreendente, resolve um problema de um jeito esperto, ou dá vontade de comprar
 só de ver a foto.
 
 Notas BAIXAS (0-4): itens básicos, de reposição ou commodity — camiseta/calça básica, meia,
-cueca, tapete higiênico, papel, sacos, cabos simples, capinha comum, refil, produto de higiene
+cueca, tapete higiênico, papel, sacos, cabos simples, capinha comum, refil, bobina ou peça de reposição, produto de higiene
 comum, material escolar simples.
 Notas MÉDIAS (5-6): úteis e bem vendidos, mas comuns.
 Notas ALTAS (7-10): gadgets curiosos, soluções criativas para casa/carro/pet, itens com efeito
@@ -52,7 +53,7 @@ def notas_uau(ofertas, lote=40):
         parte = ofertas[i:i + lote]
         lista = "\n".join(f'- id {o["id"]}: {o["nome"][:110]}' for o in parte)
         try:
-            bruto = legenda._chamar_groq(PROMPT_UAU.format(lista=lista))
+            bruto = legenda._chamar_groq(PROMPT_UAU.format(marca=config.NOME_MARCA, publico=config.PUBLICO, lista=lista))
             dados = json.loads(re.search(r"\{.*\}", bruto, re.S).group(0))
             for k, v in (dados.get("notas") or {}).items():
                 try:

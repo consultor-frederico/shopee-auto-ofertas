@@ -33,7 +33,16 @@ jobs:
           case "$HQ" in 00:15|08:15|12:15|18:15) WFS="$WFS campanhas.yml" ;; esac
           if [ "$HQ" = "19:30" ] && { [ "$DOW" = "2" ] || [ "$DOW" = "5" ]; }; then WFS="$WFS chamada.yml"; fi
           if [ "$HQ" = "08:30" ] && [ "$DOW" = "1" ]; then WFS="$WFS token.yml"; fi
+          # Ana Novo Achados (@ananovoachados): horários próprios, sem bater com o Garimpo
+          ANA=""
+          case "$HQ" in 06:30|11:30|17:00) ANA="$ANA garimpo.yml" ;; esac
+          case "$HQ" in 09:15|12:15|14:30|17:30|19:15|21:30) ANA="$ANA postar.yml" ;; esac
+          if [ "$HQ" = "08:45" ] && [ "$DOW" = "1" ]; then ANA="$ANA token.yml"; fi
           for WF in $WFS; do
             echo "▶️  $WF"
             gh api -X POST "repos/$REPO/actions/workflows/$WF/dispatches" -f ref=main || echo "::warning::falhou $WF"
+          done
+          for WF in $ANA; do
+            echo "▶️  $WF (ana)"
+            gh api -X POST "repos/$REPO/actions/workflows/$WF/dispatches" -f ref=main -f "inputs[perfil]=ana" || echo "::warning::falhou $WF (ana)"
           done

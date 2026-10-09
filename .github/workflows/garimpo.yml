@@ -1,7 +1,15 @@
 name: 1 - Garimpo de ofertas
 
+run-name: 1 - Garimpo de ofertas (${{ inputs.perfil || 'garimpo' }})
+
 on:
   workflow_dispatch:
+    inputs:
+      perfil:
+        description: 'Conta do Instagram'
+        type: choice
+        options: [garimpo, ana]
+        default: garimpo
 
 # Impede que dois robôs gravem no repositório ao mesmo tempo
 concurrency:
@@ -13,6 +21,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      PERFIL: ${{ inputs.perfil || 'garimpo' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -39,6 +49,6 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A data
           git diff --cached --quiet && exit 0
-          git commit -m "🤖 Garimpo $(TZ=America/Sao_Paulo date +'%d/%m/%Y %H:%M')"
+          git commit -m "🤖 Garimpo $PERFIL $(TZ=America/Sao_Paulo date +'%d/%m/%Y %H:%M')"
           git pull --rebase
           git push

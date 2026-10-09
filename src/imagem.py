@@ -7,14 +7,25 @@ from PIL import Image, ImageDraw, ImageFont, ImageOps
 from . import config
 
 L, A = 1080, 1350
-# Paleta tirada do logo do Garimpo VIP
-FUNDO = "#EEEDE9"
-ESCURO = "#24150A"
-DOURADO = "#A07E30"
-DOURADO_CLARO = "#E2BE68"
-LARANJA = "#24150A"   # cor do preço
-CINZA = "#6E6458"
+# Paleta da conta (config.PERFIS): no Garimpo VIP é a do logo (marrom e dourado)
+FUNDO = config.CORES["fundo"]
+ESCURO = config.CORES["escuro"]
+DOURADO = config.CORES["destaque"]          # cor de destaque (dourado no Garimpo, rosa na Ana)
+DOURADO_CLARO = config.CORES["destaque_claro"]
+LARANJA = config.CORES["preco"]             # cor do preço
+CINZA = config.CORES["cinza"]
+SOMBRA = config.CORES["sombra"]
 BRANCO = "#FFFFFF"
+ARCO_IRIS = ["#E40303", "#FF8C00", "#FFED00", "#008026", "#004DFF", "#750787"]
+
+
+def faixa_arco_iris(d, y, altura=10, largura=L):
+    """Listra fina com as cores do orgulho (só nas contas com arco_iris=True)."""
+    if not config.CORES.get("arco_iris"):
+        return
+    passo = largura / len(ARCO_IRIS)
+    for i, cor in enumerate(ARCO_IRIS):
+        d.rectangle([int(i * passo), y, int((i + 1) * passo), y + altura], fill=cor)
 
 
 def _fonte(tam, peso="Bold"):
@@ -108,7 +119,7 @@ def gerar(oferta: dict, destino, foto: Image.Image = None):
 
     # Foto do produto num cartão branco
     cx0, cy0, cx1, cy1 = 90, 205, L - 90, 205 + 715
-    d.rounded_rectangle([cx0 + 6, cy0 + 10, cx1 + 6, cy1 + 10], 40, fill="#DCD6CB")
+    d.rounded_rectangle([cx0 + 6, cy0 + 10, cx1 + 6, cy1 + 10], 40, fill=SOMBRA)
     d.rounded_rectangle([cx0, cy0, cx1, cy1], 40, fill=BRANCO)
     if foto is None:
         try:
@@ -168,6 +179,7 @@ def gerar(oferta: dict, destino, foto: Image.Image = None):
 
     # Faixa de chamada
     d.rectangle([0, A - 100, L, A], fill=ESCURO)
+    faixa_arco_iris(d, A - 108, 8)
     f_cta = _fonte(42, "ExtraBold")
     partes = [("COMENTE ", BRANCO), ("EU QUERO", DOURADO_CLARO), (" E RECEBA O LINK", BRANCO)]
     x = (L - sum(d.textlength(t, font=f_cta) for t, _ in partes)) / 2

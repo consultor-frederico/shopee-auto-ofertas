@@ -25,7 +25,7 @@ LISTA = PASTA / "lista.txt"
 DURACAO_MAX = 90          # segundos
 PRIORIDADE = 1000         # pontos: passa na frente das ofertas garimpadas
 L, A = 1080, 1920
-FUNDO = "#EEEDE9"
+from .imagem import FUNDO  # noqa: E402
 TOPO, BASE = 250, 1360    # faixa do vídeo: entre o logo e o painel de preço
 
 PADROES_ID = [r"-i\.\d+\.(\d+)", r"/product/\d+/(\d+)", r"/opaanlp/\d+/(\d+)", r"[?&]itemid=(\d+)"]

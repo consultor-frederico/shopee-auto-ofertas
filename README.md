@@ -1,6 +1,13 @@
 # Garimpo VIP — robô de afiliado Shopee
 
-Robô que roda 100% no GitHub Actions e alimenta o Instagram **@garimpovip4**.
+Robô que roda 100% no GitHub Actions e alimenta duas contas do Instagram:
+
+| Perfil (`PERFIL`) | Conta | Nichos | Identidade |
+|---|---|---|---|
+| `garimpo` (padrão) | **@garimpovip4** | eletrônicos, casa, brinquedos, pet, automotivo, masculino | marrom e dourado, `assets/logo.png`, Telegram |
+| `ana` | **@ananovoachados** | beleza, cabelo, moda, autocuidado, casa fofa — público feminino e LGBTQIA+ | rosa e roxo com listra arco-íris, `assets/ana/logo.png` |
+
+Cada conta tem sua fila e seu registro de respostas (`data/` e `data/ana/`), seu token (`IG_ACCESS_TOKEN` e `IG_ACCESS_TOKEN_ANA`) e horários próprios no `agenda.yml`. Os workflows 1, 2 e 4 têm a opção **perfil** ao rodar manualmente; o 3 responde as duas contas de uma vez.
 
 | Workflow | O que faz | Quando |
 |---|---|---|
@@ -58,6 +65,7 @@ Terça e sexta às 19:37, um post no Instagram com arte própria chamando para o
    - `SHOPEE_APP_ID`, `SHOPEE_APP_SECRET` — API de Afiliados da Shopee
    - `GROQ_API_KEY` — legendas por IA
    - `IG_ACCESS_TOKEN` — token do Instagram (login do Instagram, conta profissional)
+   - `IG_ACCESS_TOKEN_ANA` — token da @ananovoachados
    - `GH_PAT` — token do GitHub com permissão de escrever segredos neste repositório (para a renovação automática do token do Instagram)
 
 Sem o `IG_ACCESS_TOKEN`, a postagem e as respostas ficam em espera, sem dar erro.

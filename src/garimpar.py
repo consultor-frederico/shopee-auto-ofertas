@@ -24,7 +24,7 @@ def carregar_fila():
 
 
 def salvar_fila(fila):
-    config.PASTA_DADOS.mkdir(exist_ok=True)
+    config.ARQ_FILA.parent.mkdir(parents=True, exist_ok=True)
     config.ARQ_FILA.write_text(json.dumps(fila, ensure_ascii=False, indent=2), encoding="utf-8")
 
 

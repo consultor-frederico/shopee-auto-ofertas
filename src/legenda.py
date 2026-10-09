@@ -9,18 +9,26 @@ from . import config
 
 _modelo_escolhido = None
 
-HASHTAGS = {
-    "eletronicos": "#achadinhos #shopee #ofertas #eletronicos #tecnologia #promoção #garimpovip",
-    "lar": "#achadinhos #shopee #ofertas #casa #organização #utilidades #garimpovip",
-    "brinquedos": "#achadinhos #shopee #ofertas #brinquedos #presente #criança #garimpovip",
-    "feminino": "#achadinhos #shopee #ofertas #moda #beleza #achadinhosfemininos #garimpovip",
-    "pet": "#achadinhos #shopee #ofertas #pet #cachorro #gato #garimpovip",
-    "automotivo": "#achadinhos #shopee #ofertas #carro #automotivo #acessórios #garimpovip",
-    "masculino": "#achadinhos #shopee #ofertas #modamasculina #estilo #homem #garimpovip",
-    "manual": "#achadinhos #shopee #ofertas #achadosshopee #promoção #garimpovip",
+_TAGS = {
+    "eletronicos": "#achadinhos #shopee #ofertas #eletronicos #tecnologia #promoção",
+    "lar": "#achadinhos #shopee #ofertas #casa #organização #utilidades",
+    "brinquedos": "#achadinhos #shopee #ofertas #brinquedos #presente #criança",
+    "feminino": "#achadinhos #shopee #ofertas #moda #beleza #achadinhosfemininos",
+    "pet": "#achadinhos #shopee #ofertas #pet #cachorro #gato",
+    "automotivo": "#achadinhos #shopee #ofertas #carro #automotivo #acessórios",
+    "masculino": "#achadinhos #shopee #ofertas #modamasculina #estilo #homem",
+    "manual": "#achadinhos #shopee #ofertas #achadosshopee #promoção",
+    "beleza": "#achadinhos #shopee #beleza #maquiagem #skincare #achadinhosdebeleza",
+    "cabelo": "#achadinhos #shopee #cabelo #cabelocacheado #cuidadoscomcabelo #beleza",
+    "moda": "#achadinhos #shopee #moda #acessórios #lookdodia #estilo",
+    "autocuidado": "#achadinhos #shopee #autocuidado #selfcare #bemestar #skincare",
+    "casa_fofa": "#achadinhos #shopee #decoração #quartoaesthetic #casafofa #aesthetic",
 }
+EXTRA_PERFIL = {"ana": " #lgbtqia #orgulho"}
+HASHTAGS = {k: v + EXTRA_PERFIL.get(config.PERFIL, "") + " " + config.HASHTAG_MARCA for k, v in _TAGS.items()}
 
-PROMPT = """Você é social media de uma página de achadinhos da Shopee chamada Garimpo VIP.
+PROMPT = """Você é social media de uma página de achadinhos da Shopee chamada {marca}.
+Público: {publico}. {tom}
 Produto: {nome}
 Preço: R$ {preco}{desconto}
 Avaliação: {nota} estrelas, {vendas} vendidos.
@@ -102,7 +110,8 @@ def gerar(oferta: dict) -> dict:
         print("⚠️  GROQ_API_KEY não configurada: usando legenda padrão.")
     else:
         desconto = f" ({oferta['desconto']}% OFF)" if oferta.get("desconto") else ""
-        prompt = PROMPT.format(nome=oferta["nome"], preco=oferta["preco_fmt"], desconto=desconto,
+        prompt = PROMPT.format(marca=config.NOME_MARCA, publico=config.PUBLICO, tom=config.TOM,
+                               nome=oferta["nome"], preco=oferta["preco_fmt"], desconto=desconto,
                                nota=oferta["nota"], vendas=oferta["vendas"])
         try:
             bruto = _chamar_groq(prompt)

@@ -4,9 +4,7 @@ from pathlib import Path
 
 RAIZ = Path(__file__).resolve().parent.parent
 PASTA_DADOS = RAIZ / "data"
-ARQ_FILA = PASTA_DADOS / "fila.json"          # ofertas garimpadas e seu status
 FONTE = RAIZ / "assets" / "Montserrat.ttf"
-LOGO = RAIZ / "assets" / "logo.png"
 
 # --- Credenciais (segredos do GitHub) ---
 SHOPEE_APP_ID = (os.getenv("SHOPEE_APP_ID") or "").strip()
@@ -20,7 +18,7 @@ GROQ_MODELOS = [m.strip() for m in os.getenv(
     "GROQ_MODELOS", "llama-3.3-70b-versatile,llama-3.1-8b-instant").split(",") if m.strip()]
 
 # --- Nicho: palavras-chave buscadas na Shopee, por categoria ---
-NICHO = {
+NICHO_GARIMPO = {
     "eletronicos": [
         "fone bluetooth", "smartwatch", "caixa de som bluetooth", "carregador turbo",
         "power bank", "mouse sem fio", "teclado sem fio", "suporte celular",
@@ -40,12 +38,6 @@ NICHO = {
         "boneca", "quebra cabeça infantil", "massinha de modelar", "pista hot wheels",
         "brinquedo montessori", "kit slime", "jogo de tabuleiro",
         "brinquedo criativo", "projetor estrelas", "lousa mágica", "robô brinquedo",
-    ],
-    "feminino": [
-        "bolsa feminina", "kit maquiagem", "skincare", "escova secadora",
-        "prancha alisadora", "brinco feminino", "relógio feminino", "vestido feminino",
-        "organizador de maquiagem", "kit pincel maquiagem", "sandália feminina", "colar feminino",
-        "massageador facial", "escova alisadora", "organizador de joias", "espelho led",
     ],
     "pet": [
         "caminha pet", "comedouro automático", "brinquedo para cachorro", "tapete higiênico",
@@ -90,5 +82,84 @@ DIAS_SEM_REPETIR = 30          # Instagram: não repete o mesmo produto dentro d
 DIAS_SEM_REPETIR_TELEGRAM = 14 # Telegram: campeão de vendas pode voltar depois disso
 DIAS_VALIDADE_PENDENTE = 3     # oferta não postada vence depois disso (preço muda)
 
-MARCA = "GARIMPO VIP"
-ARROBA = "@garimpovip4"
+
+# --- Ana Novo Achados (@ananovoachados): público feminino e LGBTQIA+ ---
+NICHO_ANA = {
+    "beleza": [
+        "kit maquiagem", "skincare", "kit pincel maquiagem", "organizador de maquiagem",
+        "massageador facial", "espelho led", "esponja maquiagem", "paleta de sombras",
+        "lip tint", "rolo facial jade", "máscara facial led", "esmalte em gel kit",
+        "cabine led unha", "curvex aquecido", "glitter corporal", "skincare coreano",
+    ],
+    "cabelo": [
+        "escova secadora", "prancha alisadora", "escova alisadora", "modelador de cachos",
+        "babyliss automático", "touca de cetim", "difusor cabelo cacheado", "kit acessórios cabelo",
+        "presilha de cabelo", "secador de cabelo potente", "fronha de cetim", "escova desembaraçadora",
+    ],
+    "moda": [
+        "bolsa feminina", "brinco feminino", "colar feminino", "relógio feminino",
+        "vestido feminino", "sandália feminina", "organizador de joias", "óculos de sol estiloso",
+        "bolsa transversal", "anel ajustável", "pochete estilosa", "kit pulseiras",
+        "acessórios arco-íris", "camiseta oversized", "meia arco-íris", "brinco arco-íris",
+    ],
+    "autocuidado": [
+        "massageador elétrico", "difusor de aromas", "pantufa fofinha", "kit spa em casa",
+        "máscara para dormir", "garrafa motivacional", "massageador pescoço", "almofada de pescoço",
+        "bolsa térmica", "kit manicure", "luminária sunset", "vela aromática",
+    ],
+    "casa_fofa": [
+        "decoração quarto aesthetic", "luminária nuvem", "fita led quarto", "espelho decorativo",
+        "luminária neon", "porta joias", "caneca criativa", "organizador acrílico",
+        "projetor galáxia", "luminária arco-íris", "almofada fofa", "copo térmico stanley",
+        "bandeira lgbt", "decoração arco-íris",
+    ],
+}
+
+# --- Perfis (contas do Instagram). Escolha com a variável PERFIL (padrão: garimpo) ---
+PERFIS = {
+    "garimpo": {
+        "nicho": NICHO_GARIMPO,
+        "marca": "GARIMPO VIP",
+        "nome": "Garimpo VIP",
+        "arroba": "@garimpovip4",
+        "hashtag": "#garimpovip",
+        "pasta_dados": PASTA_DADOS,
+        "logo": RAIZ / "assets" / "logo.png",
+        "telegram": True,
+        "tom": "Tom animado e direto, de quem garimpa as melhores ofertas.",
+        "publico": "público geral que ama achadinhos",
+        "cores": {"fundo": "#EEEDE9", "escuro": "#24150A", "destaque": "#A07E30",
+                  "destaque_claro": "#E2BE68", "preco": "#24150A", "cinza": "#6E6458",
+                  "sombra": "#DCD6CB", "arco_iris": False},
+    },
+    "ana": {
+        "nicho": NICHO_ANA,
+        "marca": "ANA NOVO ACHADOS",
+        "nome": "Ana Novo Achados",
+        "arroba": "@ananovoachados",
+        "hashtag": "#ananovoachados",
+        "pasta_dados": PASTA_DADOS / "ana",
+        "logo": RAIZ / "assets" / "ana" / "logo.png",
+        "telegram": False,
+        "tom": ("Tom acolhedor, divertido e inclusivo, como uma amiga que indica achadinhos. "
+                "Fale com mulheres e com o público LGBTQIA+ com carinho e sem estereótipos; "
+                "prefira linguagem neutra no tratamento (\"você\", \"pra quem ama...\")."),
+        "publico": "público feminino e LGBTQIA+ que ama beleza, moda, autocuidado e casa aesthetic",
+        "cores": {"fundo": "#F8EEF4", "escuro": "#3B1340", "destaque": "#D6337F",
+                  "destaque_claro": "#FF9CCB", "preco": "#3B1340", "cinza": "#7A6478",
+                  "sombra": "#EAD3E2", "arco_iris": True},
+    },
+}
+
+PERFIL = (os.getenv("PERFIL") or "garimpo").strip().lower()
+if PERFIL not in PERFIS:
+    raise SystemExit(f"PERFIL desconhecido: {PERFIL} (use: {', '.join(PERFIS)})")
+_P = PERFIS[PERFIL]
+NICHO = _P["nicho"]
+MARCA, NOME_MARCA, ARROBA, HASHTAG_MARCA = _P["marca"], _P["nome"], _P["arroba"], _P["hashtag"]
+LOGO = _P["logo"]
+CORES = _P["cores"]
+TOM, PUBLICO = _P["tom"], _P["publico"]
+TELEGRAM_ATIVO = _P["telegram"]
+PASTA_PERFIL = _P["pasta_dados"]                 # fila e respostas de cada conta
+ARQ_FILA = PASTA_PERFIL / "fila.json"            # ofertas garimpadas e seu status

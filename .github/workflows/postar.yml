@@ -1,4 +1,5 @@
 name: 2 - Postar no Instagram
+run-name: 2 - Postar no Instagram (${{ inputs.perfil || 'garimpo' }})
 
 on:
   workflow_dispatch:
@@ -8,6 +9,11 @@ on:
         type: choice
         options: [auto, foto, reels]
         default: auto
+      perfil:
+        description: 'Conta do Instagram'
+        type: choice
+        options: [garimpo, ana]
+        default: garimpo
 
 concurrency:
   group: grava-repositorio
@@ -22,6 +28,8 @@ jobs:
       id-token: write
     environment:
       name: github-pages
+    env:
+      PERFIL: ${{ inputs.perfil || 'garimpo' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -38,7 +46,7 @@ jobs:
       - name: Preparar mídia
         id: prep
         env:
-          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_ACCESS_TOKEN: ${{ (inputs.perfil || 'garimpo') == 'ana' && secrets.IG_ACCESS_TOKEN_ANA || secrets.IG_ACCESS_TOKEN }}
           SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
           SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
@@ -59,7 +67,7 @@ jobs:
       - name: Publicar no Instagram
         if: steps.prep.outputs.tem_post == 'true'
         env:
-          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_ACCESS_TOKEN: ${{ (inputs.perfil || 'garimpo') == 'ana' && secrets.IG_ACCESS_TOKEN_ANA || secrets.IG_ACCESS_TOKEN }}
           PAGES_URL: ${{ steps.deploy.outputs.page_url }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
@@ -70,8 +78,8 @@ jobs:
         run: |
           git config user.name "GarimpoBot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A data/fila.json videos
+          git add -A data videos
           git diff --cached --quiet && exit 0
-          git commit -m "📸 Post $(TZ=America/Sao_Paulo date +'%d/%m/%Y %H:%M')"
+          git commit -m "📸 Post $PERFIL $(TZ=America/Sao_Paulo date +'%d/%m/%Y %H:%M')"
           git pull --rebase
           git push

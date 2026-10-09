@@ -15,7 +15,7 @@ import subprocess
 from PIL import Image, ImageDraw, ImageOps
 
 from . import config
-from .imagem import (BRANCO, CINZA, DOURADO, DOURADO_CLARO, ESCURO, LARANJA,
+from .imagem import (FUNDO, SOMBRA, faixa_arco_iris, BRANCO, CINZA, DOURADO, DOURADO_CLARO, ESCURO, LARANJA,
                      _baixar_foto, _brl, _estrela, _fonte, selo_loja)
 
 L, A = 1080, 1920
@@ -36,7 +36,7 @@ def _pop(t):
 
 def _fundo_estatico(oferta, foto):
     """Partes que não se mexem: fundo e logo."""
-    base = Image.new("RGB", (L, A), "#EEEDE9")
+    base = Image.new("RGB", (L, A), FUNDO)
     try:
         logo = Image.open(config.LOGO).convert("RGBA")
         logo = ImageOps.contain(logo, (340, 200), Image.LANCZOS)
@@ -52,7 +52,7 @@ def _quadro(t, base, foto, oferta):
 
     # Cartão da foto com zoom lento (1.00 → 1.08)
     cx0, cy0, cx1, cy1 = 70, 300, L - 70, 300 + 940
-    d.rounded_rectangle([cx0 + 6, cy0 + 10, cx1 + 6, cy1 + 10], 44, fill="#DCD6CB")
+    d.rounded_rectangle([cx0 + 6, cy0 + 10, cx1 + 6, cy1 + 10], 44, fill=SOMBRA)
     d.rounded_rectangle([cx0, cy0, cx1, cy1], 44, fill=BRANCO)
     if foto is not None:
         z = 1 + 0.08 * (t / DURACAO)
@@ -86,7 +86,7 @@ def _quadro(t, base, foto, oferta):
         k = _ease((t - 0.6) / 0.5)
         f_tit = _fonte(60, "ExtraBold")
         d.text((70 - (1 - k) * 300, y), oferta["titulo"], font=f_tit,
-               fill=_mix("#EEEDE9", ESCURO, k))
+               fill=_mix(FUNDO, ESCURO, k))
 
     # Preço (sobe)
     y2 = y + 100
@@ -97,20 +97,20 @@ def _quadro(t, base, foto, oferta):
         f_de, f_rs, f_preco = _fonte(42, "Medium"), _fonte(54, "Bold"), _fonte(130, "Black")
         if oferta.get("preco_de"):
             de = f"R$ {_brl(oferta['preco_de'])}"
-            d.text((x, y2 + 50 + dy), de, font=f_de, fill=_mix("#EEEDE9", CINZA, k))
+            d.text((x, y2 + 50 + dy), de, font=f_de, fill=_mix(FUNDO, CINZA, k))
             w = d.textlength(de, font=f_de)
-            d.line([x - 4, y2 + 77 + dy, x + w + 4, y2 + 77 + dy], fill=_mix("#EEEDE9", CINZA, k), width=5)
+            d.line([x - 4, y2 + 77 + dy, x + w + 4, y2 + 77 + dy], fill=_mix(FUNDO, CINZA, k), width=5)
             x += w + 30
-        d.text((x, y2 + 44 + dy), "R$", font=f_rs, fill=_mix("#EEEDE9", DOURADO, k))
+        d.text((x, y2 + 44 + dy), "R$", font=f_rs, fill=_mix(FUNDO, DOURADO, k))
         x += d.textlength("R$", font=f_rs) + 12
-        d.text((x, y2 - 20 + dy), oferta["preco_fmt"], font=f_preco, fill=_mix("#EEEDE9", LARANJA, k))
+        d.text((x, y2 - 20 + dy), oferta["preco_fmt"], font=f_preco, fill=_mix(FUNDO, LARANJA, k))
 
     # Nota e vendas
     if t >= 2.8:
         k = _ease((t - 2.8) / 0.4)
         yi = y2 + 175
-        cor = _mix("#EEEDE9", CINZA, k)
-        _estrela(d, 70 + 22, yi + 25, 24, _mix("#EEEDE9", DOURADO, k))
+        cor = _mix(FUNDO, CINZA, k)
+        _estrela(d, 70 + 22, yi + 25, 24, _mix(FUNDO, DOURADO, k))
         nota = f"{oferta['nota']:.1f}".replace(".", ",")
         vendas = f"{oferta['vendas']:,}".replace(",", ".")
         d.text((70 + 54, yi), f"{nota}   •   {vendas}+ vendidos", font=_fonte(40, "SemiBold"), fill=cor)
@@ -121,6 +121,7 @@ def _quadro(t, base, foto, oferta):
         h = 170
         topo = A - h * k
         d.rectangle([0, topo, L, A], fill=ESCURO)
+        faixa_arco_iris(d, int(topo) - 10, 10)
         pulso = 1 + 0.05 * math.sin((t - 4.0) * 2 * math.pi * 1.1) if t > 4.0 else 1
         f_cta = _fonte(int(52 * pulso), "ExtraBold")
         partes = [("COMENTE ", BRANCO), ("EU QUERO", DOURADO_CLARO)]
