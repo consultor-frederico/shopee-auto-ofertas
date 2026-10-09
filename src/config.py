@@ -67,6 +67,7 @@ NIVEIS = {
     "ouro": {"vendas": 500, "comissao_rs": 6.0, "comissao_pct": 8.0, "uau": 7},
     "prata": {"vendas": 500, "comissao_rs": 5.0, "comissao_pct": 8.0, "uau": 6},
 }
+COMISSAO_PCT_ALIEXPRESS = 7.0  # AliExpress paga 7% padrão; o corte em R$ (5 prata / 6 ouro) segue igual
 NOTA_MINIMA = float(os.getenv("NOTA_MINIMA", "4.7"))
 PRECO_MAXIMO = float(os.getenv("PRECO_MAXIMO", "300"))
 UAU_SEM_IA = 6                 # nota padrão se a IA de curadoria estiver fora do ar

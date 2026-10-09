@@ -61,6 +61,14 @@ def normalizar(no, categoria, palavra):
     }
 
 
+def _pct_min(o, nivel_cfg):
+    """A AliExpress paga 7% padrão no Brasil: lá o mínimo em % é o da config.COMISSAO_PCT_ALIEXPRESS
+    (o mínimo em R$ continua igual, então só passa produto que paga bem de verdade)."""
+    if o.get("plataforma") == "aliexpress":
+        return min(nivel_cfg["comissao_pct"], config.COMISSAO_PCT_ALIEXPRESS)
+    return nivel_cfg["comissao_pct"]
+
+
 def motivo_recusa(o):
     """Corte duro do nível Prata (o mínimo para entrar na fila)."""
     prata = config.NIVEIS["prata"]
@@ -71,7 +79,7 @@ def motivo_recusa(o):
         return "nota baixa"
     if o["vendas"] < prata["vendas"]:
         return "poucas vendas"
-    if o["comissao"] < prata["comissao_rs"] or o["comissao_pct"] < prata["comissao_pct"]:
+    if o["comissao"] < prata["comissao_rs"] or o["comissao_pct"] < _pct_min(o, prata):
         return "comissão baixa"
     if o["preco"] <= 0 or o["preco"] > config.PRECO_MAXIMO:
         return "preço fora da faixa"
@@ -85,7 +93,7 @@ def nivel(o):
     for nome in ("ouro", "prata"):
         n = config.NIVEIS[nome]
         if (o["vendas"] >= n["vendas"] and o["comissao"] >= n["comissao_rs"]
-                and o["comissao_pct"] >= n["comissao_pct"] and o.get("uau", 0) >= n["uau"]):
+                and o["comissao_pct"] >= _pct_min(o, n) and o.get("uau", 0) >= n["uau"]):
             return nome
     return None
 

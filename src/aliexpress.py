@@ -136,5 +136,5 @@ if __name__ == "__main__":   # teste: python -m src.aliexpress "fone bluetooth"
         o = normalizar(p, "teste", palavra)
         print(f"::notice::{o['nome'][:60]} | R$ {o['preco_fmt']} | {o['vendas']} vendas | "
               f"{o['avaliacao_pct']}% positivas | comissão {o['comissao_pct']}% (R$ {o['comissao']}) | "
-              f"entrega {o['entrega_dias']}d | link {'ok' if o['link_afiliado'] else 'FALTA'}")
+              f"entrega {o['entrega_dias'] or '?'}d | link {'ok' if o['link_afiliado'] else 'FALTA'}")
     print(json.dumps(produtos[:1], ensure_ascii=False)[:1500])
