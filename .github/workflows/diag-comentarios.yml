@@ -26,6 +26,8 @@ jobs:
               tag = "ATIVO" if m["id"] in ativos else "fora da lista"
               print(f"::notice::POST {m['id']} {m['timestamp']} [{tag}] {m.get('comments_count')} coment. {(m.get('caption') or '')[:40]!r}")
               if m.get("comments_count"):
-                  for c in instagram.comentarios(m["id"]):
-                      print(f"::notice::   @{c.get('username')}: {c.get('text')!r} pediu={responder.pediu_link(c.get('text',''))}")
+                  cs = instagram.comentarios(m["id"])
+                  print(f"::notice::   {len(cs)} comentários de 1º nível retornados")
+                  for c in cs:
+                      print(f"::notice::   {c.get('id')} {c.get('timestamp')} @{(c.get('from') or {}).get('username')} / {c.get('username')}: {c.get('text')!r} pediu={responder.pediu_link(c.get('text',''))}")
           PY
