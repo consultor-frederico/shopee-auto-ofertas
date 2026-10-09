@@ -24,6 +24,8 @@ jobs:
       name: github-pages
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main   # sempre o estado mais recente (não o do momento do disparo)
 
       - uses: actions/setup-python@v5
         with:

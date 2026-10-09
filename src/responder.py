@@ -66,12 +66,12 @@ def posts_ativos(fila):
 def responder(api=instagram):
     if not api.tem_token():
         print("⏸️  IG_ACCESS_TOKEN ainda não configurado — respostas em espera.")
-        return
+        return -1
     fila = carregar_fila()
     posts = posts_ativos(fila)
     if not posts:
         print("Nenhum post nos últimos 7 dias.")
-        return
+        return -1
     minha = api.conta()
     respondidos = carregar_respondidos()
     enviados = falhas = 0
@@ -125,11 +125,16 @@ def responder(api=instagram):
             time.sleep(2)
     salvar_respondidos(respondidos)
     print(f"🏁 {enviados} links enviados, {falhas} falhas, {len(posts)} posts verificados.")
+    return enviados
 
 
 if __name__ == "__main__":
     try:
-        responder()
+        # O aviso da Meta (webhook) às vezes chega antes de o comentário aparecer na API:
+        # se nada foi enviado, espera um pouco e confere de novo.
+        if not responder():
+            time.sleep(20)
+            responder()
     except Exception as e:
         print(f"::error::{e}")
         sys.exit(1)
