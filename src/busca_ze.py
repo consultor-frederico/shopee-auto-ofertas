@@ -440,7 +440,7 @@ def rodar(api, minha, ja_respondidos=None):
             falhas.pop(post, None)
         except Exception as e:   # post apagado (ex.: Reels antigo do rodízio): sai da lista após 3 erros seguidos
             falhas[post] = falhas.get(post, 0) + 1
-            print(f"⚠️  Busca do Zé: post {post} indisponível ({e}) — tentativa {falhas[post]}/3.")
+            print(f"::warning::Busca do Zé: post {post} indisponível ({str(e)[:300]}) — tentativa {falhas[post]}/3.")
             if falhas[post] >= 3:
                 d["ids"].remove(post)
                 falhas.pop(post)
