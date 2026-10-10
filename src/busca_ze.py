@@ -67,6 +67,19 @@ def posts_da_busca(api, ig_id, d):
                     print(f"🔎 Novo post da Busca do Zé: {m['id']}")
         except Exception as e:
             print(f"⚠️  Busca do Zé: não consegui listar os posts ({e})")
+    # Reels do rodízio: entram direto pelo registro de quando o robô publicou (não dependem da listagem)
+    arq_reels = config.PASTA_DADOS / "busca_reels.json"
+    if arq_reels.exists():
+        try:
+            for p in json.loads(arq_reels.read_text(encoding="utf-8")).get("posts", []):
+                pid = p.get("id_post")
+                if pid and p.get("status") == "postado" and pid not in ids:
+                    ids.append(pid)
+                    print(f"🔎 Reels da Busca do Zé incluído: {pid}")
+                elif pid and p.get("status") == "apagado" and pid in ids:
+                    ids.remove(pid)
+        except Exception as e:
+            print(f"⚠️  Busca do Zé: não li o registro dos Reels ({e})")
     return list(ids)
 
 
