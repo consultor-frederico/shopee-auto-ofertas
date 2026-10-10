@@ -1,5 +1,5 @@
 // Garimpo VIP — campainha do Instagram (Cloudflare Worker)
-// O Instagram avisa aqui quando alguém comenta; o Worker confere a assinatura da Meta
+// O Instagram avisa aqui quando alguém comenta ou manda mensagem no direct; o Worker confere a assinatura da Meta
 // e "toca" a rotina de respostas no GitHub (workflow 3 - Responder EU QUERO).
 //
 // Segredos do Worker: GITHUB_TOKEN (token com Actions: Read and write no repositório)
@@ -92,7 +92,9 @@ export default {
     let dados = {};
     try { dados = JSON.parse(corpo); } catch (e) { return new Response("ok"); }
     const temComentario = (dados.entry || []).some(e =>
-      (e.changes || []).some(c => c.field === "comments"));
+      (e.changes || []).some(c => c.field === "comments")
+      // mensagem nova no direct (Busca do Zé pelo direct); ignora o eco das mensagens da própria página
+      || (e.messaging || []).some(m => m.message && !m.message.is_echo && m.message.text));
     if (temComentario) ctx.waitUntil(tocarResponder(env));
     return new Response("EVENT_RECEIVED", { status: 200 });
   },

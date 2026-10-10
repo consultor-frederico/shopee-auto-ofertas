@@ -207,20 +207,119 @@ def mensagem(t, ofs):
     return "\n".join(linhas)
 
 
-def enviar_dm(api, ig_id, cid, t, ofs):
+def enviar_dm(api, ig_id, cid, t, ofs, destinatario=None):
+    """Manda os achados no direct: como resposta privada a um comentário (cid) ou,
+    numa conversa que a pessoa abriu, direto para ela (destinatario = id da pessoa)."""
+    para = {"id": destinatario} if destinatario else {"comment_id": cid}
     texto = mensagem(t, ofs)
     botoes = [{"type": "web_url", "url": o["link_afiliado"], "title": f"🛒 Ver achado {i}"}
               for i, o in enumerate(ofs, 1)]
     try:
-        api._req("POST", f"{ig_id}/messages", json={
-            "recipient": {"comment_id": cid},
+        return api._req("POST", f"{ig_id}/messages", json={
+            "recipient": para,
             "message": {"attachment": {"type": "template", "payload": {
                 "template_type": "button", "text": texto[:640], "buttons": botoes}}}})
     except Exception as e:   # plano B: texto com os links
         print(f"⚠️  Botões recusados ({e}); mandando os links no texto.")
         links = "\n".join(f"{i}️⃣ {o['link_afiliado']}" for i, o in enumerate(ofs, 1))
-        api.resposta_privada(ig_id, cid, f"{texto.split('Toque no botão')[0].strip()}\n\n{links}\n\n"
-                                         f"(links de afiliado: você paga o mesmo e ajuda o {config.NOME_MARCA})")
+        return api._req("POST", f"{ig_id}/messages", json={"recipient": para, "message": {
+            "text": f"{texto.split('Toque no botão')[0].strip()}\n\n{links}\n\n"
+                    f"(links de afiliado: você paga o mesmo e ajuda o {config.NOME_MARCA})"}})
+
+
+# ------------------------------------------------------------------ busca pelo direct
+JANELA_DM = timedelta(hours=23)       # o Instagram só deixa responder até 24h depois da mensagem
+SILENCIO_HUMANO = timedelta(hours=2)  # se o Fred escreveu na conversa há pouco, o robô não se mete
+MARCAS_ROBO = ("Oi! 😊", "Oi! 🤠", "Oi! 💚")   # começo das mensagens automáticas (não contam como o Fred)
+DM_NADA = ("Oi! 🤠 Aqui é o Zé Garimpo. Cavei \"{t}\" na Shopee, mas não achei nada bom o bastante 😅 "
+           "Me manda com outras palavras (ex.: \"fone bluetooth\", \"air fryer 5 litros\") que eu tento de novo!")
+
+
+def _quando(txt):
+    """'2026-10-10T12:09:48+0000' → data e hora de Brasília."""
+    from datetime import datetime, timezone
+    from .garimpar import BRT
+    try:
+        return datetime.strptime(txt[:19], "%Y-%m-%dT%H:%M:%S").replace(tzinfo=timezone.utc).astimezone(BRT)
+    except (TypeError, ValueError):
+        return None
+
+
+def _conversas(api, ig_id):
+    """Conversas do direct com as últimas mensagens (mais recentes primeiro)."""
+    corpo = api._req("GET", f"{ig_id}/conversations", params={
+        "platform": "instagram", "limit": 25,
+        "fields": "id,updated_time,messages.limit(6){id,message,from,created_time}"})
+    return corpo.get("data", [])
+
+
+def rodar_dms(api, minha):
+    """Quem manda no direct o que procura ("procuro uma air fryer") recebe os 3 achados na hora."""
+    if config.PERFIL != "garimpo":
+        return 0
+    d = carregar()
+    ig_id = minha["user_id"]
+    feitos_ids = d.setdefault("dms", {})
+    enviados_robo = set(d.setdefault("msgs_robo", []))
+    try:
+        conversas = _conversas(api, ig_id)
+    except Exception as e:
+        print(f"⚠️  Busca do Zé no direct: não consegui ler as conversas ({e})")
+        return 0
+    agora = _agora()
+    feitos = 0
+    for conv in conversas:
+        msgs = (conv.get("messages") or {}).get("data") or []
+        if not msgs:
+            continue
+        ultima = msgs[0]                                    # a API manda da mais nova para a mais velha
+        autor = (ultima.get("from") or {}).get("id")
+        if autor == ig_id or ultima["id"] in feitos_ids or not ultima.get("message"):
+            continue
+        quando = _quando(ultima.get("created_time", ""))
+        if not quando or agora - quando > JANELA_DM:
+            continue
+        humano = [m for m in msgs[1:] if (m.get("from") or {}).get("id") == ig_id and m["id"] not in enviados_robo
+                  and m.get("message") and not m["message"].startswith(MARCAS_ROBO)]
+        if humano and (q := _quando(humano[0].get("created_time", ""))) and agora - q < SILENCIO_HUMANO:
+            continue                                        # o Fred está conversando: deixa com ele
+        if feitos >= MAX_POR_RODADA:
+            break
+        from . import pedidos
+        texto = ultima["message"]
+        t = pedidos._termo(texto)   # IA decide se é pedido de produto (oi, obrigado... ficam de fora)
+        reg = {"autor": autor, "usuario": (ultima.get("from") or {}).get("username", ""), "texto": texto,
+               "termo": t, "em": agora.strftime(_fmt())}
+        if not t:
+            reg["status"] = "ignorado"
+            feitos_ids[ultima["id"]] = reg
+            continue
+        try:
+            ofs = achados(t)
+        except Exception as e:
+            print(f"⚠️  Busca do Zé no direct '{t}' falhou: {e}")
+            continue
+        try:
+            if ofs:
+                r = enviar_dm(api, ig_id, None, t, ofs, destinatario=autor)
+                reg.update({"status": "entregue", "achados": [o["id"] for o in ofs]})
+            else:
+                r = api._req("POST", f"{ig_id}/messages", json={"recipient": {"id": autor},
+                                                                "message": {"text": DM_NADA.format(t=t)}})
+                reg["status"] = "nao_achou"
+            if (r or {}).get("message_id"):
+                enviados_robo.add(r["message_id"])
+            feitos += 1
+            print(f"📩 Direct: '{t}' → {len(ofs)} achados.")
+        except Exception as e:
+            reg["status"] = f"erro: {str(e)[:200]}"
+            print(f"::warning::Busca do Zé no direct: não consegui responder: {e}")
+        feitos_ids[ultima["id"]] = reg
+    limite = (agora - timedelta(days=30)).strftime(_fmt())
+    d["dms"] = {k: v for k, v in feitos_ids.items() if v.get("em", "") >= limite}
+    d["msgs_robo"] = list(enviados_robo)[-300:]
+    salvar(d)
+    return feitos
 
 
 def rodar(api, minha, ja_respondidos=None):

@@ -178,10 +178,11 @@ def publicar():
     try:
         _esperar_url(url)
         ig_id = instagram.conferir_conta()["user_id"]
+        leg_ig = com_busca(oferta["legenda"], oferta)   # lembrete da Busca do Zé (só no Instagram)
         if prox["formato"] == "reels":
-            cont = instagram.criar_container(ig_id, oferta["legenda"], video_url=url)
+            cont = instagram.criar_container(ig_id, leg_ig, video_url=url)
         else:
-            cont = instagram.criar_container(ig_id, oferta["legenda"], imagem_url=url)
+            cont = instagram.criar_container(ig_id, leg_ig, imagem_url=url)
         instagram.aguardar_container(cont)
         media_id = instagram.publicar(ig_id, cont)
     except Exception as e:
@@ -257,6 +258,31 @@ def com_aviso(leg, oferta):
     leg = "\n".join(l for l in leg.splitlines() if not l.startswith("🕒"))
     corpo, sep, tags = leg.partition("\n\n#")
     return f"{corpo.rstrip()}\n\n{precos.aviso(oferta)}" + (f"\n\n#{tags}" if sep else "")
+
+
+LEMBRETES_BUSCA = [
+    "🔎 Não era isso que você procurava? Comenta no post fixado que o Zé garimpa pra você!",
+    "🔎 Procurando outra coisa? Fala pro Zé no post fixado do perfil (ou aqui no direct) que ele acha!",
+    "🔎 Quer algo diferente? Manda no direct o que você procura que o Zé te traz os melhores achados!",
+]
+
+
+def com_busca(leg, oferta):
+    """Em 1 de cada 3 posts, lembra da Busca do Zé (antes das hashtags). Só no Garimpo VIP e
+    só depois que o post fixo da Busca existe. Não vai para Facebook/YouTube/Telegram."""
+    if config.PERFIL != "garimpo":
+        return leg
+    try:
+        from . import busca_ze
+        if not busca_ze.carregar().get("ids"):
+            return leg
+    except Exception:
+        return leg
+    n = sum(map(ord, str(oferta.get("id", ""))))
+    if n % 3:
+        return leg
+    corpo, sep, tags = leg.partition("\n\n#")
+    return f"{corpo.rstrip()}\n\n{LEMBRETES_BUSCA[n // 3 % len(LEMBRETES_BUSCA)]}" + (f"\n\n#{tags}" if sep else "")
 
 
 def legenda_facebook(leg):

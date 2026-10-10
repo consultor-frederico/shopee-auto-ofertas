@@ -103,6 +103,9 @@ def responder(api=instagram):
             n = busca_ze.rodar(api, minha)
             if n:
                 print(f"🔎 {n} buscas do Zé entregues no direct.")
+            n = busca_ze.rodar_dms(api, minha)
+            if n:
+                print(f"📩 {n} buscas do Zé pedidas no direct.")
         except Exception as e:
             print(f"::warning::Busca do Zé falhou: {e}")
     if not posts:
