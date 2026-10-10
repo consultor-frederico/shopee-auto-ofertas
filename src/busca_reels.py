@@ -34,11 +34,11 @@ W, H = 1080, 1920
 
 LEGENDAS = [
     "🔎 BUSCA DO ZÉ ⛏️\n\nTá procurando alguma coisa na Shopee? Comenta aqui embaixo o que você quer "
-    "(ex.: \"fone bluetooth\", \"organizador de cozinha\") e o Zé te manda no direct os 3 melhores achados! 🤠",
+    "(ex.: \"fone bluetooth\", \"organizador de cozinha\") e o Zé te manda no direct os 3 melhores achados! 🤠\n\n🤫 Prefere não comentar? Manda no direct o que você procura que funciona igual!",
     "🔎 BUSCA DO ZÉ ⛏️\n\nDeixa o Zé garimpar pra você! Escreve nos comentários o produto que você procura "
-    "e em poucos minutos chegam no seu direct os achados com nota alta e muita venda. 💎",
+    "e em poucos minutos chegam no seu direct os achados com nota alta e muita venda. 💎\n\n📩 Também dá pra pedir direto no direct da página!",
     "🔎 BUSCA DO ZÉ ⛏️\n\nNão achou o que queria no feed? Comenta aqui o que você procura que o Zé cava "
-    "na Shopee e te manda os melhores no direct. Pode pedir quantas vezes quiser! 🤠",
+    "na Shopee e te manda os melhores no direct. Pode pedir quantas vezes quiser! 🤠\n\n📩 Se preferir, manda o pedido no direct que o Zé responde lá mesmo.",
 ]
 HASHTAGS = "#BuscaDoZe #garimpovip #zegarimpo #achadinhos #shopee #achados #ofertas"
 
