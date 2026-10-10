@@ -10,7 +10,7 @@ import time
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from . import config, imagem, telegram
+from . import config, imagem, precos, telegram
 from .garimpar import BRT, FMT, agora, carregar_fila, salvar_fila
 
 POR_EXECUCAO = int(os.getenv("TELEGRAM_POR_EXECUCAO", "2"))
@@ -51,6 +51,12 @@ def rodar():
     pasta = Path(tempfile.mkdtemp())
     enviadas = 0
     for o in ofs:
+        situacao = precos.conferir(o)
+        if situacao in ("sumiu", "subiu"):
+            o["telegram"] = "descartado"
+            if o.get("status") == "pendente":
+                o["status"] = "descartado"
+            continue
         try:
             arte = pasta / f"{o['id']}.jpg"
             imagem.gerar(o, arte, foto=imagem._baixar_foto(o["imagem"]))

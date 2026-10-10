@@ -41,7 +41,8 @@ def normalizar(no, categoria, palavra):
     if 0 < desconto < 1:          # caso a API devolva fração (0.3) em vez de inteiro (30)
         desconto = int(desconto * 100)
     preco_de = round(preco / (1 - desconto / 100), 2) if 5 <= desconto < 90 else None
-    return {
+    from .precos import ajustar_de
+    return ajustar_de({
         "id": str(no["itemId"]),
         "nome": (no.get("productName") or "").strip(),
         "categoria": categoria,
@@ -60,7 +61,8 @@ def normalizar(no, categoria, palavra):
         "plataforma": "shopee",
         "imagem": no.get("imageUrl") or "",
         "link_afiliado": no.get("offerLink") or "",
-    }
+        "preco_max": _num(no.get("priceMax")) or None,
+    })
 
 
 def _pct_min(o, nivel_cfg):

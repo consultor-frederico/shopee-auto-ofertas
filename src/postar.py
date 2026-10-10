@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 
 import requests
 
-from . import config, facebook, imagem, instagram, legenda, reels, story, telegram, video_manual, youtube
+from . import config, facebook, precos, imagem, instagram, legenda, reels, story, telegram, video_manual, youtube
 from .garimpar import BRT, FMT, agora, carregar_fila, salvar_fila
 
 PASTA_SITE = config.RAIZ / "site"
@@ -93,7 +93,13 @@ def preparar():
         lista = [o for o in fila["ofertas"].values() if o["id"] == forcada and o.get("status") == "pendente"]
         if not lista:
             print(f"::warning::Oferta {forcada} não está pendente na fila.")
-    for cand in lista[:3]:
+    for cand in lista[:6]:
+        situacao = precos.conferir(cand)
+        if situacao in ("sumiu", "subiu"):
+            cand["status"] = "descartado"
+            cand["motivo"] = "produto fora do ar" if situacao == "sumiu" else "preço subiu desde o garimpo"
+            print(f"🗑️  {cand.get('titulo')}: {cand['motivo']} — pulando.")
+            continue
         formato = "reels" if cand.get("video_manual") else formato_padrao
         nome = f"{cand['id']}-{int(time.time())}.{'mp4' if formato == 'reels' else 'jpg'}"
         try:
@@ -156,6 +162,7 @@ def publicar():
     if oferta.get("legenda") and "📲" not in oferta["legenda"] and "🔖" not in oferta["legenda"]:
         corpo, _, tags = oferta["legenda"].partition("\n\n#")
         oferta["legenda"] = legenda.com_compartilhar(corpo, oferta) + (f"\n\n#{tags}" if tags else "")
+    oferta["legenda"] = com_aviso(oferta.get("legenda") or "", oferta)
     try:
         _esperar_url(url)
         ig_id = instagram.conferir_conta()["user_id"]
@@ -227,6 +234,13 @@ def publicar():
             oferta["yt_erro"] = str(e)[:300]
             print(f"::warning::YouTube falhou: {e}")
         salvar_fila(fila)
+
+
+def com_aviso(leg, oferta):
+    """Põe (ou atualiza) a linha 🕒 do preço conferido logo antes das hashtags."""
+    leg = "\n".join(l for l in leg.splitlines() if not l.startswith("🕒"))
+    corpo, sep, tags = leg.partition("\n\n#")
+    return f"{corpo.rstrip()}\n\n{precos.aviso(oferta)}" + (f"\n\n#{tags}" if sep else "")
 
 
 def legenda_facebook(leg):

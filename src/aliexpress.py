@@ -107,7 +107,7 @@ def normalizar(p, categoria, palavra):
     preco = _num(p.get("target_sale_price"))
     preco_de = _num(p.get("target_original_price"))
     desconto = int(_pct(p.get("discount")))
-    if not (5 <= desconto < 90) or preco_de <= preco:
+    if not (5 <= desconto <= 60) or preco_de <= preco:   # "de" acima de 60% costuma ser inflado
         preco_de, desconto = None, 0
     pct = max(_pct(p.get("commission_rate")), _pct(p.get("hot_product_commission_rate")))
     avaliacao = _pct(p.get("evaluate_rate"))

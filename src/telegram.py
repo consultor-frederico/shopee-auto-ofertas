@@ -10,6 +10,7 @@ import sys
 import requests
 
 from .imagem import plataforma
+from .precos import aviso, tem_variacoes
 
 NOME_LOJA = {"shopee": "Shopee", "aliexpress": "AliExpress"}
 
@@ -36,13 +37,14 @@ def legenda(oferta):
     linhas = []
     for linha in (oferta.get("legenda") or "").splitlines():
         t = linha.strip()
-        if (not t or t.startswith(("#", "📲", "🔖")) or "QUERO" in t.upper() or "R$" in t):
+        if (not t or t.startswith(("#", "📲", "🔖", "🕒")) or "QUERO" in t.upper() or "R$" in t):
             continue
         linhas.append(html.escape(t))
     linhas = linhas[:3]
-    preco = f"💰 <b>R$ {oferta['preco_fmt']}</b>"
+    apartir = "a partir de " if tem_variacoes(oferta) else ""
+    preco = f"💰 {apartir}<b>R$ {oferta['preco_fmt']}</b>"
     if oferta.get("preco_de"):
-        preco = f"💰 de <s>R$ {_brl(oferta['preco_de'])}</s> por <b>R$ {oferta['preco_fmt']}</b>"
+        preco = f"💰 de <s>R$ {_brl(oferta['preco_de'])}</s> por {apartir}<b>R$ {oferta['preco_fmt']}</b>"
         if oferta.get("desconto"):
             preco += f"  (-{oferta['desconto']}%)"
     nota = (f"{oferta['avaliacao_pct']:.0f}% aprovação" if oferta.get("avaliacao_pct")
@@ -53,7 +55,7 @@ def legenda(oferta):
     if oferta.get("nivel") == "achado":
         partes = ["💎 <b>ACHADO ESCONDIDO</b> — pouca gente conhece", ""] + partes
     partes += linhas + [""] if linhas else []
-    partes += [preco, f"⭐ {nota}  •  {vendas}+ vendidos", f"🏷️ Oferta {loja}", "",
+    partes += [preco, f"⭐ {nota}  •  {vendas}+ vendidos", f"🏷️ Oferta {loja}", "", f"<i>{html.escape(aviso(oferta))}</i>",
                "<i>Link de afiliado: você paga o mesmo e ajuda o Garimpo VIP 💛</i>"]
     return "\n".join(partes)[:1024]
 
