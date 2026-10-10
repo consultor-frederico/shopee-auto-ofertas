@@ -88,4 +88,5 @@ def aviso(o):
     loja = "AliExpress" if o.get("plataforma") == "aliexpress" else "Shopee"
     quando = o.get("preco_conferido_em") or agora().strftime("%d/%m às %H:%M")
     base = "Preço a partir de" if tem_variacoes(o) else "Preço"
-    return f"🕒 {base} R$ {o['preco_fmt']}, conferido em {quando}. Na {loja} pode mudar a qualquer momento."
+    pix = " Pagando no Pix, a Shopee costuma dar desconto extra." if loja == "Shopee" else ""
+    return f"🕒 {base} R$ {o['preco_fmt']}, conferido em {quando}.{pix} O preço pode mudar a qualquer momento."
