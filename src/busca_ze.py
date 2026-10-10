@@ -496,6 +496,19 @@ if __name__ == "__main__":   # teste: python -m src.busca_ze "celular" "fone blu
             print(f"::notice::{c.get('updated_time')} | última de {quem}: {(u.get('message') or '[sem texto]')[:60]!r} "
                   f"({u.get('created_time')})")
         sys.exit(0)
+    if sys.argv[1:2] == ["posts"]:   # diagnóstico: posts do perfil e quantos comentários a API lê de cada
+        from . import instagram
+        ig = instagram.conferir_conta()["user_id"]
+        corpo = instagram._req("GET", f"{ig}/media", params={
+            "fields": "id,media_type,media_product_type,timestamp,caption,comments_count,permalink", "limit": 15})
+        for m in corpo.get("data", []):
+            try:
+                n = len(instagram.comentarios(m["id"]))
+            except Exception as e:
+                n = f"erro {str(e)[:80]}"
+            print(f"::notice::{m['id']} {m.get('media_product_type')} {m.get('timestamp')} "
+                  f"coments={m.get('comments_count')}/{n} {m.get('permalink')} | {(m.get('caption') or '')[:50]!r}")
+        sys.exit(0)
     if sys.argv[1:2] == ["atalhos"]:   # python -m src.busca_ze atalhos → grava as perguntas do direct
         try:
             from . import instagram
