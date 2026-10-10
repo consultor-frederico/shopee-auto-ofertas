@@ -73,7 +73,7 @@ def posts_da_busca(api, ig_id, d):
         try:
             for p in json.loads(arq_reels.read_text(encoding="utf-8")).get("posts", []):
                 pid = p.get("id_post")
-                if pid and p.get("status") == "postado" and pid not in ids:
+                if pid and p.get("status") == "postado" and pid not in ids and pid not in d.get("removidos", []):
                     ids.append(pid)
                     print(f"🔎 Reels da Busca do Zé incluído: {pid}")
                 elif pid and p.get("status") == "apagado" and pid in ids:
@@ -444,6 +444,7 @@ def rodar(api, minha, ja_respondidos=None):
             if falhas[post] >= 3:
                 d["ids"].remove(post)
                 falhas.pop(post)
+                d.setdefault("removidos", []).append(post)   # não volta pelo registro dos Reels
     feitos = 0
     for c in coms:
         cid, autor = c["id"], (c.get("from") or {}).get("id")
