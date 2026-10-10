@@ -82,7 +82,8 @@ def _lupa(d, cx, cy, r, cor, esp):
 
 
 def faixa(destino):
-    """PNG transparente 1080x1920 com a chamada da busca (fora das áreas dos botões do Instagram)."""
+    """PNG transparente 1080x1920 com a chamada da busca. Tudo fica entre y=300 e y=1600: aparece inteiro
+    no Reels em tela cheia, no feed (corte 4:5) e na grade do perfil (corte 3:4)."""
     img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
     # alto: selo "BUSCA DO ZÉ"
@@ -90,13 +91,13 @@ def faixa(destino):
     txt = "BUSCA DO ZÉ"
     tl = d.textlength(txt, font=f1)
     pw, ph = tl + 190, 120
-    x0, y0 = (W - pw) / 2, 200
+    x0, y0 = (W - pw) / 2, 330
     d.rounded_rectangle([x0 + 6, y0 + 8, x0 + pw + 6, y0 + ph + 8], ph // 2, fill=(0, 0, 0, 110))
     d.rounded_rectangle([x0, y0, x0 + pw, y0 + ph], ph // 2, fill=ESCURO, outline=DOURADO, width=6)
     _lupa(d, x0 + 70, y0 + ph / 2 - 8, 22, DOURADO, 8)
     d.text((x0 + 130, y0 + (ph - 64) / 2 - 6), txt, font=f1, fill=DOURADO)
     # embaixo: quadro com a pergunta (acima da legenda e longe dos ícones da direita)
-    bx0, bx1, by0, by1 = 70, 930, 1290, 1560
+    bx0, bx1, by0, by1 = 70, 930, 1220, 1490
     d.rounded_rectangle([bx0 + 8, by0 + 10, bx1 + 8, by1 + 10], 44, fill=(0, 0, 0, 120))
     d.rounded_rectangle([bx0, by0, bx1, by1], 44, fill=DOURADO, outline=ESCURO, width=7)
     bw = bx1 - bx0
