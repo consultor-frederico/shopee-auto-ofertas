@@ -5,9 +5,10 @@ Cada Reels de oferta do Garimpo VIP termina com uma destas vinhetas (3 a 5 s). O
 entre elas e nunca repete a do post anterior. Para incluir outra, é só colocar o .mp4 em `finais/`.
 Para desligar: variável `ZE_NO_FINAL=0`.
 
-As vinhetas têm só a voz do Zé: a música entra depois, contínua no Reels inteiro. O robô escolhe
-uma das faixas de `assets/musicas/` (alternando), emenda a faixa nela mesma com transição suave até
-o fim do vídeo e abaixa o volume quando o Zé fala. Para incluir outra música, coloque o .mp3 lá.
+As vinhetas têm só a voz do Zé: a música entra depois, contínua no Reels inteiro. O robô monta
+uma sequência com faixas diferentes de `assets/musicas/` (ordem sorteada, sem abrir com a mesma do
+Reels anterior), emendadas com transição suave, e abaixa o volume quando o Zé fala. Quanto mais
+.mp3 na pasta, mais variado fica: para incluir outra música, é só colocar o arquivo lá.
 Desligar: `MUSICA_REELS=0`; volume: `VOLUME_MUSICA` (padrão 0.6).
 
 | Arquivo | Cena |

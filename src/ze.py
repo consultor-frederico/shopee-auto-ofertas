@@ -2,8 +2,8 @@
 
 1) Final dos Reels: cada Reels de oferta ganha, no fim, uma vinheta curtinha do Zé
    (assets/ze/finais/*.mp4). O robô alterna entre elas, sem repetir a do post anterior.
-   O Reels inteiro ganha uma das músicas de assets/musicas/, estendida até o fim do vídeo
-   e mais baixa quando o Zé fala.
+   O Reels inteiro ganha trilha de assets/musicas/: várias faixas diferentes emendadas com
+   transição suave (sem abrir com a mesma do Reels anterior), mais baixas quando o Zé fala.
 2) Post do Zé às terças e sextas (ZE_DIAS): um filminho de assets/ze/ze_*.mp4 vira Reels (Instagram,
    story, página do Facebook e YouTube Shorts). Vídeo novo que ainda não saiu vai primeiro;
    depois o robô repete o que está há mais tempo sem sair. O post é apagado depois de 15 dias
@@ -96,25 +96,47 @@ def _duracao(arquivo):
     return int(m.group(1)) * 3600 + int(m.group(2)) * 60 + float(m.group(3)) if m else 0.0
 
 
-def escolher_musica(oferta=None):
-    """Trilha da vez (assets/musicas/), alternando pela oferta."""
+def escolher_musicas(oferta=None, total=30.0):
+    """Trilha da vez: uma sequência de músicas diferentes de assets/musicas/ para cobrir o Reels.
+    Começa por uma faixa diferente da que abriu o Reels anterior e vai trocando de música
+    a cada volta (só repete depois de usar todas)."""
+    import random
     musicas = sorted(PASTA_MUSICAS.glob("*.mp3"))
     if not musicas:
-        return None
-    semente = sum((i + 7) * ord(c) for i, c in enumerate(str((oferta or {}).get("id", time.time()))))
-    return musicas[semente % len(musicas)]
+        return []
+    dados = _carregar()
+    ultima = dados.get("ultima_musica", "")
+    rnd = random.Random(str((oferta or {}).get("id", time.time())) + ultima)
+    fila, lista, cobre = [], [], 0.0
+    while cobre < total + 1:
+        if not fila:
+            fila = musicas[:]
+            rnd.shuffle(fila)
+            anterior = lista[-1].name if lista else ultima
+            if len(fila) > 1 and fila[0].name == anterior:
+                fila.append(fila.pop(0))
+        m = fila.pop(0)
+        lista.append(m)
+        cobre += max(1.0, _duracao(m) - 1.0)
+    dados["ultima_musica"] = lista[0].name
+    _salvar(dados)
+    return lista
 
 
-def _com_musica(video, musica, saida):
-    """Estende a música (emenda nela mesma com transição suave) até o fim do vídeo e
+def _com_musica(video, musicas, saida):
+    """Emenda as músicas uma na outra com transição suave até o fim do vídeo e
     abaixa o volume sempre que há voz no vídeo (o Zé falando, ou o áudio do vídeo manual)."""
     total = _duracao(video)
-    voltas = max(1, int(total // max(1.0, _duracao(musica) - 1.0)) + 1)
-    entradas = ["-i", str(video)] + ["-i", str(musica)] * voltas
+    entradas = ["-i", str(video)]
+    for m in musicas:
+        entradas += ["-i", str(m)]
     cadeia, ult = "", "[1:a]"
-    for i in range(2, voltas + 1):
-        cadeia += f"{ult}[{i}:a]acrossfade=d=1:c1=tri:c2=tri[m{i}];"
+    for i in range(2, len(musicas) + 1):
+        cadeia += (f"[{i}:a]aresample=44100,aformat=channel_layouts=stereo[s{i}];"
+                   f"{ult}[s{i}]acrossfade=d=1:c1=tri:c2=tri[m{i}];")
         ult = f"[m{i}]"
+    if len(musicas) > 1:
+        cadeia = "[1:a]aresample=44100,aformat=channel_layouts=stereo[s1];" + cadeia.replace("[1:a]", "[s1]", 1)
     filtro = (f"{cadeia}{ult}aresample=44100,aformat=channel_layouts=stereo,atrim=0:{total:.2f},"
               f"volume={VOLUME_MUSICA},afade=t=out:st={max(0, total - 0.8):.2f}:d=0.8[m];"
               "[0:a]aresample=44100,aformat=channel_layouts=stereo,asplit[v][k];"
@@ -148,15 +170,16 @@ def emendar_final(reels, oferta=None):
         subprocess.run(cmd, check=True)
         saida.replace(reels)
         print(f"🤠 Vinheta do Zé no final do Reels: {final.name}")
-    musica = escolher_musica(oferta) if MUSICA_LIGADA else None
-    if musica:
+    musicas = escolher_musicas(oferta, _duracao(reels)) if MUSICA_LIGADA else []
+    if musicas:
         try:
             saida = reels.with_suffix(".com-musica.mp4")
-            _com_musica(reels, musica, saida)
+            _com_musica(reels, musicas, saida)
             saida.replace(reels)
+            nomes = " → ".join(m.stem for m in musicas)
             if oferta is not None:
-                oferta["musica"] = musica.name
-            print(f"🎵 Música no Reels: {musica.name}")
+                oferta["musica"] = nomes
+            print(f"🎵 Músicas no Reels: {nomes}")
         except Exception as e:
             print(f"::warning::Música não entrou ({e}); o Reels sai sem ela.")
     return final.name if final else None
