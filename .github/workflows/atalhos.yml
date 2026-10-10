@@ -4,6 +4,10 @@ name: 20 - Configurar perguntas prontas do direct
 # (lista ATALHOS em src/busca_ze.py). Rode de novo sempre que mudar as perguntas.
 on:
   workflow_dispatch:
+    inputs:
+      acao:
+        description: 'atalhos (gravar perguntas) ou conversas (diagnóstico do direct)'
+        default: atalhos
 
 jobs:
   atalhos:
@@ -19,4 +23,4 @@ jobs:
       - name: Gravar perguntas
         env:
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
-        run: python -m src.busca_ze atalhos
+        run: python -m src.busca_ze ${{ inputs.acao || 'atalhos' }}

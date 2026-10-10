@@ -277,7 +277,7 @@ def atalho_do_texto(texto):
 def configurar_atalhos(api):
     """Grava as perguntas prontas no direct da página (aparecem para quem abre a conversa pela 1ª vez)."""
     corpo = {"platform": "instagram", "ice_breakers": [
-        {"call_to_actions": [{"question": q, "payload": c} for q, c in ATALHOS]}]}
+        {"locale": "default", "call_to_actions": [{"question": q, "payload": c} for q, c in ATALHOS]}]}
     ig_id = api.conferir_conta()["user_id"]
     r = api._req("POST", f"{ig_id}/messenger_profile", json=corpo)
     print(f"::notice::Perguntas do direct configuradas: {r}")
@@ -472,6 +472,16 @@ def rodar(api, minha, ja_respondidos=None):
 
 if __name__ == "__main__":   # teste: python -m src.busca_ze "celular" "fone bluetooth"
     import sys
+    if sys.argv[1:2] == ["conversas"]:   # diagnóstico: o que o robô enxerga no direct
+        from . import instagram
+        ig = instagram.conferir_conta()["user_id"]
+        for c in _conversas(instagram, ig)[:8]:
+            ms = (c.get("messages") or {}).get("data") or []
+            u = ms[0] if ms else {}
+            quem = "PÁGINA" if (u.get("from") or {}).get("id") == ig else "pessoa"
+            print(f"::notice::{c.get('updated_time')} | última de {quem}: {(u.get('message') or '[sem texto]')[:60]!r} "
+                  f"({u.get('created_time')})")
+        sys.exit(0)
     if sys.argv[1:2] == ["atalhos"]:   # python -m src.busca_ze atalhos → grava as perguntas do direct
         try:
             from . import instagram
