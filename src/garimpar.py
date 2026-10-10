@@ -292,8 +292,10 @@ def coletar_candidatos(fila, buscar=shopee.buscar_ofertas, escolhidas=None, mem=
     return list(candidatos.values())
 
 
-def selecionar(candidatos, n):
-    """Pega os melhores, equilibrando as categorias."""
+def selecionar(candidatos, n, ja_na_fila=None):
+    """Pega os melhores, equilibrando as categorias e sem lotar a fila do mesmo tipo de produto."""
+    from . import variedade
+    fams = dict(ja_na_fila or {})
     por_cat = {}
     for o in sorted(candidatos, key=lambda x: x["pontos"], reverse=True):
         por_cat.setdefault(o["categoria"], []).append(o)
@@ -307,9 +309,12 @@ def selecionar(candidatos, n):
                 while restos[cat] and len(escolhidos) < n:
                     o = restos[cat].pop(0)
                     t = tipo_produto(o["nome"])
+                    f = variedade.familia(o)
                     if (o in escolhidos or (unico and o["palavra"] in palavras) or tipos.get(t, 0) >= max_tipo
-                            or por_palavra.get(o["palavra"], 0) >= 2):
+                            or por_palavra.get(o["palavra"], 0) >= 2
+                            or fams.get(f, 0) >= config.MAX_PENDENTES_POR_FAMILIA):
                         continue
+                    fams[f] = fams.get(f, 0) + 1
                     escolhidos.append(o)
                     palavras.add(o["palavra"])
                     por_palavra[o["palavra"]] = por_palavra.get(o["palavra"], 0) + 1
@@ -382,7 +387,8 @@ def garimpar(buscar=shopee.buscar_ofertas):
     candidatos = curar(fila, coletar_candidatos(fila, buscar, escolhidas, memoria))
     busca_profunda.registrar(memoria, escolhidas, candidatos)
     busca_profunda.salvar(memoria)
-    escolhidos = selecionar(candidatos, config.OFERTAS_POR_GARIMPO)
+    from . import variedade
+    escolhidos = selecionar(candidatos, config.OFERTAS_POR_GARIMPO, variedade.contar_pendentes(fila))
     fontes_ia = 0
     for o in escolhidos:
         texto = legenda.gerar(o)

@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 
 import requests
 
-from . import config, facebook, precos, imagem, instagram, legenda, reels, story, telegram, video_manual, youtube, ze
+from . import config, facebook, precos, imagem, instagram, legenda, reels, story, telegram, video_manual, youtube, ze, variedade
 from .garimpar import BRT, FMT, agora, carregar_fila, salvar_fila
 
 PASTA_SITE = config.RAIZ / "site"
@@ -59,8 +59,9 @@ def candidatos_ordenados(fila):
     ouro = [o for o in resto if o.get("nivel", "ouro") == "ouro"
             or (pode_achado and o.get("nivel") == "achado")]
     base = ouro or [o for o in resto if o.get("nivel") != "achado"] or resto
-    return manuais + [o for o in base if o["categoria"] not in recentes] + \
-        [o for o in base if o["categoria"] in recentes]
+    base = [o for o in base if o["categoria"] not in recentes] + [o for o in base if o["categoria"] in recentes]
+    # variedade: tipo de produto que saiu nas últimas HORAS_ENTRE_FAMILIA horas vai para o fim
+    return manuais + variedade.ordenar(base, variedade.familias_recentes(fila, "postado_em"))
 
 
 def formato_da_vez(fila):

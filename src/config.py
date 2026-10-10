@@ -103,6 +103,10 @@ DIAS_SEM_REPETIR = 30          # Instagram: não repete o mesmo produto dentro d
 DIAS_SEM_REPETIR_TELEGRAM = 14 # Telegram: campeão de vendas pode voltar depois disso
 DIAS_APAGAR_POSTS = int(os.getenv("DIAS_APAGAR_POSTS", "15"))  # posts de oferta somem depois disso
 DIAS_VALIDADE_PENDENTE = 3     # oferta não postada vence depois disso (preço muda)
+# Variedade (src/variedade.py): mesmo TIPO de produto (ex.: bomba de ar / compressor / inflador)
+HORAS_ENTRE_FAMILIA = int(os.getenv("HORAS_ENTRE_FAMILIA", "48"))                    # Instagram/Facebook
+HORAS_ENTRE_FAMILIA_TELEGRAM = int(os.getenv("HORAS_ENTRE_FAMILIA_TELEGRAM", "12"))  # Telegram (posta mais)
+MAX_PENDENTES_POR_FAMILIA = int(os.getenv("MAX_PENDENTES_POR_FAMILIA", "2"))         # na fila ao mesmo tempo
 
 
 # --- Ana Novo Achados (@ananovoachados): público feminino e LGBTQIA+ ---

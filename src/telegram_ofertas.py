@@ -10,7 +10,7 @@ import time
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from . import config, imagem, precos, telegram
+from . import config, imagem, precos, telegram, variedade
 from .garimpar import BRT, FMT, agora, carregar_fila, salvar_fila
 
 POR_EXECUCAO = int(os.getenv("TELEGRAM_POR_EXECUCAO", "2"))
@@ -23,18 +23,22 @@ def candidatas(fila):
            and o.get("link_afiliado") and o.get("titulo") and not o.get("video_manual")
            and datetime.strptime(o["criado_em"], FMT).replace(tzinfo=BRT) >= limite]
     ofs.sort(key=lambda o: o.get("pontos", 0), reverse=True)
+    # variedade: tipo de produto que já foi para o canal nas últimas horas fica para depois
+    ofs = variedade.ordenar(ofs, variedade.familias_recentes(fila, "telegram_em",
+                                                             config.HORAS_ENTRE_FAMILIA_TELEGRAM))
     # alterna categorias: evita duas seguidas do mesmo nicho
-    escolhidas, cats = [], set()
+    escolhidas, cats, fams = [], set(), set()
     for o in ofs:
         if len(escolhidas) >= POR_EXECUCAO:
             break
-        if o["categoria"] not in cats:
+        if o["categoria"] not in cats and variedade.familia(o) not in fams:
             escolhidas.append(o)
             cats.add(o["categoria"])
+            fams.add(variedade.familia(o))
     for o in ofs:
         if len(escolhidas) >= POR_EXECUCAO:
             break
-        if o not in escolhidas:
+        if o not in escolhidas and variedade.familia(o) not in fams:
             escolhidas.append(o)
     return escolhidas
 
