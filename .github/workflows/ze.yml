@@ -9,8 +9,8 @@ on:
         description: 'Postar agora, mesmo fora de terça e sexta'
         type: boolean
         default: false
-      so_instagram:
-        description: 'Postar só no Instagram (sem Facebook e YouTube)'
+      sem_facebook:
+        description: 'Não postar na página do Facebook'
         type: boolean
         default: false
 
@@ -61,11 +61,11 @@ jobs:
         env:
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
           PAGES_URL: ${{ steps.deploy.outputs.page_url || steps.deploy2.outputs.page_url }}
-          FB_PAGE_ID: ${{ !inputs.so_instagram && secrets.FB_PAGE_ID || '' }}
-          FB_PAGE_TOKEN: ${{ !inputs.so_instagram && secrets.FB_PAGE_TOKEN || '' }}
-          YT_CLIENT_ID: ${{ !inputs.so_instagram && secrets.YT_CLIENT_ID || '' }}
-          YT_CLIENT_SECRET: ${{ !inputs.so_instagram && secrets.YT_CLIENT_SECRET || '' }}
-          YT_REFRESH_TOKEN: ${{ !inputs.so_instagram && secrets.YT_REFRESH_TOKEN || '' }}
+          FB_PAGE_ID: ${{ !inputs.sem_facebook && secrets.FB_PAGE_ID || '' }}
+          FB_PAGE_TOKEN: ${{ !inputs.sem_facebook && secrets.FB_PAGE_TOKEN || '' }}
+          YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
         run: python -m src.ze publicar
       - name: Salvar registro
         if: always() && steps.prep.outcome == 'success'
