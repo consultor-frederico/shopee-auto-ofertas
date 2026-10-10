@@ -166,7 +166,8 @@ def dias_desde_ultimo(d):
     if not d["posts"]:
         return None
     ult = max(p["postado_em"] for p in d["posts"])
-    return (_agora() - datetime.strptime(ult, FMT).replace(tzinfo=BRT)).days
+    # conta dias de calendário: postado sábado às 15h, o próximo sai no sábado seguinte às 11h30
+    return (_agora().date() - datetime.strptime(ult, FMT).replace(tzinfo=BRT).date()).days
 
 
 def preparar():
