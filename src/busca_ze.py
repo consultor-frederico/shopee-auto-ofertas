@@ -80,32 +80,113 @@ def termo(texto):
     return pedidos.termo_do_comentario(texto, exigir_pedido=False)
 
 
+PRECO_MAX = float(__import__("os").getenv("BUSCA_PRECO_MAX", "5000"))   # quem pede celular quer celular
+ACESSORIOS = set("""capa capinha case pelicula peliculas protetor protecao carregador carregadores cabo cabos
+suporte suportes tomada adaptador adaptadores refil refis pecas peca reposicao kit kits bolsa bolsinha estojo
+porta organizador adesivo adesivos skin skins alca cordao chaveiro tampa tampas filtro filtros escova escovas
+lente lentes bateria baterias fonte controle capas""".split())
+PREPOSICOES = r"(?:para|pra|p/|de|do|da|no|na|em|com)"
+
+
+def _norm(txt):
+    import unicodedata
+    return unicodedata.normalize("NFKD", txt or "").encode("ascii", "ignore").decode().lower()
+
+
+def _raiz(p):
+    """Singular aproximado: 'celulares' → 'celular', 'panelas' → 'panela'."""
+    for suf, troca in (("oes", "ao"), ("aes", "ao"), ("res", "r"), ("zes", "z"), ("is", "l"), ("s", "")):
+        if len(p) > 4 and p.endswith(suf):
+            return p[: -len(suf)] + troca
+    return p
+
+
+def _palavras(txt):
+    import re
+    return [_raiz(p) for p in re.findall(r"[a-z0-9]+", _norm(txt))]
+
+
+def relevante(nome, t):
+    """O produto É o que a pessoa pediu? Todas as palavras do pedido no nome, e não pode ser
+    acessório "de/para" a coisa pedida (capinha de celular, suporte para celular...)."""
+    import re
+    pedido = [p for p in _palavras(t) if len(p) > 2 and p not in ("para", "pra", "com", "sem")]
+    nome_p = _palavras(nome)
+    if not pedido or not all(any(n.startswith(p) for n in nome_p) for p in pedido):
+        return False
+    if not (set(pedido) & ACESSORIOS):          # pediu o produto, não um acessório
+        if set(nome_p[:4]) & ACESSORIOS:         # nome começa com o acessório ("Capa ... celular")
+            return False
+        nucleo = re.escape(_palavras(t)[0])
+        if re.search(rf"\b{PREPOSICOES}\s+(?:o\s+|a\s+|seu\s+|sua\s+)?{nucleo}", _norm(nome)):
+            return False                          # "... para celular", "... de celular"
+    return True
+
+
 def _aceitavel(o, rigoroso=True):
     nome = o["nome"].lower()
-    if not (o["link_afiliado"] and o["imagem"] and 0 < o["preco"] <= config.PRECO_MAXIMO
+    if not (o["link_afiliado"] and o["imagem"] and 0 < o["preco"] <= PRECO_MAX
             and not any(p in nome for p in config.PALAVRAS_PROIBIDAS)):
         return False
     if rigoroso:
-        return o["nota"] >= 4.5 and o["vendas"] >= 50
-    return o["nota"] >= 4.3 and o["vendas"] >= 10
+        return o["nota"] >= 4.5 and o["vendas"] >= 30
+    return o["nota"] >= 4.3 and o["vendas"] >= 5
+
+
+PROMPT_IA = """Um cliente pediu na Shopee: "{t}".
+Abaixo, produtos encontrados (número: nome). Quais SÃO o próprio produto que ele pediu?
+Não conta acessório, peça, capa, suporte, refil, nem produto de outro tipo que só cita a palavra.
+Responda só com JSON {{"ok": [números]}}, do mais adequado para o menos.
+
+{lista}"""
+
+
+def _filtro_ia(t, ofs):
+    """A IA confere se cada produto é mesmo o pedido. None se a IA não respondeu."""
+    if not config.GROQ_API_KEY or not ofs:
+        return None
+    import re
+    from .legenda import _chamar_groq
+    lista = "\n".join(f"{i}: {o['nome'][:110]}" for i, o in enumerate(ofs))
+    try:
+        bruto = _chamar_groq(PROMPT_IA.format(t=t.replace('"', "'"), lista=lista))
+        nums = json.loads(re.search(r"\{.*\}", bruto, re.S).group(0)).get("ok", [])
+        return [ofs[int(n)] for n in nums if str(n).isdigit() and int(n) < len(ofs)]
+    except Exception as e:
+        print(f"⚠️  IA não conferiu a busca ({e}); fico só com as regras.")
+        return None
+
+
+def _pontos(o):
+    return (o["nota"] >= 4.8, min(o["vendas"], 5000) * o["nota"] + o["comissao"] * 30)
 
 
 def achados(t):
-    """Até 3 produtos bons para o termo (afrouxa o filtro se não achar nada no rigoroso)."""
+    """Até 3 produtos que SÃO o que a pessoa pediu: busca por relevância (e mais vendidos),
+    regras contra acessórios, e a IA confere a lista final."""
     from . import shopee
     from .garimpar import normalizar
-    nos = shopee.buscar_ofertas(t, 1, 50, 2)
-    ofs = [normalizar(n, "busca", t) for n in nos]
+    nos = []
+    for pagina, ordem in ((1, 1), (2, 1), (1, 2)):
+        try:
+            nos += shopee.buscar_ofertas(t, pagina, 50, ordem)
+        except Exception as e:
+            print(f"⚠️  Shopee (página {pagina}, ordem {ordem}): {e}")
     vistos, unicos = set(), []
-    for o in ofs:
+    for n in nos:
+        o = normalizar(n, "busca", t)
         if o["id"] not in vistos:
             vistos.add(o["id"])
             unicos.append(o)
+    certos = [o for o in unicos if relevante(o["nome"], t)]
     for rigoroso in (True, False):
-        bons = [o for o in unicos if _aceitavel(o, rigoroso)]
+        bons = sorted((o for o in certos if _aceitavel(o, rigoroso)), key=_pontos, reverse=True)[:15]
+        if not bons:
+            continue
+        conferidos = _filtro_ia(t, bons)
+        if conferidos is not None:
+            bons = conferidos
         if bons:
-            bons.sort(key=lambda o: (o["nota"] >= 4.8, min(o["vendas"], 5000) * o["nota"] + o["comissao"] * 30),
-                      reverse=True)
             return bons[:ACHADOS]
     return []
 
@@ -198,3 +279,14 @@ def rodar(api, minha, ja_respondidos=None):
         d["comentarios"][cid] = reg
     salvar(d)
     return feitos
+
+
+if __name__ == "__main__":   # teste: python -m src.busca_ze "celular" "fone bluetooth"
+    import sys
+    for t in sys.argv[1:] or ["celular"]:
+        print(f"\n🔎 {t}")
+        try:
+            for o in achados(termo(t) or t):
+                print(f"  • R$ {o['preco_fmt']:>9} ⭐{o['nota']} {o['vendas']:>6} vend. — {o['nome'][:90]}")
+        except Exception as e:
+            print(f"  ⚠️  {e}")

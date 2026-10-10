@@ -1,0 +1,44 @@
+name: 19 - Testar Busca do Zé
+
+on:
+  workflow_dispatch:
+    inputs:
+      termos:
+        description: "Buscas separadas por vírgula"
+        default: "celular, fone bluetooth, air fryer, tênis masculino, panela de pressão"
+
+concurrency:
+  group: grava-repositorio
+  cancel-in-progress: false
+
+jobs:
+  testar:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements.txt
+      - name: Testar buscas
+        env:
+          SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
+          SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          TERMOS: ${{ inputs.termos }}
+        run: |
+          mkdir -p data/relatorios
+          IFS=, read -ra T <<< "$TERMOS"; python -u -m src.busca_ze "${T[@]}" 2>&1 | tee data/relatorios/teste_busca.txt
+      - name: Salvar relatório
+        run: |
+          git config user.name "GarimpoBot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/relatorios
+          git diff --cached --quiet && exit 0
+          git commit -m "🧪 Teste da Busca do Zé"
+          git pull --rebase
+          git push
