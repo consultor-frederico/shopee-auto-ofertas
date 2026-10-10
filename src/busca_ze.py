@@ -278,9 +278,10 @@ def configurar_atalhos(api):
     """Grava as perguntas prontas no direct da página (aparecem para quem abre a conversa pela 1ª vez)."""
     corpo = {"platform": "instagram", "ice_breakers": [
         {"call_to_actions": [{"question": q, "payload": c} for q, c in ATALHOS]}]}
-    r = api._req("POST", "me/messenger_profile", json=corpo)
-    print(f"✅ Perguntas do direct configuradas: {r}")
-    print(api._req("GET", "me/messenger_profile", params={"fields": "ice_breakers"}))
+    ig_id = api.conferir_conta()["user_id"]
+    r = api._req("POST", f"{ig_id}/messenger_profile", json=corpo)
+    print(f"::notice::Perguntas do direct configuradas: {r}")
+    print(api._req("GET", f"{ig_id}/messenger_profile", params={"fields": "ice_breakers"}))
 
 
 def _ofertas_recentes(n=3):
@@ -472,8 +473,12 @@ def rodar(api, minha, ja_respondidos=None):
 if __name__ == "__main__":   # teste: python -m src.busca_ze "celular" "fone bluetooth"
     import sys
     if sys.argv[1:2] == ["atalhos"]:   # python -m src.busca_ze atalhos → grava as perguntas do direct
-        from . import instagram
-        configurar_atalhos(instagram)
+        try:
+            from . import instagram
+            configurar_atalhos(instagram)
+        except Exception as e:
+            print(f"::error::{str(e)[:500]}")
+            sys.exit(1)
         sys.exit(0)
     for t in sys.argv[1:] or ["celular"]:
         print(f"\n🔎 {t}")
