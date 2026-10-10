@@ -106,6 +106,9 @@ DIAS_VALIDADE_PENDENTE = 3     # oferta não postada vence depois disso (preço 
 # Variedade (src/variedade.py): mesmo TIPO de produto (ex.: bomba de ar / compressor / inflador)
 HORAS_ENTRE_FAMILIA = int(os.getenv("HORAS_ENTRE_FAMILIA", "48"))                    # Instagram/Facebook
 HORAS_ENTRE_FAMILIA_TELEGRAM = int(os.getenv("HORAS_ENTRE_FAMILIA_TELEGRAM", "12"))  # Telegram (posta mais)
+PAGINAS_EM_ALTA = int(os.getenv("PAGINAS_EM_ALTA", "6"))   # páginas da lista "em alta" da Shopee por garimpo
+# Só sai o que é DIFERENCIADO: abaixo disso (fator uau da IA) não posta em lugar nenhum
+UAU_MINIMO_POSTAR = int(os.getenv("UAU_MINIMO_POSTAR", "7"))
 MAX_PENDENTES_POR_FAMILIA = int(os.getenv("MAX_PENDENTES_POR_FAMILIA", "2"))         # na fila ao mesmo tempo
 
 

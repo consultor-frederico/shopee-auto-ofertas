@@ -7,7 +7,7 @@ import random
 import sys
 from datetime import datetime, timedelta, timezone
 
-from . import aliexpress, busca_profunda, config, curadoria, legenda, shopee
+from . import aliexpress, busca_profunda, config, curadoria, legenda, shopee, variedade
 
 BRT = timezone(timedelta(hours=-3))
 FMT = "%Y-%m-%d %H:%M:%S"
@@ -240,6 +240,20 @@ def coletar_extras(fila, mem, candidatos, recusas):
         ofertas = _por_categoria_aprendida(mem, nos, f"loja {nome or shop_id}")
         print(f"🏪 Loja '{nome or shop_id}': {len(nos)} produtos ({len(ofertas)} do nosso nicho)")
         _filtrar(fila, ofertas, "loja", candidatos, recusas)
+    # Lista "em alta" da própria Shopee: os mais vendidos com comissão, várias páginas
+    em_alta = []
+    for pagina in range(1, config.PAGINAS_EM_ALTA + 1):
+        try:
+            r = shopee.buscar_em_alta(pagina=pagina)
+        except Exception as e:
+            print(f"❌ Em alta (pág. {pagina}): {e}")
+            break
+        em_alta += r
+        if len(r) < 50:
+            break
+    ofertas = _por_categoria_aprendida(mem, em_alta, "em alta shopee")
+    print(f"🔥 Em alta na Shopee: {len(em_alta)} produtos ({len(ofertas)} do nosso nicho)")
+    _filtrar(fila, ofertas, "em_alta", candidatos, recusas)
     for cat_id, nicho in busca_profunda.categorias_para_garimpar(mem, config.CATEGORIAS_POR_GARIMPO):
         nos, _ = _buscar_paginas(lambda alvo, **kw: shopee.buscar_categoria(alvo, **kw), cat_id,
                                  config.PAGINAS_CATEGORIA)
@@ -294,7 +308,7 @@ def coletar_candidatos(fila, buscar=shopee.buscar_ofertas, escolhidas=None, mem=
 
 def selecionar(candidatos, n, ja_na_fila=None):
     """Pega os melhores, equilibrando as categorias e sem lotar a fila do mesmo tipo de produto."""
-    from . import variedade
+    candidatos = [o for o in candidatos if variedade.diferenciado(o)]   # só achado de verdade
     fams = dict(ja_na_fila or {})
     por_cat = {}
     for o in sorted(candidatos, key=lambda x: x["pontos"], reverse=True):
@@ -334,7 +348,7 @@ def tipo_produto(nome):
     return nome.lower()[:10]
 
 
-def curar(fila, candidatos, max_ia=120, max_achado=30):
+def curar(fila, candidatos, max_ia=150, max_achado=30):
     """Remove repetidos/parecidos, pede a nota de uau à IA e classifica em ouro/prata."""
     recentes = [r.get("nome", "") for r in fila["ofertas"].values()
                 if r.get("nome") and r.get("status") in ("pendente", "postado")]
@@ -361,13 +375,14 @@ def curar(fila, candidatos, max_ia=120, max_achado=30):
     aprovados, cont = [], {"ouro": 0, "achado": 0, "prata": 0, "descartado": 0}
     for o in unicos:
         o["uau"] = notas.get(o["id"], config.UAU_SEM_IA)
+        o["uau"] = variedade.uau(o)   # produto de vitrine (smartwatch, bomba de ar…) tem teto
         o["nivel"] = nivel(o)
         if not o["nivel"]:
             cont["descartado"] += 1
             continue
         cont[o["nivel"]] += 1
         # bônus para o que veio da busca profunda (termos da IA/memória): é o que dá cara de garimpo
-        o["pontos"] = pontuar(o) + BONUS_NIVEL[o["nivel"]] + (8 if o.get("origem_busca") in ("ia", "memoria", "loja", "categoria") else 0)
+        o["pontos"] = pontuar(o) + BONUS_NIVEL[o["nivel"]] + (8 if o.get("origem_busca") in ("ia", "memoria", "loja", "categoria", "em_alta") else 0)
         aprovados.append(o)
     orig = {}
     for o in aprovados:
@@ -387,7 +402,6 @@ def garimpar(buscar=shopee.buscar_ofertas):
     candidatos = curar(fila, coletar_candidatos(fila, buscar, escolhidas, memoria))
     busca_profunda.registrar(memoria, escolhidas, candidatos)
     busca_profunda.salvar(memoria)
-    from . import variedade
     escolhidos = selecionar(candidatos, config.OFERTAS_POR_GARIMPO, variedade.contar_pendentes(fila))
     fontes_ia = 0
     for o in escolhidos:

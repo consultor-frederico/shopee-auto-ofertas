@@ -21,6 +21,7 @@ def candidatas(fila):
     ofs = [o for o in fila["ofertas"].values()
            if o.get("status") in ("pendente", "postado") and o.get("telegram") != "ok"
            and o.get("link_afiliado") and o.get("titulo") and not o.get("video_manual")
+           and (o.get("pedido") or variedade.diferenciado(o))   # só produto diferenciado
            and datetime.strptime(o["criado_em"], FMT).replace(tzinfo=BRT) >= limite]
     ofs.sort(key=lambda o: o.get("pontos", 0), reverse=True)
     # variedade: tipo de produto que já foi para o canal nas últimas horas fica para depois

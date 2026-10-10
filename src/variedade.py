@@ -47,6 +47,39 @@ FAMILIAS = {
 }
 
 
+# Produtos "de vitrine": todo mundo posta, não são achado. A IA às vezes dá nota alta para eles,
+# então aqui o teto é fixo — não passam de uau 6 e por isso não são postados.
+COMUNS = {"smartwatch", "camera de seguranca", "fone de ouvido", "carregador", "caixa de som",
+          "aspirador", "bomba de ar", "boneca reborn", "lanterna", "ventilador", "mop", "garrafa",
+          "ferramenta eletrica", "acendedor"}
+TETO_COMUM = 6
+
+
+# Nome de franquia/personagem = risco de réplica. A IA deveria dar 0, mas às vezes deixa passar.
+FRANQUIAS = ["transformers", "optimus", "bumblebee", "megatron", "marvel", "iron heroes", "homem aranha",
+             "spider", "batman", "vingadores", "avengers", "disney", "stitch", "pokemon", "my little pony",
+             "gabby", "hello kitty", "sanrio", "kuromi", "naruto", "dragon ball", "one piece", "harry potter",
+             "hogwarts", "barbie", "frozen", "minecraft", "sonic", "mario", "star wars", "lego", "patrulha canina",
+             "peppa", "bluey", "hot wheels", "capitao america", "hulk", "wandinha", "labubu"]
+
+
+def franquia(o):
+    txt = _texto(o if isinstance(o, str) else o.get("nome", ""))
+    return any(_texto(f) in txt for f in FRANQUIAS)
+
+
+def uau(o):
+    """Fator uau já com o teto dos produtos de vitrine (e zero para franquia/personagem)."""
+    if franquia(o):
+        return 0.0
+    nota = float(o.get("uau", 0) or 0)
+    return min(nota, TETO_COMUM) if familia(o) in COMUNS else nota
+
+
+def diferenciado(o):
+    return uau(o) >= config.UAU_MINIMO_POSTAR
+
+
 def _texto(nome):
     return " " + " ".join(curadoria._norm(nome)) + " "
 

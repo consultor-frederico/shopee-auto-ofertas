@@ -85,6 +85,13 @@ def buscar_categoria(cat_id, pagina: int = 1, limite: int = 50, ordem: int = 2, 
     return _nos(f"productCatId:{int(cat_id)}," + ("isAMSOffer:true," if ams else ""), pagina, limite, ordem)
 
 
+def buscar_em_alta(pagina: int = 1, limite: int = 50, ordem: int = 2, categoria=None) -> list:
+    """Lista de produtos em alta da própria Shopee (listType:2 — vitrine de mais vendidos com comissão).
+    Testado em out/2026: listType:1 volta vazio; listType:2 traz a lista."""
+    filtro = "listType:2," + (f"productCatId:{int(categoria)}," if categoria else "")
+    return _nos(filtro, pagina, limite, ordem)
+
+
 def buscar_lojas(palavra: str, limite: int = 10) -> list:
     """Lojas com comissão (shopOfferV2): [{shopId, shopName, commissionRate, ratingStar}]."""
     query = (f"query{{shopOfferV2(keyword:{json.dumps(palavra, ensure_ascii=False)},sortType:2,page:1,"

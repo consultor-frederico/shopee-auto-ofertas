@@ -50,7 +50,7 @@ def candidatos_ordenados(fila):
     pedidos_ze = [o for o in candidatos if o.get("pedido") and not o.get("video_manual")]
     manuais += pedidos_ze[:1]   # "Você pediu, o Zé achou": um por vez, na frente da fila
     resto = [o for o in candidatos if not o.get("video_manual") and not o.get("so_telegram") and not o.get("pedido")
-             and o["categoria"] in config.NICHO]   # categoria que passou para outra conta fica de fora
+             and o["categoria"] in config.NICHO and variedade.diferenciado(o)]   # outra conta fica de fora; só produto diferenciado
     # 💎 Achado escondido: entra junto com o Ouro, mas no máximo config.ACHADOS_POR_DIA por dia
     hoje = agora().strftime("%Y-%m-%d")
     achados_hoje = sum(1 for o in fila["ofertas"].values() if o.get("nivel") == "achado"
