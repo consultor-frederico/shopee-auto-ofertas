@@ -377,7 +377,8 @@ def rodar_dms(api, minha):
         acabou_de_perguntar = ((anterior.get("from") or {}).get("id") == ig_id
                                and "Bora garimpar" in (anterior.get("message") or ""))
         # logo depois do "me diz o que você procura", qualquer resposta é a busca ("air fryer")
-        t = termo(texto) if acabou_de_perguntar else pedidos._termo(texto)
+        # no direct, só o nome do produto já é busca ("fogão"); a IA barra "oi", "obrigado"...
+        t = termo(texto) if (acabou_de_perguntar or config.GROQ_API_KEY) else pedidos._termo(texto)
         reg = {"autor": autor, "usuario": (ultima.get("from") or {}).get("username", ""), "texto": texto,
                "termo": t, "em": agora.strftime(_fmt())}
         if not t:
