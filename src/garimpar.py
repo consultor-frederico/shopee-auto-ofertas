@@ -151,6 +151,18 @@ def limpar_fila(fila):
             del fila["ofertas"][item_id]
         elif reg["status"] == "pendente" and criado < limite_pend:
             reg["status"] = "vencido"
+    # mesma loja: fica só o melhor (até MAX_POR_LOJA_NA_FILA); pedidos de seguidores não contam
+    por_loja = {}
+    for reg in fila["ofertas"].values():
+        if reg["status"] == "pendente" and reg.get("loja") and not reg.get("pedido") and not reg.get("video_manual"):
+            por_loja.setdefault(reg["loja"], []).append(reg)
+    cortados = 0
+    for loja, regs in por_loja.items():
+        for reg in sorted(regs, key=lambda r: r.get("pontos", 0), reverse=True)[config.MAX_POR_LOJA_NA_FILA:]:
+            reg["status"] = "vencido"
+            cortados += 1
+    if cortados:
+        print(f"✂️  {cortados} ofertas saíram da fila (mais de {config.MAX_POR_LOJA_NA_FILA} da mesma loja).")
 
 
 def _buscar_paginas(buscar, alvo, paginas):
@@ -226,7 +238,7 @@ def coletar_extras(fila, mem, candidatos, recusas):
             lojas.append((str(l["shopId"]), l.get("shopName", "")))
     for shop_id, nome in lojas:
         nos = []
-        for pagina in (1, 2):
+        for pagina in range(1, config.PAGINAS_LOJA + 1):
             try:
                 r = shopee.buscar_loja(shop_id, pagina=pagina)
             except Exception as e:
@@ -306,10 +318,11 @@ def coletar_candidatos(fila, buscar=shopee.buscar_ofertas, escolhidas=None, mem=
     return list(candidatos.values())
 
 
-def selecionar(candidatos, n, ja_na_fila=None):
+def selecionar(candidatos, n, ja_na_fila=None, lojas_na_fila=None):
     """Pega os melhores, equilibrando as categorias e sem lotar a fila do mesmo tipo de produto."""
     candidatos = [o for o in candidatos if variedade.diferenciado(o)]   # só achado de verdade
     fams = dict(ja_na_fila or {})
+    lojas = dict(lojas_na_fila or {})
     por_cat = {}
     for o in sorted(candidatos, key=lambda x: x["pontos"], reverse=True):
         por_cat.setdefault(o["categoria"], []).append(o)
@@ -326,9 +339,12 @@ def selecionar(candidatos, n, ja_na_fila=None):
                     f = variedade.familia(o)
                     if (o in escolhidos or (unico and o["palavra"] in palavras) or tipos.get(t, 0) >= max_tipo
                             or por_palavra.get(o["palavra"], 0) >= 2
-                            or fams.get(f, 0) >= config.MAX_PENDENTES_POR_FAMILIA):
+                            or fams.get(f, 0) >= config.MAX_PENDENTES_POR_FAMILIA
+                            or (o.get("loja") and lojas.get(o["loja"], 0) >= config.MAX_POR_LOJA_NA_FILA)):
                         continue
                     fams[f] = fams.get(f, 0) + 1
+                    if o.get("loja"):
+                        lojas[o["loja"]] = lojas.get(o["loja"], 0) + 1
                     escolhidos.append(o)
                     palavras.add(o["palavra"])
                     por_palavra[o["palavra"]] = por_palavra.get(o["palavra"], 0) + 1
@@ -348,7 +364,7 @@ def tipo_produto(nome):
     return nome.lower()[:10]
 
 
-def curar(fila, candidatos, max_ia=150, max_achado=30):
+def curar(fila, candidatos, max_ia=None, max_achado=30):
     """Remove repetidos/parecidos, pede a nota de uau à IA e classifica em ouro/prata."""
     recentes = [r.get("nome", "") for r in fila["ofertas"].values()
                 if r.get("nome") and r.get("status") in ("pendente", "postado")]
@@ -367,8 +383,19 @@ def curar(fila, candidatos, max_ia=150, max_achado=30):
     # vaga reservada para possíveis 💎 achados (poucas vendas ficariam no fim da fila da IA)
     poucos = sorted((o for o in unicos if o["vendas"] < config.NIVEIS["prata"]["vendas"]),
                     key=lambda x: (x["nota"], x["comissao"]), reverse=True)[:max_achado]
+    max_ia = max_ia or config.IA_MAX_POR_GARIMPO
     normais = [o for o in unicos if o["vendas"] >= config.NIVEIS["prata"]["vendas"]]
-    unicos = normais[:max_ia - len(poucos)] + poucos
+    # reveza as origens (IA, memória, categoria, loja, em alta, fixa) para o que veio do fundo
+    # da busca também ser avaliado, e não só os de maior comissão
+    grupos = {}
+    for o in normais:
+        grupos.setdefault(o.get("origem_busca", "?"), []).append(o)
+    revezados = []
+    while any(grupos.values()):
+        for g in list(grupos):
+            if grupos[g]:
+                revezados.append(grupos[g].pop(0))
+    unicos = revezados[:max_ia - len(poucos)] + poucos
     notas = curadoria.notas_uau(unicos)
     if not notas:
         print(f"::warning::Curadoria por IA indisponível — usando nota de uau padrão {config.UAU_SEM_IA}.")
@@ -402,7 +429,11 @@ def garimpar(buscar=shopee.buscar_ofertas):
     candidatos = curar(fila, coletar_candidatos(fila, buscar, escolhidas, memoria))
     busca_profunda.registrar(memoria, escolhidas, candidatos)
     busca_profunda.salvar(memoria)
-    escolhidos = selecionar(candidatos, config.OFERTAS_POR_GARIMPO, variedade.contar_pendentes(fila))
+    lojas_na_fila = {}
+    for r in fila["ofertas"].values():
+        if r["status"] == "pendente" and r.get("loja"):
+            lojas_na_fila[r["loja"]] = lojas_na_fila.get(r["loja"], 0) + 1
+    escolhidos = selecionar(candidatos, config.OFERTAS_POR_GARIMPO, variedade.contar_pendentes(fila), lojas_na_fila)
     fontes_ia = 0
     for o in escolhidos:
         texto = legenda.gerar(o)

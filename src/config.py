@@ -91,14 +91,27 @@ PALAVRAS_POR_GARIMPO = int(os.getenv("PALAVRAS_POR_GARIMPO", "24"))   # total de
 PALAVRAS_IA_POR_GARIMPO = int(os.getenv("PALAVRAS_IA_POR_GARIMPO", "10"))
 PALAVRAS_MEMORIA_POR_GARIMPO = int(os.getenv("PALAVRAS_MEMORIA_POR_GARIMPO", "4"))
 # Páginas da Shopee por busca (página, ordem): 1 relevância, 2 mais vendidos, 5 maior comissão.
-# As páginas 3–4 dos mais vendidos e a ordem "relevância" mostram o que fica escondido do topo.
+# As páginas fundas dos mais vendidos e a ordem "relevância" mostram o que fica escondido do topo.
 # "ams" = só ofertas em que o vendedor paga comissão extra (20–40%): barato e diferente passa no filtro.
-PAGINAS_FIXAS = ((1, 2), (2, 2), (3, 2), (4, 2), (1, 1), (1, 5), (1, 2, "ams"))
-PAGINAS_PROFUNDAS = ((1, 2), (2, 2), (3, 2), (1, 1), (2, 1), (1, 5), (1, 2, "ams"), (2, 2, "ams"))
+# A busca para sozinha quando a Shopee entrega página incompleta (acabaram os resultados).
+PROFUNDIDADE = int(os.getenv("PROFUNDIDADE", "8"))   # até que página dos "mais vendidos" o robô desce
+
+
+def _pags(ate, ordem, *extra, de=1):
+    return tuple((p, ordem, *extra) for p in range(de, ate + 1))
+
+
+PAGINAS_FIXAS = _pags(PROFUNDIDADE, 2) + _pags(3, 1) + _pags(2, 5) + _pags(3, 2, "ams")
+PAGINAS_PROFUNDAS = PAGINAS_FIXAS
 # Além das palavras: cavar nas lojas que já deram achado e garimpar direto por categoria da Shopee
 LOJAS_POR_GARIMPO = int(os.getenv("LOJAS_POR_GARIMPO", "4"))
-CATEGORIAS_POR_GARIMPO = int(os.getenv("CATEGORIAS_POR_GARIMPO", "4"))
-PAGINAS_CATEGORIA = ((2, 2), (3, 2), (4, 2), (1, 1), (1, 2, "ams"), (2, 2, "ams"))
+PAGINAS_LOJA = int(os.getenv("PAGINAS_LOJA", "4"))
+CATEGORIAS_POR_GARIMPO = int(os.getenv("CATEGORIAS_POR_GARIMPO", "6"))
+PAGINAS_CATEGORIA = _pags(PROFUNDIDADE + 2, 2, de=2) + _pags(2, 1) + _pags(3, 2, "ams")
+# Quantos produtos a IA avalia por rodada (o resto nem chega a ser julgado)
+IA_MAX_POR_GARIMPO = int(os.getenv("IA_MAX_POR_GARIMPO", "300"))
+# Variedade de lojas: no máximo isso de ofertas da mesma loja esperando na fila
+MAX_POR_LOJA_NA_FILA = int(os.getenv("MAX_POR_LOJA_NA_FILA", "5"))
 DIAS_SEM_REPETIR = 30          # Instagram: não repete o mesmo produto dentro desse prazo
 DIAS_SEM_REPETIR_TELEGRAM = 14 # Telegram: campeão de vendas pode voltar depois disso
 DIAS_APAGAR_POSTS = int(os.getenv("DIAS_APAGAR_POSTS", "15"))  # posts de oferta somem depois disso
@@ -106,7 +119,7 @@ DIAS_VALIDADE_PENDENTE = 3     # oferta não postada vence depois disso (preço 
 # Variedade (src/variedade.py): mesmo TIPO de produto (ex.: bomba de ar / compressor / inflador)
 HORAS_ENTRE_FAMILIA = int(os.getenv("HORAS_ENTRE_FAMILIA", "48"))                    # Instagram/Facebook
 HORAS_ENTRE_FAMILIA_TELEGRAM = int(os.getenv("HORAS_ENTRE_FAMILIA_TELEGRAM", "12"))  # Telegram (posta mais)
-PAGINAS_EM_ALTA = int(os.getenv("PAGINAS_EM_ALTA", "6"))   # páginas da lista "em alta" da Shopee por garimpo
+PAGINAS_EM_ALTA = int(os.getenv("PAGINAS_EM_ALTA", "10"))   # páginas da lista "em alta" da Shopee por garimpo
 # Só sai o que é DIFERENCIADO: abaixo disso (fator uau da IA) não posta em lugar nenhum
 UAU_MINIMO_POSTAR = int(os.getenv("UAU_MINIMO_POSTAR", "7"))
 MAX_PENDENTES_POR_FAMILIA = int(os.getenv("MAX_PENDENTES_POR_FAMILIA", "2"))         # na fila ao mesmo tempo
