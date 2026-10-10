@@ -42,7 +42,7 @@ async function tocarResponder(env) {
 }
 
 const CANAL_YT = "UCVgPSlZGC3iydugIP81hl9Q";   // Garimpo VIP (@garimpoVIP4)
-const GATILHO = /\b(eu\s*quero|quero|link|manda)\b/i;
+const GATILHO = /\b(eu\s*quero|quero|queria|link|manda|mandar|me\s*passa|passa\s*o\s*link|preco|precinho|valor|vlr|quanto\s*(custa|e|ta|sai|fica)|qnt\s*(custa|e|ta)|onde\s*(eu\s*)?(compr\w*|acho|encontr\w*|vende)|como\s*(compr\w*|faco\s*pra\s*compr\w*)|interess\w*|eu\s*(tb|tbm|tambem))\b/i;
 const JANELA_MS = 3 * 60 * 1000;               // comentários dos últimos 3 min (cron de 2 em 2)
 
 async function conferirYoutube(env) {

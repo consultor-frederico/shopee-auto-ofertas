@@ -19,7 +19,12 @@ DIAS_JANELA = 7                 # o Instagram só aceita resposta privada até 7
 MAX_POR_EXECUCAO = 40
 RESPOSTA_PUBLICA = True         # também responde no próprio comentário ("te mandei no direct")
 
-GATILHO = re.compile(r"\b(eu\s*quero|quero|link|eu\s*quero\s*o\s*link|manda)\b")
+# Palavras que pedem a oferta (o texto já chega sem acento e em minúsculas)
+GATILHO = re.compile(
+    r"\b(eu\s*quero|quero|queria|link|manda|mandar|me\s*passa|passa\s*o\s*link"
+    r"|preco|precinho|valor|vlr|quanto\s*(custa|e|ta|sai|fica)|qnt\s*(custa|e|ta)"
+    r"|onde\s*(eu\s*)?(compr\w*|acho|encontr\w*|vende)|como\s*(compr\w*|faco\s*pra\s*compr\w*)"
+    r"|interess\w*|eu\s*(tb|tbm|tambem))\b")
 
 DM_BOTAO = ("Oi! 😊 Aqui está a oferta {titulo} 👇\n"
             "Toque no botão para abrir a oferta ({loja}). Corre que preço de oferta muda rápido! 🛒\n"
