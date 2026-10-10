@@ -17,8 +17,8 @@ Desligar: `MUSICA_REELS=0`; volume: `VOLUME_MUSICA` (padrão 0.6).
 | finais/fim_garimpo_vip.mp4 | lupa brilhando e joinha — "Esse é garimpo VIP!" |
 | finais/fim_carrinho.mp4 | close sorrindo ao lado do carrinho de achados |
 
-## 2. Post do Zé de 15 em 15 dias (`ze_*.mp4`)
-O workflow "9 - Post do Zé Garimpo" (todo dia às 13:30, só posta se já deu 15 dias) publica um
+## 2. Post do Zé às terças e sextas (`ze_*.mp4`)
+O workflow "9 - Post do Zé Garimpo" (todo dia às 13:30, só posta às terças e sextas; mude com `ZE_DIAS`) publica um
 destes como Reels no Instagram, story, Facebook e YouTube Shorts. Vídeo que nunca saiu vai primeiro;
 depois volta o que está há mais tempo sem sair. O post é apagado com 15 dias, junto das ofertas.
 Registro em `data/ze.json`. Para incluir um vídeo novo, coloque `ze_nome.mp4` (8 s, com música) aqui.
@@ -36,3 +36,9 @@ Registro em `data/ze.json`. Para incluir um vídeo novo, coloque `ze_nome.mp4` (
 | ze_rede.mp4 | acorda na rede com o despertador | Batida de Início |
 | ze_relogio.mp4 | acha um relógio dourado na bateia | Forró da Alegria (2) |
 | ze_rio_pulo.mp4 | pula no rio com a bateia de achados | Forró da Alegria |
+
+## 3. Quadro "Você pediu, o Zé achou!" (`src/pedidos.py`)
+Todo post do Zé convida: "comenta o produto que você procura". O responder lê esses comentários,
+responde "Anotado!" e guarda o pedido em `data/.../pedidos.json`. No garimpo seguinte o robô busca o
+produto na Shopee, escolhe o melhor (nota, vendas, comissão) e põe na frente da fila com a legenda
+"🙋 VOCÊ PEDIU, O ZÉ ACHOU!" marcando @quem pediu. Quando o post sai, a pessoa recebe o link no direct.

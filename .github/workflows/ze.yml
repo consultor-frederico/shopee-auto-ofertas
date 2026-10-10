@@ -1,12 +1,12 @@
-name: 9 - Post do Zé Garimpo (15 em 15 dias)
+name: 9 - Post do Zé Garimpo (terça e sexta)
 
-# A agenda toca todo dia às 13:30; o robô só posta se o último post do Zé tiver 15 dias ou mais.
+# A agenda toca todo dia às 13:30; o robô só posta às terças e sextas (variável ZE_DIAS).
 # Rodando à mão com "forçar", posta na hora.
 on:
   workflow_dispatch:
     inputs:
       forcar:
-        description: 'Postar agora, mesmo sem ter dado 15 dias'
+        description: 'Postar agora, mesmo fora de terça e sexta'
         type: boolean
         default: false
 

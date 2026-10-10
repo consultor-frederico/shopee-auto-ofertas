@@ -83,10 +83,20 @@ def responder(api=instagram):
         return -1
     fila = carregar_fila()
     posts = posts_ativos(fila)
+    minha = None
+    if config.PERFIL == "garimpo" and api is instagram:   # quadro "Você pediu, o Zé achou"
+        try:
+            from . import pedidos
+            minha = api.conferir_conta()
+            n = pedidos.coletar(api, minha)
+            if n:
+                print(f"🙋 {n} pedidos novos nos posts do Zé.")
+        except Exception as e:
+            print(f"::warning::Pedidos do Zé falharam: {e}")
     if not posts:
         print("Nenhum post nos últimos 7 dias.")
         return -1
-    minha = api.conferir_conta() if hasattr(api, "conferir_conta") else api.conta()
+    minha = minha or (api.conferir_conta() if hasattr(api, "conferir_conta") else api.conta())
     respondidos = carregar_respondidos()
     enviados = falhas = 0
     for o in posts:

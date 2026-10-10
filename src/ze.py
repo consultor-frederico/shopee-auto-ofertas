@@ -4,12 +4,12 @@
    (assets/ze/finais/*.mp4). O robô alterna entre elas, sem repetir a do post anterior.
    O Reels inteiro ganha uma das músicas de assets/musicas/, estendida até o fim do vídeo
    e mais baixa quando o Zé fala.
-2) Post do Zé de 15 em 15 dias: um filminho de assets/ze/ze_*.mp4 vira Reels (Instagram,
+2) Post do Zé às terças e sextas (ZE_DIAS): um filminho de assets/ze/ze_*.mp4 vira Reels (Instagram,
    story, página do Facebook e YouTube Shorts). Vídeo novo que ainda não saiu vai primeiro;
    depois o robô repete o que está há mais tempo sem sair. O post é apagado depois de 15 dias
    (src/limpeza.py), junto com as ofertas.
 
-  python -m src.ze preparar   → se já deu 15 dias, copia o vídeo da vez para site/
+  python -m src.ze preparar   → se hoje é dia do Zé, copia o vídeo da vez para site/
   python -m src.ze publicar   → publica e registra em data/ze.json
 """
 import json
@@ -27,24 +27,25 @@ PASTA_FINAIS = PASTA / "finais"
 ARQ = config.PASTA_DADOS / "ze.json"
 ARQ_PROX = config.PASTA_DADOS / "proximo_ze.json"
 PASTA_SITE = config.RAIZ / "site"
-INTERVALO_DIAS = int(os.getenv("ZE_INTERVALO_DIAS", "15"))
+# dias da semana do post do Zé (0 = segunda ... 6 = domingo); padrão terça e sexta
+DIAS_SEMANA = {int(d) for d in os.getenv("ZE_DIAS", "1,4").split(",") if d.strip().isdigit()}
+NOMES_DIAS = ["segunda", "terça", "quarta", "quinta", "sexta", "sábado", "domingo"]
 FINAL_LIGADO = os.getenv("ZE_NO_FINAL", "1") != "0"
 PASTA_MUSICAS = config.RAIZ / "assets" / "musicas"
 MUSICA_LIGADA = os.getenv("MUSICA_REELS", "1") != "0"
 VOLUME_MUSICA = float(os.getenv("VOLUME_MUSICA", "0.6"))
 
+PEDIDO = ("🙋 VOCÊ PEDE, O ZÉ ACHA! Comenta aqui embaixo o produto que você procura "
+          "(ex.: \"fone bluetooth\", \"air fryer\"). O Zé garimpa, posta o achado marcando você "
+          "e ainda manda o link no seu direct! 👇")
 LEGENDAS = [
     "⛏️ O Zé Garimpo não para! Todo dia ele cava a Shopee e o AliExpress atrás dos achados "
-    "que valem a pena, para você não cair em furada. 💎\n\n"
-    "👉 Segue a página e ativa o sininho para não perder o próximo achado!",
+    "que valem a pena, para você não cair em furada. 💎",
     "🤠 Quem tem o Zé Garimpo do lado não paga caro! Ele confere preço, nota e vendas antes "
-    "de mostrar qualquer produto. ✨\n\n"
-    "💬 Conta aqui: o que você quer que o Zé garimpe pra você?",
+    "de mostrar qualquer produto. ✨",
     "💰 Achadinho bom é achadinho garimpado! O Zé passa o dia peneirando ofertas e só "
-    "traz o que vale ouro. 🏆\n\n"
-    "📣 Ofertas o dia todo, com link direto, no nosso canal do Telegram (link na bio)!",
-    "✨ Mais um dia de garimpo! O Zé Garimpo encontra os achados e você só escolhe. 🛒\n\n"
-    "👉 Marca aqui aquele amigo que ama um achadinho!",
+    "traz o que vale ouro. 🏆",
+    "✨ Mais um dia de garimpo! O Zé Garimpo encontra os achados e você só escolhe. 🛒",
 ]
 HASHTAGS = "#zegarimpo #garimpovip #achadinhos #shopee #achados #ofertas #promoção"
 
@@ -161,7 +162,7 @@ def emendar_final(reels, oferta=None):
     return final.name if final else None
 
 
-# ------------------------------------------------------------------ post do Zé (15 em 15 dias)
+# ------------------------------------------------------------------ post do Zé (terça e sexta)
 def videos():
     return sorted(PASTA.glob("ze_*.mp4"))
 
@@ -205,10 +206,12 @@ def preparar():
         print("⏸️  IG_ACCESS_TOKEN ausente.")
         return
     dados = _carregar()
-    dias = dias_desde_ultimo(dados)
     forcar = os.getenv("FORCAR") == "1"
-    if dias is not None and dias < INTERVALO_DIAS and not forcar:
-        print(f"⏳ Último post do Zé foi há {dias} dias — o próximo sai com {INTERVALO_DIAS}.")
+    hoje = _agora()
+    ja_hoje = any(p["postado_em"].startswith(hoje.strftime("%Y-%m-%d")) for p in dados["posts"])
+    if not forcar and (hoje.weekday() not in DIAS_SEMANA or ja_hoje):
+        dias = ", ".join(NOMES_DIAS[d] for d in sorted(DIAS_SEMANA))
+        print(f"⏳ O Zé posta sozinho às {dias} (uma vez no dia). Hoje não.")
         return
     video = video_da_vez(dados)
     if not video:
@@ -222,7 +225,7 @@ def preparar():
     nome = f"ze-{int(time.time())}.mp4"
     shutil.copy(video, pasta / nome)
     n = len(dados["posts"])
-    leg = LEGENDAS[n % len(LEGENDAS)] + "\n\n" + HASHTAGS
+    leg = LEGENDAS[n % len(LEGENDAS)] + "\n\n" + PEDIDO + "\n\n" + HASHTAGS
     ARQ_PROX.write_text(json.dumps({"arquivo": f"midia/{nome}", "video": video.name, "legenda": leg},
                                    ensure_ascii=False), encoding="utf-8")
     print(f"🎬 Post do Zé preparado: {video.name}")

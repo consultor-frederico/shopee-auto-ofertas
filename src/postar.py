@@ -47,7 +47,9 @@ def candidatos_ordenados(fila):
     candidatos = sorted(_validos(fila), key=lambda o: o.get("pontos", 0), reverse=True)
     recentes = {o["categoria"] for o in _ultimos_postados(fila)}
     manuais = [o for o in candidatos if o.get("video_manual")]
-    resto = [o for o in candidatos if not o.get("video_manual") and not o.get("so_telegram")
+    pedidos_ze = [o for o in candidatos if o.get("pedido") and not o.get("video_manual")]
+    manuais += pedidos_ze[:1]   # "Você pediu, o Zé achou": um por vez, na frente da fila
+    resto = [o for o in candidatos if not o.get("video_manual") and not o.get("so_telegram") and not o.get("pedido")
              and o["categoria"] in config.NICHO]   # categoria que passou para outra conta fica de fora
     # 💎 Achado escondido: entra junto com o Ouro, mas no máximo config.ACHADOS_POR_DIA por dia
     hoje = agora().strftime("%Y-%m-%d")
@@ -197,6 +199,10 @@ def publicar():
     salvar_fila(fila)
     ARQ_PROXIMO.unlink(missing_ok=True)
     print(f"✅ Publicado ({prox['formato']}): {oferta['titulo']} → {oferta['permalink'] or media_id}")
+    if oferta.get("pedido"):
+        from . import pedidos
+        pedidos.entregar(oferta, ig_id)
+        salvar_fila(fila)
     if prox.get("story"):
         try:
             surl = f"{base}/{prox['story']}"

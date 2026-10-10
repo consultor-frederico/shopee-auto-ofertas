@@ -395,6 +395,11 @@ def garimpar(buscar=shopee.buscar_ofertas):
         selo = SELO[o["nivel"]]
         print(f"{selo} {o['categoria']:<11} R$ {o['preco_fmt']:>8}  comissão R$ {o['comissao']:.2f} "
               f"({o['comissao_pct']:.0f}%)  {o['vendas']} vendas  uau {o['uau']:.0f}  {o['titulo']}")
+    try:
+        from . import pedidos
+        pedidos.atender(fila)
+    except Exception as e:
+        print(f"::warning::Pedidos do Zé não foram atendidos: {e}")
     fila["ultimo_garimpo"] = agora().strftime(FMT)
     salvar_fila(fila)
     pend = sum(1 for r in fila["ofertas"].values() if r["status"] == "pendente")

@@ -33,7 +33,7 @@ jobs:
           case "$HQ" in 00:15|08:15|12:15|18:15) WFS="$WFS campanhas.yml" ;; esac
           if [ "$HQ" = "19:30" ] && { [ "$DOW" = "2" ] || [ "$DOW" = "5" ]; }; then WFS="$WFS chamada.yml"; fi
           if [ "$HQ" = "08:30" ] && [ "$DOW" = "1" ]; then WFS="$WFS token.yml"; fi
-          if [ "$HQ" = "13:30" ]; then WFS="$WFS ze.yml"; fi        # Zé Garimpo: só posta a cada 15 dias
+          if [ "$HQ" = "13:30" ]; then WFS="$WFS ze.yml"; fi        # Zé Garimpo: só posta às terças e sextas
           if [ "$HQ" = "03:15" ]; then WFS="$WFS limpeza.yml"; fi   # apaga ofertas com mais de 15 dias
           # Ana Novo Achados (@ananovoachados): PAUSADA até o Fred conectar a conta dela.
           # Para ligar: troque ANA_LIGADA=0 por ANA_LIGADA=1.
