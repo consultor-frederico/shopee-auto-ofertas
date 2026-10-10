@@ -1,7 +1,8 @@
 """YouTube Shorts: sobe os mesmos Reels do Instagram no canal do Garimpo VIP.
 
 Segredos (o Fred cadastra no GitHub): YT_CLIENT_ID, YT_CLIENT_SECRET e YT_REFRESH_TOKEN
-(OAuth do Google com o escopo youtube.upload, autorizado no canal Garimpo VIP).
+(OAuth do Google com os escopos youtube.upload E youtube.force-ssl, autorizado no canal Garimpo VIP;
+sem o force-ssl o robô sobe Shorts mas não consegue ler nem responder comentários).
 
 No Shorts o link da descrição não é clicável, então a descrição manda a pessoa para o
 canal do Telegram (link clicável no perfil do canal), onde toda oferta tem o link.
@@ -177,3 +178,10 @@ if __name__ == "__main__":   # teste: python -m src.youtube  |  envio de teste: 
         c = canais[0]
         print(f"::notice::Canal: {c['snippet']['title']} — inscritos: "
               f"{c['statistics'].get('subscriberCount')} — vídeos: {c['statistics'].get('videoCount')}")
+        try:
+            n = len(comentarios_recentes(5))
+            print(f"::notice::Comentários: acesso ok ({n} recentes lidos).")
+        except Exception as e:
+            print(f"::error::Sem permissão para comentários. Gere o YT_REFRESH_TOKEN de novo marcando também "
+                  f"o escopo youtube.force-ssl. Detalhe: {e}")
+            raise SystemExit(1)

@@ -148,7 +148,9 @@ def responder(api=instagram):
         try:
             enviados += responder_youtube(respondidos)
         except Exception as e:
-            print(f"::warning::Respostas no YouTube falharam: {e}")
+            aviso = (" → falta o escopo youtube.force-ssl no YT_REFRESH_TOKEN"
+                     if "insufficient" in str(e).lower() else "")
+            print(f"::warning::Respostas no YouTube falharam{aviso}: {e}")
     salvar_respondidos(respondidos)
     print(f"🏁 {enviados} links enviados, {falhas} falhas, {len(posts)} posts verificados.")
     return enviados
