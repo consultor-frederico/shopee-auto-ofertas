@@ -80,7 +80,7 @@ def termo(texto):
     return pedidos.termo_do_comentario(texto, exigir_pedido=False)
 
 
-PRECO_MAX = float(__import__("os").getenv("BUSCA_PRECO_MAX", "5000"))   # quem pede celular quer celular
+PRECO_MAX = float(__import__("os").getenv("BUSCA_PRECO_MAX", "0"))   # 0 = sem limite de preço na Busca do Zé
 ACESSORIOS = set("""capa capinha case pelicula peliculas protetor protecao carregador carregadores cabo cabos
 suporte suportes tomada adaptador adaptadores refil refis pecas peca reposicao kit kits bolsa bolsinha estojo
 porta organizador adesivo adesivos skin skins alca cordao chaveiro tampa tampas filtro filtros escova escovas
@@ -125,12 +125,12 @@ def relevante(nome, t):
 
 def _aceitavel(o, rigoroso=True):
     nome = o["nome"].lower()
-    if not (o["link_afiliado"] and o["imagem"] and 0 < o["preco"] <= PRECO_MAX
+    if not (o["link_afiliado"] and o["imagem"] and 0 < o["preco"] and (not PRECO_MAX or o["preco"] <= PRECO_MAX)
             and not any(p in nome for p in config.PALAVRAS_PROIBIDAS)):
         return False
     if rigoroso:
-        return o["nota"] >= 4.5 and o["vendas"] >= 30
-    return o["nota"] >= 4.3 and o["vendas"] >= 5
+        return o["nota"] >= 4.5 and o["vendas"] >= 50
+    return o["nota"] >= 4.3 and o["vendas"] >= 10
 
 
 PROMPT_IA = """Um cliente pediu na Shopee: "{t}".
