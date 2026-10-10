@@ -5,12 +5,17 @@ Cada Reels de oferta do Garimpo VIP termina com uma destas vinhetas (3 a 5 s). O
 entre elas e nunca repete a do post anterior. Para incluir outra, é só colocar o .mp4 em `finais/`.
 Para desligar: variável `ZE_NO_FINAL=0`.
 
+As vinhetas têm só a voz do Zé: a música entra depois, contínua no Reels inteiro. O robô escolhe
+uma das faixas de `assets/musicas/` (alternando), emenda a faixa nela mesma com transição suave até
+o fim do vídeo e abaixa o volume quando o Zé fala. Para incluir outra música, coloque o .mp3 lá.
+Desligar: `MUSICA_REELS=0`; volume: `VOLUME_MUSICA` (padrão 0.6).
+
 | Arquivo | Cena |
 |---|---|
-| finais/fim_link_da_bio.mp4 | aponta para cima e faz joinha — "Corre no link da bio!" (Batida de Início) |
-| finais/fim_tchau_chapeu.mp4 | tira o chapéu — "Amanhã tem mais achado!" (Forró da Alegria) |
-| finais/fim_garimpo_vip.mp4 | lupa brilhando e joinha — "Esse é garimpo VIP!" (Splash and Fanfare 2) |
-| finais/fim_carrinho.mp4 | close sorrindo ao lado do carrinho de achados (Forró da Alegria 2) |
+| finais/fim_link_da_bio.mp4 | aponta para cima e faz joinha — "Corre no link da bio!" |
+| finais/fim_tchau_chapeu.mp4 | tira o chapéu — "Amanhã tem mais achado!" |
+| finais/fim_garimpo_vip.mp4 | lupa brilhando e joinha — "Esse é garimpo VIP!" |
+| finais/fim_carrinho.mp4 | close sorrindo ao lado do carrinho de achados |
 
 ## 2. Post do Zé de 15 em 15 dias (`ze_*.mp4`)
 O workflow "9 - Post do Zé Garimpo" (todo dia às 13:30, só posta se já deu 15 dias) publica um

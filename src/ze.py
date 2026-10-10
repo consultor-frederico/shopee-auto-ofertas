@@ -2,6 +2,8 @@
 
 1) Final dos Reels: cada Reels de oferta ganha, no fim, uma vinheta curtinha do Zé
    (assets/ze/finais/*.mp4). O robô alterna entre elas, sem repetir a do post anterior.
+   O Reels inteiro ganha uma das músicas de assets/musicas/, estendida até o fim do vídeo
+   e mais baixa quando o Zé fala.
 2) Post do Zé de 15 em 15 dias: um filminho de assets/ze/ze_*.mp4 vira Reels (Instagram,
    story, página do Facebook e YouTube Shorts). Vídeo novo que ainda não saiu vai primeiro;
    depois o robô repete o que está há mais tempo sem sair. O post é apagado depois de 15 dias
@@ -27,6 +29,9 @@ ARQ_PROX = config.PASTA_DADOS / "proximo_ze.json"
 PASTA_SITE = config.RAIZ / "site"
 INTERVALO_DIAS = int(os.getenv("ZE_INTERVALO_DIAS", "15"))
 FINAL_LIGADO = os.getenv("ZE_NO_FINAL", "1") != "0"
+PASTA_MUSICAS = config.RAIZ / "assets" / "musicas"
+MUSICA_LIGADA = os.getenv("MUSICA_REELS", "1") != "0"
+VOLUME_MUSICA = float(os.getenv("VOLUME_MUSICA", "0.6"))
 
 LEGENDAS = [
     "⛏️ O Zé Garimpo não para! Todo dia ele cava a Shopee e o AliExpress atrás dos achados "
@@ -83,29 +88,77 @@ def escolher_final(oferta=None):
     return escolhido
 
 
-def emendar_final(reels, oferta=None):
-    """Cola a vinheta do Zé no fim do Reels (mesmo arquivo). Só no Garimpo VIP."""
-    if config.PERFIL != "garimpo" or not FINAL_LIGADO:
+def _duracao(arquivo):
+    r = subprocess.run([_ffmpeg(), "-hide_banner", "-i", str(arquivo)], capture_output=True, text=True)
+    import re
+    m = re.search(r"Duration: (\d+):(\d+):([\d.]+)", r.stderr)
+    return int(m.group(1)) * 3600 + int(m.group(2)) * 60 + float(m.group(3)) if m else 0.0
+
+
+def escolher_musica(oferta=None):
+    """Trilha da vez (assets/musicas/), alternando pela oferta."""
+    musicas = sorted(PASTA_MUSICAS.glob("*.mp3"))
+    if not musicas:
         return None
-    final = escolher_final(oferta)
-    if not final:
-        return None
-    saida = reels.with_suffix(".com-ze.mp4")
-    filtro = ("[0:v]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2,"
-              "setsar=1,fps=30,format=yuv420p[v0];"
-              "[1:v]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2,"
-              "setsar=1,fps=30,format=yuv420p[v1];"
-              "[0:a]aresample=44100,aformat=channel_layouts=stereo[a0];"
-              "[1:a]aresample=44100,aformat=channel_layouts=stereo[a1];"
-              "[v0][a0][v1][a1]concat=n=2:v=1:a=1[v][a]")
-    cmd = [_ffmpeg(), "-y", "-loglevel", "error", "-i", str(reels), "-i", str(final),
-           "-filter_complex", filtro, "-map", "[v]", "-map", "[a]",
-           "-c:v", "libx264", "-preset", "medium", "-crf", "20", "-profile:v", "high",
-           "-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart", str(saida)]
+    semente = sum((i + 7) * ord(c) for i, c in enumerate(str((oferta or {}).get("id", time.time()))))
+    return musicas[semente % len(musicas)]
+
+
+def _com_musica(video, musica, saida):
+    """Estende a música (emenda nela mesma com transição suave) até o fim do vídeo e
+    abaixa o volume sempre que há voz no vídeo (o Zé falando, ou o áudio do vídeo manual)."""
+    total = _duracao(video)
+    voltas = max(1, int(total // max(1.0, _duracao(musica) - 1.0)) + 1)
+    entradas = ["-i", str(video)] + ["-i", str(musica)] * voltas
+    cadeia, ult = "", "[1:a]"
+    for i in range(2, voltas + 1):
+        cadeia += f"{ult}[{i}:a]acrossfade=d=1:c1=tri:c2=tri[m{i}];"
+        ult = f"[m{i}]"
+    filtro = (f"{cadeia}{ult}aresample=44100,aformat=channel_layouts=stereo,atrim=0:{total:.2f},"
+              f"volume={VOLUME_MUSICA},afade=t=out:st={max(0, total - 0.8):.2f}:d=0.8[m];"
+              "[0:a]aresample=44100,aformat=channel_layouts=stereo,asplit[v][k];"
+              "[m][k]sidechaincompress=threshold=0.03:ratio=6:attack=20:release=300[md];"
+              "[v][md]amix=inputs=2:normalize=0:duration=first,alimiter=limit=0.95[a]")
+    cmd = [_ffmpeg(), "-y", "-loglevel", "error", *entradas, "-filter_complex", filtro,
+           "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "160k",
+           "-movflags", "+faststart", str(saida)]
     subprocess.run(cmd, check=True)
-    saida.replace(reels)
-    print(f"🤠 Vinheta do Zé no final do Reels: {final.name}")
-    return final.name
+
+
+def emendar_final(reels, oferta=None):
+    """Cola a vinheta do Zé no fim do Reels e põe música no Reels inteiro (mesmo arquivo).
+    Só no Garimpo VIP. Devolve o nome da vinheta usada."""
+    if config.PERFIL != "garimpo":
+        return None
+    final = escolher_final(oferta) if FINAL_LIGADO else None
+    if final:
+        saida = reels.with_suffix(".com-ze.mp4")
+        filtro = ("[0:v]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2,"
+                  "setsar=1,fps=30,format=yuv420p[v0];"
+                  "[1:v]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2,"
+                  "setsar=1,fps=30,format=yuv420p[v1];"
+                  "[0:a]aresample=44100,aformat=channel_layouts=stereo[a0];"
+                  "[1:a]aresample=44100,aformat=channel_layouts=stereo[a1];"
+                  "[v0][a0][v1][a1]concat=n=2:v=1:a=1[v][a]")
+        cmd = [_ffmpeg(), "-y", "-loglevel", "error", "-i", str(reels), "-i", str(final),
+               "-filter_complex", filtro, "-map", "[v]", "-map", "[a]",
+               "-c:v", "libx264", "-preset", "medium", "-crf", "20", "-profile:v", "high",
+               "-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart", str(saida)]
+        subprocess.run(cmd, check=True)
+        saida.replace(reels)
+        print(f"🤠 Vinheta do Zé no final do Reels: {final.name}")
+    musica = escolher_musica(oferta) if MUSICA_LIGADA else None
+    if musica:
+        try:
+            saida = reels.with_suffix(".com-musica.mp4")
+            _com_musica(reels, musica, saida)
+            saida.replace(reels)
+            if oferta is not None:
+                oferta["musica"] = musica.name
+            print(f"🎵 Música no Reels: {musica.name}")
+        except Exception as e:
+            print(f"::warning::Música não entrou ({e}); o Reels sai sem ela.")
+    return final.name if final else None
 
 
 # ------------------------------------------------------------------ post do Zé (15 em 15 dias)
