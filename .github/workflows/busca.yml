@@ -1,12 +1,12 @@
-name: 18 - Reels da Busca do Zé (a cada 15 dias)
+name: 18 - Reels da Busca do Zé (1x por semana)
 
-# A agenda toca todo dia às 11:30; o robô só posta se o último Reels da Busca saiu há 15 dias ou mais
+# A agenda toca todo dia às 11:30; o robô só posta se o último Reels da Busca saiu há 7 dias ou mais
 # (variável BUSCA_INTERVALO_DIAS). Rodando à mão com "forçar", posta na hora.
 on:
   workflow_dispatch:
     inputs:
       forcar:
-        description: 'Postar agora, mesmo antes dos 15 dias'
+        description: 'Postar agora, mesmo antes dos 7 dias'
         type: boolean
         default: false
 

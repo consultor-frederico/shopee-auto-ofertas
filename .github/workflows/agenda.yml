@@ -34,7 +34,7 @@ jobs:
           case "$HQ" in 09:00|12:00|18:00|20:30) WFS="$WFS whatsapp.yml" ;; esac   # kit do Canal do WhatsApp no seu Telegram privado
           if [ "$HQ" = "19:30" ] && { [ "$DOW" = "2" ] || [ "$DOW" = "5" ]; }; then WFS="$WFS chamada.yml"; fi
           if [ "$HQ" = "08:30" ] && [ "$DOW" = "1" ]; then WFS="$WFS token.yml"; fi
-          if [ "$HQ" = "11:30" ]; then WFS="$WFS busca.yml"; fi     # Reels da Busca do Zé: só a cada 15 dias
+          if [ "$HQ" = "11:30" ]; then WFS="$WFS busca.yml"; fi     # Reels da Busca do Zé: 1x por semana
           if [ "$HQ" = "13:30" ]; then WFS="$WFS ze.yml"; fi        # Zé Garimpo: só posta às terças e sextas
           if [ "$HQ" = "03:15" ]; then WFS="$WFS limpeza.yml"; fi   # apaga ofertas com mais de 15 dias
           # Ana Novo Achados (@ananovoachados): PAUSADA até o Fred conectar a conta dela.

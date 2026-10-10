@@ -1,4 +1,4 @@
-"""🔎 Rodízio da Busca do Zé: a cada 15 dias, um Reels animado da Busca vai para o Instagram.
+"""🔎 Rodízio da Busca do Zé: uma vez por semana, um Reels animado da Busca vai para o Instagram.
 
 - Vídeos em assets/ze/busca/busca_*.mp4 (os vídeos do Flow, 9:16). O robô alterna entre eles:
   o que nunca saiu vai primeiro; depois o que está há mais tempo sem sair.
@@ -29,7 +29,7 @@ PASTA = config.RAIZ / "assets" / "ze" / "busca"
 ARQ = config.PASTA_DADOS / "busca_reels.json"
 ARQ_PROX = config.PASTA_DADOS / "proxima_busca.json"
 PASTA_SITE = config.RAIZ / "site"
-INTERVALO_DIAS = int(os.getenv("BUSCA_INTERVALO_DIAS", "15"))
+INTERVALO_DIAS = int(os.getenv("BUSCA_INTERVALO_DIAS", "7"))
 W, H = 1080, 1920
 
 LEGENDAS = [
