@@ -1,0 +1,72 @@
+name: 18 - Reels da Busca do Zé (a cada 15 dias)
+
+# A agenda toca todo dia às 11:30; o robô só posta se o último Reels da Busca saiu há 15 dias ou mais
+# (variável BUSCA_INTERVALO_DIAS). Rodando à mão com "forçar", posta na hora.
+on:
+  workflow_dispatch:
+    inputs:
+      forcar:
+        description: 'Postar agora, mesmo antes dos 15 dias'
+        type: boolean
+        default: false
+
+concurrency:
+  group: grava-repositorio
+  cancel-in-progress: false
+
+jobs:
+  ze:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Montar o Reels da Busca (com a chamada gravada no vídeo)
+        id: prep
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          FORCAR: ${{ inputs.forcar && '1' || '0' }}
+        run: python -m src.busca_reels preparar
+      - if: steps.prep.outputs.tem_post == 'true'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deploy
+        if: steps.prep.outputs.tem_post == 'true'
+        uses: actions/deploy-pages@v4
+        continue-on-error: true   # às vezes o GitHub ainda não "enxerga" o pacote recém-enviado
+      - name: Esperar e tentar publicar de novo
+        if: (steps.prep.outputs.tem_post == 'true') && steps.deploy.outcome == 'failure'
+        run: sleep 30
+      - id: deploy2
+        if: (steps.prep.outputs.tem_post == 'true') && steps.deploy.outcome == 'failure'
+        uses: actions/deploy-pages@v4
+      - name: Publicar
+        if: steps.prep.outputs.tem_post == 'true'
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          PAGES_URL: ${{ steps.deploy.outputs.page_url || steps.deploy2.outputs.page_url }}
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          FB_PAGE_TOKEN: ${{ secrets.FB_PAGE_TOKEN }}
+        run: python -m src.busca_reels publicar
+      - name: Salvar registro
+        if: always() && steps.prep.outcome == 'success'
+        run: |
+          git config user.name "GarimpoBot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A data
+          git diff --cached --quiet && exit 0
+          git commit -m "🔎 Busca do Zé $(TZ=America/Sao_Paulo date +'%d/%m/%Y %H:%M')"
+          git pull --rebase
+          git push

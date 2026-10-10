@@ -5,7 +5,7 @@ responder (o webhook acorda o robô na hora), o Zé busca na Shopee, escolhe at�
 e manda no direct da pessoa (resposta privada ao comentário, com um botão por achado).
 No comentário, responde em público: "Te mandei no direct!".
 
-O post é achado sozinho pela hashtag #BuscaDoZe na legenda (o mais recente). A limpeza de
+Vale para todo post com #BuscaDoZe na legenda: a foto fixada e os Reels do rodízio (src/busca_reels.py). A limpeza de
 15 dias não o apaga, porque ela só mexe nos posts que o robô registrou.
 """
 import json
@@ -38,7 +38,7 @@ def _fmt():
 def carregar():
     if ARQ.exists():
         return json.loads(ARQ.read_text(encoding="utf-8"))
-    return {"id_post": "", "procurado_em": "", "comentarios": {}}
+    return {"ids": [], "procurado_em": "", "comentarios": {}}
 
 
 def salvar(d):
@@ -48,25 +48,25 @@ def salvar(d):
     ARQ.write_text(json.dumps(d, ensure_ascii=False, indent=1), encoding="utf-8")
 
 
-def achar_post(api, ig_id, d):
-    """Procura o post com #BuscaDoZe (no máximo 1x por hora, se ainda não achou)."""
-    if d.get("id_post"):
-        return d["id_post"]
-    agora = _agora().strftime(_fmt())
-    if d.get("procurado_em") and d["procurado_em"] > (_agora() - timedelta(hours=1)).strftime(_fmt()):
-        return ""
-    d["procurado_em"] = agora
-    try:
-        corpo = api._req("GET", f"{ig_id}/media", params={"fields": "id,caption,timestamp", "limit": 50})
-    except Exception as e:
-        print(f"⚠️  Busca do Zé: não consegui listar os posts ({e})")
-        return ""
-    for m in corpo.get("data", []):   # vem do mais novo para o mais antigo
-        if TAG in (m.get("caption") or "").lower().replace(" ", ""):
-            d["id_post"] = m["id"]
-            print(f"🔎 Post fixo da Busca do Zé encontrado: {m['id']}")
-            return m["id"]
-    return ""
+def posts_da_busca(api, ig_id, d):
+    """Todos os posts com #BuscaDoZe (foto fixada + Reels do rodízio).
+    Uma vez achado, o post fica na lista para sempre (o fixado some da listagem da API com o tempo);
+    a cada hora o robô olha os posts novos atrás de outro #BuscaDoZe."""
+    ids = d.setdefault("ids", [])
+    if d.get("id_post") and d["id_post"] not in ids:   # formato antigo (um post só)
+        ids.append(d.pop("id_post"))
+    d.pop("id_post", None)
+    if not d.get("procurado_em") or d["procurado_em"] <= (_agora() - timedelta(hours=1)).strftime(_fmt()):
+        d["procurado_em"] = _agora().strftime(_fmt())
+        try:
+            corpo = api._req("GET", f"{ig_id}/media", params={"fields": "id,caption", "limit": 50})
+            for m in corpo.get("data", []):
+                if TAG in (m.get("caption") or "").lower().replace(" ", "") and m["id"] not in ids:
+                    ids.append(m["id"])
+                    print(f"🔎 Novo post da Busca do Zé: {m['id']}")
+        except Exception as e:
+            print(f"⚠️  Busca do Zé: não consegui listar os posts ({e})")
+    return list(ids)
 
 
 def termo(texto):
@@ -147,17 +147,18 @@ def rodar(api, minha, ja_respondidos=None):
         return 0
     d = carregar()
     ig_id = minha["user_id"]
-    post = achar_post(api, ig_id, d)
-    if not post:
-        salvar(d)
-        return 0
-    try:
-        coms = api.comentarios(post)
-    except Exception as e:
-        print(f"⚠️  Busca do Zé: comentários do post fixo ({e}) — vou procurar o post de novo.")
-        d["id_post"] = ""
-        salvar(d)
-        return 0
+    coms = []
+    for post in posts_da_busca(api, ig_id, d):
+        falhas = d.setdefault("falhas", {})
+        try:
+            coms += api.comentarios(post)
+            falhas.pop(post, None)
+        except Exception as e:   # post apagado (ex.: Reels antigo do rodízio): sai da lista após 3 erros seguidos
+            falhas[post] = falhas.get(post, 0) + 1
+            print(f"⚠️  Busca do Zé: post {post} indisponível ({e}) — tentativa {falhas[post]}/3.")
+            if falhas[post] >= 3:
+                d["ids"].remove(post)
+                falhas.pop(post)
     feitos = 0
     for c in coms:
         cid, autor = c["id"], (c.get("from") or {}).get("id")
