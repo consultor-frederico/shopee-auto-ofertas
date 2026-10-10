@@ -56,7 +56,8 @@ def posts_da_busca(api, ig_id, d):
     if d.get("id_post") and d["id_post"] not in ids:   # formato antigo (um post só)
         ids.append(d.pop("id_post"))
     d.pop("id_post", None)
-    if not d.get("procurado_em") or d["procurado_em"] <= (_agora() - timedelta(hours=1)).strftime(_fmt()):
+    espera = timedelta(hours=1) if ids else timedelta(0)   # sem nenhum post ainda: procura toda rodada
+    if not d.get("procurado_em") or d["procurado_em"] <= (_agora() - espera).strftime(_fmt()):
         d["procurado_em"] = _agora().strftime(_fmt())
         try:
             corpo = api._req("GET", f"{ig_id}/media", params={"fields": "id,caption", "limit": 50})
