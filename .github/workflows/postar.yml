@@ -69,13 +69,20 @@ jobs:
         id: deploy
         if: steps.prep.outputs.tem_post == 'true'
         uses: actions/deploy-pages@v4
+        continue-on-error: true   # às vezes o GitHub ainda não "enxerga" o pacote recém-enviado
+      - name: Esperar e tentar publicar de novo
+        if: (steps.prep.outputs.tem_post == 'true') && steps.deploy.outcome == 'failure'
+        run: sleep 30
+      - id: deploy2
+        if: (steps.prep.outputs.tem_post == 'true') && steps.deploy.outcome == 'failure'
+        uses: actions/deploy-pages@v4
 
       - name: Publicar no Instagram
         if: steps.prep.outputs.tem_post == 'true'
         env:
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
           IG_ACCESS_TOKEN_ANA: ${{ secrets.IG_ACCESS_TOKEN_ANA }}
-          PAGES_URL: ${{ steps.deploy.outputs.page_url }}
+          PAGES_URL: ${{ steps.deploy.outputs.page_url || steps.deploy2.outputs.page_url }}
           FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
           FB_PAGE_TOKEN: ${{ secrets.FB_PAGE_TOKEN }}
           YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
