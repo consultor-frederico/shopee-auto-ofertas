@@ -31,6 +31,7 @@ jobs:
           case "$HQ" in 07:45|10:45|12:45|15:45|18:45|20:45) WFS="$WFS postar.yml" ;; esac
           if [ "$Q" = "15" ] && [ $((10#$H)) -ge 8 ] && [ $((10#$H)) -le 22 ]; then WFS="$WFS telegram-ofertas.yml"; fi
           case "$HQ" in 00:15|08:15|12:15|18:15) WFS="$WFS campanhas.yml" ;; esac
+          case "$HQ" in 09:00|12:00|18:00|20:30) WFS="$WFS whatsapp.yml" ;; esac   # kit do Canal do WhatsApp no seu Telegram privado
           if [ "$HQ" = "19:30" ] && { [ "$DOW" = "2" ] || [ "$DOW" = "5" ]; }; then WFS="$WFS chamada.yml"; fi
           if [ "$HQ" = "08:30" ] && [ "$DOW" = "1" ]; then WFS="$WFS token.yml"; fi
           if [ "$HQ" = "13:30" ]; then WFS="$WFS ze.yml"; fi        # Zé Garimpo: só posta às terças e sextas

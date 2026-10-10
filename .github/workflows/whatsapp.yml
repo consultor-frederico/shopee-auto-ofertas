@@ -1,0 +1,45 @@
+name: 17 - Kit do Canal do WhatsApp
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: grava-repositorio
+  cancel-in-progress: false
+
+jobs:
+  enviar:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main   # sempre o estado mais recente (não o do momento do disparo)
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Preparar ofertas para o WhatsApp
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_PRIVADO: ${{ secrets.TELEGRAM_CHAT_PRIVADO }}
+          SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
+          SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
+        run: python -m src.whatsapp_kit
+
+      - name: Salvar fila
+        if: always()
+        run: |
+          git config user.name "GarimpoBot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/fila.json
+          git diff --cached --quiet && exit 0
+          git commit -m "📲 WhatsApp $(TZ=America/Sao_Paulo date +'%d/%m/%Y %H:%M')"
+          git pull --rebase
+          git push
