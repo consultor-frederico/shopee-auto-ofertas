@@ -253,6 +253,73 @@ def _conversas(api, ig_id):
     return corpo.get("data", [])
 
 
+# ------------------------------------------------------------------ perguntas prontas do direct (ice breakers)
+TELEGRAM = "https://t.me/garimpovipofertas"
+ATALHOS = [   # (pergunta que aparece no direct, código) — máximo 4
+    ("🔎 Zé, procura um produto pra mim!", "BUSCA_ZE"),
+    ("🔥 Quais as ofertas de hoje?", "OFERTAS_HOJE"),
+    ("🎟️ Tem cupom hoje?", "CUPONS"),
+    ("💬 Quero falar com o Garimpo VIP", "HUMANO"),
+]
+SILENCIO_PEDIDO = timedelta(hours=24)   # depois do "quero falar com o Garimpo VIP", o robô fica quieto
+
+
+def _sem_emoji(txt):
+    import re
+    return re.sub(r"[^a-z0-9 ]", "", _norm(txt)).strip()
+
+
+def atalho_do_texto(texto):
+    alvo = _sem_emoji(texto)
+    return next((cod for perg, cod in ATALHOS if _sem_emoji(perg) == alvo), None)
+
+
+def configurar_atalhos(api):
+    """Grava as perguntas prontas no direct da página (aparecem para quem abre a conversa pela 1ª vez)."""
+    corpo = {"platform": "instagram", "ice_breakers": [
+        {"call_to_actions": [{"question": q, "payload": c} for q, c in ATALHOS]}]}
+    r = api._req("POST", "me/messenger_profile", json=corpo)
+    print(f"✅ Perguntas do direct configuradas: {r}")
+    print(api._req("GET", "me/messenger_profile", params={"fields": "ice_breakers"}))
+
+
+def _ofertas_recentes(n=3):
+    from .garimpar import carregar_fila
+    ofs = [o for o in carregar_fila()["ofertas"].values()
+           if o.get("status") == "postado" and o.get("link_afiliado") and o.get("postado_em")]
+    return sorted(ofs, key=lambda o: o["postado_em"], reverse=True)[:n]
+
+
+def responder_atalho(api, ig_id, autor, cod, d):
+    """Resposta de cada pergunta pronta. Devolve a resposta da API (ou None)."""
+    enviar = lambda msg: api._req("POST", f"{ig_id}/messages", json={"recipient": {"id": autor}, "message": msg})
+    if cod == "BUSCA_ZE":
+        return enviar({"text": "Oi! 🤠 Aqui é o Zé Garimpo. Bora garimpar! ⛏️\n\nMe diz o que você procura "
+                               "(ex.: \"fone bluetooth\", \"air fryer\", \"tênis de corrida\") que eu te mando "
+                               "os 3 melhores achados da Shopee, com nota alta e muita venda."})
+    if cod == "OFERTAS_HOJE":
+        ofs = _ofertas_recentes()
+        if not ofs:
+            return enviar({"text": f"Oi! 🤠 Aqui é o Zé Garimpo. As ofertas do dia saem no feed e no Telegram: {TELEGRAM} 💎"})
+        linhas = ["Oi! 🤠 Aqui é o Zé Garimpo. Os últimos achados da página:", ""]
+        for i, o in enumerate(ofs, 1):
+            linhas.append(f"{i}️⃣ {_curto(o.get('titulo') or o.get('nome', ''))} — R$ {o['preco_fmt']}")
+        linhas += ["", f"Tem muito mais no Telegram: {TELEGRAM}",
+                   f"(links de afiliado: você paga o mesmo e ajuda o {config.NOME_MARCA})"]
+        botoes = [{"type": "web_url", "url": o["link_afiliado"], "title": f"🛒 Ver achado {i}"}
+                  for i, o in enumerate(ofs, 1)]
+        return enviar({"attachment": {"type": "template", "payload": {
+            "template_type": "button", "text": "\n".join(linhas)[:640], "buttons": botoes}}})
+    if cod == "CUPONS":
+        return enviar({"text": "Oi! 🤠 Aqui é o Zé Garimpo. Os cupons e campanhas da Shopee saem primeiro no "
+                               f"nosso canal do Telegram, assim que a Shopee libera 🎟️\n\n👉 {TELEGRAM}\n\n"
+                               "E se procura algo específico, é só me dizer o nome do produto que eu garimpo!"})
+    if cod == "HUMANO":
+        d.setdefault("humano", {})[autor] = _agora().strftime(_fmt())
+        return enviar({"text": "Oi! 😊 Pode mandar sua mensagem que a gente responde por aqui assim que possível 💛"})
+    return None
+
+
 def rodar_dms(api, minha):
     """Quem manda no direct o que procura ("procuro uma air fryer") recebe os 3 achados na hora."""
     if config.PERFIL != "garimpo":
@@ -283,11 +350,33 @@ def rodar_dms(api, minha):
                   and m.get("message") and not m["message"].startswith(MARCAS_ROBO)]
         if humano and (q := _quando(humano[0].get("created_time", ""))) and agora - q < SILENCIO_HUMANO:
             continue                                        # o Fred está conversando: deixa com ele
+        pediu_humano = d.get("humano", {}).get(autor)
+        if pediu_humano and pediu_humano >= (agora - SILENCIO_PEDIDO).strftime(_fmt()):
+            continue                                        # pediu para falar com gente: deixa com o Fred
         if feitos >= MAX_POR_RODADA:
             break
         from . import pedidos
         texto = ultima["message"]
-        t = pedidos._termo(texto)   # IA decide se é pedido de produto (oi, obrigado... ficam de fora)
+        cod = atalho_do_texto(texto)
+        if cod:                                             # tocou numa pergunta pronta do direct
+            try:
+                r = responder_atalho(api, ig_id, autor, cod, d)
+                if (r or {}).get("message_id"):
+                    enviados_robo.add(r["message_id"])
+                status = "atalho"
+                print(f"📩 Direct: pergunta pronta {cod}.")
+            except Exception as e:
+                status = f"erro: {str(e)[:200]}"
+                print(f"::warning::Pergunta pronta {cod}: {e}")
+            feitos_ids[ultima["id"]] = {"autor": autor, "texto": texto, "atalho": cod, "status": status,
+                                        "em": agora.strftime(_fmt())}
+            feitos += 1
+            continue
+        anterior = msgs[1] if len(msgs) > 1 else {}
+        acabou_de_perguntar = ((anterior.get("from") or {}).get("id") == ig_id
+                               and "Bora garimpar" in (anterior.get("message") or ""))
+        # logo depois do "me diz o que você procura", qualquer resposta é a busca ("air fryer")
+        t = termo(texto) if acabou_de_perguntar else pedidos._termo(texto)
         reg = {"autor": autor, "usuario": (ultima.get("from") or {}).get("username", ""), "texto": texto,
                "termo": t, "em": agora.strftime(_fmt())}
         if not t:
@@ -382,6 +471,10 @@ def rodar(api, minha, ja_respondidos=None):
 
 if __name__ == "__main__":   # teste: python -m src.busca_ze "celular" "fone bluetooth"
     import sys
+    if sys.argv[1:2] == ["atalhos"]:   # python -m src.busca_ze atalhos → grava as perguntas do direct
+        from . import instagram
+        configurar_atalhos(instagram)
+        sys.exit(0)
     for t in sys.argv[1:] or ["celular"]:
         print(f"\n🔎 {t}")
         try:

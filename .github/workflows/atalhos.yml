@@ -1,0 +1,22 @@
+name: 20 - Configurar perguntas prontas do direct
+
+# Grava no Instagram as perguntas que aparecem para quem abre o direct da página pela primeira vez
+# (lista ATALHOS em src/busca_ze.py). Rode de novo sempre que mudar as perguntas.
+on:
+  workflow_dispatch:
+
+jobs:
+  atalhos:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install requests
+      - name: Gravar perguntas
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+        run: python -m src.busca_ze atalhos

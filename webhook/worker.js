@@ -94,7 +94,7 @@ export default {
     const temComentario = (dados.entry || []).some(e =>
       (e.changes || []).some(c => c.field === "comments")
       // mensagem nova no direct (Busca do Zé pelo direct); ignora o eco das mensagens da própria página
-      || (e.messaging || []).some(m => m.message && !m.message.is_echo && m.message.text));
+      || (e.messaging || []).some(m => (m.message && !m.message.is_echo && m.message.text) || m.postback));
     if (temComentario) ctx.waitUntil(tocarResponder(env));
     return new Response("EVENT_RECEIVED", { status: 200 });
   },
