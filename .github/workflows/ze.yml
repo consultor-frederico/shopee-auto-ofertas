@@ -1,0 +1,68 @@
+name: 9 - Post do Zé Garimpo (15 em 15 dias)
+
+# A agenda toca todo dia às 13:30; o robô só posta se o último post do Zé tiver 15 dias ou mais.
+# Rodando à mão com "forçar", posta na hora.
+on:
+  workflow_dispatch:
+    inputs:
+      forcar:
+        description: 'Postar agora, mesmo sem ter dado 15 dias'
+        type: boolean
+        default: false
+
+concurrency:
+  group: grava-repositorio
+  cancel-in-progress: false
+
+jobs:
+  ze:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Escolher o vídeo do Zé
+        id: prep
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          FORCAR: ${{ inputs.forcar && '1' || '0' }}
+        run: python -m src.ze preparar
+      - if: steps.prep.outputs.tem_post == 'true'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deploy
+        if: steps.prep.outputs.tem_post == 'true'
+        uses: actions/deploy-pages@v4
+      - name: Publicar
+        if: steps.prep.outputs.tem_post == 'true'
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          PAGES_URL: ${{ steps.deploy.outputs.page_url }}
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          FB_PAGE_TOKEN: ${{ secrets.FB_PAGE_TOKEN }}
+          YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+        run: python -m src.ze publicar
+      - name: Salvar registro
+        if: always() && steps.prep.outcome == 'success'
+        run: |
+          git config user.name "GarimpoBot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A data
+          git diff --cached --quiet && exit 0
+          git commit -m "🤠 Post do Zé $(TZ=America/Sao_Paulo date +'%d/%m/%Y %H:%M')"
+          git pull --rebase
+          git push

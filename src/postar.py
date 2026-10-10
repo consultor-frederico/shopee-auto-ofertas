@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 
 import requests
 
-from . import config, facebook, precos, imagem, instagram, legenda, reels, story, telegram, video_manual, youtube
+from . import config, facebook, precos, imagem, instagram, legenda, reels, story, telegram, video_manual, youtube, ze
 from .garimpar import BRT, FMT, agora, carregar_fila, salvar_fila
 
 PASTA_SITE = config.RAIZ / "site"
@@ -105,11 +105,13 @@ def preparar():
         try:
             if cand.get("video_manual"):
                 video_manual.gerar_reels(cand, config.RAIZ / cand["video_manual"], pasta / nome)
+                _final_do_ze(pasta / nome, cand)
                 oferta = cand
                 break
             foto = imagem._baixar_foto(cand["imagem"])
             if formato == "reels":
                 reels.gerar(cand, pasta / nome, foto=foto)
+                _final_do_ze(pasta / nome, cand)
             else:
                 imagem.gerar(cand, pasta / nome, foto=foto)
             oferta = cand
@@ -136,6 +138,14 @@ def preparar():
     ARQ_PROXIMO.write_text(json.dumps(prox), encoding="utf-8")
     print(f"🎬 Preparado {formato}: {oferta['titulo']} (R$ {oferta['preco_fmt']}, {oferta['categoria']})")
     _saida("tem_post", "true")
+
+
+def _final_do_ze(arquivo, oferta):
+    """Vinheta do Zé Garimpo no fim do Reels; se falhar, o Reels sai sem ela."""
+    try:
+        oferta["final_ze"] = ze.emendar_final(arquivo, oferta) or ""
+    except Exception as e:
+        print(f"::warning::Vinheta do Zé não entrou ({e}); o Reels sai sem ela.")
 
 
 def _esperar_url(url, limite_s=180):

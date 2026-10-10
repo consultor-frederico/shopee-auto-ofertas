@@ -62,11 +62,17 @@ def descricao(oferta):
 
 
 def enviar_short(caminho_mp4, oferta):
-    """Sobe o vídeo como público e devolve o id do vídeo no YouTube."""
+    """Sobe o Reels da oferta como Short público e devolve o id do vídeo no YouTube."""
+    return enviar_video(caminho_mp4, titulo(oferta), descricao(oferta),
+                        ["achadinhos", "shopee", "achados", "ofertas", oferta.get("categoria", "")])
+
+
+def enviar_video(caminho_mp4, titulo_yt, descricao_yt, tags):
+    """Sobe qualquer vídeo vertical como Short público e devolve o id."""
     tok = _token()
-    meta = {"snippet": {"title": titulo(oferta), "description": descricao(oferta),
+    meta = {"snippet": {"title": _limpo(titulo_yt)[:100], "description": _limpo(descricao_yt)[:4900],
                         "categoryId": CATEGORIA_YT, "defaultLanguage": "pt-BR",
-                        "tags": ["achadinhos", "shopee", "achados", "ofertas", oferta.get("categoria", "")]},
+                        "tags": [t for t in tags if t]},
             "status": {"privacyStatus": "public", "selfDeclaredMadeForKids": False}}
     dados = open(caminho_mp4, "rb").read()
     ini = requests.post(UPLOAD_URL, timeout=60, data=json.dumps(meta), headers={

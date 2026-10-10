@@ -1,14 +1,15 @@
 """Apaga do Instagram, da página do Facebook e do YouTube os posts de oferta com mais de N dias.
 
 Preço de oferta muda — post velho com preço antigo confunde quem vê. Só mexe nas ofertas que o
-próprio robô postou (fila); posts manuais, chamadas do Telegram e vídeos do Zé ficam.
+próprio robô postou (fila) e os posts do Zé Garimpo (data/ze.json); posts manuais e chamadas
+do Telegram ficam.
 Uso: python -m src.limpeza   (DRY_RUN=1 só mostra o que apagaria)
 """
 import os
 import sys
 from datetime import datetime, timedelta
 
-from . import config, facebook, youtube
+from . import config, facebook, youtube, ze
 from .garimpar import BRT, FMT, agora, carregar_fila, salvar_fila
 
 
@@ -19,13 +20,14 @@ def rodar():
     teste = os.getenv("DRY_RUN") == "1"
     limite = agora() - timedelta(days=config.DIAS_APAGAR_POSTS)
     fila = carregar_fila()
+    dados_ze = ze._carregar() if config.PERFIL == "garimpo" else {"posts": []}
     apagados = falhas = 0
-    for o in fila["ofertas"].values():
+    for o in list(fila["ofertas"].values()) + dados_ze["posts"]:
         if o.get("status") != "postado" or not o.get("postado_em"):
             continue
         if datetime.strptime(o["postado_em"], FMT).replace(tzinfo=BRT) >= limite:
             continue
-        print(f"🗑️  {o['postado_em'][:10]} — {o.get('titulo')}")
+        print(f"🗑️  {o['postado_em'][:10]} — {o.get('titulo') or 'Zé Garimpo: ' + str(o.get('video'))}")
         if teste:
             continue
         ok = True
@@ -49,6 +51,8 @@ def rodar():
         else:
             falhas += 1
     salvar_fila(fila)
+    if dados_ze["posts"]:
+        ze._salvar(dados_ze)
     print(f"🏁 {apagados} posts antigos apagados, {falhas} com falha (tenta de novo amanhã).")
 
 
