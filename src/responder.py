@@ -98,6 +98,13 @@ def responder(api=instagram):
                 print(f"🙋 {n} pedidos novos nos posts do Zé.")
         except Exception as e:
             print(f"::warning::Pedidos do Zé falharam: {e}")
+        try:   # 🔎 Busca do Zé (post fixo com #BuscaDoZe)
+            from . import busca_ze
+            n = busca_ze.rodar(api, minha)
+            if n:
+                print(f"🔎 {n} buscas do Zé entregues no direct.")
+        except Exception as e:
+            print(f"::warning::Busca do Zé falhou: {e}")
     if not posts:
         print("Nenhum post nos últimos 7 dias.")
         return -1
