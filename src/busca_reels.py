@@ -6,6 +6,7 @@
   faixa "BUSCA DO ZÉ" no alto e o quadro "TÁ PROCURANDO ALGUMA COISA? Comenta aqui..." embaixo.
 - Legenda com #BuscaDoZe: assim a busca (src/busca_ze.py) funciona nos comentários desse Reels.
 - Quando sai um Reels novo da Busca, o anterior é apagado (o post fixo com a foto fica sempre).
+- Ganha uma das músicas de assets/musicas/ por baixo da voz do Zé (igual aos outros Reels).
 - Só no Instagram (+ story): é lá que a busca responde no direct.
 
   python -m src.busca_reels preparar   → se já deu o intervalo, monta o vídeo em site/
@@ -124,6 +125,23 @@ def gravar_faixa(video, saida):
            "-c:a", "aac", "-b:a", "160k", "-movflags", "+faststart", str(saida)]
     subprocess.run(cmd, check=True)
     png.unlink(missing_ok=True)
+    return _musica(video, saida)
+
+
+def _musica(video, saida):
+    """Música das outras postagens do Zé (assets/musicas/) por baixo da voz, que abaixa quando ele fala."""
+    from .ze import MUSICA_LIGADA, _com_musica, escolher_musica
+    musica = escolher_musica({"id": Path(video).name}) if MUSICA_LIGADA else None
+    if not musica:
+        return saida
+    tmp = Path(saida).with_name(Path(saida).stem + "_m.mp4")
+    try:
+        _com_musica(saida, musica, tmp)
+        tmp.replace(saida)
+        print(f"🎵 Música: {musica.name}")
+    except Exception as e:
+        tmp.unlink(missing_ok=True)
+        print(f"::warning::Música não entrou ({e}); o Reels sai sem ela.")
     return saida
 
 
