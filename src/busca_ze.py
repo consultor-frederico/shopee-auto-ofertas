@@ -97,7 +97,12 @@ PRECO_MAX = float(__import__("os").getenv("BUSCA_PRECO_MAX", "0"))   # 0 = sem l
 ACESSORIOS = set("""capa capinha case pelicula peliculas protetor protecao carregador carregadores cabo cabos
 suporte suportes tomada adaptador adaptadores refil refis pecas peca reposicao kit kits bolsa bolsinha estojo
 porta organizador adesivo adesivos skin skins alca cordao chaveiro tampa tampas filtro filtros escova escovas
-lente lentes bateria baterias fonte controle capas""".split())
+lente lentes bateria baterias fonte controle capas lencol lencois fronha fronhas colcha colchas edredom
+cobertor manta saia""".split())
+# palavras que não contam como "começo do nome" (o produto pedido tem que vir logo no início do título)
+VAZIAS = set("""de do da dos das para pra com sem e o a os as em no na kit novo nova original oferta promocao
+jogo conjunto super top premium lancamento envio imediato pronta entrega frete gratis""".split())
+POSICAO_MAX = 4   # o núcleo do pedido tem que estar entre as 4 primeiras palavras que contam do nome
 PREPOSICOES = r"(?:para|pra|p/|de|do|da|no|na|em|com)"
 
 
@@ -127,6 +132,13 @@ def relevante(nome, t):
     nome_p = _palavras(nome)
     if not pedido or not all(any(n.startswith(p) for n in nome_p) for p in pedido):
         return False
+    # "cama casal" ≠ "Lençol Queen 400 Fios ... Cama Casal": o que a pessoa pediu tem que ser
+    # o próprio produto, ou seja, aparecer no começo do título, não só citado no meio/fim.
+    cabeca = [n for n in nome_p if not n.isdigit() and n not in VAZIAS][:POSICAO_MAX]
+    if not any(n.startswith(pedido[0]) for n in cabeca):
+        return False
+    if cabeca[0].startswith(pedido[0]):        # nome já começa pelo que foi pedido ("Kit 2 Travesseiros")
+        return True
     if not (set(pedido) & ACESSORIOS):          # pediu o produto, não um acessório
         if set(nome_p[:4]) & ACESSORIOS:         # nome começa com o acessório ("Capa ... celular")
             return False
@@ -148,7 +160,8 @@ def _aceitavel(o, rigoroso=True):
 
 PROMPT_IA = """Um cliente pediu na Shopee: "{t}".
 Abaixo, produtos encontrados (número: nome). Quais SÃO o próprio produto que ele pediu?
-Não conta acessório, peça, capa, suporte, refil, nem produto de outro tipo que só cita a palavra.
+Não conta acessório, peça, capa, suporte, refil, nem produto de outro tipo que só cita a palavra
+(ex.: pediu "cama casal" → lençol, colcha ou protetor "para cama casal" NÃO servem; só a cama).
 Responda só com JSON {{"ok": [números]}}, do mais adequado para o menos.
 
 {lista}"""
