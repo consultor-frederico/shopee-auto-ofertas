@@ -209,3 +209,8 @@ PALAVRAS_PROIBIDAS = PALAVRAS_PROIBIDAS + _P.get("proibidas", [])
 PASTA_PERFIL = _P["pasta_dados"]                 # fila e respostas de cada conta
 ARQ_FILA = PASTA_PERFIL / "fila.json"            # ofertas garimpadas e seu status
 ARQ_PALAVRAS = PASTA_PERFIL / "palavras.json"    # memória das buscas: quais termos trazem achados
+
+# ⏸️ Em espera (out/2026): a API de afiliados não traz as avaliações dos compradores.
+# Para religar, mude para "1" (ou crie a variável no workflow).
+VALE_A_PENA_ATIVO = os.getenv("VALE_A_PENA_ATIVO", "0") == "1"   # "Zé, isso vale a pena?" no direct
+RAIO_X_ATIVO = os.getenv("RAIO_X_ATIVO", "0") == "1"             # 📊 Raio-X do Zé nas legendas

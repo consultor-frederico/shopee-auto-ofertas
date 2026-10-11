@@ -129,7 +129,7 @@ def preparar():
     if not oferta:
         print("⚠️  Nenhuma oferta pendente válida na fila.")
         return
-    if config.PERFIL == "garimpo":   # 📊 Raio-X do Zé (nota, vendas e preço x parecidos)
+    if config.PERFIL == "garimpo" and config.RAIO_X_ATIVO:   # 📊 Raio-X do Zé (nota, vendas e preço x parecidos)
         from . import raio_x
         raio_x.preparar(oferta)
         salvar_fila(fila)
@@ -180,7 +180,7 @@ def publicar():
         corpo, _, tags = oferta["legenda"].partition("\n\n#")
         oferta["legenda"] = legenda.com_compartilhar(corpo, oferta) + (f"\n\n#{tags}" if tags else "")
     oferta["legenda"] = com_aviso(oferta.get("legenda") or "", oferta)
-    if oferta.get("raio_x"):
+    if config.RAIO_X_ATIVO and oferta.get("raio_x"):
         from . import raio_x
         oferta["legenda"] = raio_x.com_raio_x(oferta["legenda"], oferta)
     try:
@@ -272,8 +272,9 @@ LEMBRETES_BUSCA = [
     "🔎 Não era isso que você procurava? Comenta no post fixado que o Zé garimpa pra você!",
     "🔎 Procurando outra coisa? Fala pro Zé no post fixado do perfil (ou aqui no direct) que ele acha!",
     "🔎 Quer algo diferente? Manda no direct o que você procura que o Zé te traz os melhores achados!",
-    "🤔 Viu um produto na Shopee e ficou na dúvida? Manda o link no direct que o Zé diz se vale a pena!",
 ]
+if config.VALE_A_PENA_ATIVO:
+    LEMBRETES_BUSCA.append("🤔 Viu um produto na Shopee e ficou na dúvida? Manda o link no direct que o Zé diz se vale a pena!")
 
 
 def com_busca(leg, oferta):

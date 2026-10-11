@@ -324,9 +324,9 @@ def responder_atalho(api, ig_id, autor, cod, d):
     if cod == "BUSCA_ZE":
         return enviar({"text": "Oi! 🤠 Aqui é o Zé Garimpo. Bora garimpar! ⛏️\n\nMe diz o que você procura "
                                "(ex.: \"fone bluetooth\", \"air fryer\", \"tênis de corrida\") que eu te mando "
-                               "os 3 melhores achados da Shopee, com nota alta e muita venda.\n\n"
-                               "🤔 Viu um produto e ficou na dúvida? Me manda o link (ou um print) "
-                               "que eu te digo se vale a pena!"})
+                               "os 3 melhores achados da Shopee, com nota alta e muita venda."
+                               + ("\n\n🤔 Viu um produto e ficou na dúvida? Me manda o link (ou um print) "
+                                  "que eu te digo se vale a pena!" if config.VALE_A_PENA_ATIVO else "")})
     if cod == "OFERTAS_HOJE":
         ofs = _ofertas_recentes()
         if not ofs:
@@ -403,7 +403,7 @@ def rodar_dms(api, minha):
                                         "em": agora.strftime(_fmt())}
             feitos += 1
             continue
-        if vale_a_pena.tem_link(texto) or imagem:            # 🤔 "Zé, isso vale a pena?"
+        if config.VALE_A_PENA_ATIVO and (vale_a_pena.tem_link(texto) or imagem):   # 🤔 "Zé, isso vale a pena?"
             reg = {"autor": autor, "texto": texto, "imagem": bool(imagem), "em": agora.strftime(_fmt())}
             try:
                 r, status = vale_a_pena.responder(api, ig_id, autor, texto, imagem)
