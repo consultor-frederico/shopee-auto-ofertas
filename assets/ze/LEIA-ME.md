@@ -42,7 +42,6 @@ Registro em `data/ze.json`. Para incluir um vídeo novo, coloque `ze_nome.mp4` (
 | ze_presente.mp4 | traz um presente embrulhado que brilha | Travelling Light |
 | ze_fogos.mp4 | solta um sinalizador que vira fogos de sacolinhas | Splash and Fanfare (2) |
 | ze_joinha.mp4 | aponta para cima e faz joinha | Toys Are Us |
-| ze_massageador.mp4 | relaxa na cadeira de balanço com a almofada massageadora | A Stroll |
 | ze_chapeu.mp4 | tira o chapéu entre brilhos dourados | Forró da Alegria (2) |
 | ze_balanca.mp4 | pesa moedas na balança e morde uma | Batida de Início |
 | ze_caixa_magica.mp4 | abre uma caixa mágica e saem produtos voando | Toys Are Us |
