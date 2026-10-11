@@ -1,10 +1,11 @@
 """Zé Garimpo, o mascote do Garimpo VIP.
 
-1) Final dos Reels: cada Reels de oferta ganha, no fim, uma vinheta curtinha do Zé
-   (assets/ze/finais/*.mp4). O robô alterna entre elas, sem repetir a do post anterior.
+1) Começo e final dos Reels: cada Reels de oferta abre com 1,8 s do Zé (assets/ze/inicios/*.mp4,
+   sem fala, para prender quem está rolando o feed) e termina com uma vinheta curtinha dele
+   (assets/ze/finais/*.mp4). O robô alterna os dois, sem repetir o do post anterior.
    O Reels inteiro ganha trilha de assets/musicas/: várias faixas diferentes emendadas com
    transição suave (sem abrir com a mesma do Reels anterior), mais baixas quando o Zé fala.
-2) Post do Zé às terças e sextas (ZE_DIAS): um filminho de assets/ze/ze_*.mp4 vira Reels (Instagram,
+2) Post do Zé às segundas, quartas, sextas e domingos (ZE_DIAS): um filminho de assets/ze/ze_*.mp4 vira Reels (Instagram,
    story, página do Facebook e YouTube Shorts). Vídeo novo que ainda não saiu vai primeiro;
    depois o robô repete o que está há mais tempo sem sair. O post é apagado depois de 15 dias
    (src/limpeza.py), junto com as ofertas.
@@ -24,13 +25,15 @@ from . import config
 
 PASTA = config.RAIZ / "assets" / "ze"
 PASTA_FINAIS = PASTA / "finais"
+PASTA_INICIOS = PASTA / "inicios"
 ARQ = config.PASTA_DADOS / "ze.json"
 ARQ_PROX = config.PASTA_DADOS / "proximo_ze.json"
 PASTA_SITE = config.RAIZ / "site"
-# dias da semana do post do Zé (0 = segunda ... 6 = domingo); padrão terça e sexta
-DIAS_SEMANA = {int(d) for d in os.getenv("ZE_DIAS", "1,4").split(",") if d.strip().isdigit()}
+# dias da semana do post do Zé (0 = segunda ... 6 = domingo); padrão segunda, quarta, sexta e domingo
+DIAS_SEMANA = {int(d) for d in os.getenv("ZE_DIAS", "0,2,4,6").split(",") if d.strip().isdigit()}
 NOMES_DIAS = ["segunda", "terça", "quarta", "quinta", "sexta", "sábado", "domingo"]
 FINAL_LIGADO = os.getenv("ZE_NO_FINAL", "1") != "0"
+INICIO_LIGADO = os.getenv("ZE_NO_INICIO", "1") != "0"
 PASTA_MUSICAS = config.RAIZ / "assets" / "musicas"
 MUSICA_LIGADA = os.getenv("MUSICA_REELS", "1") != "0"
 VOLUME_MUSICA = float(os.getenv("VOLUME_MUSICA", "0.6"))
@@ -74,19 +77,27 @@ def _agora():
 
 
 # ------------------------------------------------------------------ vinheta no fim dos Reels
-def escolher_final(oferta=None):
-    """Vinheta da vez: alterna pela oferta e nunca repete a última usada."""
-    finais = sorted(PASTA_FINAIS.glob("*.mp4"))
-    if not finais:
+def _escolher(pasta, chave, oferta=None):
+    """Clipe da vez: alterna pela oferta e nunca repete o último usado."""
+    clipes = sorted(pasta.glob("*.mp4"))
+    if not clipes:
         return None
     dados = _carregar()
-    ultimo = dados.get("ultimo_final", "")
-    opcoes = [f for f in finais if f.name != ultimo] or finais
+    ultimo = dados.get(chave, "")
+    opcoes = [f for f in clipes if f.name != ultimo] or clipes
     semente = sum(map(ord, str((oferta or {}).get("id", time.time()))))
     escolhido = opcoes[semente % len(opcoes)]
-    dados["ultimo_final"] = escolhido.name
+    dados[chave] = escolhido.name
     _salvar(dados)
     return escolhido
+
+
+def escolher_final(oferta=None):
+    return _escolher(PASTA_FINAIS, "ultimo_final", oferta)
+
+
+def escolher_inicio(oferta=None):
+    return _escolher(PASTA_INICIOS, "ultimo_inicio", oferta)
 
 
 def _duracao(arquivo):
@@ -158,27 +169,35 @@ def _com_musica(video, musicas, saida):
 
 
 def emendar_final(reels, oferta=None):
-    """Cola a vinheta do Zé no fim do Reels e põe música no Reels inteiro (mesmo arquivo).
+    """Cola o Zé no começo e a vinheta no fim do Reels e põe música no Reels inteiro (mesmo arquivo).
     Só no Garimpo VIP. Devolve o nome da vinheta usada."""
     if config.PERFIL != "garimpo":
         return None
     final = escolher_final(oferta) if FINAL_LIGADO else None
-    if final:
+    inicio = escolher_inicio(oferta) if INICIO_LIGADO else None
+    partes = ([inicio] if inicio else []) + [reels] + ([final] if final else [])
+    if len(partes) > 1:
         saida = reels.with_suffix(".com-ze.mp4")
-        filtro = ("[0:v]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2,"
-                  "setsar=1,fps=30,format=yuv420p[v0];"
-                  "[1:v]scale=1080:1920:force_original_aspect_ratio=decrease,pad=1080:1920:(ow-iw)/2:(oh-ih)/2,"
-                  "setsar=1,fps=30,format=yuv420p[v1];"
-                  "[0:a]aresample=44100,aformat=channel_layouts=stereo[a0];"
-                  "[1:a]aresample=44100,aformat=channel_layouts=stereo[a1];"
-                  "[v0][a0][v1][a1]concat=n=2:v=1:a=1[v][a]")
-        cmd = [_ffmpeg(), "-y", "-loglevel", "error", "-i", str(reels), "-i", str(final),
+        entradas, filtro, junta = [], "", ""
+        for i, arq in enumerate(partes):
+            entradas += ["-i", str(arq)]
+            filtro += (f"[{i}:v]scale=1080:1920:force_original_aspect_ratio=decrease,"
+                       f"pad=1080:1920:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30,format=yuv420p[v{i}];"
+                       f"[{i}:a]aresample=44100,aformat=channel_layouts=stereo[a{i}];")
+            junta += f"[v{i}][a{i}]"
+        filtro += f"{junta}concat=n={len(partes)}:v=1:a=1[v][a]"
+        cmd = [_ffmpeg(), "-y", "-loglevel", "error", *entradas,
                "-filter_complex", filtro, "-map", "[v]", "-map", "[a]",
                "-c:v", "libx264", "-preset", "medium", "-crf", "20", "-profile:v", "high",
                "-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart", str(saida)]
         subprocess.run(cmd, check=True)
         saida.replace(reels)
-        print(f"🤠 Vinheta do Zé no final do Reels: {final.name}")
+        if inicio:
+            print(f"🤠 Zé no começo do Reels: {inicio.name}")
+            if oferta is not None:
+                oferta["inicio_ze"] = inicio.name
+        if final:
+            print(f"🤠 Vinheta do Zé no final do Reels: {final.name}")
     musicas = escolher_musicas(oferta, _duracao(reels)) if MUSICA_LIGADA else []
     if musicas:
         try:
@@ -194,7 +213,7 @@ def emendar_final(reels, oferta=None):
     return final.name if final else None
 
 
-# ------------------------------------------------------------------ post do Zé (terça e sexta)
+# ------------------------------------------------------------------ post do Zé (ZE_DIAS)
 def videos():
     return sorted(PASTA.glob("ze_*.mp4"))
 

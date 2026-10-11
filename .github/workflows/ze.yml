@@ -1,12 +1,12 @@
-name: 9 - Post do Zé Garimpo (terça e sexta)
+name: 9 - Post do Zé Garimpo (seg, qua, sex e dom)
 
-# A agenda toca todo dia às 13:30; o robô só posta às terças e sextas (variável ZE_DIAS).
+# A agenda toca todo dia às 13:30; o robô só posta às segundas, quartas, sextas e domingos (variável ZE_DIAS).
 # Rodando à mão com "forçar", posta na hora.
 on:
   workflow_dispatch:
     inputs:
       forcar:
-        description: 'Postar agora, mesmo fora de terça e sexta'
+        description: 'Postar agora, mesmo fora dos dias do Zé'
         type: boolean
         default: false
       sem_facebook:

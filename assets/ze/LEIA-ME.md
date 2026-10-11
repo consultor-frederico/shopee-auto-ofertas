@@ -1,5 +1,10 @@
 # Vídeos do Zé Garimpo (mascote)
 
+## 0. Começo dos Reels (`inicios/`)
+Cada Reels de oferta abre com 1,8 s do Zé, sem fala (tirando o chapéu, soltando fogos, abrindo a caixa
+mágica...), para prender quem está rolando o feed. O robô alterna e não repete o do post anterior.
+Para incluir outro, coloque o .mp4 curtinho (sem fala) em `inicios/`. Desligar: `ZE_NO_INICIO=0`.
+
 ## 1. Final dos Reels (`finais/`)
 Cada Reels de oferta do Garimpo VIP termina com uma destas vinhetas (3 a 5 s). O robô alterna
 entre elas e nunca repete a do post anterior. Para incluir outra, é só colocar o .mp4 em `finais/`.
@@ -18,8 +23,8 @@ Desligar: `MUSICA_REELS=0`; volume: `VOLUME_MUSICA` (padrão 0.6).
 | finais/fim_garimpo_vip.mp4 | lupa brilhando e joinha — "Esse é garimpo VIP!" |
 | finais/fim_carrinho.mp4 | close sorrindo ao lado do carrinho de achados |
 
-## 2. Post do Zé às terças e sextas (`ze_*.mp4`)
-O workflow "9 - Post do Zé Garimpo" (todo dia às 13:30, só posta às terças e sextas; mude com `ZE_DIAS`) publica um
+## 2. Post do Zé às segundas, quartas, sextas e domingos (`ze_*.mp4`)
+O workflow "9 - Post do Zé Garimpo" (todo dia às 13:30, só posta às segundas, quartas, sextas e domingos; mude com `ZE_DIAS`) publica um
 destes como Reels no Instagram, story, Facebook e YouTube Shorts. Vídeo que nunca saiu vai primeiro;
 depois volta o que está há mais tempo sem sair. O post é apagado com 15 dias, junto das ofertas.
 Registro em `data/ze.json`. Para incluir um vídeo novo, coloque `ze_nome.mp4` (8 s, com música) aqui.
