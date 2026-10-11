@@ -3,7 +3,7 @@
   python -m src.postar preparar   → escolhe a oferta, gera foto ou Reels em site/ (vai para o GitHub Pages)
   python -m src.postar publicar   → com o site no ar, cria o post no Instagram e atualiza a fila
 
-O formato alterna entre foto e Reels (ou force com FORMATO=foto|reels).
+O formato: 2 Reels para cada foto (REELS_POR_FOTO; ou force com FORMATO=foto|reels).
 """
 import json
 import os
@@ -68,8 +68,16 @@ def formato_da_vez(fila):
     forcado = (os.getenv("FORMATO") or "").strip().lower()
     if forcado in ("foto", "reels"):
         return forcado
-    ult = _ultimos_postados(fila, 1)
-    return "foto" if ult and ult[0].get("formato") == "reels" else "reels"
+    # padrão: 2 Reels para cada foto (Reels é o que o Instagram mais mostra para quem não segue);
+    # mude com REELS_POR_FOTO (1 = alterna foto e Reels)
+    n = max(1, int(os.getenv("REELS_POR_FOTO", "2") or 2))
+    ult = _ultimos_postados(fila, n)
+    seguidos = 0
+    for o in ult:
+        if o.get("formato") != "reels":
+            break
+        seguidos += 1
+    return "foto" if seguidos >= n else "reels"
 
 
 def preparar():
