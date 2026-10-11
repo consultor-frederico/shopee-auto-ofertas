@@ -96,6 +96,12 @@ def _duracao(arquivo):
     return int(m.group(1)) * 3600 + int(m.group(2)) * 60 + float(m.group(3)) if m else 0.0
 
 
+def _base_musica(nome):
+    """'toys_are_us_2.mp3' → 'toys_are_us' (trechos da mesma música)."""
+    import re
+    return re.sub(r"(_\d+)?\.mp3$", "", nome or "")
+
+
 def escolher_musicas(oferta=None, total=30.0):
     """Trilha da vez: uma sequência de músicas diferentes de assets/musicas/ para cobrir o Reels.
     Começa por uma faixa diferente da que abriu o Reels anterior e vai trocando de música
@@ -115,7 +121,10 @@ def escolher_musicas(oferta=None, total=30.0):
             anterior = lista[-1].name if lista else ultima
             if len(fila) > 1 and fila[0].name == anterior:
                 fila.append(fila.pop(0))
-        m = fila.pop(0)
+        # não emenda dois trechos da mesma música (toys_are_us_1 e toys_are_us_2)
+        prev = _base_musica(lista[-1].name if lista else ultima)
+        k = next((i for i, x in enumerate(fila) if _base_musica(x.name) != prev), 0)
+        m = fila.pop(k)
         lista.append(m)
         cobre += max(1.0, _duracao(m) - 1.0)
     dados["ultima_musica"] = lista[0].name
