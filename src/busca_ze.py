@@ -7,6 +7,10 @@ No comentário, responde em público: "Te mandei no direct!".
 
 Vale para todo post com #BuscaDoZe na legenda: a foto fixada e os Reels do rodízio (src/busca_reels.py). A limpeza de
 15 dias não o apaga, porque ela só mexe nos posts que o robô registrou.
+
+Vale também em TODOS os Reels de oferta (últimos 7 dias): ali, o comentário que pede OUTRO produto
+("procuro uma air fryer", "tem cabeceira com pés?") vira busca. "Quero", "preço", "link" ou pedido
+do próprio produto do Reels continuam com o responder (link da oferta no direct).
 """
 import json
 from datetime import timedelta
@@ -496,6 +500,19 @@ def rodar_dms(api, minha):
     return feitos
 
 
+def _mesmo_pedido(t, titulo):
+    """O pedido é do próprio produto do Reels? ('onde compra esse fone' no Reels de um fone → sim)."""
+    nome = _palavras(titulo)
+    pedido = [p for p in _palavras(t) if len(p) > 2 and p not in VAZIAS]
+    return bool(pedido) and any(n.startswith(p) or p.startswith(n) for p in pedido for n in nome if len(n) > 2)
+
+
+def tomados():
+    """Comentários de Reels de oferta que a Busca do Zé já atendeu (o responder não manda o link deles)."""
+    return {k for k, v in carregar().get("comentarios", {}).items()
+            if v.get("reels_oferta") and v.get("status") not in ("link", "ignorado")}
+
+
 def rodar(api, minha, ja_respondidos=None):
     """Atende os comentários novos do post fixo. Devolve quantas buscas entregou."""
     if config.PERFIL != "garimpo":
@@ -503,7 +520,7 @@ def rodar(api, minha, ja_respondidos=None):
     d = carregar()
     ig_id = minha["user_id"]
     coms = []
-    from .responder import numero_pedido, posts_top, so_pediu_link
+    from .responder import numero_pedido, pediu_link, posts_top, so_pediu_link
     tops = posts_top()   # carrosséis do Top 5: comentário com pedido de produto vira busca;
     for post in tops:    # "QUERO 3"/"QUERO" fica com o responder (link do produto do carrossel)
         try:
@@ -522,6 +539,19 @@ def rodar(api, minha, ja_respondidos=None):
                 d["ids"].remove(post)
                 falhas.pop(post)
                 d.setdefault("removidos", []).append(post)   # não volta pelo registro dos Reels
+    # Reels de oferta: a Busca do Zé vale em todos
+    try:
+        from .garimpar import carregar_fila
+        from .responder import posts_ativos
+        for o in posts_ativos(carregar_fila()):
+            if o.get("formato") != "reels" or o["id_post"] in d["ids"]:
+                continue
+            try:
+                coms += [dict(c, _oferta=o.get("titulo") or o.get("nome", "")) for c in api.comentarios(o["id_post"])]
+            except Exception as e:
+                print(f"⚠️  Busca do Zé: comentários do Reels {o['id_post']}: {e}")
+    except Exception as e:
+        print(f"⚠️  Busca do Zé: não consegui ler os Reels de oferta ({e})")
     feitos = 0
     for c in coms:
         cid, autor = c["id"], (c.get("from") or {}).get("id")
@@ -534,7 +564,18 @@ def rodar(api, minha, ja_respondidos=None):
         if c.get("_top") and (numero_pedido(texto, c["_top"]) or so_pediu_link(texto)):
             continue   # pediu link de um produto do Top: quem responde é o responder
         reg = {"usuario": usuario, "autor": autor, "texto": texto, "em": _agora().strftime(_fmt())}
-        t = termo(texto)
+        if "_oferta" in c:   # Reels de oferta: só vira busca se pedir OUTRO produto
+            if so_pediu_link(texto):
+                continue   # "quero", "link", "preço?" → responder manda o link da oferta
+            from .pedidos import _termo
+            t = _termo(texto)   # aqui só conta pedido de produto de verdade (elogio/pergunta ficam de fora)
+            reg.update({"termo": t, "reels_oferta": True})
+            if not t or _mesmo_pedido(t, c["_oferta"]):
+                reg["status"] = "link" if pediu_link(texto) else "ignorado"   # é sobre o próprio produto
+                d["comentarios"][cid] = reg
+                continue
+        else:
+            t = termo(texto)
         reg["termo"] = t
         if not t:
             reg["status"] = "ignorado"   # elogio, emoji, marcação de amigo...

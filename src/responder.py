@@ -114,6 +114,13 @@ def responder(api=instagram):
         return -1
     minha = minha or (api.conferir_conta() if hasattr(api, "conferir_conta") else api.conta())
     respondidos = carregar_respondidos()
+    busca = set()
+    if config.PERFIL == "garimpo" and api is instagram:
+        try:
+            from . import busca_ze
+            busca = busca_ze.tomados()   # pediu OUTRO produto no Reels: a Busca do Zé já respondeu
+        except Exception as e:
+            print(f"⚠️  Não li os comentários da Busca do Zé: {e}")
     enviados = falhas = 0
     if tops:
         try:
@@ -131,7 +138,7 @@ def responder(api=instagram):
             autor = (c.get("from") or {}).get("id")
             if cid in respondidos or autor == minha["user_id"] or c.get("username") == minha.get("username"):
                 continue
-            if not pediu_link(c.get("text", "")):
+            if not pediu_link(c.get("text", "")) or cid in busca:
                 continue
             usuario = c.get("username") or (c.get("from") or {}).get("username", "")
             ja_recebeu = any(r.get("post") == o["id_post"] and r.get("dm") == "ok" and autor
