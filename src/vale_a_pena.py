@@ -105,7 +105,7 @@ def _modelos_visao(headers):
         r = requests.get(f"{config.GROQ_URL}/models", headers=headers, timeout=20)
         ids = [m["id"] for m in r.json().get("data", [])]
         print(f"ℹ️  Modelos da Groq: {ids}")
-        lista += [i for i in ids if re.search(r"vision|llama-4|scout|maverick|[-_/]vl|gemma-3|pixtral|kimi", i, re.I)]
+        lista += [i for i in ids if re.search(r"vision|llama-4|scout|maverick|[-_/]vl|gemma-3|pixtral|kimi|qwen3\.[5-9]", i, re.I)]
     except Exception as e:
         print(f"⚠️  Não listei os modelos da Groq ({e}).")
     return list(dict.fromkeys(lista))
