@@ -1,0 +1,8 @@
+403 https://shopee.com.br/api/v2/item/get_ratings {"is_customized":false,"is_login":false,"action_type":2,"error":90309999,"tracking_id":"143f9746953-2672-40ab-9032-3ea587c50625","redirect_to_error_page":true} 
+404 https://shopee.com.br/api/v4/product/get_ratings {"error":"error_not_found"}
+403 https://shopee.com.br/api/v4/pdp/get_rw {"is_customized":false,"is_login":false,"action_type":2,"error":90309999,"tracking_id":"76a80b3454-043a-4aab-9e10-a90645d7fec3","redirect_to_error_page":true} 
+403 https://shopee.com.br/api/v2/item/get_ratings {"is_customized":false,"is_login":false,"action_type":2,"error":90309999,"tracking_id":"9450a742481-876d-4c2a-a243-6901f4c9d18b","redirect_to_error_page":true} 
+404 https://shopee.com.br/api/v4/product/get_ratings {"error":"error_not_found"}
+403 https://shopee.com.br/api/v4/pdp/get_rw {"is_customized":false,"is_login":false,"action_type":2,"error":90309999,"tracking_id":"905e56d4c27-7c73-4075-a818-37ce10422fb9","redirect_to_error_page":true} 
+GET https://s.shopee.com.br/ 200 https://shope.ee/error_page
+GET https://shopee.com.br/product/335317330/21199078523 200 https://shopee.com.br/product/335317330/21199078523
