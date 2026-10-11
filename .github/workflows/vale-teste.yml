@@ -1,0 +1,45 @@
+name: 21 - Testar "Zé, isso vale a pena?"
+
+# Testa a análise do direct (link ou print) e o Raio-X do Zé, sem mandar nada para ninguém.
+on:
+  workflow_dispatch:
+    inputs:
+      links:
+        description: "Links da Shopee separados por espaço (ou visao-teste)"
+        default: "https://s.shopee.com.br/5q8bzAqTP5 https://shopee.com.br/product/335317330/21199078523 visao-teste"
+
+concurrency:
+  group: grava-repositorio
+  cancel-in-progress: false
+
+jobs:
+  testar:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements.txt
+      - name: Testar
+        env:
+          SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
+          SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          LINKS: ${{ inputs.links }}
+        run: |
+          mkdir -p data/relatorios
+          { python -u -m src.vale_a_pena $LINKS; echo; echo "=== Raio-X ==="; python -u -m src.raio_x "Fone de Ouvido Bluetooth TWS Sem Fio" 29.90; } 2>&1 | tee data/relatorios/teste_vale_a_pena.txt
+      - name: Salvar relatório
+        run: |
+          git config user.name "GarimpoBot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/relatorios
+          git diff --cached --quiet && exit 0
+          git commit -m "🧪 Teste do Vale a pena"
+          git pull --rebase
+          git push

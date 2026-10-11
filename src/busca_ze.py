@@ -260,10 +260,24 @@ def _quando(txt):
 
 def _conversas(api, ig_id):
     """Conversas do direct com as últimas mensagens (mais recentes primeiro)."""
-    corpo = api._req("GET", f"{ig_id}/conversations", params={
-        "platform": "instagram", "limit": 25,
-        "fields": "id,updated_time,messages.limit(6){id,message,from,created_time}"})
+    base = "id,updated_time,messages.limit(6){id,message,from,created_time%s}"
+    try:   # com os anexos (prints para o "Zé, isso vale a pena?")
+        corpo = api._req("GET", f"{ig_id}/conversations", params={
+            "platform": "instagram", "limit": 25, "fields": base % ",attachments{image_data{url}}"})
+    except Exception as e:
+        print(f"⚠️  Direct: a API não aceitou ler os anexos ({str(e)[:150]}); lendo só o texto.")
+        corpo = api._req("GET", f"{ig_id}/conversations", params={
+            "platform": "instagram", "limit": 25, "fields": base % ""})
     return corpo.get("data", [])
+
+
+def _imagem(msg):
+    """URL da primeira imagem anexada à mensagem (print), se houver."""
+    for a in (msg.get("attachments") or {}).get("data") or []:
+        url = (a.get("image_data") or {}).get("url")
+        if url:
+            return url
+    return None
 
 
 # ------------------------------------------------------------------ perguntas prontas do direct (ice breakers)
@@ -310,7 +324,9 @@ def responder_atalho(api, ig_id, autor, cod, d):
     if cod == "BUSCA_ZE":
         return enviar({"text": "Oi! 🤠 Aqui é o Zé Garimpo. Bora garimpar! ⛏️\n\nMe diz o que você procura "
                                "(ex.: \"fone bluetooth\", \"air fryer\", \"tênis de corrida\") que eu te mando "
-                               "os 3 melhores achados da Shopee, com nota alta e muita venda."})
+                               "os 3 melhores achados da Shopee, com nota alta e muita venda.\n\n"
+                               "🤔 Viu um produto e ficou na dúvida? Me manda o link (ou um print) "
+                               "que eu te digo se vale a pena!"})
     if cod == "OFERTAS_HOJE":
         ofs = _ofertas_recentes()
         if not ofs:
@@ -355,7 +371,8 @@ def rodar_dms(api, minha):
             continue
         ultima = msgs[0]                                    # a API manda da mais nova para a mais velha
         autor = (ultima.get("from") or {}).get("id")
-        if autor == ig_id or ultima["id"] in feitos_ids or not ultima.get("message"):
+        imagem = _imagem(ultima)
+        if autor == ig_id or ultima["id"] in feitos_ids or not (ultima.get("message") or imagem):
             continue
         quando = _quando(ultima.get("created_time", ""))
         if not quando or agora - quando > JANELA_DM:
@@ -369,9 +386,9 @@ def rodar_dms(api, minha):
             continue                                        # pediu para falar com gente: deixa com o Fred
         if feitos >= MAX_POR_RODADA:
             break
-        from . import pedidos
-        texto = ultima["message"]
-        cod = atalho_do_texto(texto)
+        from . import pedidos, vale_a_pena
+        texto = ultima.get("message") or ""
+        cod = atalho_do_texto(texto) if texto else None
         if cod:                                             # tocou numa pergunta pronta do direct
             try:
                 r = responder_atalho(api, ig_id, autor, cod, d)
@@ -385,6 +402,21 @@ def rodar_dms(api, minha):
             feitos_ids[ultima["id"]] = {"autor": autor, "texto": texto, "atalho": cod, "status": status,
                                         "em": agora.strftime(_fmt())}
             feitos += 1
+            continue
+        if vale_a_pena.tem_link(texto) or imagem:            # 🤔 "Zé, isso vale a pena?"
+            reg = {"autor": autor, "texto": texto, "imagem": bool(imagem), "em": agora.strftime(_fmt())}
+            try:
+                r, status = vale_a_pena.responder(api, ig_id, autor, texto, imagem)
+                if (r or {}).get("message_id"):
+                    enviados_robo.add(r["message_id"])
+                reg["status"] = f"vale_a_pena: {status}"
+                print(f"📩 Direct: vale a pena? → {status}.")
+            except Exception as e:
+                reg["status"] = f"erro: {str(e)[:200]}"
+                print(f"::warning::Vale a pena no direct: {e}")
+            feitos_ids[ultima["id"]] = reg
+            if reg["status"] != "vale_a_pena: ignorado":
+                feitos += 1
             continue
         anterior = msgs[1] if len(msgs) > 1 else {}
         acabou_de_perguntar = ((anterior.get("from") or {}).get("id") == ig_id
