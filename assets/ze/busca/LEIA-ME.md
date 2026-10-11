@@ -10,3 +10,7 @@ Coloque aqui os vídeos do Flow da Busca do Zé com nome `busca_*.mp4` (ex.: `bu
 - Quando sai um Reels novo da Busca, o anterior é apagado. O post fixo (a foto) não é mexido.
 - A legenda leva #BuscaDoZe, então quem comentar recebe os achados no direct (src/busca_ze.py).
 - Para conferir a faixa num vídeo antes: `python -m src.busca_reels previa caminho/do/video.mp4`.
+
+## Próximo vídeo combinado (11/10/2026)
+- **"A lista que não acaba"** (o Zé desenrola a lista de pedidos, ela rola morro abaixo; fala "Calma, gente,
+  um de cada vez!"): quando chegar, entra AQUI como `busca_lista.mp4`, não em `assets/ze/ze_*.mp4`.
