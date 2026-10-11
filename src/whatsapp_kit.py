@@ -79,7 +79,7 @@ def texto_whatsapp(o):
         preco = f"💰 de ~R$ {telegram._brl(o['preco_de'])}~ por {apartir}*R$ {o['preco_fmt']}*"
         if o.get("desconto"):
             preco += f" (-{o['desconto']}%)"
-    nota = (f"{o['avaliacao_pct']:.0f}% aprovação" if o.get("avaliacao_pct")
+    nota = (f"{o['avaliacao_pct']:.0f}% avaliações positivas" if o.get("avaliacao_pct")
             else f"nota {o.get('nota', 0):.1f}".replace(".", ","))
     vendas = f"{o.get('vendas', 0):,}".replace(",", ".")
     loja = telegram.NOME_LOJA.get(plataforma(o), plataforma(o).title())

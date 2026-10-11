@@ -231,7 +231,7 @@ def _curto(nome, n=45):
 
 
 def mensagem(prod, a):
-    linhas = ["Oi! 🤠 Aqui é o Zé Garimpo. Dei uma garimpada nesse produto:", ""]
+    linhas = ["Oi! 🤠 Aqui é o Zé Garimpo. Garimpei os números desse produto na Shopee:", ""]
     if prod.get("nome"):
         linhas.append(f"📦 {_curto(prod['nome'], 60)}")
     dados = []
@@ -242,7 +242,7 @@ def mensagem(prod, a):
         dados.append(f"R$ {brl(prod['preco'])}")
     if dados:
         linhas.append(" · ".join(dados))
-    linhas += ["", f"Veredito: {a['veredito']}"]
+    linhas += ["", f"Pelos números: {a['veredito']}"]
     linhas += [f"👍 {p}" for p in a["pros"]] + [f"👎 {c}" for c in a["contras"]]
     if a["opcoes"]:
         linhas += ["", "💡 Se quiser economizar, achei estas:" if a["veredito"].startswith("✅")
@@ -250,7 +250,7 @@ def mensagem(prod, a):
         for i, o in enumerate(a["opcoes"], 1):
             nota = f"{o['nota']:.1f}".replace(".", ",")
             linhas.append(f"{i}️⃣ {_curto(o['nome'], 40)}: R$ {o['preco_fmt']} (⭐ {nota}, {o['motivo']})")
-    linhas += ["", "Dica: antes de comprar, olha as fotos das avaliações 😉"]
+    linhas += ["", "⚠️ Eu não testo os produtos: olho nota, vendas e preço. Antes de comprar, vê as fotos das avaliações 😉"]
     if prod.get("link_afiliado") or a["opcoes"]:
         linhas.append(f"(links de afiliado: você paga o mesmo e ajuda o {config.NOME_MARCA})")
     return "\n".join(linhas)

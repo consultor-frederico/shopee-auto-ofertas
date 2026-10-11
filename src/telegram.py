@@ -47,7 +47,7 @@ def legenda(oferta):
         preco = f"💰 de <s>R$ {_brl(oferta['preco_de'])}</s> por {apartir}<b>R$ {oferta['preco_fmt']}</b>"
         if oferta.get("desconto"):
             preco += f"  (-{oferta['desconto']}%)"
-    nota = (f"{oferta['avaliacao_pct']:.0f}% aprovação" if oferta.get("avaliacao_pct")
+    nota = (f"{oferta['avaliacao_pct']:.0f}% avaliações positivas" if oferta.get("avaliacao_pct")
             else f"{oferta.get('nota', 0):.1f}".replace(".", ","))
     vendas = f"{oferta.get('vendas', 0):,}".replace(",", ".")
     loja = NOME_LOJA.get(plataforma(oferta), plataforma(oferta).title())

@@ -163,7 +163,7 @@ def bloco_texto(img, oferta, y, largura_total):
     d.rounded_rectangle([x, y, x + wp + 70, y + 110], 55, fill=MENTA)
     d.text((x + 35, y + 8), preco, font=f_p, fill=NOITE)
     y += 136
-    nota = (f"{oferta['avaliacao_pct']:.0f}% aprovação" if oferta.get("avaliacao_pct")
+    nota = (f"{oferta['avaliacao_pct']:.0f}% avaliações positivas" if oferta.get("avaliacao_pct")
                 else f"{oferta['nota']:.1f}".replace(".", ","))
     vendas = f"{oferta['vendas']:,}".replace(",", ".")
     info = f"{nota if '%' in nota else 'nota ' + nota}  ·  {vendas}+ vendidos"

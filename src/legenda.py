@@ -48,6 +48,10 @@ Regras:
   organizada em 1 minuto"), porque é isso que faz o post aparecer na busca.
   Depois, 1 ou 2 benefícios concretos. Mencione o preço uma vez. Use poucos emojis.
   NÃO invente características que não estão no nome do produto. NÃO coloque link nem hashtags.
+  A página é um GARIMPO: escolhe produtos pela nota e pelas vendas na Shopee, mas NÃO testa nem
+  usa os produtos. Então NUNCA escreva como quem usou, testou, comprou ou tem o produto ("testei",
+  "uso aqui em casa", "amei", "eu tenho", "recomendo") e NUNCA prometa resultado ("garantido",
+  "dura muito", "não decepciona"). Fale do produto e do achado, não de experiência própria.
   A última linha deve ser exatamente: {cta}"""
 
 
@@ -178,6 +182,29 @@ def _legenda_padrao(oferta):
             f"{CTA}")
 
 
+# A página só garimpa (não testa os produtos): legenda da IA que falar como quem usou é descartada,
+# e promessa de resultado ("diversão garantida") sai do texto.
+_USO = re.compile(r"\b(testei|testamos|testad[oa]s?|usei|usamos|uso (aqui|todo|em casa|sempre)|comprei|"
+                  r"compramos|experimentei|amei|eu tenho|tenho (um|uma|o|a) |aqui em casa|lá em casa|"
+                  r"recomendo|indico|garanto|aprovei|aprovamos)\b", re.I)
+_PROMESSA = [
+    (re.compile(r"\s*[–—-]\s*[\wÀ-ú ]{0,25}\bgarantid[oa]s?\b[!.]?", re.I), "."),
+    (re.compile(r",?\s*[\wÀ-ú]+ garantid[oa]s?\b", re.I), ""),
+    (re.compile(r",?\s*(e )?dura muito( tempo)?", re.I), ""),
+    (re.compile(r",?\s*não decepciona", re.I), ""),
+]
+
+
+def sem_promessa(texto):
+    for rx, troca in _PROMESSA:
+        texto = rx.sub(troca, texto)
+    return re.sub(r"\.\.+", ".", re.sub(r"[ \t]+([.,!])", r"\1", texto))
+
+
+def fala_como_quem_usou(texto):
+    return bool(_USO.search(texto or ""))
+
+
 def gerar(oferta: dict) -> dict:
     """Recebe a oferta normalizada e devolve {'titulo','legenda','fonte'}."""
     titulo = _titulo_padrao(oferta["nome"])
@@ -195,6 +222,10 @@ def gerar(oferta: dict) -> dict:
             dados = json.loads(re.search(r"\{.*\}", bruto, re.S).group(0))
             t = str(dados.get("titulo", "")).strip()[:40]
             leg = str(dados.get("legenda", "")).strip()
+            if leg and fala_como_quem_usou(leg):
+                print("⚠️  Legenda da IA falou como quem usou o produto; usando legenda padrão.")
+                leg = ""
+            leg = sem_promessa(leg)
             if leg and "QUERO" in leg.upper():
                 return {"titulo": t or titulo,
                         "legenda": com_compartilhar(leg, oferta) + "\n\n" + HASHTAGS.get(oferta["categoria"], ""),

@@ -216,10 +216,13 @@ def _quadro(t, base, foto, oferta, e=None):
         yi = y2 + 175
         cor = _mix(F, e["info"], k)
         _estrela(d, 70 + 22, yi + 25, 24, _mix(F, e["estrela"], k))
-        nota = (f"{oferta['avaliacao_pct']:.0f}% aprovação" if oferta.get("avaliacao_pct")
+        nota = (f"{oferta['avaliacao_pct']:.0f}% avaliações positivas" if oferta.get("avaliacao_pct")
                 else f"{oferta['nota']:.1f}".replace(".", ","))
         vendas = f"{oferta['vendas']:,}".replace(",", ".")
-        d.text((70 + 54, yi), f"{nota}   •   {vendas}+ vendidos", font=_fonte(40, "SemiBold"), fill=cor)
+        txt, tam = f"{nota}   •   {vendas}+ vendidos", 40
+        while tam > 28 and d.textlength(txt, font=_fonte(tam, "SemiBold")) > 1080 - 124 - 40:
+            tam -= 2
+        d.text((70 + 54, yi + (40 - tam) // 2), txt, font=_fonte(tam, "SemiBold"), fill=cor)
 
     # Chamada (faixa no pé ou pílula flutuante; sobe e pulsa)
     if t >= 3.6:

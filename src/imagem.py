@@ -212,7 +212,7 @@ def gerar(oferta: dict, destino, foto: Image.Image = None):
 
     f_info = _fonte(34, "SemiBold")
     vendas = f"{oferta['vendas']:,}".replace(",", ".")
-    nota = (f"{oferta['avaliacao_pct']:.0f}% aprovação" if oferta.get("avaliacao_pct")
+    nota = (f"{oferta['avaliacao_pct']:.0f}% avaliações positivas" if oferta.get("avaliacao_pct")
                 else f"{oferta['nota']:.1f}".replace(".", ","))
     info = f"{nota}   •   {vendas}+ vendidos"
     yi = y + 140
