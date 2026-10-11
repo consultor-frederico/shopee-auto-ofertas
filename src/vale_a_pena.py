@@ -25,7 +25,7 @@ RE_IDS = [re.compile(r"-i\.(\d+)\.(\d+)"),                    # nome-do-produto-
           re.compile(r"/product/(\d+)/(\d+)"),                 # /product/LOJA/ITEM
           re.compile(r"shopee\.com\.br/[^/?#]+/(\d{3,})/(\d{6,})")]   # /loja/LOJA/ITEM
 MODELOS_VISAO = [m.strip() for m in os.getenv(
-    "GROQ_MODELOS_VISAO", "meta-llama/llama-4-scout-17b-16e-instruct,meta-llama/llama-4-maverick-17b-128e-instruct"
+    "GROQ_MODELOS_VISAO", "qwen/qwen3.8-27b,meta-llama/llama-4-scout-17b-16e-instruct"
 ).split(",") if m.strip()]
 
 PROMPT_VISAO = """Esta imagem é um print de um produto de loja online (provavelmente Shopee).
