@@ -3,9 +3,15 @@ on: workflow_dispatch
 jobs:
   sonda:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
       - run: |
-          python3 - <<'PY'
+          mkdir -p data/relatorios
+          python3 - <<'PY' > data/relatorios/sonda.txt 2>&1
           import requests, json
           UA={"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36","Referer":"https://shopee.com.br/","Accept":"application/json","x-api-source":"pc","x-shopee-language":"pt-BR","x-requested-with":"XMLHttpRequest"}
           for it,sh in [(58264955821,1000531129),(21199078523,335317330)]:
@@ -21,3 +27,5 @@ jobs:
               r=requests.get(u,headers=UA,timeout=20,allow_redirects=True); print('GET',u,r.status_code,r.url[:150])
             except Exception as e: print('ERR',u,e)
           PY
+          git config user.name GarimpoBot; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/relatorios; git commit -qm "🧪 sonda"; git pull -q --rebase; git push -q
