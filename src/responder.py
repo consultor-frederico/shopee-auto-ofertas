@@ -108,12 +108,18 @@ def responder(api=instagram):
                 print(f"📩 {n} buscas do Zé pedidas no direct.")
         except Exception as e:
             print(f"::warning::Busca do Zé falhou: {e}")
-    if not posts:
+    tops = posts_top() if config.PERFIL == "garimpo" and api is instagram else {}
+    if not posts and not tops:
         print("Nenhum post nos últimos 7 dias.")
         return -1
     minha = minha or (api.conferir_conta() if hasattr(api, "conferir_conta") else api.conta())
     respondidos = carregar_respondidos()
     enviados = falhas = 0
+    if tops:
+        try:
+            enviados += responder_top(api, minha, tops, respondidos)
+        except Exception as e:
+            print(f"::warning::Respostas do Top 5 falharam: {e}")
     for o in posts:
         try:
             coms = api.comentarios(o["id_post"])
@@ -178,6 +184,95 @@ def responder(api=instagram):
             print(f"::warning::Respostas no YouTube falharam{aviso}: {e}")
     salvar_respondidos(respondidos)
     print(f"🏁 {enviados} links enviados, {falhas} falhas, {len(posts)} posts verificados.")
+    return enviados
+
+
+def posts_top():
+    """Carrosséis do Top 5 publicados nos últimos 7 dias (data/<perfil>/top.json)."""
+    arq = config.PASTA_PERFIL / "top.json"
+    if not arq.exists():
+        return {}
+    limite = (agora() - timedelta(days=DIAS_JANELA)).strftime(FMT)
+    return {k: v for k, v in json.loads(arq.read_text(encoding="utf-8")).get("posts", {}).items()
+            if v.get("postado_em", "") >= limite}
+
+
+def numero_pedido(texto, total):
+    """'QUERO 3', 'quero o 3', 'eu quero 3', '3' → 3. None se não disse qual."""
+    t = _normalizar(texto)
+    m = re.search(r"\b(?:quero|queria|link|manda)\D{0,6}([1-9])\b", t) or re.fullmatch(r"\s*#?([1-9])\W*", t)
+    n = int(m.group(1)) if m else None
+    return n if n and n <= total else None
+
+
+def so_pediu_link(texto):
+    """'QUERO', 'eu quero!!', 'link pf' → True. 'quero uma air fryer' → False (isso é busca)."""
+    if not pediu_link(texto):
+        return False
+    resto = GATILHO.sub(" ", _normalizar(texto))
+    palavras = [p for p in re.findall(r"[a-z]+", resto) if p not in ("pf", "pfv", "por", "favor", "o", "a", "me", "ai", "aqui", "tb", "tbm", "kkk")]
+    return len(palavras) <= 1
+
+
+DM_TOP_TODOS = ("Oi! 🤠 Aqui é o Zé Garimpo. Os links do {titulo}:\n\n{lista}\n\n"
+                "Corre que preço de oferta muda rápido! 🛒\n"
+                f"(links de afiliado: você paga o mesmo e ajuda a página {config.NOME_MARCA})")
+
+
+def responder_top(api, minha, tops, respondidos):
+    enviados = 0
+    num = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
+    for post_id, info in tops.items():
+        itens = info.get("itens") or []
+        try:
+            coms = api.comentarios(post_id)
+        except Exception as e:
+            print(f"⚠️  Comentários do Top {post_id}: {e}")
+            continue
+        for c in coms:
+            cid = c["id"]
+            autor = (c.get("from") or {}).get("id")
+            if cid in respondidos or autor == minha["user_id"] or c.get("username") == minha.get("username"):
+                continue
+            texto = c.get("text", "")
+            n = numero_pedido(texto, len(itens))
+            if not n and not so_pediu_link(texto):
+                continue   # comentário comum (ou um pedido para a Busca do Zé, que ela mesma atende)
+            usuario = c.get("username") or (c.get("from") or {}).get("username", "")
+            reg = {"post": post_id, "oferta": itens[n - 1]["id"] if n else "top", "usuario": usuario,
+                   "autor": autor, "em": agora().strftime(FMT), "top": n or "todos"}
+            try:
+                if n:
+                    it = itens[n - 1]
+                    titulo = it["nome"][:60]
+                    try:
+                        api.resposta_privada_botao(minha["user_id"], cid, DM_BOTAO.format(titulo=titulo, loja="Shopee"),
+                                                   it["link_afiliado"], TITULO_BOTAO)
+                        reg["formato"] = "botao"
+                    except Exception as e:
+                        print(f"   (botão recusado: {e}; enviando como texto)")
+                        api.resposta_privada(minha["user_id"], cid, DM.format(titulo=titulo, link=it["link_afiliado"]))
+                        reg["formato"] = "texto"
+                else:   # só "QUERO": uma resposta privada por comentário → manda a lista com os 5 links
+                    lista = "\n\n".join(f"{num[i]} {it['nome'][:50]} — R$ {it['preco_fmt']}\n{it['link_afiliado']}"
+                                         for i, it in enumerate(itens))
+                    titulo = "Top 5 da semana" if info.get("tipo") == "semana" else "Top 5 do mês"
+                    api.resposta_privada(minha["user_id"], cid, DM_TOP_TODOS.format(titulo=titulo, lista=lista))
+                    reg["formato"] = "lista"
+                reg["dm"] = "ok"
+                enviados += 1
+                if RESPOSTA_PUBLICA:
+                    try:
+                        api.responder_comentario(cid, random.choice(PUBLICAS))
+                        reg["publica"] = "ok"
+                    except Exception as e:
+                        reg["publica"] = f"erro: {str(e)[:300]}"
+                print(f"🏆 Top: link {n or 'de todos'} enviado para @{usuario}")
+            except Exception as e:
+                reg["dm"] = f"erro: {str(e)[:200]}"
+                print(f"⚠️  DM do Top para @{usuario} falhou: {e}")
+            respondidos[cid] = reg
+            time.sleep(2)
     return enviados
 
 

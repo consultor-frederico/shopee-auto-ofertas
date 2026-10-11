@@ -69,6 +69,17 @@ def criar_container(ig_id, legenda, imagem_url=None, video_url=None):
     return _req("POST", f"{ig_id}/media", params=params)["id"]
 
 
+def criar_item_carrossel(ig_id, imagem_url=None, video_url=None):
+    params = {"is_carousel_item": "true"}
+    params.update({"media_type": "VIDEO", "video_url": video_url} if video_url else {"image_url": imagem_url})
+    return _req("POST", f"{ig_id}/media", params=params)["id"]
+
+
+def criar_carrossel(ig_id, filhos, legenda):
+    return _req("POST", f"{ig_id}/media", params={"media_type": "CAROUSEL", "children": ",".join(filhos),
+                                                   "caption": legenda})["id"]
+
+
 def criar_story(ig_id, imagem_url=None, video_url=None):
     """Story (some em 24h). A API não permite adesivo de link."""
     params = {"media_type": "STORIES"}

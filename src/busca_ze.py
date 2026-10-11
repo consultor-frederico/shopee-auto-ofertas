@@ -490,6 +490,13 @@ def rodar(api, minha, ja_respondidos=None):
     d = carregar()
     ig_id = minha["user_id"]
     coms = []
+    from .responder import numero_pedido, posts_top, so_pediu_link
+    tops = posts_top()   # carrosséis do Top 5: comentário com pedido de produto vira busca;
+    for post in tops:    # "QUERO 3"/"QUERO" fica com o responder (link do produto do carrossel)
+        try:
+            coms += [dict(c, _top=len(tops[post].get("itens") or [])) for c in api.comentarios(post)]
+        except Exception as e:
+            print(f"⚠️  Busca do Zé: comentários do Top {post}: {e}")
     for post in posts_da_busca(api, ig_id, d):
         falhas = d.setdefault("falhas", {})
         try:
@@ -511,6 +518,8 @@ def rodar(api, minha, ja_respondidos=None):
             break
         usuario = c.get("username") or (c.get("from") or {}).get("username", "")
         texto = c.get("text", "")
+        if c.get("_top") and (numero_pedido(texto, c["_top"]) or so_pediu_link(texto)):
+            continue   # pediu link de um produto do Top: quem responde é o responder
         reg = {"usuario": usuario, "autor": autor, "texto": texto, "em": _agora().strftime(_fmt())}
         t = termo(texto)
         reg["termo"] = t

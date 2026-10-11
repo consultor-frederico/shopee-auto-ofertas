@@ -1,0 +1,96 @@
+name: 23 - Top 5 da Semana e do Mês
+run-name: 23 - Top 5 (${{ inputs.tipo || 'auto' }}${{ inputs.so_previa && ' - prévia' || '' }})
+
+# Sextas: Top 5 da Semana. Último dia do mês: Top 5 do Mês (substitui o semanal se cair numa sexta).
+# Quem dispara é o relógio (agenda.yml) às 16:00; "auto" decide sozinho se hoje é dia de Top.
+on:
+  workflow_dispatch:
+    inputs:
+      tipo:
+        description: 'Qual Top'
+        type: choice
+        options: [auto, semana, mes]
+        default: auto
+      so_previa:
+        description: 'Só gerar a prévia (não posta; os slides ficam em data/relatorios/top)'
+        type: boolean
+        default: false
+
+concurrency:
+  group: grava-repositorio
+  cancel-in-progress: false
+
+jobs:
+  top:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+    env:
+      PERFIL: garimpo
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Prévia (não posta)
+        if: inputs.so_previa
+        env:
+          SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
+          SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: python -m src.top previa ${{ inputs.tipo == 'mes' && 'mes' || 'semana' }}
+
+      - name: Preparar slides
+        id: prep
+        if: ${{ !inputs.so_previa }}
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
+          SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: python -m src.top preparar ${{ inputs.tipo || 'auto' }}
+
+      - name: Enviar slides ao GitHub Pages
+        if: steps.prep.outputs.tem_post == 'true'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - name: Publicar o site
+        id: deploy
+        if: steps.prep.outputs.tem_post == 'true'
+        uses: actions/deploy-pages@v4
+        continue-on-error: true
+      - name: Esperar e tentar de novo
+        if: (steps.prep.outputs.tem_post == 'true') && steps.deploy.outcome == 'failure'
+        run: sleep 30
+      - id: deploy2
+        if: (steps.prep.outputs.tem_post == 'true') && steps.deploy.outcome == 'failure'
+        uses: actions/deploy-pages@v4
+
+      - name: Publicar o carrossel no Instagram
+        if: steps.prep.outputs.tem_post == 'true'
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          PAGES_URL: ${{ steps.deploy.outputs.page_url || steps.deploy2.outputs.page_url }}
+        run: python -m src.top publicar
+
+      - name: Salvar
+        if: always()
+        run: |
+          git config user.name "GarimpoBot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A data
+          git diff --cached --quiet && exit 0
+          git commit -m "🏆 Top 5 $(TZ=America/Sao_Paulo date +'%d/%m/%Y %H:%M')"
+          git pull --rebase
+          git push
