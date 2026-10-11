@@ -174,6 +174,30 @@ def _pontos(o):
     return (o["nota"] >= 4.8, min(o["vendas"], 5000) * o["nota"] + o["comissao"] * 30)
 
 
+def _mesmo_produto(a, b):
+    """Dois anúncios do mesmo produto (outra loja, outra cor, título quase igual)?"""
+    from difflib import SequenceMatcher
+    pa = {w for w in _palavras(a["nome"]) if len(w) > 2}
+    pb = {w for w in _palavras(b["nome"]) if len(w) > 2}
+    if pa and pb and len(pa & pb) / len(pa | pb) >= 0.6:
+        return True
+    return SequenceMatcher(None, _norm(a["nome"])[:80], _norm(b["nome"])[:80]).ratio() >= 0.8
+
+
+def _sem_repetidos(ofs):
+    """Mantém a ordem, mas junta anúncios do mesmo produto e fica com o mais barato."""
+    escolhidos = []
+    for o in ofs:
+        for i, e in enumerate(escolhidos):
+            if _mesmo_produto(o, e):
+                if o["preco"] < e["preco"]:
+                    escolhidos[i] = o
+                break
+        else:
+            escolhidos.append(o)
+    return escolhidos
+
+
 def achados(t):
     """Até 3 produtos que SÃO o que a pessoa pediu: busca por relevância (e mais vendidos),
     regras contra acessórios, e a IA confere a lista final."""
@@ -199,6 +223,7 @@ def achados(t):
         conferidos = _filtro_ia(t, bons)
         if conferidos is not None:
             bons = conferidos
+        bons = _sem_repetidos(bons)
         if bons:
             return bons[:ACHADOS]
     return []
