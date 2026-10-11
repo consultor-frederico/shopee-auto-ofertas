@@ -37,6 +37,15 @@ Registro em `data/ze.json`. Para incluir um vídeo novo, coloque `ze_nome.mp4` (
 | ze_rede.mp4 | acorda na rede com o despertador | Batida de Início |
 | ze_relogio.mp4 | acha um relógio dourado na bateia | Forró da Alegria (2) |
 | ze_rio_pulo.mp4 | pula no rio com a bateia de achados | Forró da Alegria |
+| ze_churrasco.mp4 | acha um celular no espeto do churrasco | Forró da Alegria |
+| ze_bateia_brilho.mp4 | sorri e pisca com a bateia cheia de achados | Happy Tails |
+| ze_presente.mp4 | traz um presente embrulhado que brilha | Travelling Light |
+| ze_fogos.mp4 | solta um sinalizador que vira fogos de sacolinhas | Splash and Fanfare (2) |
+| ze_joinha.mp4 | aponta para cima e faz joinha | Toys Are Us |
+| ze_massageador.mp4 | relaxa na cadeira de balanço com a almofada massageadora | A Stroll |
+| ze_chapeu.mp4 | tira o chapéu entre brilhos dourados | Forró da Alegria (2) |
+| ze_balanca.mp4 | pesa moedas na balança e morde uma | Batida de Início |
+| ze_caixa_magica.mp4 | abre uma caixa mágica e saem produtos voando | Toys Are Us |
 
 ## 3. Quadro "Você pediu, o Zé achou!" (`src/pedidos.py`)
 Todo post do Zé convida: "comenta o produto que você procura". O responder lê esses comentários,
