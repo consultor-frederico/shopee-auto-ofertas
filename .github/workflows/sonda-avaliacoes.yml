@@ -1,0 +1,23 @@
+name: 99 - Sonda avaliações (temporário)
+on: workflow_dispatch
+jobs:
+  sonda:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          python3 - <<'PY'
+          import requests, json
+          UA={"User-Agent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36","Referer":"https://shopee.com.br/","Accept":"application/json","x-api-source":"pc","x-shopee-language":"pt-BR","x-requested-with":"XMLHttpRequest"}
+          for it,sh in [(58264955821,1000531129),(21199078523,335317330)]:
+            for url in [f"https://shopee.com.br/api/v2/item/get_ratings?itemid={it}&shopid={sh}&limit=20&offset=0&type=0&filter=1&flag=1",
+                        f"https://shopee.com.br/api/v4/product/get_ratings?itemid={it}&shopid={sh}&limit=20&offset=0&type=0&filter=1",
+                        f"https://shopee.com.br/api/v4/pdp/get_rw?item_id={it}&shop_id={sh}"]:
+              try:
+                r=requests.get(url,headers=UA,timeout=20)
+                print(r.status_code,url.split('?')[0],r.text[:300].replace('\n',' '))
+              except Exception as e: print('ERR',url,e)
+          for u in ["https://s.shopee.com.br/","https://shopee.com.br/product/335317330/21199078523"]:
+            try:
+              r=requests.get(u,headers=UA,timeout=20,allow_redirects=True); print('GET',u,r.status_code,r.url[:150])
+            except Exception as e: print('ERR',u,e)
+          PY
