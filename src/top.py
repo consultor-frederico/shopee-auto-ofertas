@@ -363,17 +363,19 @@ def preparar(tipo="auto"):
 def story_do_ze(video, saida, tipo):
     """Vídeo do Zé (9:16) com a chamada escrita por cima: avisa no story que saiu o Top."""
     import subprocess
-    fonte = str(FONTE).replace(":", "\\:")
-    l1 = "SAIU O TOP 5 DA SEMANA!" if tipo == "semana" else "SAIU O TOP 5 DO MÊS!"
-    l2 = "Corre no perfil e confere"
-    txt = (f"drawbox=x=0:y=ih-330:w=iw:h=330:color=black@0.45:t=fill,"
-           f"drawtext=fontfile='{fonte}':text='{l1}':fontsize=54:fontcolor=0xFFC828:borderw=4:bordercolor=0x2D1405:"
-           f"x=(w-text_w)/2:y=h-290,"
-           f"drawtext=fontfile='{fonte}':text='{l2}':fontsize=40:fontcolor=white:borderw=3:bordercolor=0x2D1405:"
-           f"x=(w-text_w)/2:y=h-200")
-    subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(video), "-vf", f"scale=1080:1920,{txt}",
-                    "-c:v", "libx264", "-pix_fmt", "yuv420p", "-c:a", "aac", "-movflags", "+faststart", str(saida)],
-                   check=True)
+    from .ze import _ffmpeg
+    png = saida.with_suffix(".png")
+    cam = Image.new("RGBA", (1080, 1920), (0, 0, 0, 0))
+    d = ImageDraw.Draw(cam)
+    d.rectangle((0, 1560, 1080, 1920), fill=(0, 0, 0, 120))
+    es = TEMAS[tipo]["borda"]
+    _ctext(d, 1610, "SAIU O TOP 5 DA SEMANA!" if tipo == "semana" else "SAIU O TOP 5 DO MÊS!", _f(66), AM, 5, es)
+    _ctext(d, 1720, "Corre no perfil e confere", _f(46), BR, 4, es)
+    cam.save(png)
+    subprocess.run([_ffmpeg(), "-y", "-loglevel", "error", "-i", str(video), "-i", str(png), "-filter_complex",
+                    "[0:v]scale=1080:1920,setsar=1[v];[v][1:v]overlay=0:0", "-c:v", "libx264", "-pix_fmt", "yuv420p",
+                    "-c:a", "aac", "-movflags", "+faststart", str(saida)], check=True)
+    png.unlink(missing_ok=True)
 
 
 def carregar():
@@ -427,7 +429,10 @@ def previa(tipo="semana"):
     if info:
         (pasta / "legenda.txt").write_text(legenda(info), encoding="utf-8")
         if (CAPAS / f"{tipo}.mp4").exists():
-            story_do_ze(CAPAS / f"{tipo}.mp4", pasta / "story.mp4", tipo)
+            try:
+                story_do_ze(CAPAS / f"{tipo}.mp4", pasta / "story.mp4", tipo)
+            except Exception as e:
+                print(f"::warning::Story da prévia falhou: {e}")
         print(legenda(info))
 
 
