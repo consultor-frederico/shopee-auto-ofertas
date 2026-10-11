@@ -93,13 +93,31 @@ def produto_do_link(texto):
     return {"nome": nome, "parcial": True} if nome else {"parcial": True, "nome": ""}
 
 
+_visao_ok = []
+
+
+def _modelos_visao(headers):
+    """Modelos que enxergam imagem: os da config + os que a Groq listar com cara de visão."""
+    if _visao_ok:
+        return list(_visao_ok)
+    lista = list(MODELOS_VISAO)
+    try:
+        r = requests.get(f"{config.GROQ_URL}/models", headers=headers, timeout=20)
+        ids = [m["id"] for m in r.json().get("data", [])]
+        print(f"ℹ️  Modelos da Groq: {ids}")
+        lista += [i for i in ids if re.search(r"vision|llama-4|scout|maverick|[-_/]vl|gemma-3|pixtral|kimi", i, re.I)]
+    except Exception as e:
+        print(f"⚠️  Não listei os modelos da Groq ({e}).")
+    return list(dict.fromkeys(lista))
+
+
 def _visao(imagem_bytes):
     """Lê nome e preço de um print com um modelo de visão da Groq."""
     if not config.GROQ_API_KEY:
         return None
     dados = "data:image/jpeg;base64," + base64.b64encode(imagem_bytes).decode()
     headers = {"Authorization": f"Bearer {config.GROQ_API_KEY}", "Content-Type": "application/json"}
-    for modelo in MODELOS_VISAO:
+    for modelo in _modelos_visao(headers):
         try:
             r = requests.post(f"{config.GROQ_URL}/chat/completions", headers=headers, timeout=60, json={
                 "model": modelo, "temperature": 0.1, "response_format": {"type": "json_object"},
@@ -110,6 +128,8 @@ def _visao(imagem_bytes):
                 print(f"⚠️  Visão/{modelo}: HTTP {r.status_code} {r.text[:150]}")
                 continue
             bruto = r.json()["choices"][0]["message"]["content"]
+            if modelo not in _visao_ok:
+                _visao_ok.insert(0, modelo)
             return json.loads(re.search(r"\{.*\}", bruto, re.S).group(0))
         except Exception as e:
             print(f"⚠️  Visão/{modelo}: {e}")
@@ -164,7 +184,7 @@ def _pontos(o):
 
 def analisar(prod):
     """Veredito com os motivos e até 2 opções melhores."""
-    r = comparar(prod)
+    r = comparar(prod, mesmo_tipo=True)
     preco, nota, vendas = prod.get("preco") or 0, prod.get("nota"), prod.get("vendas")
     pros, contras = [], []
     if nota is not None and not prod.get("parcial"):
@@ -196,7 +216,7 @@ def analisar(prod):
                 break
     if any("nota baixa" in c or "arriscado" in c for c in contras):
         veredito = "⚠️ Eu teria cuidado com esse."
-    elif contras or opcoes:
+    elif contras or (opcoes and len(pros) < 2):
         veredito = "🤔 Dá pra achar melhor."
     elif pros:
         veredito = "✅ Vale a pena!"
@@ -225,7 +245,8 @@ def mensagem(prod, a):
     linhas += ["", f"Veredito: {a['veredito']}"]
     linhas += [f"👍 {p}" for p in a["pros"]] + [f"👎 {c}" for c in a["contras"]]
     if a["opcoes"]:
-        linhas += ["", "💡 Achei opção melhor:"]
+        linhas += ["", "💡 Se quiser economizar, achei estas:" if a["veredito"].startswith("✅")
+                   else "💡 Achei opção melhor:"]
         for i, o in enumerate(a["opcoes"], 1):
             nota = f"{o['nota']:.1f}".replace(".", ",")
             linhas.append(f"{i}️⃣ {_curto(o['nome'], 40)}: R$ {o['preco_fmt']} (⭐ {nota}, {o['motivo']})")

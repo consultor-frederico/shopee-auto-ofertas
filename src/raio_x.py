@@ -70,8 +70,19 @@ def _buscar(t):
     return saida
 
 
-def comparar(prod, t=None):
-    """prod precisa de "nome" e "preco" (e "id", se houver, para não comparar com ele mesmo)."""
+def _mesmo_tipo(nome, parecidos):
+    """A IA confere quais parecidos são o MESMO tipo de produto (não acessório, não outra coisa)."""
+    if not config.GROQ_API_KEY or not parecidos:
+        return parecidos
+    from .busca_ze import _filtro_ia
+    base = sorted(parecidos, key=lambda o: o["vendas"], reverse=True)[:40]
+    ok = _filtro_ia(re.sub(r"\s+", " ", nome)[:120], base)
+    return parecidos if ok is None else ok
+
+
+def comparar(prod, t=None, mesmo_tipo=False):
+    """prod precisa de "nome" e "preco" (e "id", se houver, para não comparar com ele mesmo).
+    mesmo_tipo=True: a IA confere a lista (usado no direct, onde as opções viram sugestão)."""
     from .busca_ze import relevante
     t = t or termo(prod["nome"])
     if not t:
@@ -83,6 +94,8 @@ def comparar(prod, t=None):
         extra = [o for o in _buscar(t2) if o["id"] != str(prod.get("id", "")) and relevante(o["nome"], t2)]
         ids = {o["id"] for o in parecidos}
         parecidos += [o for o in extra if o["id"] not in ids]
+    if mesmo_tipo:
+        parecidos = _mesmo_tipo(prod["nome"], parecidos)
     amostra = [o["preco"] for o in parecidos if o["vendas"] >= VENDAS_MIN_AMOSTRA]
     if len(amostra) >= MIN_PARECIDOS:
         # tira os extremos (kits enormes, peças avulsas) antes da mediana
@@ -124,7 +137,7 @@ def preparar(oferta):
     if oferta.get("raio_x") or oferta.get("plataforma", "shopee") != "shopee" or not oferta.get("nome"):
         return
     try:
-        r = comparar(oferta)
+        r = comparar(oferta, mesmo_tipo=True)
         oferta["raio_x"] = {"termo": r["termo"], "n": r["n"], "mediana": r["mediana"], "pct": r["pct"]}
         print(f"📊 Raio-X: '{r['termo']}' — {r['n']} parecidos, mediana "
               f"{brl(r['mediana']) if r['mediana'] else '-'}, este {r['pct'] if r['pct'] is not None else '?'}%")
