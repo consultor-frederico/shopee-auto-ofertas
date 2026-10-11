@@ -17,6 +17,10 @@ import requests
 URL = "https://api-sg.aliexpress.com/sync"
 METODO_BUSCA = "aliexpress.affiliate.product.query"
 METODO_EM_ALTA = "aliexpress.affiliate.hotproduct.query"   # produtos em alta (lista separada)
+# Desligado (10/10/2026): o Fred combinou não postar compra internacional, só produto do Brasil.
+# A API da AliExpress não diz de onde o produto sai; "entrega em 7 dias" ainda pega envio da China
+# (Choice). Para religar, mude para True — só se houver um jeito de garantir estoque no Brasil.
+ATIVO = False
 DIAS_ENTREGA_MAX = 7          # "já está no Brasil": entrega rápida para o Brasil
 AVALIACAO_MIN_PCT = 95.0      # vendedor confiável: ≥ 95% de avaliações positivas
 
@@ -26,7 +30,7 @@ def _env(nome):
 
 
 def configurado():
-    return all(_env(n) for n in ("ALIEXPRESS_APP_KEY", "ALIEXPRESS_APP_SECRET", "ALIEXPRESS_TRACKING_ID"))
+    return ATIVO and all(_env(n) for n in ("ALIEXPRESS_APP_KEY", "ALIEXPRESS_APP_SECRET", "ALIEXPRESS_TRACKING_ID"))
 
 
 def assinar(params, segredo):
