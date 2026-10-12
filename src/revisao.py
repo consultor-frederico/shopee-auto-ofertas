@@ -36,7 +36,7 @@ PRODUCAO = {
     "whatsapp.yml": "Kit do WhatsApp",
     "busca.yml": "Reels da Busca do Zé",
     "ze.yml": "Post do Zé Garimpo",
-    "limpeza.yml": "Limpeza de posts antigos",
+    # "limpeza.yml" desligada em 12/10/2026 (posts antigos ficam no ar)
     "chamada.yml": "Chamada do Telegram",
     "token.yml": "Renovar token",
 }

@@ -1,7 +1,7 @@
 name: 12 - Apagar posts antigos
 
 # Apaga do Instagram e da página do Facebook as ofertas postadas há mais de 15 dias
-# (preço velho confunde). Roda 1x por dia pela agenda.
+# (preço velho confunde). DESLIGADA da agenda em 12/10/2026 — só roda se for disparada à mão.
 on:
   workflow_dispatch:
     inputs:
