@@ -1,8 +1,9 @@
 """Zé Garimpo, o mascote do Garimpo VIP.
 
-1) Começo e final dos Reels: cada Reels de oferta abre com 1,8 s do Zé (assets/ze/inicios/*.mp4,
-   sem fala, para prender quem está rolando o feed) e termina com uma vinheta curtinha dele
-   (assets/ze/finais/*.mp4). O robô alterna os dois, sem repetir o do post anterior.
+1) Começo ou final dos Reels, em rodízio de 3: dois Reels de oferta terminam com uma vinheta
+   curtinha do Zé (assets/ze/finais/*.mp4) e o terceiro abre com 1,8 s dele (assets/ze/inicios/*.mp4,
+   sem fala, para prender quem está rolando o feed). Nunca os dois no mesmo Reels.
+   O robô alterna os clipes, sem repetir o do post anterior.
    O Reels inteiro ganha trilha de assets/musicas/: várias faixas diferentes emendadas com
    transição suave (sem abrir com a mesma do Reels anterior), mais baixas quando o Zé fala.
 2) Post do Zé às segundas, quartas, sextas e domingos (ZE_DIAS): um filminho de assets/ze/ze_*.mp4 vira Reels (Instagram,
@@ -168,13 +169,25 @@ def _com_musica(video, musicas, saida):
     subprocess.run(cmd, check=True)
 
 
+def _vez_do_ze():
+    """Rodízio de 3 Reels de oferta, para o Zé não aparecer demais:
+    1º e 2º → Zé só no final; 3º → Zé só no começo. Depois recomeça.
+    Devolve (quer_inicio, quer_final)."""
+    dados = _carregar()
+    n = int(dados.get("ciclo_reels", 0)) % 3
+    dados["ciclo_reels"] = (n + 1) % 3
+    _salvar(dados)
+    return (n == 2, n != 2)
+
+
 def emendar_final(reels, oferta=None):
-    """Cola o Zé no começo e a vinheta no fim do Reels e põe música no Reels inteiro (mesmo arquivo).
+    """Cola o Zé no começo ou a vinheta no fim do Reels (rodízio de _vez_do_ze) e põe música no Reels inteiro (mesmo arquivo).
     Só no Garimpo VIP. Devolve o nome da vinheta usada."""
     if config.PERFIL != "garimpo":
         return None
-    final = escolher_final(oferta) if FINAL_LIGADO else None
-    inicio = escolher_inicio(oferta) if INICIO_LIGADO else None
+    quer_inicio, quer_final = _vez_do_ze()
+    final = escolher_final(oferta) if (FINAL_LIGADO and quer_final) else None
+    inicio = escolher_inicio(oferta) if (INICIO_LIGADO and quer_inicio) else None
     partes = ([inicio] if inicio else []) + [reels] + ([final] if final else [])
     if len(partes) > 1:
         saida = reels.with_suffix(".com-ze.mp4")
