@@ -3,7 +3,8 @@
   python -m src.postar preparar   → escolhe a oferta, gera foto ou Reels em site/ (vai para o GitHub Pages)
   python -m src.postar publicar   → com o site no ar, cria o post no Instagram e atualiza a fila
 
-O formato: 2 Reels para cada foto (REELS_POR_FOTO; ou force com FORMATO=foto|reels).
+O formato: 2 Reels para cada foto (REELS_POR_FOTO; ou force com FORMATO=foto|reels|carrossel).
+O último Reels antes de cada foto vira carrossel (capa + foto grande + "por que vale"); desligue com CARROSSEL=0.
 """
 import json
 import os
@@ -13,7 +14,7 @@ from datetime import datetime, timedelta
 
 import requests
 
-from . import config, facebook, precos, imagem, instagram, legenda, reels, story, telegram, video_manual, youtube, ze, variedade
+from . import carrossel, config, facebook, precos, imagem, instagram, legenda, reels, story, telegram, video_manual, youtube, ze, variedade
 from .garimpar import BRT, FMT, agora, carregar_fila, salvar_fila
 
 PASTA_SITE = config.RAIZ / "site"
@@ -66,7 +67,7 @@ def candidatos_ordenados(fila):
 
 def formato_da_vez(fila):
     forcado = (os.getenv("FORMATO") or "").strip().lower()
-    if forcado in ("foto", "reels"):
+    if forcado in ("foto", "reels", "carrossel"):
         return forcado
     # padrão: 2 Reels para cada foto (Reels é o que o Instagram mais mostra para quem não segue);
     # mude com REELS_POR_FOTO (1 = alterna foto e Reels)
@@ -74,10 +75,15 @@ def formato_da_vez(fila):
     ult = _ultimos_postados(fila, n)
     seguidos = 0
     for o in ult:
-        if o.get("formato") != "reels":
+        if o.get("formato") not in ("reels", "carrossel"):
             break
         seguidos += 1
-    return "foto" if seguidos >= n else "reels"
+    if seguidos >= n:
+        return "foto"
+    # o último da sequência antes da foto vira carrossel: reels, carrossel, foto (1 em cada 3 posts)
+    if n >= 2 and seguidos == n - 1 and os.getenv("CARROSSEL", "1") != "0":
+        return "carrossel"
+    return "reels"
 
 
 def preparar():
@@ -123,6 +129,8 @@ def preparar():
             if formato == "reels":
                 reels.gerar(cand, pasta / nome, foto=foto)
                 _final_do_ze(pasta / nome, cand)
+            elif formato == "carrossel":
+                slides = [f"midia/{os.path.basename(a)}" for a in carrossel.gerar(cand, pasta / nome, foto=foto)]
             else:
                 imagem.gerar(cand, pasta / nome, foto=foto)
             oferta = cand
@@ -142,7 +150,9 @@ def preparar():
         raio_x.preparar(oferta)
         salvar_fila(fila)
     prox = {"id": oferta["id"], "formato": formato, "arquivo": f"midia/{nome}"}
-    if STORIES and formato == "foto":   # story vertical feito a partir da arte do feed
+    if formato == "carrossel":
+        prox["slides"] = slides
+    if STORIES and formato in ("foto", "carrossel"):   # story vertical feito da arte do feed (no carrossel, da capa)
         try:
             story.gerar(pasta / nome, pasta / f"story-{nome}")
             prox["story"] = f"midia/story-{nome}"
@@ -197,6 +207,14 @@ def publicar():
         leg_ig = com_busca(oferta["legenda"], oferta)   # lembrete da Busca do Zé (só no Instagram)
         if prox["formato"] == "reels":
             cont = instagram.criar_container(ig_id, leg_ig, video_url=url)
+        elif prox["formato"] == "carrossel":
+            urls = [f"{base}/{s}" for s in prox["slides"]]
+            for u in urls[1:]:
+                _esperar_url(u)
+            filhos = [instagram.criar_item_carrossel(ig_id, imagem_url=u) for u in urls]
+            for c in filhos:
+                instagram.aguardar_container(c)
+            cont = instagram.criar_carrossel(ig_id, filhos, leg_ig)
         else:
             cont = instagram.criar_container(ig_id, leg_ig, imagem_url=url)
         instagram.aguardar_container(cont)

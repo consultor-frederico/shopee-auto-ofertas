@@ -7,7 +7,7 @@ on:
       formato:
         description: 'Formato do post'
         type: choice
-        options: [auto, foto, reels]
+        options: [auto, foto, reels, carrossel]
         default: auto
       oferta_id:
         description: 'Código de uma oferta da fila (opcional, para teste)'
