@@ -35,11 +35,14 @@ Responda APENAS com JSON no formato {{"notas": {{"<id>": <nota>, ...}}}} para to
 
 def _norm(txt):
     txt = unicodedata.normalize("NFKD", txt or "").encode("ascii", "ignore").decode().lower()
+    # marca escrita de jeitos diferentes conta igual: "DR.REJUALL" = "Dr.Reju-All" = "drrejuall"
+    txt = re.sub(r"(?<=[a-z0-9])[.\-'’‑](?=[a-z0-9])", "", txt)
     return [t for t in re.findall(r"[a-z0-9]+", txt) if len(t) > 2]
 
 
 PARADAS = {"com", "para", "kit", "unidades", "und", "pcs", "original", "promocao", "envio",
-           "imediato", "novo", "nova", "pronta", "entrega", "atacado", "qualidade", "alta"}
+           "imediato", "novo", "nova", "pronta", "entrega", "atacado", "qualidade", "alta",
+          "new", "official", "oficial", "loja", "store", "hot", "sale"}
 
 
 def tokens(nome):
