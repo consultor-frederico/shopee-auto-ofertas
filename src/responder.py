@@ -42,16 +42,32 @@ PUBLICAS = ["Te mandei no direct! 📩", "Enviado no seu direct! 💌", "Já est
 
 PUBLICAS_FB = ["Te mandei no Messenger! 📩", "Enviado no seu Messenger! 💌", "Confere o Messenger, te mandei o link! 📲"]
 
-if config.PERFIL == "ana":   # a Ana fala do jeito dela (contas independentes)
-    DM_BOTAO = ("Oiê! 💚 Separei pra você: {titulo} ✨\n"
-                "É só tocar no botão pra ver na {loja}. Corre que achadinho bom acaba rápido!\n"
-                "(link de afiliada: você paga o mesmo e apoia a Ana Novo Achados)")
+class _Variado(list):
+    """Várias versões da mesma mensagem: cada .format() sorteia uma, para não soar robô."""
+    def format(self, **kw):
+        return random.choice(self).format(**kw)
+
+
+if config.PERFIL == "ana":   # a Ana fala do jeito dela (contas independentes), cada vez de um jeito
+    _AVISO = "\n\n(é link de afiliada: você paga o mesmo e me ajuda a continuar garimpando 💚)"
+    DM_BOTAO = _Variado([
+        "Oiê! 💚 Olha ele aqui: {titulo} ✨\nToca no botão que abre direto na {loja}." + _AVISO,
+        "Oi, amiga! Separei pra você 🥰 {titulo}\nÉ só tocar no botão pra ver na {loja}. Me conta depois se gostou!" + _AVISO,
+        "Aaah, que bom que você curtiu! 😍 Tá aqui: {titulo}\nO botão abre na {loja}, mas corre que esses somem rápido." + _AVISO,
+        "Prontinho! ✨ {titulo}\nToca no botão pra ver na {loja}. Espero que você goste! 💬" + _AVISO,
+        "Oi! Esse eu também amei 💚 {titulo}\nÉ só tocar no botão que abre na {loja}." + _AVISO,
+    ])
     TITULO_BOTAO = "💚 Quero ver"
-    DM = ("Oiê! 💚 Separei pra você: {titulo} ✨\n{link}\n\n"
-          "Corre que achadinho bom acaba rápido!\n"
-          "(link de afiliada: você paga o mesmo e apoia a Ana Novo Achados)")
+    DM = _Variado([
+        "Oiê! 💚 Olha ele aqui: {titulo} ✨\n{link}" + _AVISO,
+        "Oi, amiga! Separei pra você 🥰 {titulo}\n{link}\nMe conta depois se gostou!" + _AVISO,
+        "Aaah, que bom que você curtiu! 😍 {titulo}\n{link}\nCorre que esses somem rápido." + _AVISO,
+        "Prontinho! ✨ {titulo}\n{link}\nEspero que você goste! 💬" + _AVISO,
+    ])
     PUBLICAS = ["Corre no direct, te mandei! 💚", "Mandei no seu direct ✨", "Tá no seu direct, amore! 💌",
-                "Link enviado no direct 💚", "Olha o direct! ✨"]
+                "Olha o direct! ✨", "Te mandei lá no privado 🥰", "Já tá no seu direct, me conta se gostou! 💚",
+                "Separei pra você, olha o direct 😍", "Mandei! Confere lá 💌", "Prontinho, tá no direct ✨",
+                "Ai, esse é lindo né? Te mandei no direct 💚"]
 
 
 def _normalizar(txt):
