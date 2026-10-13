@@ -49,7 +49,7 @@ class _Variado(list):
 
 
 if config.PERFIL == "ana":   # a Ana fala do jeito dela (contas independentes), cada vez de um jeito
-    _AVISO = "\n\n(é link de afiliada: você paga o mesmo e me ajuda a continuar garimpando 💚)"
+    _AVISO = "\n\n(é link de afiliada: você paga o mesmo e me ajuda a continuar caçando achadinhos 💚)"
     DM_BOTAO = _Variado([
         "Oiê! 💚 Olha ele aqui: {titulo} ✨\nToca no botão que abre direto na {loja}." + _AVISO,
         "Oi, amiga! Separei pra você 🥰 {titulo}\nÉ só tocar no botão pra ver na {loja}. Me conta depois se gostou!" + _AVISO,

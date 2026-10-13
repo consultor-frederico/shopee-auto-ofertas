@@ -59,10 +59,10 @@ HASHTAGS = "#zegarimpo #garimpovip #achadinhos #shopee #achados #ofertas #promo�
 
 # Posts próprios da Ana (sem oferta): tom de amiga, sem prometer teste de produto
 LEGENDAS_ANA = [
-    "💚 Oi, gente! Aqui é a Ana. Todo dia eu garimpo achadinhos de beleza, moda, autocuidado e casa "
+    "💚 Oi, gente! Aqui é a Ana. Todo dia eu caço achadinhos de beleza, moda, autocuidado e casa "
     "pra você não precisar ficar horas procurando. ✨",
     "☕ Pausa pro cafezinho e já volto com mais achados! Me segue pra não perder nenhum. 💚",
-    "🛍️ Achadinho bom é aquele que cabe no bolso e deixa o dia mais gostoso. Bora garimpar juntas? ✨",
+    "🛍️ Achadinho bom é aquele que cabe no bolso e deixa o dia mais gostoso. Bora caçar achadinho juntas? ✨",
     "✨ Me conta aqui nos comentários: que tipo de achadinho você quer ver mais por aqui? 💬",
 ]
 PEDIDO_ANA = "💬 Comenta o que você mais gosta de ver: beleza, moda, autocuidado ou casa? Eu leio tudo! 💚"

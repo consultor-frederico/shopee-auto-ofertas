@@ -239,7 +239,9 @@ MUSICAS = PASTA / "musicas"   # trilhas só da Ana (nunca as do Garimpo VIP)
 def _trilha(duracao):
     """Entrada de áudio do ffmpeg: uma música da Ana sorteada (com fade no fim) ou silêncio."""
     import random
-    faixas = sorted(MUSICAS.glob("*.mp3")) if MUSICAS.exists() else []
+    # A trilha agora entra depois, no Reels inteiro (src/ze.py: emendar_final), junto com a Ana no começo/fim
+    # e mais baixa quando ela fala. Aqui sai sem música para não ficarem duas por cima uma da outra.
+    faixas = []
     if not faixas:
         return ["-f", "lavfi", "-i", "anullsrc=channel_layout=stereo:sample_rate=44100"]
     return ["-i", str(random.choice(faixas)), "-af",
