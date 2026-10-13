@@ -1,6 +1,6 @@
 """Visual próprio da Ana Novo Achados (@ananovoachados) — propositalmente diferente do Garimpo VIP.
 
-Cores do logo da Ana (azul-noite e verde-menta). Foto numa moldura em arco, título em fonte
+Paleta leve e feminina (creme, rosa-blush e ameixa). Foto numa moldura em arco, título em fonte
 serifada, preço em pílula menta, adesivo de desconto inclinado e chamada em botão contornado.
 """
 import math
@@ -15,12 +15,12 @@ PASTA = config.RAIZ / "assets" / "ana"
 SERIF = PASTA / "DMSerifDisplay-Regular.ttf"
 SANS = PASTA / "DMSans.ttf"
 
-# Paleta tirada do logo da Ana
-TOPO_COR, BASE_COR = (0x12, 0x11, 0x1F), (0x1E, 0x1C, 0x36)
-NOITE = "#12111F"
-MENTA = "#7CDACA"
-MENTA_ESCURA = "#3E9C8E"
-CINZA = "#9B99B5"
+# Paleta leve e feminina: creme e rosa-blush, rosa no destaque e texto ameixa
+TOPO_COR, BASE_COR = (0xFF, 0xF8, 0xF4), (0xFB, 0xE3, 0xE8)
+TEXTO = "#4A2C3F"          # ameixa (títulos e textos)
+ROSA = "#F2A7B8"           # pílula do preço e adesivo
+ROSA_ESCURA = "#D9668A"    # linhas, "QUERO" e detalhes
+CINZA = "#A08893"          # malva (preço antigo e avaliação)
 BRANCO = "#FFFFFF"
 LOJAS = {"shopee": ("Shopee", "#EE4D2D"), "aliexpress": ("AliExpress", "#E43225")}
 
@@ -52,8 +52,9 @@ def degrade(l, a):
 
 
 def logo(largura=330):
-    """Logo da Ana (assets/ana/logo.png, menta com fundo transparente)."""
+    """Logo da Ana (assets/ana/logo.png com fundo transparente), pintado de ameixa."""
     img = Image.open(config.LOGO).convert("RGBA")
+    img = Image.merge("RGBA", (*Image.new("RGB", img.size, TEXTO).split(), img.getchannel("A")))  # logo em ameixa
     return ImageOps.contain(img, (largura, 10_000), Image.LANCZOS)
 
 
@@ -76,9 +77,9 @@ def colar_foto_no_arco(img, foto, caixa, zoom=1.0):
     X0, Y0, X1 = x0 - g, y0 - g, x1 + g
     r = (X1 - X0) / 2
     dd = ImageDraw.Draw(img)
-    dd.arc([X0, Y0, X1, Y0 + 2 * r], 180, 360, fill=MENTA, width=esp)
+    dd.arc([X0, Y0, X1, Y0 + 2 * r], 180, 360, fill=ROSA_ESCURA, width=esp)
     for x in (X0 + esp / 2, X1 - esp / 2):
-        dd.line([(x, Y0 + r), (x, y1 - 40)], fill=MENTA, width=esp)
+        dd.line([(x, Y0 + r), (x, y1 - 40)], fill=ROSA_ESCURA, width=esp)
     moldura = Image.new("RGB", (l, a), BRANCO)
     if foto is not None:
         alvo = (int((l - 70) * zoom), int((a - 120) * zoom))
@@ -100,11 +101,11 @@ def adesivo(img, cx, cy, texto1, texto2, r=118, angulo=-12, escala=1.0):
         ang = 2 * math.pi * i / 48
         rr = r * (1 + 0.06 * math.cos(ang * 12))
         pts.append((c + rr * math.cos(ang), c + rr * math.sin(ang)))
-    d.polygon(pts, fill=MENTA)
-    d.ellipse([c - r * 0.82, c - r * 0.82, c + r * 0.82, c + r * 0.82], outline=NOITE, width=3)
+    d.polygon(pts, fill=ROSA)
+    d.ellipse([c - r * 0.82, c - r * 0.82, c + r * 0.82, c + r * 0.82], outline=TEXTO, width=3)
     f1, f2 = sans(int(r * 0.46), "Black"), sans(int(r * 0.26), "Bold")
-    d.text((c - d.textlength(texto1, font=f1) / 2, c - r * 0.44), texto1, font=f1, fill=NOITE)
-    d.text((c - d.textlength(texto2, font=f2) / 2, c + r * 0.10), texto2, font=f2, fill=NOITE)
+    d.text((c - d.textlength(texto1, font=f1) / 2, c - r * 0.44), texto1, font=f1, fill=TEXTO)
+    d.text((c - d.textlength(texto2, font=f2) / 2, c + r * 0.10), texto2, font=f2, fill=TEXTO)
     a = a.rotate(angulo, resample=Image.BICUBIC)
     if escala != 1.0:
         n = max(1, int(tam * escala))
@@ -113,7 +114,7 @@ def adesivo(img, cx, cy, texto1, texto2, r=118, angulo=-12, escala=1.0):
 
 
 def selo_loja(d, oferta, x, y):
-    nome, cor = LOJAS.get(oferta.get("plataforma") or "shopee", ("Loja", NOITE))
+    nome, cor = LOJAS.get(oferta.get("plataforma") or "shopee", ("Loja", TEXTO))
     f = sans(28, "Bold")
     t = f"na {nome}"
     w = d.textlength(t, font=f)
@@ -146,7 +147,7 @@ def bloco_texto(img, oferta, y, largura_total):
     l = largura_total
     f_tit = serif(68)
     for linha in quebrar(d, oferta["titulo"], f_tit, l - 160, max_linhas=2):
-        d.text(((l - d.textlength(linha, font=f_tit)) / 2, y), linha, font=f_tit, fill=BRANCO)
+        d.text(((l - d.textlength(linha, font=f_tit)) / 2, y), linha, font=f_tit, fill=TEXTO)
         y += 78
     y += 26
     preco = f"R$ {oferta['preco_fmt']}"
@@ -160,8 +161,8 @@ def bloco_texto(img, oferta, y, largura_total):
         d.text((x, y + 34), de, font=f_de, fill=CINZA)
         d.line([x - 2, y + 56, x + wd - 22, y + 56], fill=CINZA, width=3)
         x += wd
-    d.rounded_rectangle([x, y, x + wp + 70, y + 110], 55, fill=MENTA)
-    d.text((x + 35, y + 8), preco, font=f_p, fill=NOITE)
+    d.rounded_rectangle([x, y, x + wp + 70, y + 110], 55, fill=ROSA)
+    d.text((x + 35, y + 8), preco, font=f_p, fill=TEXTO)
     y += 136
     nota = (f"{oferta['avaliacao_pct']:.0f}% avaliações positivas" if oferta.get("avaliacao_pct")
                 else f"{oferta['nota']:.1f}".replace(".", ","))
@@ -179,10 +180,10 @@ def botao_cta(img, cy, largura_total, escala=1.0):
     w = sum(d.textlength(t, font=f) for t, f in ((t1, f1), (t2, f2), (t3, f1)))
     h = int(96 * escala)
     x0 = (largura_total - w) / 2 - 50
-    d.rounded_rectangle([x0, cy - h / 2, x0 + w + 100, cy + h / 2], h // 2, outline=MENTA, width=4)
+    d.rounded_rectangle([x0, cy - h / 2, x0 + w + 100, cy + h / 2], h // 2, fill=BRANCO, outline=ROSA_ESCURA, width=4)
     x = x0 + 50
     ty = cy - 30 * escala
-    for t, f, cor in ((t1, f1, BRANCO), (t2, f2, MENTA), (t3, f1, BRANCO)):
+    for t, f, cor in ((t1, f1, TEXTO), (t2, f2, ROSA_ESCURA), (t3, f1, TEXTO)):
         d.text((x, ty), t, font=f, fill=cor)
         x += d.textlength(t, font=f)
 
@@ -196,7 +197,7 @@ def gerar_foto(oferta, destino, foto=None):
     d = ImageDraw.Draw(img)
     f = sans(30, "Medium")
     t = "achadinho do dia"
-    d.text((L - 70 - d.textlength(t, font=f), 76), t, font=f, fill=MENTA)
+    d.text((L - 70 - d.textlength(t, font=f), 76), t, font=f, fill=ROSA_ESCURA)
     caixa = (180, 185, L - 180, 815)
     colar_foto_no_arco(img, foto, caixa)
     d = ImageDraw.Draw(img)
