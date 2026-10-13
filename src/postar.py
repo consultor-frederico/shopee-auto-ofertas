@@ -4,7 +4,8 @@
   python -m src.postar publicar   → com o site no ar, cria o post no Instagram e atualiza a fila
 
 O formato: 2 Reels para cada foto (REELS_POR_FOTO; ou force com FORMATO=foto|reels|carrossel).
-O último Reels antes de cada foto vira carrossel (capa + foto grande + "por que vale"); desligue com CARROSSEL=0.
+O último Reels antes de cada foto vira carrossel (capa + foto grande + "por que vale" e, no Garimpo,
+o Zé em vídeo no fim); desligue com CARROSSEL=0.
 """
 import json
 import os
@@ -211,7 +212,8 @@ def publicar():
             urls = [f"{base}/{s}" for s in prox["slides"]]
             for u in urls[1:]:
                 _esperar_url(u)
-            filhos = [instagram.criar_item_carrossel(ig_id, imagem_url=u) for u in urls]
+            filhos = [instagram.criar_item_carrossel(ig_id, video_url=u) if u.endswith(".mp4")
+                      else instagram.criar_item_carrossel(ig_id, imagem_url=u) for u in urls]
             for c in filhos:
                 instagram.aguardar_container(c)
             cont = instagram.criar_carrossel(ig_id, filhos, leg_ig)

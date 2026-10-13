@@ -1,13 +1,21 @@
 """Carrossel do feed (1080x1350): capa (a própria arte do post) + foto grande + "por que vale a pena".
+No Garimpo VIP fecha com um 4º slide em vídeo: a vinheta do Zé (assets/ze/finais) com a chamada
+EU QUERO embaixo e música (desligue com ZE_NO_CARROSSEL=0). O Zé só comemora, nunca testa produto.
 
 Cada conta usa o seu visual: o Garimpo VIP a paleta marrom e dourado (src/imagem.py) e a Ana o
 visual leve dela (src/layout_ana.py). Só usa dados da oferta (nota, vendas, preço), nada inventado.
 """
+import os
+import subprocess
+
 from PIL import Image, ImageDraw, ImageOps
 
 from . import config, imagem
 
 L, A = 1080, 1350
+ZE_NO_CARROSSEL = os.getenv("ZE_NO_CARROSSEL", "1") != "0"
+# vinhetas que combinam com "comenta EU QUERO" (a do link da bio fica de fora)
+ZE_FORA = {"fim_link_da_bio.mp4"}
 
 
 def gerar(oferta, destino_capa, foto=None):
@@ -24,6 +32,11 @@ def gerar(oferta, destino_capa, foto=None):
     else:
         _foto_garimpo(oferta, foto, s2)
         _vale_garimpo(oferta, s3)
+        if ZE_NO_CARROSSEL:
+            try:
+                return [str(destino_capa), s2, s3, _ze_garimpo(oferta, f"{base}-4.mp4")]
+            except Exception as e:
+                print(f"::warning::Slide do Zé não entrou ({e}); o carrossel sai sem ele.")
     return [str(destino_capa), s2, s3]
 
 
@@ -158,3 +171,44 @@ def _vale_ana(oferta, destino):
     d.text(((L - d.textlength(t, font=f_s)) / 2, y + 20), t, font=f_s, fill=la.CINZA)
     la.botao_cta(img, A - 110, L, escala=1.1)
     img.save(destino, "JPEG", quality=90, optimize=True)
+
+
+def _ze_garimpo(oferta, destino):
+    """Vinheta do Zé recortada em 4:5, com a faixa EU QUERO por cima e música. Mínimo de 4 s
+    (o Instagram recusa vídeo de carrossel com menos de 3 s): o último quadro segura o resto."""
+    from . import ze
+    clipes = sorted(f for f in ze.PASTA_FINAIS.glob("*.mp4") if f.name not in ZE_FORA)
+    if not clipes:
+        raise RuntimeError("sem vinhetas em assets/ze/finais")
+    clipe = clipes[sum(map(ord, str(oferta.get("id", "")))) % len(clipes)]
+    faixa = destino[: -len(".mp4")] + "-faixa.png"
+    img = Image.new("RGBA", (L, 150), imagem.ESCURO)
+    d = ImageDraw.Draw(img)
+    f_cta = imagem._fonte(48, "ExtraBold")
+    partes = [("COMENTE ", imagem.BRANCO), ("EU QUERO", imagem.DOURADO_CLARO), (" E RECEBA O LINK", imagem.BRANCO)]
+    x = (L - sum(d.textlength(t, font=f_cta) for t, _ in partes)) / 2
+    for t, cor in partes:
+        d.text((x, 46), t, font=f_cta, fill=cor)
+        x += d.textlength(t, font=f_cta)
+    img.save(faixa)
+    dur = max(4.0, ze._duracao(clipe) + 0.6)
+    bruto = destino[: -len(".mp4")] + "-bruto.mp4"
+    filtro = (f"[0:v]scale={L}:-2,crop={L}:{A}:0:(ih-{A})*0.3,setsar=1,fps=30,"
+              f"tpad=stop_mode=clone:stop_duration={dur:.2f}[z];[z][1:v]overlay=0:H-h,format=yuv420p[v];"
+              "[0:a]aresample=44100,aformat=channel_layouts=stereo,apad[a]")
+    subprocess.run([ze._ffmpeg(), "-y", "-loglevel", "error", "-i", str(clipe), "-i", faixa,
+                    "-filter_complex", filtro, "-map", "[v]", "-map", "[a]", "-t", f"{dur:.2f}",
+                    "-c:v", "libx264", "-preset", "medium", "-crf", "20", "-profile:v", "high",
+                    "-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart", bruto], check=True)
+    os.remove(faixa)
+    try:
+        musicas = ze.escolher_musicas(oferta, dur) if ze.MUSICA_LIGADA else []
+        if musicas:
+            ze._com_musica(bruto, musicas, destino)
+            os.remove(bruto)
+    except Exception as e:
+        print(f"::warning::Música do slide do Zé não entrou ({e}).")
+    if os.path.exists(bruto):
+        os.replace(bruto, destino)
+    print(f"🤠 Zé fecha o carrossel: {clipe.name}")
+    return destino
