@@ -300,3 +300,30 @@ def gerar_reels(oferta, destino, foto=None, duracao=8.0, fps=30):
     if proc.wait() != 0:
         raise RuntimeError("ffmpeg falhou ao gerar o Reels.")
     return destino
+
+
+# ---------------------------------------------------------------- story (1080x1920)
+def gerar_story(arte_feed, destino):
+    """Story da Ana feito da arte do feed (que já traz o rosto dela e o botão do QUERO)."""
+    L, A = 1080, 1920
+    img = degrade(L, A)
+    d = ImageDraw.Draw(img)
+    f = serif(72)
+    t = "achadinho novo no feed"
+    d.text(((L - d.textlength(t, font=f)) / 2, 150), t, font=f, fill=TEXTO)
+    arte = ImageOps.contain(Image.open(arte_feed).convert("RGB"), (900, 1125), Image.LANCZOS)
+    m = Image.new("L", arte.size, 0)
+    ImageDraw.Draw(m).rounded_rectangle([0, 0, arte.width - 1, arte.height - 1], 40, fill=255)
+    x0, y0 = (L - arte.width) // 2, 300
+    d.rounded_rectangle([x0 - 8, y0 - 8, x0 + arte.width + 8, y0 + arte.height + 8], 48, fill=ROSA_ESCURA)
+    img.paste(arte, (x0, y0), m)
+    y = y0 + arte.height + 90
+    f1, f2 = sans(44, "Medium"), sans(44, "Black")
+    t1, t2 = "vai no último post e comenta ", "QUERO"
+    x = (L - d.textlength(t1, font=f1) - d.textlength(t2, font=f2)) / 2
+    d.text((x, y), t1, font=f1, fill=TEXTO)
+    d.text((x + d.textlength(t1, font=f1), y), t2, font=f2, fill=ROSA_ESCURA)
+    f3 = sans(34, "Medium")
+    d.text(((L - d.textlength(config.ARROBA, font=f3)) / 2, A - 120), config.ARROBA, font=f3, fill=ROSA_ESCURA)
+    img.save(destino, "JPEG", quality=90, optimize=True)
+    return destino

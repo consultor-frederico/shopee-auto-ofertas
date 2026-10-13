@@ -21,8 +21,10 @@ from .garimpar import BRT, FMT, agora, carregar_fila, salvar_fila
 PASTA_SITE = config.RAIZ / "site"
 ARQ_PROXIMO = config.PASTA_PERFIL / "proximo.json"
 MAX_TENTATIVAS = 2
-# Cada post do feed vai também para o story (só no Garimpo VIP; desligue com STORIES=0)
-STORIES = config.PERFIL == "garimpo" and os.getenv("STORIES", "1") != "0"
+# Cada post do feed vai também para o story (desligue com STORIES=0).
+# Na Ana o story tem visual próprio (layout_ana.gerar_story); ligue trocando ANA_STORIES para "1".
+ANA_STORIES = os.getenv("ANA_STORIES", "0") == "1"
+STORIES = (config.PERFIL == "garimpo" or ANA_STORIES) and os.getenv("STORIES", "1") != "0"
 
 
 def _saida(chave, valor):
@@ -156,7 +158,11 @@ def preparar():
         prox["slides"] = slides
     if STORIES and formato in ("foto", "carrossel"):   # story vertical feito da arte do feed (no carrossel, da capa)
         try:
-            story.gerar(pasta / nome, pasta / f"story-{nome}")
+            if config.PERFIL == "ana":
+                from . import layout_ana
+                layout_ana.gerar_story(pasta / nome, pasta / f"story-{nome}")
+            else:
+                story.gerar(pasta / nome, pasta / f"story-{nome}")
             prox["story"] = f"midia/story-{nome}"
         except Exception as e:
             print(f"::warning::Arte do story falhou: {e}")
