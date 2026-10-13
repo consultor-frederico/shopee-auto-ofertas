@@ -48,7 +48,7 @@ Regras:
   organizada em 1 minuto"), porque é isso que faz o post aparecer na busca.
   Depois, 1 ou 2 benefícios concretos. Mencione o preço uma vez. Use poucos emojis.
   NÃO invente características que não estão no nome do produto. NÃO coloque link nem hashtags.
-  A página é um GARIMPO: escolhe produtos pela nota e pelas vendas na Shopee, mas NÃO testa nem
+  A página é uma curadoria de achadinhos: escolhe produtos pela nota e pelas vendas na Shopee, mas NÃO testa nem
   usa os produtos. Então NUNCA escreva como quem usou, testou, comprou ou tem o produto ("testei",
   "uso aqui em casa", "amei", "eu tenho", "recomendo") e NUNCA prometa resultado ("garantido",
   "dura muito", "não decepciona"). Fale do produto e do achado, não de experiência própria.
