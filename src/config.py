@@ -188,10 +188,10 @@ PERFIS = {
                 "Fale com mulheres e com o público LGBTQIA+ com carinho e sem estereótipos; "
                 "prefira linguagem neutra no tratamento (\"você\", \"pra quem ama...\")."),
         "publico": "público feminino e LGBTQIA+ que ama beleza, moda, autocuidado e casa aesthetic",
-        # cores do logo da Ana (a arte própria fica em src/layout_ana.py)
-        "cores": {"fundo": "#12111F", "escuro": "#12111F", "destaque": "#7CDACA",
-                  "destaque_claro": "#7CDACA", "preco": "#12111F", "cinza": "#9B99B5",
-                  "sombra": "#1E1C36"},
+        # paleta leve e feminina da Ana (a arte própria fica em src/layout_ana.py)
+        "cores": {"fundo": "#FFF8F4", "escuro": "#4A2C3F", "destaque": "#D9668A",
+                  "destaque_claro": "#F2A7B8", "preco": "#4A2C3F", "cinza": "#A08893",
+                  "sombra": "#FBE3E8"},
     },
 }
 
