@@ -197,14 +197,14 @@ def gerar_foto(oferta, destino, foto=None):
     f = sans(30, "Medium")
     t = "achadinho do dia"
     d.text((L - 70 - d.textlength(t, font=f), 76), t, font=f, fill=MENTA)
-    caixa = (170, 185, L - 170, 860)
+    caixa = (180, 185, L - 180, 815)
     colar_foto_no_arco(img, foto, caixa)
     d = ImageDraw.Draw(img)
     selo_loja(d, oferta, caixa[0] + 30, caixa[3] - 80)
     if oferta.get("desconto"):
         adesivo(img, caixa[2] - 10, caixa[1] + 170, f"-{oferta['desconto']}%", "OFF")
-    bloco_texto(img, oferta, 892, L)
-    botao_cta(img, A - 86, L)
+    bloco_texto(img, oferta, 845, L)
+    botao_cta(img, A - 72, L)
     img.save(destino, "JPEG", quality=90, optimize=True)
     return destino
 
