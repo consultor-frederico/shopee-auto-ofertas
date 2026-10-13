@@ -33,15 +33,16 @@ ARQ = config.PASTA_PERFIL / "ze.json"              # cada conta com o seu rodíz
 ARQ_PROX = config.PASTA_PERFIL / "proximo_ze.json"
 PASTA_SITE = config.RAIZ / "site"
 # dias da semana do post do Zé (0 = segunda ... 6 = domingo); padrão segunda, quarta, sexta e domingo
-# Ana: terças, quintas e sábados (ANA_DIAS), para não bater com os dias do Zé
-_DIAS = os.getenv("ANA_DIAS", "1,3,5") if ANA else os.getenv("ZE_DIAS", "0,2,4,6")
+# Ana: 1 post próprio por semana, às quintas (ANA_DIAS; 0 = segunda)
+_DIAS = os.getenv("ANA_DIAS", "3") if ANA else os.getenv("ZE_DIAS", "0,2,4,6")
 DIAS_SEMANA = {int(d) for d in _DIAS.split(",") if d.strip().isdigit()}
 NOMES_DIAS = ["segunda", "terça", "quarta", "quinta", "sexta", "sábado", "domingo"]
 FINAL_LIGADO = os.getenv("ZE_NO_FINAL", "1") != "0"
 INICIO_LIGADO = os.getenv("ZE_NO_INICIO", "1") != "0"
 PASTA_MUSICAS = config.RAIZ / "assets" / ("ana/musicas" if ANA else "musicas")   # pasta vazia = sem música
 MUSICA_LIGADA = os.getenv("MUSICA_REELS", "1") != "0"
-VOLUME_MUSICA = float(os.getenv("VOLUME_MUSICA", "0.6"))
+# Ana: música ambiente, bem de fundo
+VOLUME_MUSICA = float(os.getenv("VOLUME_MUSICA", "0.35" if ANA else "0.6"))
 
 PEDIDO = ("🙋 VOCÊ PEDE, O ZÉ ACHA! Comenta aqui embaixo o produto que você procura "
           "(ex.: \"fone bluetooth\", \"air fryer\"). O Zé garimpa, posta o achado marcando você "
@@ -245,7 +246,21 @@ def videos():
 
 
 def video_da_vez(dados):
-    """Primeiro os que nunca saíram; depois o que está há mais tempo sem sair."""
+    """Zé: primeiro os que nunca saíram; depois o que está há mais tempo sem sair.
+    Ana: sorteio entre os que nunca saíram; depois, entre a metade que está há mais tempo sem sair."""
+    if ANA:
+        import random
+        uso = {}
+        for p in dados["posts"]:
+            uso[p["video"]] = max(uso.get(p["video"], ""), p["postado_em"])
+        lista = videos()
+        if not lista:
+            return None
+        novos = [v for v in lista if v.name not in uso]
+        if novos:
+            return random.choice(novos)
+        antigos = sorted(lista, key=lambda v: uso[v.name])
+        return random.choice(antigos[:max(1, len(antigos) // 2)])
     ultimo_uso = {}
     for p in dados["posts"]:
         ultimo_uso[p["video"]] = max(ultimo_uso.get(p["video"], ""), p["postado_em"])
@@ -297,8 +312,13 @@ def preparar():
     for fixo in (config.RAIZ / "assets" / "paginas").glob("*.html"):
         (PASTA_SITE / fixo.name).write_text(fixo.read_text(encoding="utf-8"), encoding="utf-8")
     nome = f"{PREFIXO[:-1]}-{int(time.time())}.mp4"
-    shutil.copy(video, pasta / nome)
-    if ANA and MUSICA_LIGADA:   # os vídeos da Ana vêm só com a voz: põe musiquinha (mais baixa quando ela fala)
+    busca = ANA and "busca" in video.name   # chamada da Busca da Ana: faixa por cima + legenda #BuscaDaAna
+    if busca:
+        from . import busca_reels
+        busca_reels.gravar_faixa(video, pasta / nome)   # já põe a música
+    else:
+        shutil.copy(video, pasta / nome)
+    if ANA and MUSICA_LIGADA and not busca:   # os vídeos da Ana vêm só com a voz: põe musiquinha (mais baixa quando ela fala)
         musicas = escolher_musicas({"id": video.name}, _duracao(pasta / nome))
         if musicas:
             try:
@@ -309,7 +329,10 @@ def preparar():
             except Exception as e:
                 print(f"::warning::Música não entrou ({e}); o vídeo sai só com a voz.")
     n = len(dados["posts"])
-    if ANA:
+    if busca:
+        from . import busca_reels
+        leg = busca_reels.LEGENDAS[0] + "\n\n" + busca_reels.HASHTAGS
+    elif ANA:
         leg = LEGENDAS_ANA[n % len(LEGENDAS_ANA)] + "\n\n" + PEDIDO_ANA + "\n\n" + HASHTAGS_ANA
     else:
         leg = LEGENDAS[n % len(LEGENDAS)] + "\n\n" + PEDIDO + "\n\n" + HASHTAGS

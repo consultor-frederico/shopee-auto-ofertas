@@ -133,6 +133,18 @@ def responder(api=instagram):
                 print(f"📩 {n} buscas do Zé pedidas no direct.")
         except Exception as e:
             print(f"::warning::Busca do Zé falhou: {e}")
+    if config.PERFIL == "ana" and api is instagram:   # 💚 Busca da Ana (#BuscaDaAna, Reels de oferta e direct)
+        try:
+            from . import busca_ze
+            minha = minha or api.conferir_conta()
+            n = busca_ze.rodar(api, minha)
+            if n:
+                print(f"💚 {n} buscas da Ana entregues no direct.")
+            n = busca_ze.rodar_dms(api, minha)
+            if n:
+                print(f"📩 {n} buscas da Ana pedidas no direct.")
+        except Exception as e:
+            print(f"::warning::Busca da Ana falhou: {e}")
     tops = posts_top() if config.PERFIL == "garimpo" and api is instagram else {}
     if not posts and not tops:
         print("Nenhum post nos últimos 7 dias.")
@@ -140,7 +152,7 @@ def responder(api=instagram):
     minha = minha or (api.conferir_conta() if hasattr(api, "conferir_conta") else api.conta())
     respondidos = carregar_respondidos()
     busca = set()
-    if config.PERFIL == "garimpo" and api is instagram:
+    if config.PERFIL in ("garimpo", "ana") and api is instagram:
         try:
             from . import busca_ze
             busca = busca_ze.tomados()   # pediu OUTRO produto no Reels: a Busca do Zé já respondeu

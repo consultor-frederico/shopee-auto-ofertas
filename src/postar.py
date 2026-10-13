@@ -308,14 +308,20 @@ LEMBRETES_BUSCA = [
     "🔎 Procurando outra coisa? Fala pro Zé no post fixado do perfil (ou aqui no direct) que ele acha!",
     "🔎 Quer algo diferente? Manda no direct o que você procura que o Zé te traz os melhores achados!",
 ]
-if config.VALE_A_PENA_ATIVO:
+if config.PERFIL == "ana":
+    LEMBRETES_BUSCA = [
+        "💬 Procurando outra coisa? Comenta aqui o que você quer que eu acho pra você e te mando no direct!",
+        "💬 Não era bem isso? Me fala nos comentários (ou no direct) o que você procura que eu encontro 💚",
+        "💬 Quer algo diferente? Manda no meu direct o que você procura que eu te mando os melhores achadinhos!",
+    ]
+elif config.VALE_A_PENA_ATIVO:
     LEMBRETES_BUSCA.append("🤔 Viu um produto na Shopee e ficou na dúvida? Manda o link no direct que o Zé diz se vale a pena!")
 
 
 def com_busca(leg, oferta):
     """Em 1 de cada 3 posts, lembra da Busca do Zé (antes das hashtags). Só no Garimpo VIP e
     só depois que o post fixo da Busca existe. Não vai para Facebook/YouTube/Telegram."""
-    if config.PERFIL != "garimpo":
+    if config.PERFIL not in ("garimpo", "ana"):
         return leg
     try:
         from . import busca_ze

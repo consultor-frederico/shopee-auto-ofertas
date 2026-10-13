@@ -17,8 +17,10 @@ from datetime import timedelta
 
 from . import config
 
+ANA = config.PERFIL == "ana"   # 💚 Busca da Ana: mesma ferramenta, com o jeito dela e #BuscaDaAna
 ARQ = config.PASTA_PERFIL / "busca_ze.json"
-TAG = "buscadoze"
+TAG = "buscadaana" if ANA else "buscadoze"
+AVISO_ANA = "(são links de afiliada: você paga o mesmo e me ajuda a continuar caçando achadinhos 💚)"
 MAX_POR_RODADA = 15
 ACHADOS = 3
 
@@ -27,6 +29,11 @@ PUBLICAS = ["@{u} o Zé achou! ⛏️ Te mandei no direct 📩",
             "@{u} garimpado! ⛏️ Os achados estão no seu direct 💌"]
 PUBLICA_NADA = ("@{u} o Zé cavou, cavou e não achou nada bom de \"{t}\" ainda 😅 "
                 "Tenta com outras palavras (ex.: \"fone bluetooth\")!")
+if ANA:
+    PUBLICAS = ["@{u} achei! 💚 Te mandei no direct", "Prontinho, @{u}! Olha o seu direct 🥰",
+                "@{u} separei uns achadinhos pra você, tá no direct ✨"]
+    PUBLICA_NADA = ("@{u} procurei \"{t}\" mas não achei nada bom o bastante ainda 😕 "
+                    "Me fala com outras palavras (ex.: \"bolsa transversal\") que eu tento de novo! 💚")
 
 
 def _agora():
@@ -72,7 +79,7 @@ def posts_da_busca(api, ig_id, d):
         except Exception as e:
             print(f"⚠️  Busca do Zé: não consegui listar os posts ({e})")
     # Reels do rodízio: entram direto pelo registro de quando o robô publicou (não dependem da listagem)
-    arq_reels = config.PASTA_DADOS / "busca_reels.json"
+    arq_reels = config.PASTA_PERFIL / "busca_reels.json"
     if arq_reels.exists():
         try:
             for p in json.loads(arq_reels.read_text(encoding="utf-8")).get("posts", []):
@@ -252,13 +259,14 @@ def _curto(nome, n=45):
 
 
 def mensagem(t, ofs):
-    linhas = [f"Oi! 🤠 Aqui é o Zé Garimpo. Garimpei \"{t}\" na Shopee e separei:", ""]
+    linhas = [(f"Oi! 💚 Aqui é a Ana. Procurei \"{t}\" na Shopee e separei pra você:" if ANA
+               else f"Oi! 🤠 Aqui é o Zé Garimpo. Garimpei \"{t}\" na Shopee e separei:"), ""]
     for i, o in enumerate(ofs, 1):
         vendas = f"{o['vendas']:,}".replace(",", ".")
         nota = f"{o['nota']:.1f}".replace(".", ",")
         linhas.append(f"{i}️⃣ {_curto(o['nome'])} — R$ {o['preco_fmt']} (⭐ {nota}, {vendas}+ vendidos)")
     linhas += ["", "Toque no botão do que gostou 👇",
-               f"(links de afiliado: você paga o mesmo e ajuda o {config.NOME_MARCA})"]
+               (AVISO_ANA if ANA else f"(links de afiliado: você paga o mesmo e ajuda o {config.NOME_MARCA})")]
     return "\n".join(linhas)
 
 
@@ -279,15 +287,18 @@ def enviar_dm(api, ig_id, cid, t, ofs, destinatario=None):
         links = "\n".join(f"{i}️⃣ {o['link_afiliado']}" for i, o in enumerate(ofs, 1))
         return api._req("POST", f"{ig_id}/messages", json={"recipient": para, "message": {
             "text": f"{texto.split('Toque no botão')[0].strip()}\n\n{links}\n\n"
-                    f"(links de afiliado: você paga o mesmo e ajuda o {config.NOME_MARCA})"}})
+                    + (AVISO_ANA if ANA else f"(links de afiliado: você paga o mesmo e ajuda o {config.NOME_MARCA})")}})
 
 
 # ------------------------------------------------------------------ busca pelo direct
 JANELA_DM = timedelta(hours=23)       # o Instagram só deixa responder até 24h depois da mensagem
 SILENCIO_HUMANO = timedelta(hours=2)  # se o Fred escreveu na conversa há pouco, o robô não se mete
-MARCAS_ROBO = ("Oi! 😊", "Oi! 🤠", "Oi! 💚")   # começo das mensagens automáticas (não contam como o Fred)
+MARCAS_ROBO = ("Oi! 😊", "Oi! 🤠", "Oi! 💚", "Oiê!", "Oi, amiga!", "Aaah", "Prontinho!", "Oi! Esse")   # começo das mensagens automáticas (não contam como o Fred)
 DM_NADA = ("Oi! 🤠 Aqui é o Zé Garimpo. Cavei \"{t}\" na Shopee, mas não achei nada bom o bastante 😅 "
            "Me manda com outras palavras (ex.: \"fone bluetooth\", \"air fryer 5 litros\") que eu tento de novo!")
+if ANA:
+    DM_NADA = ("Oi! 💚 Aqui é a Ana. Procurei \"{t}\" na Shopee, mas não achei nada bom o bastante 😕 "
+               "Me manda com outras palavras (ex.: \"bolsa transversal\", \"escova secadora\") que eu tento de novo!")
 
 
 def _quando(txt):
@@ -377,7 +388,7 @@ def responder_atalho(api, ig_id, autor, cod, d):
         for i, o in enumerate(ofs, 1):
             linhas.append(f"{i}️⃣ {_curto(o.get('titulo') or o.get('nome', ''))} — R$ {o['preco_fmt']}")
         linhas += ["", f"Tem muito mais no Telegram: {TELEGRAM}",
-                   f"(links de afiliado: você paga o mesmo e ajuda o {config.NOME_MARCA})"]
+                   (AVISO_ANA if ANA else f"(links de afiliado: você paga o mesmo e ajuda o {config.NOME_MARCA})")]
         botoes = [{"type": "web_url", "url": o["link_afiliado"], "title": f"🛒 Ver achado {i}"}
                   for i, o in enumerate(ofs, 1)]
         return enviar({"attachment": {"type": "template", "payload": {
@@ -394,7 +405,7 @@ def responder_atalho(api, ig_id, autor, cod, d):
 
 def rodar_dms(api, minha):
     """Quem manda no direct o que procura ("procuro uma air fryer") recebe os 3 achados na hora."""
-    if config.PERFIL != "garimpo":
+    if config.PERFIL not in ("garimpo", "ana"):
         return 0
     d = carregar()
     ig_id = minha["user_id"]
@@ -517,7 +528,7 @@ def tomados():
 
 def rodar(api, minha, ja_respondidos=None):
     """Atende os comentários novos do post fixo. Devolve quantas buscas entregou."""
-    if config.PERFIL != "garimpo":
+    if config.PERFIL not in ("garimpo", "ana"):
         return 0
     d = carregar()
     ig_id = minha["user_id"]

@@ -16,12 +16,16 @@ Dois Reels terminam com a Ana se despedindo (`finais/`) e o terceiro abre com 1,
 | finais/fim_tchau_pijama.mp4 | de pijama na cama, se despedindo (7 s) |
 
 ## 2. Post próprio da Ana (`ana_*.mp4`)
-Terças, quintas e sábados às 16h (mude com `ANA_DIAS`; 0 = segunda). Só no Instagram (feed + story).
-Vídeo que nunca saiu vai primeiro. Para incluir outro, coloque `ana_nome.mp4` aqui.
+1 por semana, às quintas às 16h (mude com `ANA_DIAS`; 0 = segunda). Só no Instagram (feed + story).
+Ordem sorteada: primeiro os que nunca saíram; depois, entre a metade que está há mais tempo sem sair.
+Para incluir outro, coloque `ana_nome.mp4` aqui. Vídeo com "busca" no nome (ana_busca_chamada.mp4)
+sai com a faixa "Busca da Ana" por cima e legenda #BuscaDaAna.
+
+## 3. Busca da Ana (`busca/`)
+Igual à Busca do Zé: quem comenta num post com #BuscaDaAna (ou pede outro produto num Reels de oferta,
+ou manda no direct) recebe 3 achados no direct. `busca/busca_fixo.mp4` é o Reels para fixar no perfil:
+publicado pelo workflow "18 - Reels da Busca" com perfil = ana (não é apagado e não entra em rodízio).
 
 ## Música
-Os vídeos da Ana vêm só com a voz. O robô põe trilha de `assets/ana/musicas/` (músicas só dela, nunca as do Garimpo VIP) (mais baixa quando ela fala),
-nos Reels de oferta e nos posts próprios. Para trocar ou incluir músicas, é só mexer nessa pasta.
-
-ana_oi_acenando, ana_palmas, ana_olhando_quarto, ana_celular, ana_presente, ana_cafe,
-ana_anotando, ana_closet_organizado, ana_skincare
+Os vídeos da Ana vêm só com a voz. O robô põe trilha de `assets/ana/musicas/` (músicas só dela, nunca as do
+Garimpo VIP), como música ambiente bem baixinha (VOLUME_MUSICA 0.35), mais baixa ainda quando ela fala.

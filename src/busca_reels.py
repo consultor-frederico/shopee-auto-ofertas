@@ -25,9 +25,10 @@ from PIL import Image, ImageDraw, ImageFont
 
 from . import config
 
-PASTA = config.RAIZ / "assets" / "ze" / "busca"
-ARQ = config.PASTA_DADOS / "busca_reels.json"
-ARQ_PROX = config.PASTA_DADOS / "proxima_busca.json"
+ANA = config.PERFIL == "ana"   # 💚 Busca da Ana: vídeos em assets/ana/videos/busca/, visual e texto dela
+PASTA = config.RAIZ / "assets" / ("ana/videos/busca" if ANA else "ze/busca")
+ARQ = config.PASTA_PERFIL / "busca_reels.json"
+ARQ_PROX = config.PASTA_PERFIL / "proxima_busca.json"
 PASTA_SITE = config.RAIZ / "site"
 INTERVALO_DIAS = int(os.getenv("BUSCA_INTERVALO_DIAS", "7"))
 W, H = 1080, 1920
@@ -41,6 +42,13 @@ LEGENDAS = [
     "na Shopee e te manda os melhores no direct. Pode pedir quantas vezes quiser! 🤠\n\n📩 Se preferir, manda o pedido no direct que o Zé responde lá mesmo.",
 ]
 HASHTAGS = "#BuscaDoZe #garimpovip #zegarimpo #achadinhos #shopee #achados #ofertas"
+if ANA:
+    LEGENDAS = [
+        "💚 BUSCA DA ANA\n\nTá procurando alguma coisa e não acha? Comenta aqui embaixo o que você quer "
+        "(ex.: \"bolsa transversal\", \"escova secadora\") que eu procuro na Shopee e te mando no direct "
+        "os 3 melhores achadinhos, com nota alta e muita venda! ✨\n\n🤫 Prefere não comentar? Me manda no direct que funciona igual!",
+    ]
+    HASHTAGS = "#BuscaDaAna #ananovoachados #achadinhos #achadinhosfemininos #shopee #achados"
 
 ESCURO = "#24150A"
 DOURADO = "#E2BE68"
@@ -81,6 +89,35 @@ def _lupa(d, cx, cy, r, cor, esp):
     d.line([cx + r * 0.7, cy + r * 0.7, cx + r * 1.6, cy + r * 1.6], fill=cor, width=esp + 4)
 
 
+def faixa_ana(destino):
+    """Chamada da Busca da Ana por cima do vídeo, nas cores dela (ameixa e rosa, fonte DM)."""
+    from . import layout_ana as la
+    img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    f1 = la.serif(66)
+    txt = "Busca da Ana"
+    tl = d.textlength(txt, font=f1)
+    pw, ph = tl + 150, 116
+    x0, y0 = (W - pw) / 2, 330
+    d.rounded_rectangle([x0 + 5, y0 + 7, x0 + pw + 5, y0 + ph + 7], ph // 2, fill=(0, 0, 0, 90))
+    d.rounded_rectangle([x0, y0, x0 + pw, y0 + ph], ph // 2, fill=la.TEXTO, outline=la.ROSA, width=5)
+    d.text((x0 + 75, y0 + (ph - 80) / 2), txt, font=f1, fill="#FFF8F4")
+    bx0, bx1, by0, by1 = 70, 930, 1220, 1490
+    d.rounded_rectangle([bx0 + 8, by0 + 10, bx1 + 8, by1 + 10], 44, fill=(0, 0, 0, 100))
+    d.rounded_rectangle([bx0, by0, bx1, by1], 44, fill="#FFF8F4", outline=la.ROSA_ESCURA, width=6)
+    bw = bx1 - bx0
+    camada = Image.new("RGBA", (bw, by1 - by0), (0, 0, 0, 0))
+    dc = ImageDraw.Draw(camada)
+    _centro(dc, 34, "Tá procurando", la.serif(74), la.TEXTO, bw)
+    _centro(dc, 112, "alguma coisa?", la.serif(74), la.TEXTO, bw)
+    _centro(dc, 206, "Comenta aqui que eu acho pra você", la.sans(38, "SemiBold"), la.ROSA_ESCURA, bw)
+    img.alpha_composite(camada, (bx0, by0))
+    cx, ay = (bx0 + bx1) / 2, by1 + 22
+    d.polygon([(cx - 56, ay), (cx + 56, ay), (cx, ay + 70)], fill=la.ROSA, outline=la.TEXTO, width=5)
+    img.save(destino)
+    return destino
+
+
 def faixa(destino):
     """PNG transparente 1080x1920 com a chamada da busca. Tudo fica entre y=300 e y=1600: aparece inteiro
     no Reels em tela cheia, no feed (corte 4:5) e na grade do perfil (corte 3:4)."""
@@ -118,7 +155,7 @@ def gravar_faixa(video, saida):
     """Ajusta o vídeo para 1080x1920 e grava a faixa por cima do começo ao fim (mantém o áudio)."""
     from .ze import _ffmpeg
     png = Path(saida).with_suffix(".png")
-    faixa(png)
+    (faixa_ana if ANA else faixa)(png)
     filtro = (f"[0:v]scale={W}:{H}:force_original_aspect_ratio=decrease,"
               f"pad={W}:{H}:(ow-iw)/2:(oh-ih)/2,setsar=1[v];[v][1:v]overlay=0:0,format=yuv420p")
     cmd = [_ffmpeg(), "-y", "-loglevel", "error", "-i", str(video), "-i", str(png),
@@ -131,15 +168,15 @@ def gravar_faixa(video, saida):
 
 def _musica(video, saida):
     """Música das outras postagens do Zé (assets/musicas/) por baixo da voz, que abaixa quando ele fala."""
-    from .ze import MUSICA_LIGADA, _com_musica, escolher_musica
-    musica = escolher_musica({"id": Path(video).name}) if MUSICA_LIGADA else None
+    from .ze import MUSICA_LIGADA, _com_musica, _duracao, escolher_musicas
+    musica = escolher_musicas({"id": Path(video).name}, _duracao(saida)) if MUSICA_LIGADA else []
     if not musica:
         return saida
     tmp = Path(saida).with_name(Path(saida).stem + "_m.mp4")
     try:
         _com_musica(saida, musica, tmp)
         tmp.replace(saida)
-        print(f"🎵 Música: {musica.name}")
+        print(f"🎵 Música: {' → '.join(m.stem for m in musica)}")
     except Exception as e:
         tmp.unlink(missing_ok=True)
         print(f"::warning::Música não entrou ({e}); o Reels sai sem ela.")
@@ -174,11 +211,8 @@ def preparar():
     from . import instagram
     from .ze import _saida
     _saida("tem_post", "false")
-    if config.PERFIL != "garimpo":
-        print("⏸️  A Busca do Zé é só do Garimpo VIP.")
-        return
     if not instagram.tem_token():
-        print("⏸️  IG_ACCESS_TOKEN ausente.")
+        print("⏸️  Token do Instagram ausente.")
         return
     d = _carregar()
     dias = dias_desde_ultimo(d)
@@ -220,7 +254,7 @@ def publicar():
                        "permalink": instagram.permalink(media), "status": "postado"})
     _salvar(d)
     ARQ_PROX.unlink(missing_ok=True)
-    print(f"✅ Reels da Busca do Zé publicado: {d['posts'][-1]['permalink'] or media}")
+    print(f"✅ Reels da Busca {'da Ana' if ANA else 'do Zé'} publicado ({config.ARROBA}): {d['posts'][-1]['permalink'] or media}")
     try:
         cs = instagram.criar_story(ig_id, video_url=url)
         instagram.aguardar_container(cs)
@@ -228,7 +262,7 @@ def publicar():
         print("📲 Também no story.")
     except Exception as e:
         print(f"::warning::Story da Busca falhou: {e}")
-    if anteriores and facebook.configurado():   # o Reels anterior da Busca sai do perfil
+    if anteriores and facebook.configurado() and not ANA:   # o Reels fixado da Ana fica para sempre   # o Reels anterior da Busca sai do perfil
         for p in anteriores:
             try:
                 facebook.apagar(p["id_post"])

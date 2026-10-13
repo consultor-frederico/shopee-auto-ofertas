@@ -9,6 +9,11 @@ on:
         description: 'Postar agora, mesmo antes dos 7 dias'
         type: boolean
         default: false
+      perfil:
+        description: 'Conta do Instagram (ana = Reels da Busca da Ana, para fixar)'
+        type: choice
+        options: [garimpo, ana]
+        default: garimpo
 
 concurrency:
   group: grava-repositorio
@@ -23,6 +28,8 @@ jobs:
       id-token: write
     environment:
       name: github-pages
+    env:
+      PERFIL: ${{ inputs.perfil || 'garimpo' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -36,6 +43,7 @@ jobs:
         id: prep
         env:
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_ACCESS_TOKEN_ANA: ${{ secrets.IG_ACCESS_TOKEN_ANA }}
           FORCAR: ${{ inputs.forcar && '1' || '0' }}
         run: python -m src.busca_reels preparar
       - if: steps.prep.outputs.tem_post == 'true'
@@ -56,6 +64,7 @@ jobs:
         if: steps.prep.outputs.tem_post == 'true'
         env:
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_ACCESS_TOKEN_ANA: ${{ secrets.IG_ACCESS_TOKEN_ANA }}
           PAGES_URL: ${{ steps.deploy.outputs.page_url || steps.deploy2.outputs.page_url }}
           FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
           FB_PAGE_TOKEN: ${{ secrets.FB_PAGE_TOKEN }}
@@ -67,6 +76,6 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A data
           git diff --cached --quiet && exit 0
-          git commit -m "🔎 Busca do Zé $(TZ=America/Sao_Paulo date +'%d/%m/%Y %H:%M')"
+          git commit -m "🔎 Busca ($PERFIL) $(TZ=America/Sao_Paulo date +'%d/%m/%Y %H:%M')"
           git pull --rebase
           git push
