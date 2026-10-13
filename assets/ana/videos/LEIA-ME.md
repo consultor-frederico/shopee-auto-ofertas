@@ -19,5 +19,9 @@ Dois Reels terminam com a Ana se despedindo (`finais/`) e o terceiro abre com 1,
 Terças, quintas e sábados às 16h (mude com `ANA_DIAS`; 0 = segunda). Só no Instagram (feed + story).
 Vídeo que nunca saiu vai primeiro. Para incluir outro, coloque `ana_nome.mp4` aqui.
 
+## Música
+Os vídeos da Ana vêm só com a voz. O robô põe trilha de `assets/ana/musicas/` (mais baixa quando ela fala),
+nos Reels de oferta e nos posts próprios. Para trocar ou incluir músicas, é só mexer nessa pasta.
+
 ana_oi_acenando, ana_palmas, ana_olhando_quarto, ana_celular, ana_presente, ana_cafe,
 ana_anotando, ana_closet_organizado, ana_skincare

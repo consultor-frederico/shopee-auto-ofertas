@@ -298,6 +298,16 @@ def preparar():
         (PASTA_SITE / fixo.name).write_text(fixo.read_text(encoding="utf-8"), encoding="utf-8")
     nome = f"{PREFIXO[:-1]}-{int(time.time())}.mp4"
     shutil.copy(video, pasta / nome)
+    if ANA and MUSICA_LIGADA:   # os vídeos da Ana vêm só com a voz: põe musiquinha (mais baixa quando ela fala)
+        musicas = escolher_musicas({"id": video.name}, _duracao(pasta / nome))
+        if musicas:
+            try:
+                tmp = pasta / f"tmp-{nome}"
+                _com_musica(pasta / nome, musicas, tmp)
+                tmp.replace(pasta / nome)
+                print(f"🎵 Música: {' → '.join(m.stem for m in musicas)}")
+            except Exception as e:
+                print(f"::warning::Música não entrou ({e}); o vídeo sai só com a voz.")
     n = len(dados["posts"])
     if ANA:
         leg = LEGENDAS_ANA[n % len(LEGENDAS_ANA)] + "\n\n" + PEDIDO_ANA + "\n\n" + HASHTAGS_ANA
