@@ -1,20 +1,23 @@
 # Vídeos da Ana (Ana Novo Achados)
 
-Vídeos da apresentadora da @ananovoachados, feitos no Google Flow (9:16, 720x1280, 8 s, com áudio).
-Recebidos em 13/10/2026. **Ainda não entram em nenhum post**: a Ana está pausada (`ANA_LIGADA=0`)
-até a conta dela ser conectada na Meta. Quando ligar, a ideia é usar como o Zé no Garimpo VIP
-(abertura/final dos Reels e posts próprios), sempre só na @ananovoachados.
+Feitos no Google Flow (9:16, 8 s, com a voz dela). Só saem na @ananovoachados.
+Funciona igual ao Zé no Garimpo VIP (código em `src/ze.py`, que lê esta pasta quando `PERFIL=ana`).
+Registro do rodízio em `data/ana/ze.json`.
+
+## 1. Reels de oferta (rodízio de 3)
+Dois Reels terminam com a Ana se despedindo (`finais/`) e o terceiro abre com 1,8 s dela, sem som (`inicios/`).
 
 | Arquivo | Cena |
 |---|---|
-| ana_oi_acenando.mp4 | acena para a câmera, close (selfie) |
-| ana_palmas.mp4 | bate palmas e sorri no quarto |
-| ana_olhando_quarto.mp4 | olha em volta no quarto com luzinhas |
-| ana_apontando.mp4 | aponta para o lado (espaço vazio) |
-| ana_celular.mp4 | mexe no celular e fala para a câmera |
-| ana_presente.mp4 | segura uma caixa de presente com laço rosa |
-| ana_cafe.mp4 | segura uma caneca rosa perto da janela |
-| ana_anotando.mp4 | anota num caderno no sofá |
-| ana_closet_organizado.mp4 | mostra um closet organizado |
-| ana_skincare.mp4 | mostra um frasco de skincare |
-| ana_tchau_pijama.mp4 | de pijama na cama, se despedindo |
+| inicios/ini_oi_acenando.mp4 | acena para a câmera |
+| inicios/ini_palmas.mp4 | bate palmas e sorri |
+| inicios/ini_olhando_quarto.mp4 | olha em volta no quarto |
+| finais/fim_apontando.mp4 | aponta para o lado e fala (3,6 s) |
+| finais/fim_tchau_pijama.mp4 | de pijama na cama, se despedindo (7 s) |
+
+## 2. Post próprio da Ana (`ana_*.mp4`)
+Terças, quintas e sábados às 16h (mude com `ANA_DIAS`; 0 = segunda). Só no Instagram (feed + story).
+Vídeo que nunca saiu vai primeiro. Para incluir outro, coloque `ana_nome.mp4` aqui.
+
+ana_oi_acenando, ana_palmas, ana_olhando_quarto, ana_celular, ana_presente, ana_cafe,
+ana_anotando, ana_closet_organizado, ana_skincare

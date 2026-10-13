@@ -47,6 +47,7 @@ jobs:
           case "$HQ" in 06:30|11:30|17:00) ANA="$ANA garimpo.yml" ;; esac
           case "$HQ" in 09:15|12:15|14:30|17:30|19:15|21:30) ANA="$ANA postar.yml" ;; esac
           if [ "$HQ" = "08:45" ] && [ "$DOW" = "1" ]; then ANA="$ANA token.yml"; fi
+          if [ "$HQ" = "16:00" ]; then ANA="$ANA ze.yml"; fi        # post próprio da Ana: só às terças, quintas e sábados (ANA_DIAS)
           for WF in $WFS; do
             echo "▶️  $WF"
             gh api -X POST "repos/$REPO/actions/workflows/$WF/dispatches" -f ref=main || echo "::warning::falhou $WF"

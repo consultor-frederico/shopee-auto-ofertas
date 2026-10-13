@@ -24,18 +24,22 @@ from datetime import datetime, timedelta
 
 from . import config
 
-PASTA = config.RAIZ / "assets" / "ze"
+ANA = config.PERFIL == "ana"   # na @ananovoachados quem aparece é a Ana (assets/ana/videos/)
+PASTA = config.RAIZ / "assets" / ("ana/videos" if ANA else "ze")
+PREFIXO = "ana_" if ANA else "ze_"
 PASTA_FINAIS = PASTA / "finais"
 PASTA_INICIOS = PASTA / "inicios"
-ARQ = config.PASTA_DADOS / "ze.json"
-ARQ_PROX = config.PASTA_DADOS / "proximo_ze.json"
+ARQ = config.PASTA_PERFIL / "ze.json"              # cada conta com o seu rodízio
+ARQ_PROX = config.PASTA_PERFIL / "proximo_ze.json"
 PASTA_SITE = config.RAIZ / "site"
 # dias da semana do post do Zé (0 = segunda ... 6 = domingo); padrão segunda, quarta, sexta e domingo
-DIAS_SEMANA = {int(d) for d in os.getenv("ZE_DIAS", "0,2,4,6").split(",") if d.strip().isdigit()}
+# Ana: terças, quintas e sábados (ANA_DIAS), para não bater com os dias do Zé
+_DIAS = os.getenv("ANA_DIAS", "1,3,5") if ANA else os.getenv("ZE_DIAS", "0,2,4,6")
+DIAS_SEMANA = {int(d) for d in _DIAS.split(",") if d.strip().isdigit()}
 NOMES_DIAS = ["segunda", "terça", "quarta", "quinta", "sexta", "sábado", "domingo"]
 FINAL_LIGADO = os.getenv("ZE_NO_FINAL", "1") != "0"
 INICIO_LIGADO = os.getenv("ZE_NO_INICIO", "1") != "0"
-PASTA_MUSICAS = config.RAIZ / "assets" / "musicas"
+PASTA_MUSICAS = config.RAIZ / "assets" / ("ana/musicas" if ANA else "musicas")   # pasta vazia = sem música
 MUSICA_LIGADA = os.getenv("MUSICA_REELS", "1") != "0"
 VOLUME_MUSICA = float(os.getenv("VOLUME_MUSICA", "0.6"))
 
@@ -52,6 +56,17 @@ LEGENDAS = [
     "✨ Mais um dia de garimpo! O Zé Garimpo encontra os achados e você só escolhe. 🛒",
 ]
 HASHTAGS = "#zegarimpo #garimpovip #achadinhos #shopee #achados #ofertas #promoção"
+
+# Posts próprios da Ana (sem oferta): tom de amiga, sem prometer teste de produto
+LEGENDAS_ANA = [
+    "💚 Oi, gente! Aqui é a Ana. Todo dia eu garimpo achadinhos de beleza, moda, autocuidado e casa "
+    "pra você não precisar ficar horas procurando. ✨",
+    "☕ Pausa pro cafezinho e já volto com mais achados! Me segue pra não perder nenhum. 💚",
+    "🛍️ Achadinho bom é aquele que cabe no bolso e deixa o dia mais gostoso. Bora garimpar juntas? ✨",
+    "✨ Me conta aqui nos comentários: que tipo de achadinho você quer ver mais por aqui? 💬",
+]
+PEDIDO_ANA = "💬 Comenta o que você mais gosta de ver: beleza, moda, autocuidado ou casa? Eu leio tudo! 💚"
+HASHTAGS_ANA = "#ananovoachados #achadinhos #achadinhosfemininos #autocuidado #shopee #achados"
 
 
 def _ffmpeg():
@@ -182,9 +197,7 @@ def _vez_do_ze():
 
 def emendar_final(reels, oferta=None):
     """Cola o Zé no começo ou a vinheta no fim do Reels (rodízio de _vez_do_ze) e põe música no Reels inteiro (mesmo arquivo).
-    Só no Garimpo VIP. Devolve o nome da vinheta usada."""
-    if config.PERFIL != "garimpo":
-        return None
+    No Garimpo VIP é o Zé; na Ana Novo Achados é a Ana. Devolve o nome da vinheta usada."""
     quer_inicio, quer_final = _vez_do_ze()
     final = escolher_final(oferta) if (FINAL_LIGADO and quer_final) else None
     inicio = escolher_inicio(oferta) if (INICIO_LIGADO and quer_inicio) else None
@@ -206,11 +219,11 @@ def emendar_final(reels, oferta=None):
         subprocess.run(cmd, check=True)
         saida.replace(reels)
         if inicio:
-            print(f"🤠 Zé no começo do Reels: {inicio.name}")
+            print(f"{'💚 Ana' if ANA else '🤠 Zé'} no começo do Reels: {inicio.name}")
             if oferta is not None:
                 oferta["inicio_ze"] = inicio.name
         if final:
-            print(f"🤠 Vinheta do Zé no final do Reels: {final.name}")
+            print(f"{'💚 Ana' if ANA else '🤠 Zé'} no final do Reels: {final.name}")
     musicas = escolher_musicas(oferta, _duracao(reels)) if MUSICA_LIGADA else []
     if musicas:
         try:
@@ -228,7 +241,7 @@ def emendar_final(reels, oferta=None):
 
 # ------------------------------------------------------------------ post do Zé (ZE_DIAS)
 def videos():
-    return sorted(PASTA.glob("ze_*.mp4"))
+    return sorted(PASTA.glob(f"{PREFIXO}*.mp4"))
 
 
 def video_da_vez(dados):
@@ -263,11 +276,8 @@ def _saida(chave, valor):
 def preparar():
     from . import instagram
     _saida("tem_post", "false")
-    if config.PERFIL != "garimpo":
-        print("⏸️  O Zé Garimpo é só do Garimpo VIP.")
-        return
     if not instagram.tem_token():
-        print("⏸️  IG_ACCESS_TOKEN ausente.")
+        print("⏸️  Token do Instagram ausente.")
         return
     dados = _carregar()
     forcar = os.getenv("FORCAR") == "1"
@@ -275,24 +285,27 @@ def preparar():
     ja_hoje = any(p["postado_em"].startswith(hoje.strftime("%Y-%m-%d")) for p in dados["posts"])
     if not forcar and (hoje.weekday() not in DIAS_SEMANA or ja_hoje):
         dias = ", ".join(NOMES_DIAS[d] for d in sorted(DIAS_SEMANA))
-        print(f"⏳ O Zé posta sozinho às {dias} (uma vez no dia). Hoje não.")
+        print(f"⏳ {'A Ana' if ANA else 'O Zé'} posta sozinho às {dias} (uma vez no dia). Hoje não.")
         return
     video = video_da_vez(dados)
     if not video:
-        print("⚠️  Nenhum vídeo ze_*.mp4 em assets/ze/.")
+        print(f"⚠️  Nenhum vídeo {PREFIXO}*.mp4 em {PASTA}.")
         return
     pasta = PASTA_SITE / "midia"
     pasta.mkdir(parents=True, exist_ok=True)
     (PASTA_SITE / ".nojekyll").write_text("")
     for fixo in (config.RAIZ / "assets" / "paginas").glob("*.html"):
         (PASTA_SITE / fixo.name).write_text(fixo.read_text(encoding="utf-8"), encoding="utf-8")
-    nome = f"ze-{int(time.time())}.mp4"
+    nome = f"{PREFIXO[:-1]}-{int(time.time())}.mp4"
     shutil.copy(video, pasta / nome)
     n = len(dados["posts"])
-    leg = LEGENDAS[n % len(LEGENDAS)] + "\n\n" + PEDIDO + "\n\n" + HASHTAGS
+    if ANA:
+        leg = LEGENDAS_ANA[n % len(LEGENDAS_ANA)] + "\n\n" + PEDIDO_ANA + "\n\n" + HASHTAGS_ANA
+    else:
+        leg = LEGENDAS[n % len(LEGENDAS)] + "\n\n" + PEDIDO + "\n\n" + HASHTAGS
     ARQ_PROX.write_text(json.dumps({"arquivo": f"midia/{nome}", "video": video.name, "legenda": leg},
                                    ensure_ascii=False), encoding="utf-8")
-    print(f"🎬 Post do Zé preparado: {video.name}")
+    print(f"🎬 Post {'da Ana' if ANA else 'do Zé'} preparado: {video.name}")
     _saida("tem_post", "true")
 
 
@@ -314,7 +327,7 @@ def publicar():
     dados["posts"].append(reg)
     _salvar(dados)
     ARQ_PROX.unlink(missing_ok=True)
-    print(f"✅ Zé publicado no Instagram: {reg['permalink'] or media}")
+    print(f"✅ {'Ana' if ANA else 'Zé'} publicado no Instagram ({config.ARROBA}): {reg['permalink'] or media}")
     try:
         cs = instagram.criar_story(ig_id, video_url=url)
         instagram.aguardar_container(cs)
@@ -322,6 +335,9 @@ def publicar():
         print("📲 Também no story.")
     except Exception as e:
         print(f"::warning::Story do Zé falhou: {e}")
+    if ANA:   # a Ana só tem Instagram (Facebook e YouTube são do Garimpo VIP)
+        _salvar(dados)
+        return
     if facebook.configurado():
         try:
             reg["fb_post"] = facebook.postar_video(url, legenda_facebook(prox["legenda"]))
