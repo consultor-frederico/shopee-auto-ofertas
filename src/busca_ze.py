@@ -399,6 +399,8 @@ def rodar_dms(api, minha):
     d = carregar()
     ig_id = minha["user_id"]
     feitos_ids = d.setdefault("dms", {})
+    from . import story_dm
+    de_story = story_dm.tratados()   # "quero" em resposta a story: o link já foi pelo story_dm
     enviados_robo = set(d.setdefault("msgs_robo", []))
     try:
         conversas = _conversas(api, ig_id)
@@ -414,7 +416,7 @@ def rodar_dms(api, minha):
         ultima = msgs[0]                                    # a API manda da mais nova para a mais velha
         autor = (ultima.get("from") or {}).get("id")
         imagem = _imagem(ultima)
-        if autor == ig_id or ultima["id"] in feitos_ids or not (ultima.get("message") or imagem):
+        if autor == ig_id or ultima["id"] in feitos_ids or ultima["id"] in de_story or not (ultima.get("message") or imagem):
             continue
         quando = _quando(ultima.get("created_time", ""))
         if not quando or agora - quando > JANELA_DM:

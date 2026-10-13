@@ -255,7 +255,7 @@ def publicar():
             cont_s = instagram.criar_story(ig_id, video_url=surl if eh_video else None,
                                            imagem_url=None if eh_video else surl)
             instagram.aguardar_container(cont_s)
-            instagram.publicar(ig_id, cont_s)
+            oferta["story_id"] = instagram.publicar(ig_id, cont_s)   # para achar o produto quando responderem o story
             oferta["story"] = "ok"
             print("📲 Também publicado no story.")
         except Exception as e:

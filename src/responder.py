@@ -89,10 +89,19 @@ def responder(api=instagram):
     fila = carregar_fila()
     posts = posts_ativos(fila)
     minha = None
+    if api is instagram:   # 📲 respondeu um story com "quero": manda o link daquele achado
+        try:
+            from . import story_dm
+            minha = api.conferir_conta()
+            n = story_dm.responder_stories(api, minha)
+            if n:
+                print(f"📲 {n} links enviados por resposta de story.")
+        except Exception as e:
+            print(f"::warning::Respostas de story falharam: {e}")
     if config.PERFIL == "garimpo" and api is instagram:   # quadro "Você pediu, o Zé achou"
         try:
             from . import pedidos
-            minha = api.conferir_conta()
+            minha = minha or api.conferir_conta()
             n = pedidos.coletar(api, minha)
             if n:
                 print(f"🙋 {n} pedidos novos nos posts do Zé.")
