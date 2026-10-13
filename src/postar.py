@@ -82,7 +82,8 @@ def formato_da_vez(fila):
     if seguidos >= n:
         return "foto"
     # o último da sequência antes da foto vira carrossel: reels, carrossel, foto (1 em cada 3 posts)
-    if n >= 2 and seguidos == n - 1 and os.getenv("CARROSSEL", "1") != "0":
+    if (n >= 2 and seguidos == n - 1 and ult[0].get("formato") == "reels"
+            and os.getenv("CARROSSEL", "1") != "0"):
         return "carrossel"
     return "reels"
 
