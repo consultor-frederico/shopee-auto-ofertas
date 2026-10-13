@@ -20,6 +20,8 @@ mundo já posta: smartwatch, fone, power bank, carregador, aspirador portátil, 
 caixa de som, ring light. Esses só passam de 6 se tiverem algo realmente inusitado.
 Nota 0: produto com nome de franquia, marca ou personagem famoso (filme, série, desenho, anime,
 time, grife) — é risco de réplica.
+Nota 0 também: produto que não combina com o público acima (ex.: numa página para o público
+feminino, brinquedo infantil, ferramenta, isqueiro/acendedor, item automotivo ou masculino).
 Notas ALTAS (7-8): gadgets curiosos, soluções criativas para casa/carro/pet, itens com efeito
 visual, "não sabia que precisava disso", presentes legais.
 Notas 9-10: RARAS — só para o que é realmente surpreendente e quase ninguém conhece

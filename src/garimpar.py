@@ -306,7 +306,9 @@ def coletar_candidatos(fila, buscar=shopee.buscar_ofertas, escolhidas=None, mem=
         _filtrar(fila, ofertas, origem, candidatos, recusas)
     if escolhidas and erros == len(escolhidas):
         raise RuntimeError("Todas as buscas na Shopee falharam — verifique os segredos e a API.")
-    if buscar is shopee.buscar_ofertas:   # (nos testes com busca simulada, pula as lojas/categorias)
+    # Lojas, "em alta" e categorias trazem de tudo: só no Garimpo VIP (público geral).
+    # A Ana fica só nas palavras do nicho dela, para não aparecer brinquedo ou ferramenta.
+    if buscar is shopee.buscar_ofertas and config.PERFIL == "garimpo":   # (nos testes com busca simulada, pula)
         try:
             coletar_extras(fila, mem, candidatos, recusas)
         except Exception as e:
