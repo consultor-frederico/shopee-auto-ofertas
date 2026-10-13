@@ -40,9 +40,9 @@ jobs:
           # Para religar: if [ "$HQ" = "03:15" ]; then WFS="$WFS limpeza.yml"; fi
           if [ "$HQ" = "17:00" ] && [ "$DOW" = "5" ]; then WFS="$WFS revisao.yml"; fi
           if [ "$HQ" = "16:00" ] && { [ "$DOW" = "5" ] || [ "$(date -d tomorrow +%d)" = "01" ]; }; then WFS="$WFS top.yml"; fi   # Top 5: semana (sexta) / mês (último dia)   # revisão semanal no seu Telegram privado
-          # Ana Novo Achados (@ananovoachados): PAUSADA até o Fred conectar a conta dela.
-          # Para ligar: troque ANA_LIGADA=0 por ANA_LIGADA=1.
-          ANA_LIGADA=0
+          # Ana Novo Achados (@ananovoachados): LIGADA em 13/10/2026.
+          # Para pausar: troque ANA_LIGADA=1 por ANA_LIGADA=0.
+          ANA_LIGADA=1
           ANA=""
           case "$HQ" in 06:30|11:30|17:00) ANA="$ANA garimpo.yml" ;; esac
           case "$HQ" in 09:15|12:15|14:30|17:30|19:15|21:30) ANA="$ANA postar.yml" ;; esac
