@@ -58,6 +58,23 @@ def logo(largura=330):
     return ImageOps.contain(img, (largura, 10_000), Image.LANCZOS)
 
 
+ROSTO = PASTA / "ana.jpg"        # a personagem Ana (versão jovem da Ana de verdade)
+ROSTO_CORTE = (200, 90, 660, 550)  # recorte do rosto na foto 825x1024
+
+
+def avatar(diam):
+    """Rosto da Ana num círculo com anel rosa (None se a foto não existir)."""
+    if not ROSTO.exists():
+        return None
+    r = Image.open(ROSTO).convert("RGB").crop(ROSTO_CORTE).resize((diam, diam), Image.LANCZOS)
+    m = Image.new("L", (diam, diam), 0)
+    ImageDraw.Draw(m).ellipse([0, 0, diam - 1, diam - 1], fill=255)
+    anel = Image.new("RGBA", (diam + 12, diam + 12), (0, 0, 0, 0))
+    ImageDraw.Draw(anel).ellipse([0, 0, diam + 11, diam + 11], fill=ROSA_ESCURA)
+    anel.paste(r, (6, 6), m)
+    return anel
+
+
 def mascara_arco(l, a):
     m = Image.new("L", (l, a), 0)
     d = ImageDraw.Draw(m)
@@ -192,8 +209,13 @@ def botao_cta(img, cy, largura_total, escala=1.0):
 def gerar_foto(oferta, destino, foto=None):
     L, A = 1080, 1350
     img = degrade(L, A)
+    x = 60
+    av = avatar(118)
+    if av:
+        img.paste(av, (x, 30), av)
+        x += av.width + 22
     lg = logo(150)
-    img.paste(lg, (70, 36), lg)
+    img.paste(lg, (x, 36), lg)
     d = ImageDraw.Draw(img)
     f = sans(30, "Medium")
     t = "achadinho do dia"
@@ -218,8 +240,15 @@ def gerar_reels(oferta, destino, foto=None, duracao=8.0, fps=30):
         import imageio_ffmpeg
         ffmpeg = imageio_ffmpeg.get_ffmpeg_exe()
     base = degrade(L, A)
-    lg = logo(340)
-    base.paste(lg, ((L - lg.width) // 2, 90), lg)
+    av = avatar(210)
+    if av:
+        lg = logo(270)
+        x = (L - (av.width + 40 + lg.width)) // 2
+        base.paste(av, (x, 110), av)
+        base.paste(lg, (x + av.width + 40, 110 + (av.height - lg.height) // 2), lg)
+    else:
+        lg = logo(340)
+        base.paste(lg, ((L - lg.width) // 2, 90), lg)
     caixa = (130, 400, L - 130, 1230)
     texto = Image.new("RGBA", (L, 480), (0, 0, 0, 0))
     bloco_texto(texto, oferta, 0, L)
