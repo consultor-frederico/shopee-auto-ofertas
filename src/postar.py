@@ -22,8 +22,8 @@ PASTA_SITE = config.RAIZ / "site"
 ARQ_PROXIMO = config.PASTA_PERFIL / "proximo.json"
 MAX_TENTATIVAS = 2
 # Cada post do feed vai também para o story (desligue com STORIES=0).
-# Na Ana o story tem visual próprio (layout_ana.gerar_story); ligue trocando ANA_STORIES para "1".
-ANA_STORIES = os.getenv("ANA_STORIES", "0") == "1"
+# Na Ana o story tem visual próprio (layout_ana.gerar_story); desligue com ANA_STORIES=0.
+ANA_STORIES = os.getenv("ANA_STORIES", "1") == "1"   # ligado em 13/10/2026
 STORIES = (config.PERFIL == "garimpo" or ANA_STORIES) and os.getenv("STORIES", "1") != "0"
 
 
