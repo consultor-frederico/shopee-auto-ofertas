@@ -233,6 +233,19 @@ def gerar_foto(oferta, destino, foto=None):
 
 
 # ---------------------------------------------------------------- Reels (1080x1920, 8s)
+MUSICAS = PASTA / "musicas"   # trilhas só da Ana (nunca as do Garimpo VIP)
+
+
+def _trilha(duracao):
+    """Entrada de áudio do ffmpeg: uma música da Ana sorteada (com fade no fim) ou silêncio."""
+    import random
+    faixas = sorted(MUSICAS.glob("*.mp3")) if MUSICAS.exists() else []
+    if not faixas:
+        return ["-f", "lavfi", "-i", "anullsrc=channel_layout=stereo:sample_rate=44100"]
+    return ["-i", str(random.choice(faixas)), "-af",
+            f"volume=0.8,afade=t=in:d=0.3,afade=t=out:st={duracao - 1.2}:d=1.2"]
+
+
 def gerar_reels(oferta, destino, foto=None, duracao=8.0, fps=30):
     L, A = 1080, 1920
     ffmpeg = shutil.which("ffmpeg")
@@ -276,7 +289,7 @@ def gerar_reels(oferta, destino, foto=None, duracao=8.0, fps=30):
 
     cmd = [ffmpeg, "-y", "-loglevel", "error",
            "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{L}x{A}", "-r", str(fps), "-i", "-",
-           "-f", "lavfi", "-i", "anullsrc=channel_layout=stereo:sample_rate=44100",
+           *_trilha(duracao),
            "-shortest", "-c:v", "libx264", "-preset", "medium", "-crf", "20",
            "-pix_fmt", "yuv420p", "-profile:v", "high", "-movflags", "+faststart",
            "-c:a", "aac", "-b:a", "128k", str(destino)]

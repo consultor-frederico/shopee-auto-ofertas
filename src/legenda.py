@@ -27,7 +27,7 @@ _TAGS = {
     "autocuidado": "#achadinhosshopee #autocuidado #selfcare #achadinhos",
     "casa_fofa": "#achadinhosshopee #decoração #quartoaesthetic #achadinhos",
 }
-EXTRA_PERFIL = {"ana": " #lgbtqia #orgulho"}
+EXTRA_PERFIL = {"ana": " #achadinhosfemininos #autocuidado"}
 CTA = ("💚 Comenta QUERO que eu te mando o link no direct!" if config.PERFIL == "ana"
        else "👇 Comente EU QUERO que eu te envio o link no direct!")
 HASHTAGS = {k: v + EXTRA_PERFIL.get(config.PERFIL, "") + " " + config.HASHTAG_MARCA for k, v in _TAGS.items()}

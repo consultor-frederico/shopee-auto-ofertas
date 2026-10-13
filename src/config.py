@@ -125,7 +125,7 @@ UAU_MINIMO_POSTAR = int(os.getenv("UAU_MINIMO_POSTAR", "7"))
 MAX_PENDENTES_POR_FAMILIA = int(os.getenv("MAX_PENDENTES_POR_FAMILIA", "2"))         # na fila ao mesmo tempo
 
 
-# --- Ana Novo Achados (@ananovoachados): público feminino e LGBTQIA+ ---
+# --- Ana Novo Achados (@ananovoachados): público feminino ---
 NICHO_ANA = {
     "beleza": [
         "kit maquiagem", "skincare", "kit pincel maquiagem", "organizador de maquiagem",
@@ -142,7 +142,7 @@ NICHO_ANA = {
         "bolsa feminina", "brinco feminino", "colar feminino", "relógio feminino",
         "vestido feminino", "sandália feminina", "organizador de joias", "óculos de sol estiloso",
         "bolsa transversal", "anel ajustável", "pochete estilosa", "kit pulseiras",
-        "acessórios arco-íris", "camiseta oversized", "meia arco-íris", "brinco arco-íris",
+        "camiseta oversized", "kit presilhas", "bolsa de praia", "brinco de pérola",
     ],
     "autocuidado": [
         "massageador elétrico", "difusor de aromas", "pantufa fofinha", "kit spa em casa",
@@ -152,8 +152,8 @@ NICHO_ANA = {
     "casa_fofa": [
         "decoração quarto aesthetic", "luminária nuvem", "fita led quarto", "espelho decorativo",
         "luminária neon", "porta joias", "caneca criativa", "organizador acrílico",
-        "projetor galáxia", "luminária arco-íris", "almofada fofa", "copo térmico stanley",
-        "bandeira lgbt", "decoração arco-íris",
+        "projetor galáxia", "luminária decorativa", "almofada fofa", "copo térmico stanley",
+        "kit organizador closet", "cabideiro de chão",
     ],
 }
 
@@ -185,9 +185,9 @@ PERFIS = {
         "telegram": False,
         "proibidas": ["infantil", "criança", "crianca", "bebê", "bebe", "menina", "menino", "kids"],
         "tom": ("Tom acolhedor, divertido e inclusivo, como uma amiga que indica achadinhos. "
-                "Fale com mulheres e com o público LGBTQIA+ com carinho e sem estereótipos; "
-                "prefira linguagem neutra no tratamento (\"você\", \"pra quem ama...\")."),
-        "publico": "público feminino e LGBTQIA+ que ama beleza, moda, autocuidado e casa aesthetic",
+                "Fale com mulheres com carinho, leveza e sem estereótipos, "
+                "tratando por \"você\" (ex.: \"pra quem ama...\")."),
+        "publico": "público feminino que ama beleza, moda, autocuidado e casa aesthetic",
         # paleta leve e feminina da Ana (a arte própria fica em src/layout_ana.py)
         "cores": {"fundo": "#FFF8F4", "escuro": "#4A2C3F", "destaque": "#D9668A",
                   "destaque_claro": "#F2A7B8", "preco": "#4A2C3F", "cinza": "#A08893",
