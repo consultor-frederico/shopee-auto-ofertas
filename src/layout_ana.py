@@ -59,7 +59,7 @@ def logo(largura=330):
 
 
 ROSTO = PASTA / "ana.jpg"        # a personagem Ana (versão jovem da Ana de verdade)
-ROSTO_CORTE = (200, 90, 660, 550)  # recorte do rosto na foto 825x1024
+ROSTO_CORTE = (180, 120, 640, 580)  # recorte do rosto na foto 825x1024
 
 
 def avatar(diam):
