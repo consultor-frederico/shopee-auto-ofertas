@@ -90,6 +90,15 @@ def formato_da_vez(fila):
     return "reels"
 
 
+def arte_da_vez(fila):
+    """Rodízio dos modelos de arte (src/imagem.py: MODELOS): o próximo depois do último que saiu."""
+    lista = imagem.modelos()
+    for o in _ultimos_postados(fila, 10):
+        if o.get("arte") in lista:
+            return lista[(lista.index(o["arte"]) + 1) % len(lista)]
+    return lista[0]
+
+
 def preparar():
     _saida("tem_post", "false")
     if not instagram.tem_token():
@@ -130,6 +139,8 @@ def preparar():
                 oferta = cand
                 break
             foto = imagem._baixar_foto(cand["imagem"])
+            if formato != "reels":   # foto e capa do carrossel trocam de modelo a cada post
+                cand["arte"] = arte_da_vez(fila)
             if formato == "reels":
                 reels.gerar(cand, pasta / nome, foto=foto)
                 _final_do_ze(pasta / nome, cand)

@@ -1,5 +1,6 @@
 """Monta a arte do post (1080x1350, formato retrato do feed) com foto, preço e selo."""
 import io
+import os
 
 import requests
 from PIL import Image, ImageDraw, ImageFont, ImageOps
@@ -133,15 +134,40 @@ def _brl(v):
     return f"{v:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
 
+# Modelos de arte de cada conta, em rodízio (o postar.py grava em oferta["arte"] qual saiu).
+# "classico" é o desenho original; os outros ficam em src/artes_garimpo.py e src/layout_ana.py.
+MODELOS = {"garimpo": ["classico", "noite", "manchete"], "ana": ["classico", "polaroid", "revista"]}
+
+
+def modelos():
+    """Modelos ligados nesta conta. ARTES=classico desliga o rodízio; ARTES=noite,manchete escolhe quais."""
+    todos = MODELOS.get(config.PERFIL, ["classico"])
+    escolha = [m.strip() for m in os.getenv("ARTES", "").split(",") if m.strip() in todos]
+    return escolha or todos
+
+
+def modelo_de(oferta):
+    """Modelo gravado na oferta; sem gravação (Telegram, kit do WhatsApp), sorteia fixo pelo id."""
+    lista = modelos()
+    if oferta.get("arte") in lista:
+        return oferta["arte"]
+    return lista[sum(map(ord, str(oferta.get("id", "")))) % len(lista)]
+
+
 def gerar(oferta: dict, destino, foto: Image.Image = None):
+    if foto is None:
+        try:
+            foto = _baixar_foto(oferta["imagem"])
+        except Exception as e:
+            print(f"⚠️  Não baixei a foto ({e}); usando arte sem foto.")
+    modelo = modelo_de(oferta)
     if config.PERFIL == "ana":   # a Ana tem visual próprio (src/layout_ana.py)
         from . import layout_ana
-        if foto is None:
-            try:
-                foto = _baixar_foto(oferta["imagem"])
-            except Exception as e:
-                print(f"⚠️  Não baixei a foto ({e}); usando arte sem foto.")
-        return layout_ana.gerar_foto(oferta, destino, foto)
+        return {"polaroid": layout_ana.gerar_polaroid, "revista": layout_ana.gerar_revista}.get(
+            modelo, layout_ana.gerar_foto)(oferta, destino, foto)
+    if modelo != "classico":
+        from . import artes_garimpo
+        return getattr(artes_garimpo, modelo)(oferta, destino, foto)
     img = Image.new("RGB", (L, A), FUNDO)
     d = ImageDraw.Draw(img)
 
@@ -160,11 +186,6 @@ def gerar(oferta: dict, destino, foto: Image.Image = None):
     cx0, cy0, cx1, cy1 = 90, 205, L - 90, 205 + 715
     d.rounded_rectangle([cx0 + 6, cy0 + 10, cx1 + 6, cy1 + 10], 40, fill=SOMBRA)
     d.rounded_rectangle([cx0, cy0, cx1, cy1], 40, fill=BRANCO)
-    if foto is None:
-        try:
-            foto = _baixar_foto(oferta["imagem"])
-        except Exception as e:
-            print(f"⚠️  Não baixei a foto ({e}); usando arte sem foto.")
     if foto is not None:
         foto = ImageOps.contain(foto, (cx1 - cx0 - 80, cy1 - cy0 - 80), Image.LANCZOS)
         img.paste(foto, (cx0 + (cx1 - cx0 - foto.width) // 2, cy0 + (cy1 - cy0 - foto.height) // 2))

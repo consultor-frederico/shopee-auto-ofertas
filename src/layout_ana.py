@@ -232,6 +232,158 @@ def gerar_foto(oferta, destino, foto=None):
     return destino
 
 
+# ---------------------------------------------------------------- modelos extras (rodízio)
+AMEIXA_FUNDO = "#4A2C3F"
+CREME = "#FFF8F4"
+ROSA_CLARA = "#FBE3E8"
+
+
+def _bolinhas(img, cor, passo=54, r=4):
+    d = ImageDraw.Draw(img)
+    for yy in range(0, img.height, passo):
+        for xx in range((yy // passo % 2) * passo // 2, img.width, passo):
+            d.ellipse([xx - r, yy - r, xx + r, yy + r], fill=cor)
+
+
+def gerar_polaroid(oferta, destino, foto=None):
+    """Foto numa polaroid levemente girada, com fita adesiva e o título escrito na borda de baixo."""
+    L, A = 1080, 1350
+    img = Image.new("RGB", (L, A), ROSA_CLARA)
+    _bolinhas(img, "#F6CFD8")
+    d = ImageDraw.Draw(img)
+    av = avatar(104)
+    x = 60
+    if av:
+        img.paste(av, (x, 34), av)
+        x += av.width + 20
+    # balão de fala da Ana
+    t = "olha o que eu achei!"
+    fb = sans(34, "Bold")
+    wb = d.textlength(t, font=fb)
+    d.rounded_rectangle([x, 52, x + wb + 56, 128], 38, fill=BRANCO)
+    d.polygon([(x + 6, 100), (x - 18, 116), (x + 20, 120)], fill=BRANCO)
+    d.text((x + 28, 68), t, font=fb, fill=TEXTO)
+    lg = logo(130)
+    img.paste(lg, (L - 60 - lg.width, 40), lg)
+
+    # polaroid
+    pw, ph = 690, 810
+    pol = Image.new("RGBA", (pw, ph), BRANCO)
+    if foto is not None:
+        ft = ImageOps.contain(foto, (pw - 70, pw - 70), Image.LANCZOS)
+        pol.paste(ft, (35 + (pw - 70 - ft.width) // 2, 35 + (pw - 70 - ft.height) // 2))
+    dp = ImageDraw.Draw(pol)
+    ftit = serif(48)
+    yy = pw - 12
+    for linha in quebrar(dp, oferta["titulo"], ftit, pw - 80, max_linhas=2):
+        dp.text(((pw - dp.textlength(linha, font=ftit)) / 2, yy), linha, font=ftit, fill=TEXTO)
+        yy += 54
+    sombra = Image.new("RGBA", (pw + 40, ph + 40), (0, 0, 0, 0))
+    ImageDraw.Draw(sombra).rectangle([20, 26, pw + 20, ph + 26], fill=(74, 44, 63, 60))
+    sombra.paste(pol, (20, 20), pol)
+    sombra = sombra.rotate(-3, expand=True, resample=Image.BICUBIC)
+    px, py = (L - sombra.width) // 2, 175
+    img.paste(sombra, (px, py), sombra)
+    # fita adesiva no topo
+    fita = Image.new("RGBA", (230, 64), (242, 167, 184, 200))
+    fita = fita.rotate(4, expand=True, resample=Image.BICUBIC)
+    img.paste(fita, ((L - fita.width) // 2, py - 8), fita)
+    d = ImageDraw.Draw(img)
+    selo_loja(d, oferta, px + 70, py + 80)
+    if oferta.get("desconto"):
+        adesivo(img, px + sombra.width - 70, py + 120, f"-{oferta['desconto']}%", "OFF", r=105, angulo=10)
+
+    # preço e avaliação
+    y = 1080
+    preco = f"R$ {oferta['preco_fmt']}"
+    f_p = sans(80, "Black")
+    wp = d.textlength(preco, font=f_p)
+    de = f"de R$ {_brl(oferta['preco_de'])}" if oferta.get("preco_de") else ""
+    f_de = sans(32, "Medium")
+    wd = d.textlength(de, font=f_de) + 26 if de else 0
+    x = (L - (wd + wp + 64)) / 2
+    if de:
+        d.text((x, y + 36), de, font=f_de, fill=CINZA)
+        d.line([x - 2, y + 56, x + wd - 24, y + 56], fill=CINZA, width=3)
+        x += wd
+    d.rounded_rectangle([x, y, x + wp + 64, y + 108], 54, fill=TEXTO)
+    d.text((x + 32, y + 6), preco, font=f_p, fill=BRANCO)
+    botao_cta(img, A - 72, L, escala=0.95)
+    img.save(destino, "JPEG", quality=90, optimize=True)
+    return destino
+
+
+def gerar_revista(oferta, destino, foto=None):
+    """Cara de capa de revista: foto num círculo grande e painel ameixa com título, preço e chamada."""
+    L, A = 1080, 1350
+    img = degrade(L, A)
+    d = ImageDraw.Draw(img)
+    fk = sans(30, "Bold")
+    t = "A N A   I N D I C A"
+    d.text(((L - d.textlength(t, font=fk)) / 2, 44), t, font=fk, fill=ROSA_ESCURA)
+    d.line([90, 64, (L - d.textlength(t, font=fk)) / 2 - 30, 64], fill=ROSA, width=3)
+    d.line([(L + d.textlength(t, font=fk)) / 2 + 30, 64, L - 90, 64], fill=ROSA, width=3)
+
+    # foto no círculo com anel duplo
+    diam, cy = 640, 455
+    cx = L // 2
+    d.ellipse([cx - diam / 2 - 26, cy - diam / 2 - 26, cx + diam / 2 + 26, cy + diam / 2 + 26], outline=ROSA, width=4)
+    circ = Image.new("RGB", (diam, diam), BRANCO)
+    if foto is not None:
+        ft = ImageOps.contain(foto, (int(diam * 0.74), int(diam * 0.74)), Image.LANCZOS)
+        circ.paste(ft, ((diam - ft.width) // 2, (diam - ft.height) // 2))
+    m = Image.new("L", (diam, diam), 0)
+    ImageDraw.Draw(m).ellipse([0, 0, diam - 1, diam - 1], fill=255)
+    img.paste(circ, (cx - diam // 2, cy - diam // 2), m)
+    av = avatar(150)
+    if av:
+        img.paste(av, (cx - diam // 2 - 40, cy + diam // 2 - 150), av)
+    if oferta.get("desconto"):
+        adesivo(img, cx + diam // 2 - 10, cy - diam // 2 + 70, f"-{oferta['desconto']}%", "OFF", r=110, angulo=12)
+
+    # painel ameixa
+    top = 830
+    d = ImageDraw.Draw(img)
+    d.rounded_rectangle([40, top, L - 40, A - 40], 56, fill=AMEIXA_FUNDO)
+    selo_y = top - 26
+    nome, cor = LOJAS.get(oferta.get("plataforma") or "shopee", ("Loja", TEXTO))
+    fl = sans(28, "Bold")
+    tl = f"na {nome}"
+    wl = d.textlength(tl, font=fl)
+    d.rounded_rectangle([(L - wl) / 2 - 30, selo_y, (L + wl) / 2 + 30, selo_y + 52], 26, fill=cor)
+    d.text(((L - wl) / 2, selo_y + 9), tl, font=fl, fill=BRANCO)
+    y = top + 56
+    ftit = serif(60)
+    for linha in quebrar(d, oferta["titulo"], ftit, L - 200, max_linhas=2):
+        d.text(((L - d.textlength(linha, font=ftit)) / 2, y), linha, font=ftit, fill=CREME)
+        y += 70
+    y += 10
+    preco = f"R$ {oferta['preco_fmt']}"
+    f_p = sans(86, "Black")
+    linha_info = ""
+    if oferta.get("preco_de"):
+        linha_info = f"de R$ {_brl(oferta['preco_de'])}  ·  "
+    nota = (f"{oferta['avaliacao_pct']:.0f}% positivas" if oferta.get("avaliacao_pct")
+            else f"nota {oferta['nota']:.1f}".replace(".", ","))
+    linha_info += f"{nota}  ·  " + f"{oferta['vendas']:,}+ vendidos".replace(",", ".")
+    d.text(((L - d.textlength(preco, font=f_p)) / 2, y), preco, font=f_p, fill=ROSA)
+    y += 108
+    fi = sans(30, "Medium")
+    d.text(((L - d.textlength(linha_info, font=fi)) / 2, y), linha_info, font=fi, fill="#D8C3CF")
+    # chamada
+    f1, f2 = sans(40, "Bold"), sans(40, "Black")
+    t1, t2, t3 = "comenta ", "QUERO", " e recebe o link"
+    w = sum(d.textlength(t, font=ff) for t, ff in ((t1, f1), (t2, f2), (t3, f1)))
+    cyb = A - 118
+    d.rounded_rectangle([(L - w) / 2 - 44, cyb - 42, (L + w) / 2 + 44, cyb + 42], 42, fill=ROSA)
+    x = (L - w) / 2
+    for t, ff, c in ((t1, f1, TEXTO), (t2, f2, BRANCO), (t3, f1, TEXTO)):
+        d.text((x, cyb - 27), t, font=ff, fill=c)
+        x += d.textlength(t, font=ff)
+    img.save(destino, "JPEG", quality=90, optimize=True)
+    return destino
+
+
 # ---------------------------------------------------------------- Reels (1080x1920, 8s)
 MUSICAS = PASTA / "musicas"   # trilhas só da Ana (nunca as do Garimpo VIP)
 
