@@ -30,7 +30,8 @@ _TAGS = {
 EXTRA_PERFIL = {"ana": " #achadinhosfemininos #autocuidado"}
 CTA = ("💚 Comenta QUERO que eu te mando o link no direct!" if config.PERFIL == "ana"
        else "👇 Comente EU QUERO que eu te envio o link no direct!")
-HASHTAGS = {k: v + EXTRA_PERFIL.get(config.PERFIL, "") + " " + config.HASHTAG_MARCA for k, v in _TAGS.items()}
+HASHTAGS = {k: " ".join(dict.fromkeys((v + EXTRA_PERFIL.get(config.PERFIL, "") + " " + config.HASHTAG_MARCA).split()))
+            for k, v in _TAGS.items()}   # sem hashtag repetida (ex.: #autocuidado da categoria e da Ana)
 
 PROMPT = """Você é social media de uma página de achadinhos da Shopee chamada {marca}.
 Público: {publico}. {tom}
