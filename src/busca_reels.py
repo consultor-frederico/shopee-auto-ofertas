@@ -41,14 +41,14 @@ LEGENDAS = [
     "🔎 BUSCA DO ZÉ ⛏️\n\nNão achou o que queria no feed? Comenta aqui o que você procura que o Zé cava "
     "na Shopee e te manda os melhores no direct. Pode pedir quantas vezes quiser! 🤠\n\n📩 Se preferir, manda o pedido no direct que o Zé responde lá mesmo.",
 ]
-HASHTAGS = "#BuscaDoZe #garimpovip #zegarimpo #achadinhos #shopee #achados #ofertas"
+HASHTAGS = "#BuscaDoZe #garimpovip #zegarimpo #achadinhos #achadinhosshopee"
 if ANA:
     LEGENDAS = [
         "💚 BUSCA DA ANA\n\nTá procurando alguma coisa e não acha? Comenta aqui embaixo o que você quer "
         "(ex.: \"bolsa transversal\", \"escova secadora\") que eu procuro na Shopee e te mando no direct "
         "os 3 melhores achadinhos, com nota alta e muita venda! ✨\n\n🤫 Prefere não comentar? Me manda no direct que funciona igual!",
     ]
-    HASHTAGS = "#BuscaDaAna #ananovoachados #achadinhos #achadinhosfemininos #shopee #achados"
+    HASHTAGS = "#BuscaDaAna #ananovoachados #achadinhosfemininos #achadinhos #achadinhosshopee"
 
 ESCURO = "#24150A"
 DOURADO = "#E2BE68"

@@ -38,7 +38,7 @@ LEGENDAS = [
     "👉 Entre pelo link da bio.",
 ]
 
-HASHTAGS = "#achadinhos #shopee #cupons #ofertas #promoção #garimpovip"
+HASHTAGS = "#cupomshopee #achadinhos #achadinhosshopee #cupomdedesconto #garimpovip"
 
 
 def _saida(chave, valor):

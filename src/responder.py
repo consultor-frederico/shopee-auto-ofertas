@@ -55,7 +55,7 @@ if config.PERFIL == "ana":   # a Ana fala do jeito dela (contas independentes), 
         "Oi, amiga! Separei pra você 🥰 {titulo}\nÉ só tocar no botão pra ver na {loja}. Me conta depois se gostou!" + _AVISO,
         "Aaah, que bom que você curtiu! 😍 Tá aqui: {titulo}\nO botão abre na {loja}, mas corre que esses somem rápido." + _AVISO,
         "Prontinho! ✨ {titulo}\nToca no botão pra ver na {loja}. Espero que você goste! 💬" + _AVISO,
-        "Oi! Esse eu também amei 💚 {titulo}\nÉ só tocar no botão que abre na {loja}." + _AVISO,
+        "Oi! Esse tá saindo muito 💚 {titulo}\nÉ só tocar no botão que abre na {loja}." + _AVISO,
     ])
     TITULO_BOTAO = "💚 Quero ver"
     DM = _Variado([

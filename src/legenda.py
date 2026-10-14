@@ -11,7 +11,8 @@ from . import config
 _modelo_escolhido = None
 
 # Poucas hashtags e bem específicas (hoje elas só classificam o post; o que traz alcance é a
-# palavra-chave na legenda e o post ser enviado/salvo).
+# palavra-chave na legenda e o post ser enviado/salvo). Regra das skills de Instagram: 3 a 5 tags
+# "dimensionadas" (1 ampla + 1 da categoria + 1-2 do próprio produto + a da marca), nunca 30.
 _TAGS = {
     "eletronicos": "#achadinhosshopee #gadgets #tecnologia #achadinhos",
     "lar": "#achadinhosshopee #casaorganizada #utilidadesdomesticas #achadinhos",
@@ -28,10 +29,36 @@ _TAGS = {
     "casa_fofa": "#achadinhosshopee #decoração #quartoaesthetic #achadinhos",
 }
 EXTRA_PERFIL = {"ana": " #achadinhosfemininos #autocuidado"}
+MAX_TAGS = 5
+_TAGS_PROIBIDAS = {"#fyp", "#foryou", "#viral", "#explore", "#explorar", "#reels", "#instagood",
+                   "#tbt", "#love", "#follow", "#seguir", "#like", "#curtir", "#sigoevolto"}
 CTA = ("💚 Comenta QUERO que eu te mando o link no direct!" if config.PERFIL == "ana"
        else "👇 Comente EU QUERO que eu te envio o link no direct!")
 HASHTAGS = {k: " ".join(dict.fromkeys((v + EXTRA_PERFIL.get(config.PERFIL, "") + " " + config.HASHTAG_MARCA).split()))
             for k, v in _TAGS.items()}   # sem hashtag repetida (ex.: #autocuidado da categoria e da Ana)
+
+
+def _tag_ok(tag):
+    t = tag.lower()
+    if not re.fullmatch(r"#[a-z0-9_à-ÿ]{3,30}", t) or t in _TAGS_PROIBIDAS:
+        return False
+    if config.PERFIL == "ana" and ("garimp" in t or any(p in t for p in config._P.get("proibidas", []))):
+        return False
+    return True
+
+
+def montar_hashtags(categoria, do_produto=()):
+    """No máximo 5: a ampla do perfil, a da categoria, até 2 do próprio produto (vindas da IA) e a da marca."""
+    base = (_TAGS.get(categoria) or _TAGS["manual"]).split()
+    ampla = "#achadinhosfemininos" if config.PERFIL == "ana" else base[0]
+    da_categoria = next((t for t in base[1:] if t not in ("#achadinhos", "#achadinhosshopee")), "#achadinhos")
+    produto = [t if t.startswith("#") else "#" + t for t in (do_produto or [])]
+    produto = [t for t in produto if _tag_ok(t)][:2]
+    tags = list(dict.fromkeys(t.lower() for t in [ampla, da_categoria] + produto))
+    tags += [t for t in base if t.lower() not in tags]          # completa se faltou tag do produto
+    marca = [config.HASHTAG_MARCA] if config.HASHTAG_MARCA else []
+    return " ".join(tags[:MAX_TAGS - len(marca)] + marca)
+
 
 PROMPT = """Você é social media de uma página de achadinhos da Shopee chamada {marca}.
 Público: {publico}. {tom}
@@ -40,20 +67,31 @@ Preço: R$ {preco}{desconto}
 Avaliação: {nota} estrelas, {vendas} vendidos.{achado}
 
 Responda APENAS com um JSON válido, sem texto antes ou depois, no formato:
-{{"titulo": "...", "legenda": "..."}}
+{{"titulo": "...", "legenda": "...", "hashtags": ["#...", "#..."]}}
 
 Regras:
 - "titulo": nome comercial curto do produto, no máximo 32 caracteres, sem emoji, sem marca de loja.
-- "legenda": 3 a 5 linhas curtas separadas por \\n. Linha 1 é um gancho que JÁ TRAZ O NOME do
-  produto do jeito que as pessoas pesquisam no Instagram (ex.: "Porta tempero giratório: cozinha
-  organizada em 1 minuto"), porque é isso que faz o post aparecer na busca.
-  Depois, 1 ou 2 benefícios concretos. Mencione o preço uma vez. Use poucos emojis.
-  NÃO invente características que não estão no nome do produto. NÃO coloque link nem hashtags.
+- "legenda": 3 a 5 linhas curtas separadas por \\n, com UMA ideia só.
+  Linha 1 é o gancho e tem NO MÁXIMO 110 caracteres (o Instagram corta em ~125 com o "mais").
+  Ela JÁ TRAZ O NOME do produto do jeito que as pessoas pesquisam no Instagram (ex.: "Porta tempero
+  giratório: cozinha organizada em 1 minuto"), porque é isso que faz o post aparecer na busca.
+  Depois, 1 ou 2 benefícios concretos. Prefira números a adjetivos: use a nota, as vendas e o preço
+  (ex.: "nota 4,9 com mais de 2 mil vendidos" em vez de "super bem avaliado"). Mencione o preço uma vez.
+  Use poucos emojis. NÃO invente características que não estão no nome do produto. NÃO coloque link nem hashtags.
+  Escreva como gente, sem cara de texto de IA: no máximo 1 travessão (—) na legenda toda, nada de
+  "imperdível", "incrível", "revolucionário", "eleve", "transforme", "descubra", "perfeito para você",
+  "não perca", "você vai se surpreender".
   A página é uma curadoria de achadinhos: escolhe produtos pela nota e pelas vendas na Shopee, mas NÃO testa nem
   usa os produtos. Então NUNCA escreva como quem usou, testou, comprou ou tem o produto ("testei",
   "uso aqui em casa", "amei", "eu tenho", "recomendo") e NUNCA prometa resultado ("garantido",
-  "dura muito", "não decepciona"). Fale do produto e do achado, não de experiência própria.
-  A última linha deve ser exatamente: {cta}"""
+  "dura muito", "não decepciona"). Fale do produto e do achado, não de experiência própria.{proibido}
+  A última linha deve ser exatamente: {cta}
+- "hashtags": 2 hashtags em português, minúsculas, sem acento, de nicho DESTE produto e de quem compra
+  ele (ex.: boneca → "#brinquedoinfantil", "#presentedecrianca"; ring light → "#youtuber", "#criadordeconteudo").
+  Nada genérico como #viral, #fyp, #explore, #ofertas ou #promoção."""
+
+# A Ana tem as palavras dela: "garimpo/garimpar" é do Zé (Garimpo VIP) e nunca aparece na Ana.
+PROIBIDO_ANA = '\n  NUNCA use as palavras "garimpo", "garimpar", "garimpei" nem "garimpado".'
 
 
 def _modelos_disponiveis(headers):
@@ -196,6 +234,33 @@ _PROMESSA = [
 ]
 
 
+_CLICHE = {"imperdível", "incrível", "revolucionário", "revolucionária", "não perca", "simplesmente incrível"}
+
+
+def sem_cara_de_ia(texto):
+    """Mantém só o 1º travessão; os outros viram vírgula. Tira clichê solto ("— imperdível!")."""
+    linhas = []
+    visto = False
+    for linha in texto.split("\n"):
+        partes = [x for x in re.split(r"\s+[—–]\s+|\s*--\s*", linha)          # "— imperdível!" solto sai
+                  if x.strip(" !.,") and x.strip(" !.,").lower() not in _CLICHE]
+        nova = partes[0] if partes else ""
+        for parte in partes[1:]:
+            nova += (" — " if not visto else ", ") + parte
+            visto = True
+        linhas.append(re.sub(r"\s{2,}", " ", nova).strip().rstrip(",;—– "))
+    return "\n".join(linhas)
+
+
+def gancho_curto(texto, limite=125):
+    """Se a 1ª linha passar do que aparece antes do "mais", corta na última palavra inteira."""
+    linhas = texto.split("\n")
+    if linhas and len(linhas[0]) > limite:
+        corte = linhas[0][:limite].rsplit(" ", 1)[0].rstrip(" ,:;—-")
+        linhas[0] = corte
+    return "\n".join(linhas)
+
+
 def sem_promessa(texto):
     for rx, troca in _PROMESSA:
         texto = rx.sub(troca, texto)
@@ -215,6 +280,7 @@ def gerar(oferta: dict) -> dict:
     else:
         desconto = f" ({oferta['desconto']}% OFF)" if oferta.get("desconto") else ""
         prompt = PROMPT.format(cta=CTA, marca=config.NOME_MARCA, publico=config.PUBLICO, tom=config.TOM,
+                               proibido=PROIBIDO_ANA if config.PERFIL == "ana" else "",
                                nome=oferta["nome"], preco=oferta["preco_fmt"], desconto=desconto,
                                nota=oferta["nota"], vendas=oferta["vendas"],
                                achado=ACHADO if oferta.get("nivel") == "achado" else "")
@@ -226,10 +292,15 @@ def gerar(oferta: dict) -> dict:
             if leg and fala_como_quem_usou(leg):
                 print("⚠️  Legenda da IA falou como quem usou o produto; usando legenda padrão.")
                 leg = ""
-            leg = sem_promessa(leg)
+            if leg and config.PERFIL == "ana" and re.search(r"garimp", leg, re.I):
+                print("⚠️  Legenda da Ana veio com 'garimpo'; usando legenda padrão.")
+                leg = ""
+            leg = gancho_curto(sem_cara_de_ia(sem_promessa(leg)))
+            tags_ia = dados.get("hashtags") if isinstance(dados.get("hashtags"), list) else []
             if leg and "QUERO" in leg.upper():
                 return {"titulo": t or titulo,
-                        "legenda": com_compartilhar(leg, oferta) + "\n\n" + HASHTAGS.get(oferta["categoria"], ""),
+                        "legenda": com_compartilhar(leg, oferta) + "\n\n"
+                                   + montar_hashtags(oferta["categoria"], [str(x) for x in tags_ia]),
                         "fonte": "ia"}
             print("⚠️  Legenda da IA veio fora do padrão; usando legenda padrão.")
             if t:
@@ -237,5 +308,5 @@ def gerar(oferta: dict) -> dict:
         except Exception as e:
             print(f"⚠️  Falha na legenda por IA ({e}); usando legenda padrão.")
     oferta_t = dict(oferta, titulo=base["titulo"])
-    base["legenda"] = com_compartilhar(_legenda_padrao(oferta_t), oferta) + "\n\n" + HASHTAGS.get(oferta["categoria"], "")
+    base["legenda"] = com_compartilhar(_legenda_padrao(oferta_t), oferta) + "\n\n" + montar_hashtags(oferta["categoria"])
     return base

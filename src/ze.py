@@ -56,7 +56,7 @@ LEGENDAS = [
     "traz o que vale ouro. 🏆",
     "✨ Mais um dia de garimpo! O Zé Garimpo encontra os achados e você só escolhe. 🛒",
 ]
-HASHTAGS = "#zegarimpo #garimpovip #achadinhos #shopee #achados #ofertas #promoção"
+HASHTAGS = "#zegarimpo #garimpovip #achadinhos #achadinhosshopee #achadosdashopee"
 
 # Posts próprios da Ana (sem oferta): tom de amiga, sem prometer teste de produto
 LEGENDAS_ANA = [
@@ -67,7 +67,7 @@ LEGENDAS_ANA = [
     "✨ Me conta aqui nos comentários: que tipo de achadinho você quer ver mais por aqui? 💬",
 ]
 PEDIDO_ANA = "💬 Comenta o que você mais gosta de ver: beleza, moda, autocuidado ou casa? Eu leio tudo! 💚"
-HASHTAGS_ANA = "#ananovoachados #achadinhos #achadinhosfemininos #autocuidado #shopee #achados"
+HASHTAGS_ANA = "#ananovoachados #achadinhosfemininos #autocuidado #achadinhos #achadosdashopee"
 
 
 def _ffmpeg():
