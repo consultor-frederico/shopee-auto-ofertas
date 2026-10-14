@@ -63,9 +63,13 @@ def candidatos_ordenados(fila):
     ouro = [o for o in resto if o.get("nivel", "ouro") == "ouro"
             or (pode_achado and o.get("nivel") == "achado")]
     base = ouro or [o for o in resto if o.get("nivel") != "achado"] or resto
+    fams = variedade.familias_recentes(fila, "postado_em")
+    # Ouro só de família que saiu há pouco? Prata de outro tipo vence a repetição.
+    if not any(variedade.familia(o) not in fams for o in base):
+        base = [o for o in resto if o.get("nivel") != "achado" and variedade.familia(o) not in fams] or base
     base = [o for o in base if o["categoria"] not in recentes] + [o for o in base if o["categoria"] in recentes]
     # variedade: tipo de produto que saiu nas últimas HORAS_ENTRE_FAMILIA horas vai para o fim
-    return manuais + variedade.ordenar(base, variedade.familias_recentes(fila, "postado_em"))
+    return manuais + variedade.ordenar(base, fams)
 
 
 def formato_da_vez(fila):

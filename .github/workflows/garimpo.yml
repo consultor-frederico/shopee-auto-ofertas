@@ -57,5 +57,9 @@ jobs:
           git add -A data
           git diff --cached --quiet && exit 0
           git commit -m "🤖 Garimpo $PERFIL $(TZ=America/Sao_Paulo date +'%d/%m/%Y %H:%M')"
-          git pull --rebase
-          git push
+          # outro workflow pode ter salvo junto: tenta de novo até 5 vezes
+          for i in 1 2 3 4 5; do
+            git pull --rebase && git push && break
+            [ $i = 5 ] && exit 1
+            sleep $((i * 5))
+          done
