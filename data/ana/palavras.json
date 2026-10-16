@@ -83,7 +83,7 @@
   "brinco feminino": {
    "cat": "moda",
    "origem": "fixa",
-   "usos": 3,
+   "usos": 4,
    "achados": 0,
    "criado": "2026-10-13",
    "ultimo_uso": "2026-10-16"
@@ -91,10 +91,10 @@
   "massageador elétrico": {
    "cat": "autocuidado",
    "origem": "fixa",
-   "usos": 5,
+   "usos": 6,
    "achados": 3,
    "criado": "2026-10-13",
-   "ultimo_uso": "2026-10-15"
+   "ultimo_uso": "2026-10-16"
   },
   "massageador facial": {
    "cat": "beleza",
@@ -123,23 +123,23 @@
   "fronha de cetim": {
    "cat": "cabelo",
    "origem": "fixa",
-   "usos": 2,
+   "usos": 3,
    "achados": 0,
    "criado": "2026-10-13",
-   "ultimo_uso": "2026-10-14"
+   "ultimo_uso": "2026-10-16"
   },
   "organizador de joias": {
    "cat": "moda",
    "origem": "fixa",
-   "usos": 2,
+   "usos": 3,
    "achados": 0,
    "criado": "2026-10-13",
-   "ultimo_uso": "2026-10-14"
+   "ultimo_uso": "2026-10-16"
   },
   "bolsa térmica": {
    "cat": "autocuidado",
    "origem": "fixa",
-   "usos": 5,
+   "usos": 6,
    "achados": 0,
    "criado": "2026-10-13",
    "ultimo_uso": "2026-10-16"
@@ -163,10 +163,10 @@
   "bolsa feminina": {
    "cat": "moda",
    "origem": "fixa",
-   "usos": 4,
-   "achados": 4,
+   "usos": 5,
+   "achados": 5,
    "criado": "2026-10-13",
-   "ultimo_uso": "2026-10-15"
+   "ultimo_uso": "2026-10-16"
   },
   "esmalte em gel kit": {
    "cat": "beleza",
@@ -187,10 +187,10 @@
   "projetor galáxia": {
    "cat": "casa_fofa",
    "origem": "fixa",
-   "usos": 4,
+   "usos": 5,
    "achados": 3,
    "criado": "2026-10-13",
-   "ultimo_uso": "2026-10-15"
+   "ultimo_uso": "2026-10-16"
   },
   "cinto bolso oculto": {
    "cat": "moda",
@@ -283,10 +283,10 @@
   "sandália feminina": {
    "cat": "moda",
    "origem": "fixa",
-   "usos": 4,
-   "achados": 3,
+   "usos": 5,
+   "achados": 4,
    "criado": "2026-10-13",
-   "ultimo_uso": "2026-10-15"
+   "ultimo_uso": "2026-10-16"
   },
   "lip tint": {
    "cat": "beleza",
@@ -299,10 +299,10 @@
   "secador de cabelo potente": {
    "cat": "cabelo",
    "origem": "fixa",
-   "usos": 4,
+   "usos": 5,
    "achados": 0,
    "criado": "2026-10-13",
-   "ultimo_uso": "2026-10-15"
+   "ultimo_uso": "2026-10-16"
   },
   "caneca criativa": {
    "cat": "casa_fofa",
@@ -475,7 +475,7 @@
   "colar feminino": {
    "cat": "moda",
    "origem": "fixa",
-   "usos": 4,
+   "usos": 5,
    "achados": 1,
    "criado": "2026-10-13",
    "ultimo_uso": "2026-10-16"
@@ -483,7 +483,7 @@
   "luminária sunset": {
    "cat": "autocuidado",
    "origem": "fixa",
-   "usos": 2,
+   "usos": 3,
    "achados": 0,
    "criado": "2026-10-13",
    "ultimo_uso": "2026-10-16"
@@ -803,10 +803,10 @@
   "porta joias": {
    "cat": "casa_fofa",
    "origem": "fixa",
-   "usos": 1,
+   "usos": 2,
    "achados": 0,
    "criado": "2026-10-14",
-   "ultimo_uso": "2026-10-14"
+   "ultimo_uso": "2026-10-16"
   },
   "garrafa motivacional": {
    "cat": "autocuidado",
@@ -995,10 +995,10 @@
   "glitter corporal": {
    "cat": "beleza",
    "origem": "fixa",
-   "usos": 1,
+   "usos": 2,
    "achados": 0,
    "criado": "2026-10-15",
-   "ultimo_uso": "2026-10-15"
+   "ultimo_uso": "2026-10-16"
   },
   "vela aromática": {
    "cat": "autocuidado",
@@ -1115,10 +1115,10 @@
   "cabine led unha": {
    "cat": "beleza",
    "origem": "fixa",
-   "usos": 1,
+   "usos": 2,
    "achados": 0,
    "criado": "2026-10-15",
-   "ultimo_uso": "2026-10-15"
+   "ultimo_uso": "2026-10-16"
   },
   "difusor cabelo cacheado": {
    "cat": "cabelo",
@@ -1239,56 +1239,136 @@
    "achados": 0,
    "criado": "2026-10-16",
    "ultimo_uso": "2026-10-16"
+  },
+  "difusor silicone anti-frizz": {
+   "cat": "cabelo",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-16",
+   "ultimo_uso": "2026-10-16"
+  },
+  "porta guardanapo giratório": {
+   "cat": "casa_fofa",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-16",
+   "ultimo_uso": "2026-10-16"
+  },
+  "cinto bolsa dobrável": {
+   "cat": "moda",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-16",
+   "ultimo_uso": "2026-10-16"
+  },
+  "almofada relaxante aquecida": {
+   "cat": "autocuidado",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-16",
+   "ultimo_uso": "2026-10-16"
+  },
+  "máscara vapor facial": {
+   "cat": "beleza",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-16",
+   "ultimo_uso": "2026-10-16"
+  },
+  "esfoliante químico portátil": {
+   "cat": "beleza",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-16",
+   "ultimo_uso": "2026-10-16"
+  },
+  "bolsa saco transparente": {
+   "cat": "moda",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-16",
+   "ultimo_uso": "2026-10-16"
+  },
+  "capa protetora spray brilho": {
+   "cat": "cabelo",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-16",
+   "ultimo_uso": "2026-10-16"
+  },
+  "luminária projeção estrelas": {
+   "cat": "casa_fofa",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-16",
+   "ultimo_uso": "2026-10-16"
+  },
+  "máscara sono aromática": {
+   "cat": "autocuidado",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-16",
+   "ultimo_uso": "2026-10-16"
   }
  },
  "categorias": {
   "100009": {
    "nivel": 0,
    "votos": {
-    "moda": 11091,
-    "beleza": 79,
-    "cabelo": 3901,
-    "autocuidado": 60,
-    "casa_fofa": 55
+    "moda": 12654,
+    "beleza": 115,
+    "cabelo": 3906,
+    "autocuidado": 61,
+    "casa_fofa": 67
    }
   },
   "100034": {
    "nivel": 1,
    "votos": {
-    "moda": 54,
+    "moda": 56,
     "cabelo": 18,
     "autocuidado": 16,
-    "beleza": 34,
-    "casa_fofa": 7
+    "beleza": 56,
+    "casa_fofa": 9
    }
   },
   "100167": {
    "nivel": 2,
    "votos": {
-    "moda": 23,
+    "moda": 25,
     "casa_fofa": 1,
-    "beleza": 2,
+    "beleza": 3,
     "autocuidado": 1
    }
   },
   "100636": {
    "nivel": 0,
    "votos": {
-    "casa_fofa": 23996,
-    "autocuidado": 10107,
-    "beleza": 2199,
-    "cabelo": 2443,
-    "moda": 2556
+    "casa_fofa": 25977,
+    "autocuidado": 10917,
+    "beleza": 2438,
+    "cabelo": 3145,
+    "moda": 3515
    }
   },
   "100711": {
    "nivel": 1,
    "votos": {
-    "casa_fofa": 4325,
+    "casa_fofa": 4348,
     "beleza": 519,
     "cabelo": 41,
-    "moda": 598,
-    "autocuidado": 807
+    "moda": 604,
+    "autocuidado": 813
    }
   },
   "101155": {
@@ -1300,38 +1380,38 @@
   "100719": {
    "nivel": 1,
    "votos": {
-    "casa_fofa": 7879,
+    "casa_fofa": 8999,
     "moda": 1,
-    "autocuidado": 424,
-    "beleza": 45
+    "autocuidado": 636,
+    "beleza": 46
    }
   },
   "100722": {
    "nivel": 1,
    "votos": {
-    "casa_fofa": 809,
+    "casa_fofa": 813,
     "cabelo": 20,
-    "moda": 93,
-    "beleza": 17,
+    "moda": 95,
+    "beleza": 27,
     "autocuidado": 120
    }
   },
   "101270": {
    "nivel": 2,
    "votos": {
-    "casa_fofa": 692,
+    "casa_fofa": 696,
     "cabelo": 20,
-    "moda": 71,
-    "beleza": 10,
+    "moda": 73,
+    "beleza": 13,
     "autocuidado": 84
    }
   },
   "101165": {
    "nivel": 2,
    "votos": {
-    "casa_fofa": 456,
-    "moda": 14,
-    "autocuidado": 22,
+    "casa_fofa": 474,
+    "moda": 20,
+    "autocuidado": 28,
     "beleza": 23,
     "cabelo": 28
    }
@@ -1347,11 +1427,11 @@
   "100010": {
    "nivel": 0,
    "votos": {
-    "casa_fofa": 1387,
-    "autocuidado": 190,
+    "casa_fofa": 1784,
+    "autocuidado": 227,
     "cabelo": 522,
     "moda": 14,
-    "beleza": 67
+    "beleza": 68
    }
   },
   "100039": {
@@ -1371,29 +1451,29 @@
   "100635": {
    "nivel": 0,
    "votos": {
-    "casa_fofa": 31,
+    "casa_fofa": 46,
     "cabelo": 31,
-    "autocuidado": 177,
-    "beleza": 56,
-    "moda": 26
+    "autocuidado": 213,
+    "beleza": 58,
+    "moda": 31
    }
   },
   "100703": {
    "nivel": 1,
    "votos": {
-    "casa_fofa": 31,
+    "casa_fofa": 46,
     "cabelo": 25,
-    "autocuidado": 177,
-    "beleza": 48,
-    "moda": 26
+    "autocuidado": 213,
+    "beleza": 50,
+    "moda": 31
    }
   },
   "101111": {
    "nivel": 2,
    "votos": {
-    "casa_fofa": 27,
-    "autocuidado": 157,
-    "beleza": 36,
+    "casa_fofa": 41,
+    "autocuidado": 183,
+    "beleza": 38,
     "cabelo": 19,
     "moda": 26
    }
@@ -1401,31 +1481,31 @@
   "100718": {
    "nivel": 1,
    "votos": {
-    "autocuidado": 2365,
+    "autocuidado": 2378,
     "cabelo": 63,
-    "casa_fofa": 3681,
+    "casa_fofa": 3685,
     "beleza": 4,
-    "moda": 59
+    "moda": 60
    }
   },
   "101241": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 2344,
+    "autocuidado": 2357,
     "cabelo": 11,
     "casa_fofa": 50,
-    "moda": 19,
+    "moda": 20,
     "beleza": 1
    }
   },
   "100717": {
    "nivel": 1,
    "votos": {
-    "autocuidado": 2356,
+    "autocuidado": 2844,
     "cabelo": 45,
-    "moda": 139,
-    "casa_fofa": 317,
-    "beleza": 141
+    "moda": 164,
+    "casa_fofa": 426,
+    "beleza": 142
    }
   },
   "101223": {
@@ -1442,7 +1522,8 @@
     "autocuidado": 12,
     "cabelo": 23,
     "casa_fofa": 33,
-    "beleza": 59
+    "beleza": 59,
+    "moda": 10
    },
    "usos": 1,
    "ultimo_uso": "2026-10-13",
@@ -1481,43 +1562,43 @@
   "100637": {
    "nivel": 0,
    "votos": {
-    "autocuidado": 196,
+    "autocuidado": 237,
     "cabelo": 241,
-    "casa_fofa": 41,
-    "moda": 618,
-    "beleza": 122
+    "casa_fofa": 52,
+    "moda": 769,
+    "beleza": 123
    }
   },
   "100728": {
    "nivel": 1,
    "votos": {
-    "autocuidado": 146,
+    "autocuidado": 176,
     "cabelo": 39,
-    "moda": 374
+    "moda": 449
    }
   },
   "101323": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 141,
+    "autocuidado": 169,
     "cabelo": 6,
-    "moda": 189
+    "moda": 225
    }
   },
   "101220": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 2317,
+    "autocuidado": 2804,
     "cabelo": 1,
-    "moda": 134,
-    "casa_fofa": 72
+    "moda": 143,
+    "casa_fofa": 73
    },
    "achados": 1
   },
   "101327": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 1
+    "autocuidado": 3
    }
   },
   "101329": {
@@ -1525,27 +1606,27 @@
    "votos": {
     "autocuidado": 3,
     "cabelo": 1,
-    "moda": 117
+    "moda": 145
    }
   },
   "100015": {
    "nivel": 0,
    "votos": {
-    "autocuidado": 1311,
-    "casa_fofa": 74,
-    "moda": 218,
+    "autocuidado": 1316,
+    "casa_fofa": 75,
+    "moda": 308,
     "beleza": 145,
-    "cabelo": 47
+    "cabelo": 48
    }
   },
   "100087": {
    "nivel": 1,
    "votos": {
-    "autocuidado": 1299,
+    "autocuidado": 1301,
     "casa_fofa": 61,
-    "moda": 98,
+    "moda": 127,
     "beleza": 145,
-    "cabelo": 47
+    "cabelo": 48
    }
   },
   "100332": {
@@ -1553,7 +1634,8 @@
    "votos": {
     "autocuidado": 9,
     "beleza": 13,
-    "casa_fofa": 1
+    "casa_fofa": 1,
+    "moda": 5
    }
   },
   "101239": {
@@ -1568,9 +1650,9 @@
    "nivel": 1,
    "votos": {
     "autocuidado": 149,
-    "cabelo": 26,
-    "casa_fofa": 2254,
-    "moda": 20,
+    "cabelo": 28,
+    "casa_fofa": 2265,
+    "moda": 24,
     "beleza": 100
    }
   },
@@ -1585,21 +1667,21 @@
   "100630": {
    "nivel": 0,
    "votos": {
-    "beleza": 26700,
-    "cabelo": 16572,
-    "moda": 321,
-    "autocuidado": 2968,
-    "casa_fofa": 108
+    "beleza": 28569,
+    "cabelo": 17459,
+    "moda": 479,
+    "autocuidado": 3044,
+    "casa_fofa": 141
    }
   },
   "100663": {
    "nivel": 1,
    "votos": {
-    "beleza": 15220,
-    "cabelo": 15679,
-    "moda": 293,
-    "autocuidado": 1430,
-    "casa_fofa": 96
+    "beleza": 15383,
+    "cabelo": 16561,
+    "moda": 446,
+    "autocuidado": 1486,
+    "casa_fofa": 127
    }
   },
   "100885": {
@@ -1607,9 +1689,9 @@
    "votos": {
     "beleza": 8444,
     "cabelo": 43,
-    "casa_fofa": 69,
-    "moda": 216,
-    "autocuidado": 23
+    "casa_fofa": 99,
+    "moda": 367,
+    "autocuidado": 25
    },
    "achados": 2
   },
@@ -1617,46 +1699,46 @@
    "nivel": 2,
    "votos": {
     "beleza": 482,
-    "casa_fofa": 1494
+    "casa_fofa": 1498
    },
    "achados": 6
   },
   "100664": {
    "nivel": 1,
    "votos": {
-    "beleza": 3330,
-    "autocuidado": 52
+    "beleza": 3514,
+    "autocuidado": 67
    }
   },
   "100905": {
    "nivel": 2,
    "votos": {
-    "beleza": 122
+    "beleza": 124
    }
   },
   "100025": {
    "nivel": 1,
    "votos": {
     "beleza": 13,
-    "autocuidado": 8,
+    "autocuidado": 9,
     "casa_fofa": 35,
-    "cabelo": 3820,
-    "moda": 89
+    "cabelo": 3825,
+    "moda": 104
    }
   },
   "100146": {
    "nivel": 2,
    "votos": {
     "beleza": 3,
-    "cabelo": 629,
-    "moda": 60,
+    "cabelo": 633,
+    "moda": 75,
     "autocuidado": 3
    }
   },
   "100666": {
    "nivel": 1,
    "votos": {
-    "beleza": 16,
+    "beleza": 19,
     "autocuidado": 10,
     "casa_fofa": 1
    }
@@ -1664,11 +1746,11 @@
   "100001": {
    "nivel": 0,
    "votos": {
-    "beleza": 70,
+    "beleza": 95,
     "cabelo": 17,
-    "autocuidado": 5022,
-    "casa_fofa": 65,
-    "moda": 10
+    "autocuidado": 5711,
+    "casa_fofa": 66,
+    "moda": 11
    }
   },
   "100019": {
@@ -1676,9 +1758,9 @@
    "votos": {
     "beleza": 68,
     "cabelo": 5,
-    "autocuidado": 4968,
-    "casa_fofa": 2,
-    "moda": 10
+    "autocuidado": 5653,
+    "casa_fofa": 3,
+    "moda": 11
    }
   },
   "100133": {
@@ -1693,49 +1775,49 @@
    "votos": {
     "beleza": 422,
     "cabelo": 36,
-    "moda": 1486,
-    "autocuidado": 12,
-    "casa_fofa": 3971
+    "moda": 2330,
+    "autocuidado": 14,
+    "casa_fofa": 4671
    }
   },
   "101256": {
    "nivel": 2,
    "votos": {
     "beleza": 3,
-    "moda": 10,
-    "casa_fofa": 56,
+    "moda": 11,
+    "casa_fofa": 57,
     "cabelo": 4
    }
   },
   "100662": {
    "nivel": 1,
    "votos": {
-    "beleza": 5248,
-    "autocuidado": 27
+    "beleza": 5662,
+    "autocuidado": 31
    }
   },
   "100880": {
    "nivel": 2,
    "votos": {
-    "beleza": 157
+    "beleza": 248
    },
    "achados": 1
   },
   "100715": {
    "nivel": 1,
    "votos": {
-    "beleza": 28,
+    "beleza": 185,
     "cabelo": 32,
     "casa_fofa": 16,
-    "autocuidado": 10,
-    "moda": 111
+    "autocuidado": 11,
+    "moda": 158
    }
   },
   "101191": {
    "nivel": 2,
    "votos": {
     "beleza": 17,
-    "moda": 79,
+    "moda": 126,
     "cabelo": 30,
     "autocuidado": 6
    }
@@ -1743,18 +1825,18 @@
   "100889": {
    "nivel": 2,
    "votos": {
-    "beleza": 29,
-    "cabelo": 15601,
-    "moda": 42,
-    "autocuidado": 81,
+    "beleza": 30,
+    "cabelo": 16483,
+    "moda": 44,
+    "autocuidado": 86,
     "casa_fofa": 26
    }
   },
   "100886": {
    "nivel": 2,
    "votos": {
-    "beleza": 6718,
-    "autocuidado": 1267,
+    "beleza": 6866,
+    "autocuidado": 1312,
     "moda": 3,
     "cabelo": 8
    },
@@ -1766,17 +1848,17 @@
     "beleza": 18,
     "cabelo": 17,
     "casa_fofa": 3,
-    "autocuidado": 363,
-    "moda": 4
+    "autocuidado": 442,
+    "moda": 19
    }
   },
   "101260": {
    "nivel": 2,
    "votos": {
     "beleza": 41,
-    "moda": 1262,
+    "moda": 1971,
     "cabelo": 4,
-    "casa_fofa": 611
+    "casa_fofa": 1218
    },
    "usos": 1,
    "ultimo_uso": "2026-10-13"
@@ -1794,11 +1876,11 @@
   "102187": {
    "nivel": 0,
    "votos": {
-    "cabelo": 138,
-    "casa_fofa": 129,
-    "autocuidado": 269,
-    "moda": 27,
-    "beleza": 61
+    "cabelo": 140,
+    "casa_fofa": 143,
+    "autocuidado": 281,
+    "moda": 28,
+    "beleza": 62
    }
   },
   "102249": {
@@ -1835,8 +1917,8 @@
    "votos": {
     "cabelo": 44,
     "casa_fofa": 6,
-    "autocuidado": 39,
-    "moda": 3,
+    "autocuidado": 48,
+    "moda": 4,
     "beleza": 2
    }
   },
@@ -1857,20 +1939,20 @@
    "nivel": 0,
    "votos": {
     "cabelo": 474,
-    "casa_fofa": 200,
-    "moda": 112,
-    "autocuidado": 56,
-    "beleza": 19
+    "casa_fofa": 212,
+    "moda": 171,
+    "autocuidado": 69,
+    "beleza": 29
    }
   },
   "100075": {
    "nivel": 1,
    "votos": {
     "cabelo": 474,
-    "casa_fofa": 200,
-    "moda": 69,
-    "autocuidado": 56,
-    "beleza": 18
+    "casa_fofa": 212,
+    "moda": 128,
+    "autocuidado": 69,
+    "beleza": 28
    }
   },
   "100290": {
@@ -1878,15 +1960,15 @@
    "votos": {
     "cabelo": 412,
     "casa_fofa": 6,
-    "moda": 5
+    "moda": 16
    }
   },
   "100038": {
    "nivel": 1,
    "votos": {
     "cabelo": 149,
-    "autocuidado": 116,
-    "casa_fofa": 9,
+    "autocuidado": 124,
+    "casa_fofa": 10,
     "moda": 14,
     "beleza": 61
    }
@@ -1902,7 +1984,7 @@
    "votos": {
     "cabelo": 211,
     "casa_fofa": 446,
-    "moda": 3,
+    "moda": 13,
     "autocuidado": 56,
     "beleza": 569
    }
@@ -1939,11 +2021,11 @@
   "100632": {
    "nivel": 0,
    "votos": {
-    "cabelo": 104,
-    "casa_fofa": 529,
-    "autocuidado": 533,
-    "beleza": 114,
-    "moda": 151
+    "cabelo": 105,
+    "casa_fofa": 545,
+    "autocuidado": 611,
+    "beleza": 128,
+    "moda": 166
    }
   },
   "100680": {
@@ -1974,27 +2056,28 @@
    "nivel": 2,
    "votos": {
     "cabelo": 4,
-    "beleza": 11
+    "beleza": 11,
+    "moda": 5
    }
   },
   "100633": {
    "nivel": 0,
    "votos": {
-    "cabelo": 988,
-    "moda": 674,
-    "autocuidado": 757,
-    "beleza": 14,
-    "casa_fofa": 7
+    "cabelo": 989,
+    "moda": 769,
+    "autocuidado": 803,
+    "beleza": 18,
+    "casa_fofa": 14
    }
   },
   "100689": {
    "nivel": 1,
    "votos": {
-    "cabelo": 988,
-    "moda": 320,
-    "autocuidado": 355,
-    "casa_fofa": 7,
-    "beleza": 3
+    "cabelo": 989,
+    "moda": 346,
+    "autocuidado": 400,
+    "casa_fofa": 14,
+    "beleza": 7
    }
   },
   "101037": {
@@ -2021,25 +2104,25 @@
    "nivel": 0,
    "votos": {
     "cabelo": 3,
-    "autocuidado": 110,
-    "moda": 5317,
+    "autocuidado": 128,
+    "moda": 6309,
     "beleza": 20,
-    "casa_fofa": 4
+    "casa_fofa": 6
    }
   },
   "100090": {
    "nivel": 1,
    "votos": {
     "cabelo": 3,
-    "autocuidado": 12,
-    "moda": 30
+    "autocuidado": 14,
+    "moda": 38
    }
   },
   "100334": {
    "nivel": 2,
    "votos": {
     "cabelo": 3,
-    "moda": 22
+    "moda": 28
    }
   },
   "100698": {
@@ -2067,7 +2150,7 @@
    "votos": {
     "cabelo": 53,
     "casa_fofa": 75,
-    "autocuidado": 13,
+    "autocuidado": 14,
     "moda": 8,
     "beleza": 12
    }
@@ -2115,7 +2198,7 @@
    "votos": {
     "cabelo": 6,
     "moda": 8,
-    "autocuidado": 2
+    "autocuidado": 3
    }
   },
   "102567": {
@@ -2123,7 +2206,7 @@
    "votos": {
     "cabelo": 6,
     "moda": 8,
-    "autocuidado": 2
+    "autocuidado": 3
    }
   },
   "102255": {
@@ -2162,7 +2245,7 @@
    "nivel": 2,
    "votos": {
     "cabelo": 4,
-    "casa_fofa": 26,
+    "casa_fofa": 31,
     "autocuidado": 24
    }
   },
@@ -2191,7 +2274,7 @@
    "nivel": 1,
    "votos": {
     "cabelo": 12,
-    "casa_fofa": 55,
+    "casa_fofa": 65,
     "moda": 4,
     "beleza": 2,
     "autocuidado": 1
@@ -2213,9 +2296,9 @@
    "nivel": 2,
    "votos": {
     "cabelo": 7,
-    "moda": 75,
-    "autocuidado": 9,
-    "casa_fofa": 397,
+    "moda": 169,
+    "autocuidado": 11,
+    "casa_fofa": 418,
     "beleza": 134
    },
    "usos": 1,
@@ -2226,9 +2309,9 @@
    "nivel": 1,
    "votos": {
     "cabelo": 3,
-    "autocuidado": 54,
-    "casa_fofa": 35,
-    "beleza": 5
+    "autocuidado": 56,
+    "casa_fofa": 39,
+    "beleza": 6
    }
   },
   "102242": {
@@ -2275,8 +2358,8 @@
    "nivel": 1,
    "votos": {
     "cabelo": 12,
-    "autocuidado": 40,
-    "beleza": 2
+    "autocuidado": 43,
+    "beleza": 27
    }
   },
   "100129": {
@@ -2304,7 +2387,7 @@
    "nivel": 2,
    "votos": {
     "cabelo": 1,
-    "casa_fofa": 19,
+    "casa_fofa": 22,
     "beleza": 1
    }
   },
@@ -2332,8 +2415,8 @@
    "nivel": 0,
    "votos": {
     "cabelo": 6,
-    "casa_fofa": 9,
-    "beleza": 11,
+    "casa_fofa": 10,
+    "beleza": 13,
     "autocuidado": 10
    }
   },
@@ -2341,7 +2424,7 @@
    "nivel": 1,
    "votos": {
     "cabelo": 4,
-    "beleza": 5
+    "beleza": 7
    }
   },
   "101434": {
@@ -2392,8 +2475,8 @@
    "nivel": 2,
    "votos": {
     "cabelo": 1,
-    "moda": 31,
-    "casa_fofa": 3
+    "moda": 78,
+    "casa_fofa": 4
    }
   },
   "101492": {
@@ -2472,20 +2555,20 @@
    "nivel": 1,
    "votos": {
     "cabelo": 201,
-    "casa_fofa": 41,
-    "autocuidado": 49,
-    "moda": 174,
-    "beleza": 122
+    "casa_fofa": 52,
+    "autocuidado": 60,
+    "moda": 250,
+    "beleza": 123
    }
   },
   "101273": {
    "nivel": 2,
    "votos": {
     "cabelo": 1,
-    "autocuidado": 46,
-    "casa_fofa": 27,
-    "moda": 139,
-    "beleza": 120
+    "autocuidado": 57,
+    "casa_fofa": 37,
+    "moda": 202,
+    "beleza": 121
    }
   },
   "101291": {
@@ -2509,7 +2592,7 @@
    "votos": {
     "cabelo": 1,
     "moda": 3,
-    "beleza": 9
+    "beleza": 166
    }
   },
   "101442": {
@@ -2528,7 +2611,7 @@
    "nivel": 1,
    "votos": {
     "cabelo": 1,
-    "casa_fofa": 9,
+    "casa_fofa": 10,
     "beleza": 4,
     "autocuidado": 10
    }
@@ -2543,7 +2626,7 @@
   "100137": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 4954,
+    "autocuidado": 5638,
     "casa_fofa": 1,
     "beleza": 55,
     "cabelo": 4,
@@ -2598,20 +2681,20 @@
    "nivel": 0,
    "votos": {
     "casa_fofa": 38,
-    "autocuidado": 38,
-    "cabelo": 128,
-    "moda": 18,
-    "beleza": 19
+    "autocuidado": 40,
+    "cabelo": 129,
+    "moda": 21,
+    "beleza": 25
    }
   },
   "100668": {
    "nivel": 1,
    "votos": {
     "casa_fofa": 37,
-    "cabelo": 12,
+    "cabelo": 13,
     "beleza": 14,
     "autocuidado": 3,
-    "moda": 14
+    "moda": 17
    }
   },
   "100920": {
@@ -2643,7 +2726,7 @@
    "nivel": 1,
    "votos": {
     "casa_fofa": 72,
-    "cabelo": 1398,
+    "cabelo": 2096,
     "autocuidado": 42,
     "beleza": 9
    }
@@ -2652,17 +2735,17 @@
    "nivel": 2,
    "votos": {
     "casa_fofa": 5,
-    "cabelo": 18
+    "cabelo": 27
    }
   },
   "100684": {
    "nivel": 1,
    "votos": {
-    "casa_fofa": 440,
-    "autocuidado": 28,
-    "moda": 99,
+    "casa_fofa": 455,
+    "autocuidado": 30,
+    "moda": 104,
     "cabelo": 32,
-    "beleza": 45
+    "beleza": 50
    }
   },
   "101008": {
@@ -2670,18 +2753,18 @@
    "votos": {
     "casa_fofa": 383,
     "autocuidado": 17,
-    "moda": 1,
+    "moda": 5,
     "cabelo": 12
    }
   },
   "100709": {
    "nivel": 1,
    "votos": {
-    "casa_fofa": 23,
-    "autocuidado": 179,
-    "beleza": 314,
-    "cabelo": 142,
-    "moda": 18
+    "casa_fofa": 25,
+    "autocuidado": 188,
+    "beleza": 379,
+    "cabelo": 144,
+    "moda": 20
    }
   },
   "101143": {
@@ -2704,25 +2787,25 @@
   "100022": {
    "nivel": 1,
    "votos": {
-    "moda": 4293,
+    "moda": 4897,
     "beleza": 1
    }
   },
   "100035": {
    "nivel": 1,
    "votos": {
-    "moda": 1380,
+    "moda": 1640,
     "cabelo": 4,
-    "casa_fofa": 2,
+    "casa_fofa": 5,
     "beleza": 1
    }
   },
   "100017": {
    "nivel": 0,
    "votos": {
-    "moda": 2030,
+    "moda": 2068,
     "casa_fofa": 38,
-    "cabelo": 16,
+    "cabelo": 19,
     "beleza": 1,
     "autocuidado": 13
    }
@@ -2730,109 +2813,110 @@
   "100115": {
    "nivel": 1,
    "votos": {
-    "moda": 50,
+    "moda": 64,
     "cabelo": 6
    }
   },
   "100534": {
    "nivel": 0,
    "votos": {
-    "moda": 1150,
-    "casa_fofa": 10,
+    "moda": 1231,
+    "casa_fofa": 19,
     "beleza": 1
    }
   },
   "100573": {
    "nivel": 1,
    "votos": {
-    "moda": 950,
-    "casa_fofa": 3
+    "moda": 1014,
+    "casa_fofa": 6
    }
   },
   "100029": {
    "nivel": 1,
    "votos": {
-    "moda": 2561,
+    "moda": 3171,
     "autocuidado": 28,
-    "casa_fofa": 2,
-    "beleza": 2
+    "casa_fofa": 4,
+    "beleza": 4
    }
   },
   "101035": {
    "nivel": 2,
    "votos": {
-    "moda": 169,
-    "casa_fofa": 7,
-    "beleza": 3
+    "moda": 180,
+    "casa_fofa": 14,
+    "beleza": 7
    }
   },
   "100575": {
    "nivel": 1,
    "votos": {
-    "moda": 41
+    "moda": 47
    }
   },
   "100021": {
    "nivel": 1,
    "votos": {
-    "moda": 7,
+    "moda": 8,
     "cabelo": 2
    }
   },
   "101034": {
    "nivel": 2,
    "votos": {
-    "moda": 41
+    "moda": 43
    }
   },
   "100675": {
    "nivel": 1,
    "votos": {
-    "autocuidado": 113,
+    "autocuidado": 135,
     "casa_fofa": 6,
     "cabelo": 47,
-    "moda": 5,
+    "moda": 8,
     "beleza": 5
    }
   },
   "100954": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 77
+    "autocuidado": 92
    }
   },
   "100883": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 18,
-    "beleza": 1676
+    "autocuidado": 22,
+    "beleza": 1791
    }
   },
   "100045": {
    "nivel": 1,
    "votos": {
-    "autocuidado": 12,
-    "casa_fofa": 20
+    "autocuidado": 14,
+    "casa_fofa": 24,
+    "beleza": 1
    }
   },
   "100887": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 35,
+    "autocuidado": 38,
     "beleza": 5
    }
   },
   "100171": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 27,
+    "autocuidado": 32,
     "beleza": 7
    }
   },
   "100042": {
    "nivel": 1,
    "votos": {
-    "autocuidado": 5,
+    "autocuidado": 6,
     "cabelo": 2,
     "casa_fofa": 1,
     "beleza": 4
@@ -2841,43 +2925,43 @@
   "100215": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 5
+    "autocuidado": 6
    }
   },
   "102002": {
    "nivel": 1,
    "votos": {
-    "autocuidado": 331,
-    "beleza": 116,
-    "cabelo": 9,
-    "casa_fofa": 4
+    "autocuidado": 332,
+    "beleza": 211,
+    "cabelo": 11,
+    "casa_fofa": 5
    }
   },
   "102007": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 37,
-    "beleza": 55
+    "autocuidado": 38,
+    "beleza": 102
    }
   },
   "100670": {
    "nivel": 1,
    "votos": {
-    "autocuidado": 33,
+    "autocuidado": 35,
     "cabelo": 112
    }
   },
   "100929": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 33,
+    "autocuidado": 35,
     "cabelo": 99
    }
   },
   "101138": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 77,
+    "autocuidado": 86,
     "beleza": 274,
     "cabelo": 2
    }
@@ -2885,15 +2969,15 @@
   "102239": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 54,
-    "casa_fofa": 13,
-    "beleza": 2
+    "autocuidado": 56,
+    "casa_fofa": 14,
+    "beleza": 3
    }
   },
   "100147": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 5,
+    "autocuidado": 6,
     "beleza": 1,
     "casa_fofa": 20,
     "cabelo": 2675
@@ -2902,7 +2986,7 @@
   "101006": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 6,
+    "autocuidado": 7,
     "cabelo": 4,
     "moda": 6
    }
@@ -2910,58 +2994,58 @@
   "101217": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 7,
-    "beleza": 8,
+    "autocuidado": 8,
+    "beleza": 9,
     "moda": 4
    }
   },
   "100122": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 5
+    "autocuidado": 6
    }
   },
   "100693": {
    "nivel": 1,
    "votos": {
-    "autocuidado": 153,
-    "moda": 282
+    "autocuidado": 154,
+    "moda": 350
    }
   },
   "101069": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 1
+    "autocuidado": 2
    }
   },
   "100008": {
    "nivel": 1,
    "votos": {
-    "autocuidado": 14,
+    "autocuidado": 15,
     "casa_fofa": 63
    }
   },
   "100888": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 14,
+    "autocuidado": 15,
     "beleza": 7
    }
   },
   "100658": {
    "nivel": 1,
    "votos": {
-    "beleza": 2401,
+    "beleza": 3200,
     "autocuidado": 969,
     "cabelo": 250,
-    "moda": 3,
-    "casa_fofa": 4
+    "moda": 6,
+    "casa_fofa": 5
    }
   },
   "100866": {
    "nivel": 2,
    "votos": {
-    "beleza": 369,
+    "beleza": 372,
     "autocuidado": 181
    }
   },
@@ -2969,7 +3053,7 @@
    "nivel": 2,
    "votos": {
     "beleza": 5,
-    "autocuidado": 8
+    "autocuidado": 9
    }
   },
   "101137": {
@@ -2982,35 +3066,35 @@
   "100638": {
    "nivel": 0,
    "votos": {
-    "beleza": 58,
+    "beleza": 69,
     "cabelo": 12,
-    "casa_fofa": 198,
-    "autocuidado": 117,
-    "moda": 428
+    "casa_fofa": 225,
+    "autocuidado": 132,
+    "moda": 620
    }
   },
   "100733": {
    "nivel": 1,
    "votos": {
-    "beleza": 21,
-    "moda": 153,
-    "casa_fofa": 5,
+    "beleza": 30,
+    "moda": 155,
+    "casa_fofa": 9,
     "autocuidado": 4
    }
   },
   "101370": {
    "nivel": 2,
    "votos": {
-    "beleza": 15,
-    "moda": 153,
-    "casa_fofa": 4,
+    "beleza": 21,
+    "moda": 155,
+    "casa_fofa": 8,
     "autocuidado": 4
    }
   },
   "100665": {
    "nivel": 1,
    "votos": {
-    "beleza": 162,
+    "beleza": 175,
     "autocuidado": 120,
     "cabelo": 1
    }
@@ -3034,7 +3118,7 @@
   "102003": {
    "nivel": 2,
    "votos": {
-    "beleza": 2,
+    "beleza": 3,
     "autocuidado": 102
    }
   },
@@ -3056,11 +3140,11 @@
   "100659": {
    "nivel": 1,
    "votos": {
-    "cabelo": 605,
+    "cabelo": 608,
     "casa_fofa": 3,
     "moda": 18,
     "autocuidado": 25,
-    "beleza": 15
+    "beleza": 28
    }
   },
   "100871": {
@@ -3072,7 +3156,7 @@
   "100874": {
    "nivel": 2,
    "votos": {
-    "cabelo": 111,
+    "cabelo": 114,
     "beleza": 1
    }
   },
@@ -3080,7 +3164,7 @@
    "nivel": 2,
    "votos": {
     "cabelo": 38,
-    "autocuidado": 6,
+    "autocuidado": 9,
     "beleza": 9
    }
   },
@@ -3090,7 +3174,7 @@
     "cabelo": 341,
     "casa_fofa": 3,
     "moda": 18,
-    "beleza": 11,
+    "beleza": 21,
     "autocuidado": 1
    }
   },
@@ -3098,8 +3182,8 @@
    "nivel": 1,
    "votos": {
     "cabelo": 4,
-    "autocuidado": 29,
-    "casa_fofa": 34,
+    "autocuidado": 31,
+    "casa_fofa": 56,
     "moda": 22
    }
   },
@@ -3108,7 +3192,7 @@
    "votos": {
     "cabelo": 4,
     "moda": 8,
-    "casa_fofa": 1
+    "casa_fofa": 2
    }
   },
   "102013": {
@@ -3116,15 +3200,15 @@
    "votos": {
     "cabelo": 4,
     "autocuidado": 101,
-    "beleza": 4
+    "beleza": 8
    }
   },
   "100732": {
    "nivel": 1,
    "votos": {
     "casa_fofa": 150,
-    "autocuidado": 63,
-    "moda": 165,
+    "autocuidado": 76,
+    "moda": 197,
     "beleza": 33
    }
   },
@@ -3137,9 +3221,9 @@
   "100679": {
    "nivel": 1,
    "votos": {
-    "casa_fofa": 67,
-    "cabelo": 9,
-    "moda": 2,
+    "casa_fofa": 68,
+    "cabelo": 10,
+    "moda": 4,
     "beleza": 20,
     "autocuidado": 45
    }
@@ -3148,7 +3232,7 @@
    "nivel": 2,
    "votos": {
     "casa_fofa": 33,
-    "cabelo": 2,
+    "cabelo": 3,
     "autocuidado": 45
    }
   },
@@ -3156,8 +3240,8 @@
    "nivel": 1,
    "votos": {
     "casa_fofa": 3,
-    "autocuidado": 257,
-    "moda": 18
+    "autocuidado": 294,
+    "moda": 23
    }
   },
   "100949": {
@@ -3191,7 +3275,7 @@
    "votos": {
     "casa_fofa": 45,
     "autocuidado": 1272,
-    "cabelo": 1,
+    "cabelo": 2,
     "beleza": 3
    }
   },
@@ -3199,7 +3283,7 @@
    "nivel": 2,
    "votos": {
     "casa_fofa": 6,
-    "cabelo": 8,
+    "cabelo": 14,
     "autocuidado": 40
    }
   },
@@ -3207,7 +3291,7 @@
    "nivel": 2,
    "votos": {
     "casa_fofa": 9,
-    "cabelo": 67,
+    "cabelo": 68,
     "moda": 2
    }
   },
@@ -3222,7 +3306,7 @@
    "nivel": 2,
    "votos": {
     "casa_fofa": 47,
-    "cabelo": 1372,
+    "cabelo": 2055,
     "autocuidado": 2
    }
   },
@@ -3235,9 +3319,9 @@
   "100639": {
    "nivel": 0,
    "votos": {
-    "casa_fofa": 91,
+    "casa_fofa": 100,
     "beleza": 6,
-    "moda": 31,
+    "moda": 45,
     "autocuidado": 4,
     "cabelo": 10
    }
@@ -3272,8 +3356,8 @@
   "100737": {
    "nivel": 1,
    "votos": {
-    "casa_fofa": 39,
-    "moda": 1,
+    "casa_fofa": 40,
+    "moda": 3,
     "autocuidado": 1,
     "cabelo": 4
    }
@@ -3287,10 +3371,10 @@
   "100036": {
    "nivel": 1,
    "votos": {
-    "casa_fofa": 3,
-    "moda": 9,
+    "casa_fofa": 5,
+    "moda": 11,
     "cabelo": 5,
-    "beleza": 16,
+    "beleza": 28,
     "autocuidado": 4
    }
   },
@@ -3299,7 +3383,7 @@
    "votos": {
     "casa_fofa": 12,
     "beleza": 1,
-    "moda": 331
+    "moda": 337
    }
   },
   "100352": {
@@ -3327,7 +3411,7 @@
    "nivel": 2,
    "votos": {
     "casa_fofa": 3,
-    "moda": 8,
+    "moda": 9,
     "beleza": 1
    }
   },
@@ -3335,13 +3419,13 @@
    "nivel": 2,
    "votos": {
     "casa_fofa": 6,
-    "moda": 1
+    "moda": 2
    }
   },
   "102248": {
    "nivel": 2,
    "votos": {
-    "casa_fofa": 55,
+    "casa_fofa": 65,
     "moda": 4,
     "beleza": 2,
     "autocuidado": 1
@@ -3357,77 +3441,77 @@
   "100724": {
    "nivel": 1,
    "votos": {
-    "casa_fofa": 181,
+    "casa_fofa": 182,
     "autocuidado": 9,
     "cabelo": 18,
     "moda": 9,
-    "beleza": 7
+    "beleza": 12
    }
   },
   "101142": {
    "nivel": 2,
    "votos": {
-    "cabelo": 108,
+    "cabelo": 110,
     "autocuidado": 2
    }
   },
   "101171": {
    "nivel": 2,
    "votos": {
-    "cabelo": 4,
-    "moda": 16,
+    "cabelo": 6,
+    "moda": 18,
     "autocuidado": 3
    }
   },
   "100117": {
    "nivel": 1,
    "votos": {
-    "cabelo": 4,
-    "moda": 52,
+    "cabelo": 7,
+    "moda": 60,
     "autocuidado": 12
    }
   },
   "100409": {
    "nivel": 2,
    "votos": {
-    "cabelo": 4,
+    "cabelo": 7,
     "moda": 6
    }
   },
   "102010": {
    "nivel": 2,
    "votos": {
-    "cabelo": 5,
+    "cabelo": 7,
     "autocuidado": 4
    }
   },
   "101258": {
    "nivel": 2,
    "votos": {
-    "moda": 27,
-    "casa_fofa": 47,
+    "moda": 40,
+    "casa_fofa": 70,
     "beleza": 194
    }
   },
   "100576": {
    "nivel": 1,
    "votos": {
-    "moda": 35,
-    "casa_fofa": 7,
+    "moda": 46,
+    "casa_fofa": 13,
     "beleza": 1
    }
   },
   "100618": {
    "nivel": 2,
    "votos": {
-    "moda": 20,
-    "casa_fofa": 5
+    "moda": 31,
+    "casa_fofa": 11
    }
   },
   "101259": {
    "nivel": 2,
    "votos": {
-    "moda": 8,
+    "moda": 26,
     "casa_fofa": 1402,
     "beleza": 5,
     "cabelo": 3
@@ -3436,7 +3520,7 @@
   "101174": {
    "nivel": 2,
    "votos": {
-    "moda": 2,
+    "moda": 3,
     "casa_fofa": 555,
     "beleza": 27,
     "autocuidado": 2,
@@ -3446,23 +3530,23 @@
   "100030": {
    "nivel": 1,
    "votos": {
-    "moda": 1336,
+    "moda": 1384,
     "beleza": 12,
-    "casa_fofa": 5
+    "casa_fofa": 8
    }
   },
   "100153": {
    "nivel": 2,
    "votos": {
-    "moda": 7,
-    "casa_fofa": 3
+    "moda": 55,
+    "casa_fofa": 6
    }
   },
   "101262": {
    "nivel": 2,
    "votos": {
-    "moda": 6,
-    "casa_fofa": 70,
+    "moda": 11,
+    "casa_fofa": 75,
     "beleza": 41,
     "cabelo": 18,
     "autocuidado": 3
@@ -3472,18 +3556,18 @@
   "100136": {
    "nivel": 2,
    "votos": {
-    "moda": 4,
+    "moda": 5,
     "beleza": 5,
-    "casa_fofa": 1,
+    "casa_fofa": 2,
     "autocuidado": 6
    }
   },
   "101132": {
    "nivel": 2,
    "votos": {
-    "moda": 4,
+    "moda": 6,
     "beleza": 20,
-    "casa_fofa": 2,
+    "casa_fofa": 4,
     "cabelo": 8
    }
   },
@@ -3497,64 +3581,65 @@
   "100093": {
    "nivel": 1,
    "votos": {
-    "autocuidado": 44,
-    "moda": 561
+    "autocuidado": 52,
+    "moda": 724
    }
   },
   "100950": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 169,
-    "moda": 18
+    "autocuidado": 206,
+    "moda": 20
    }
   },
   "102549": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 39
+    "autocuidado": 48,
+    "moda": 1
    }
   },
   "100094": {
    "nivel": 1,
    "votos": {
-    "autocuidado": 18,
-    "moda": 589
+    "autocuidado": 22,
+    "moda": 745
    }
   },
   "100533": {
    "nivel": 0,
    "votos": {
-    "autocuidado": 17,
-    "moda": 757,
-    "casa_fofa": 2
+    "autocuidado": 21,
+    "moda": 864,
+    "casa_fofa": 4
    }
   },
   "100565": {
    "nivel": 1,
    "votos": {
-    "autocuidado": 8,
-    "moda": 19
+    "autocuidado": 10,
+    "moda": 24
    }
   },
   "100606": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 8,
-    "moda": 19
+    "autocuidado": 10,
+    "moda": 23
    }
   },
   "100088": {
    "nivel": 1,
    "votos": {
-    "autocuidado": 5,
-    "casa_fofa": 4,
+    "autocuidado": 6,
+    "casa_fofa": 5,
     "moda": 2
    }
   },
   "100682": {
    "nivel": 1,
    "votos": {
-    "autocuidado": 45,
+    "autocuidado": 55,
     "beleza": 31,
     "moda": 1
    }
@@ -3562,59 +3647,59 @@
   "101000": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 45,
+    "autocuidado": 55,
     "moda": 1
    }
   },
   "101360": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 46,
+    "autocuidado": 55,
     "beleza": 8
    }
   },
   "100678": {
    "nivel": 1,
    "votos": {
-    "autocuidado": 20,
+    "autocuidado": 24,
     "cabelo": 14,
     "casa_fofa": 4,
     "moda": 2,
-    "beleza": 9
+    "beleza": 18
    }
   },
   "100974": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 20,
+    "autocuidado": 24,
     "cabelo": 2
    }
   },
   "100089": {
    "nivel": 1,
    "votos": {
-    "autocuidado": 10,
-    "moda": 310
+    "autocuidado": 12,
+    "moda": 398
    }
   },
   "100336": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 12,
-    "moda": 5
+    "autocuidado": 14,
+    "moda": 6
    }
   },
   "101026": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 226,
-    "moda": 87
+    "autocuidado": 271,
+    "moda": 100
    }
   },
   "100953": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 36,
+    "autocuidado": 43,
     "cabelo": 47,
     "beleza": 5
    }
@@ -3622,82 +3707,82 @@
   "100564": {
    "nivel": 1,
    "votos": {
-    "autocuidado": 9,
-    "moda": 66
+    "autocuidado": 11,
+    "moda": 81
    }
   },
   "100686": {
    "nivel": 1,
    "votos": {
-    "autocuidado": 5
+    "autocuidado": 6
    }
   },
   "100676": {
    "nivel": 1,
    "votos": {
-    "autocuidado": 11,
+    "autocuidado": 13,
     "casa_fofa": 7
    }
   },
   "100961": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 5,
+    "autocuidado": 6,
     "casa_fofa": 7
    }
   },
   "100124": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 11
+    "autocuidado": 13
    }
   },
   "100095": {
    "nivel": 1,
    "votos": {
-    "autocuidado": 15,
-    "moda": 2595
+    "autocuidado": 17,
+    "moda": 3001
    }
   },
   "101373": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 9
+    "autocuidado": 11
    }
   },
   "101359": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 17,
+    "autocuidado": 21,
     "beleza": 14,
     "casa_fofa": 3,
-    "moda": 138
+    "moda": 143
    }
   },
   "101939": {
    "nivel": 1,
    "votos": {
-    "autocuidado": 8,
+    "autocuidado": 9,
     "casa_fofa": 3
    }
   },
   "101986": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 8,
+    "autocuidado": 9,
     "casa_fofa": 3
    }
   },
   "100963": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 5
+    "autocuidado": 6
    }
   },
   "101156": {
    "nivel": 2,
    "votos": {
-    "casa_fofa": 778,
+    "casa_fofa": 779,
     "autocuidado": 18,
     "moda": 2
    }
@@ -3711,10 +3796,10 @@
   "100285": {
    "nivel": 2,
    "votos": {
-    "casa_fofa": 43,
-    "autocuidado": 18,
+    "casa_fofa": 49,
+    "autocuidado": 27,
     "cabelo": 3,
-    "beleza": 12
+    "beleza": 20
    }
   },
   "101157": {
@@ -3726,7 +3811,7 @@
   "101394": {
    "nivel": 2,
    "votos": {
-    "casa_fofa": 16,
+    "casa_fofa": 17,
     "moda": 1
    }
   },
@@ -3740,16 +3825,16 @@
   "101012": {
    "nivel": 2,
    "votos": {
-    "casa_fofa": 19,
-    "moda": 48,
-    "beleza": 2,
+    "casa_fofa": 24,
+    "moda": 49,
+    "beleza": 4,
     "cabelo": 2
    }
   },
   "100898": {
    "nivel": 2,
    "votos": {
-    "beleza": 917,
+    "beleza": 1088,
     "autocuidado": 24
    },
    "achados": 1
@@ -3757,14 +3842,14 @@
   "100899": {
    "nivel": 2,
    "votos": {
-    "beleza": 236,
-    "autocuidado": 7
+    "beleza": 240,
+    "autocuidado": 22
    }
   },
   "100893": {
    "nivel": 2,
    "votos": {
-    "beleza": 865,
+    "beleza": 866,
     "autocuidado": 4
    },
    "achados": 1
@@ -3787,20 +3872,20 @@
   "100900": {
    "nivel": 2,
    "votos": {
-    "beleza": 63,
+    "beleza": 64,
     "autocuidado": 12
    }
   },
   "100897": {
    "nivel": 2,
    "votos": {
-    "beleza": 55
+    "beleza": 58
    }
   },
   "100892": {
    "nivel": 2,
    "votos": {
-    "beleza": 43
+    "beleza": 45
    }
   },
   "100997": {
@@ -3819,59 +3904,59 @@
   "100092": {
    "nivel": 1,
    "votos": {
-    "moda": 917
+    "moda": 941
    }
   },
   "100532": {
    "nivel": 0,
    "votos": {
-    "moda": 2855,
-    "autocuidado": 1727,
+    "moda": 3566,
+    "autocuidado": 1728,
     "beleza": 5
    }
   },
   "100562": {
    "nivel": 1,
    "votos": {
-    "moda": 76,
+    "moda": 93,
     "autocuidado": 9
    }
   },
   "100601": {
    "nivel": 2,
    "votos": {
-    "moda": 19
+    "moda": 24
    }
   },
   "100661": {
    "nivel": 1,
    "votos": {
-    "moda": 7,
-    "beleza": 181,
+    "moda": 9,
+    "beleza": 366,
     "autocuidado": 2
    }
   },
   "100096": {
    "nivel": 1,
    "votos": {
-    "moda": 98,
+    "moda": 162,
     "autocuidado": 11,
-    "casa_fofa": 1
+    "casa_fofa": 2
    }
   },
   "100339": {
    "nivel": 2,
    "votos": {
-    "moda": 24,
+    "moda": 53,
     "autocuidado": 11,
-    "casa_fofa": 1
+    "casa_fofa": 2
    }
   },
   "100325": {
    "nivel": 2,
    "votos": {
-    "moda": 58,
-    "autocuidado": 4,
+    "moda": 82,
+    "autocuidado": 5,
     "beleza": 129,
     "cabelo": 38,
     "casa_fofa": 15
@@ -3880,213 +3965,213 @@
   "101325": {
    "nivel": 2,
    "votos": {
-    "moda": 27
+    "moda": 31
    }
   },
   "100341": {
    "nivel": 2,
    "votos": {
-    "moda": 23
+    "moda": 42
    }
   },
   "100097": {
    "nivel": 1,
    "votos": {
-    "moda": 128,
+    "moda": 173,
     "beleza": 20,
-    "casa_fofa": 3
+    "casa_fofa": 4
    }
   },
   "100347": {
    "nivel": 2,
    "votos": {
-    "moda": 39,
+    "moda": 60,
     "beleza": 20,
-    "casa_fofa": 1
+    "casa_fofa": 2
    }
   },
   "100091": {
    "nivel": 1,
    "votos": {
-    "moda": 74
+    "moda": 102
    }
   },
   "100023": {
    "nivel": 1,
    "votos": {
-    "moda": 649,
+    "moda": 652,
     "cabelo": 10
    }
   },
   "100338": {
    "nivel": 2,
    "votos": {
-    "moda": 35
+    "moda": 44
    }
   },
   "100086": {
    "nivel": 1,
    "votos": {
-    "moda": 118,
-    "autocuidado": 7,
+    "moda": 178,
+    "autocuidado": 9,
     "casa_fofa": 9
    }
   },
   "100320": {
    "nivel": 2,
    "votos": {
-    "moda": 91
+    "moda": 123
    }
   },
   "100416": {
    "nivel": 2,
    "votos": {
-    "moda": 24,
+    "moda": 28,
     "autocuidado": 12
    }
   },
   "100410": {
    "nivel": 2,
    "votos": {
-    "moda": 10
+    "moda": 12
    }
   },
   "100349": {
    "nivel": 2,
    "votos": {
-    "moda": 36
+    "moda": 46
    }
   },
   "100570": {
    "nivel": 1,
    "votos": {
-    "moda": 76
+    "moda": 80
    }
   },
   "100102": {
    "nivel": 1,
    "votos": {
-    "moda": 15
+    "moda": 17
    }
   },
   "100561": {
    "nivel": 1,
    "votos": {
-    "moda": 2309,
+    "moda": 2889,
     "autocuidado": 1713
    }
   },
   "100597": {
    "nivel": 2,
    "votos": {
-    "moda": 92
+    "moda": 116
    }
   },
   "100413": {
    "nivel": 2,
    "votos": {
-    "moda": 12
+    "moda": 14
    }
   },
   "100594": {
    "nivel": 2,
    "votos": {
-    "moda": 560,
+    "moda": 700,
     "autocuidado": 30
    }
   },
   "100346": {
    "nivel": 2,
    "votos": {
-    "moda": 8
+    "moda": 12
    }
   },
   "100322": {
    "nivel": 2,
    "votos": {
-    "moda": 4,
+    "moda": 14,
     "casa_fofa": 1
    }
   },
   "100344": {
    "nivel": 2,
    "votos": {
-    "moda": 45,
+    "moda": 55,
     "casa_fofa": 2
    }
   },
   "100101": {
    "nivel": 1,
    "votos": {
-    "moda": 6
+    "moda": 7
    }
   },
   "100360": {
    "nivel": 2,
    "votos": {
-    "moda": 6
+    "moda": 7
    }
   },
   "100342": {
    "nivel": 2,
    "votos": {
-    "moda": 8
+    "moda": 11
    }
   },
   "101066": {
    "nivel": 2,
    "votos": {
-    "moda": 4,
+    "moda": 5,
     "autocuidado": 4
    }
   },
   "100571": {
    "nivel": 1,
    "votos": {
-    "moda": 33,
-    "casa_fofa": 2
+    "moda": 97,
+    "casa_fofa": 4
    }
   },
   "100608": {
    "nivel": 2,
    "votos": {
     "moda": 2,
-    "casa_fofa": 2
+    "casa_fofa": 4
    }
   },
   "100109": {
    "nivel": 1,
    "votos": {
-    "moda": 6
+    "moda": 7
    }
   },
   "100374": {
    "nivel": 2,
    "votos": {
-    "moda": 4
+    "moda": 5
    }
   },
   "100556": {
    "nivel": 1,
    "votos": {
-    "moda": 5,
+    "moda": 6,
     "beleza": 2
    }
   },
   "100587": {
    "nivel": 2,
    "votos": {
-    "moda": 4
+    "moda": 5
    }
   },
   "100867": {
    "nivel": 2,
    "votos": {
-    "beleza": 2017,
+    "beleza": 2805,
     "cabelo": 248,
     "autocuidado": 787,
-    "moda": 3,
-    "casa_fofa": 4
+    "moda": 6,
+    "casa_fofa": 5
    }
   },
   "100738": {
@@ -4094,8 +4179,8 @@
    "votos": {
     "beleza": 1,
     "autocuidado": 3,
-    "moda": 6,
-    "casa_fofa": 11,
+    "moda": 15,
+    "casa_fofa": 17,
     "cabelo": 4
    }
   },
@@ -4109,14 +4194,14 @@
   "100865": {
    "nivel": 2,
    "votos": {
-    "beleza": 3,
+    "beleza": 5,
     "autocuidado": 1
    }
   },
   "101029": {
    "nivel": 2,
    "votos": {
-    "cabelo": 978
+    "cabelo": 979
    }
   },
   "100149": {
@@ -4138,29 +4223,29 @@
    "nivel": 2,
    "votos": {
     "cabelo": 13,
-    "casa_fofa": 2
+    "casa_fofa": 4
    }
   },
   "100037": {
    "nivel": 1,
    "votos": {
-    "casa_fofa": 1355,
-    "autocuidado": 52,
+    "casa_fofa": 1747,
+    "autocuidado": 78,
     "beleza": 2
    }
   },
   "100168": {
    "nivel": 2,
    "votos": {
-    "casa_fofa": 1239,
-    "autocuidado": 52
+    "casa_fofa": 1601,
+    "autocuidado": 78
    },
    "achados": 1
   },
   "100535": {
    "nivel": 0,
    "votos": {
-    "casa_fofa": 31,
+    "casa_fofa": 41,
     "beleza": 7,
     "moda": 1
    }
@@ -4168,39 +4253,39 @@
   "100582": {
    "nivel": 1,
    "votos": {
-    "casa_fofa": 27,
+    "casa_fofa": 37,
     "moda": 1
    }
   },
   "100625": {
    "nivel": 2,
    "votos": {
-    "casa_fofa": 23,
+    "casa_fofa": 31,
     "moda": 1
    }
   },
   "101013": {
    "nivel": 2,
    "votos": {
-    "casa_fofa": 31
+    "casa_fofa": 41
    }
   },
   "100628": {
    "nivel": 2,
    "votos": {
-    "casa_fofa": 4
+    "casa_fofa": 6
    }
   },
   "100170": {
    "nivel": 2,
    "votos": {
-    "casa_fofa": 116
+    "casa_fofa": 146
    }
   },
   "100708": {
    "nivel": 1,
    "votos": {
-    "casa_fofa": 10,
+    "casa_fofa": 11,
     "cabelo": 392,
     "autocuidado": 3208,
     "beleza": 1
@@ -4209,7 +4294,7 @@
   "101129": {
    "nivel": 2,
    "votos": {
-    "casa_fofa": 10,
+    "casa_fofa": 11,
     "cabelo": 386,
     "autocuidado": 2198,
     "beleza": 1
@@ -4219,14 +4304,14 @@
   "102012": {
    "nivel": 2,
    "votos": {
-    "casa_fofa": 4,
+    "casa_fofa": 5,
     "autocuidado": 4
    }
   },
   "100610": {
    "nivel": 2,
    "votos": {
-    "moda": 19
+    "moda": 83
    }
   },
   "100324": {
@@ -4238,7 +4323,7 @@
   "100569": {
    "nivel": 1,
    "votos": {
-    "moda": 563
+    "moda": 582
    }
   },
   "100613": {
@@ -4250,7 +4335,7 @@
   "100032": {
    "nivel": 1,
    "votos": {
-    "moda": 54
+    "moda": 68
    }
   },
   "100012": {
@@ -4258,7 +4343,7 @@
    "votos": {
     "autocuidado": 135,
     "beleza": 8,
-    "moda": 134,
+    "moda": 165,
     "cabelo": 1
    }
   },
@@ -4287,23 +4372,24 @@
    "nivel": 2,
    "votos": {
     "autocuidado": 10,
-    "beleza": 17,
+    "beleza": 31,
     "cabelo": 27,
     "moda": 32,
-    "casa_fofa": 1
+    "casa_fofa": 2
    }
   },
   "100176": {
    "nivel": 2,
    "votos": {
     "cabelo": 100,
-    "autocuidado": 83
+    "autocuidado": 83,
+    "casa_fofa": 1
    }
   },
   "100921": {
    "nivel": 2,
    "votos": {
-    "cabelo": 12,
+    "cabelo": 13,
     "casa_fofa": 3,
     "autocuidado": 1
    }
@@ -4318,7 +4404,7 @@
   "102272": {
    "nivel": 1,
    "votos": {
-    "cabelo": 12,
+    "cabelo": 14,
     "autocuidado": 76,
     "beleza": 7
    }
@@ -4347,8 +4433,8 @@
   "101261": {
    "nivel": 2,
    "votos": {
-    "casa_fofa": 24,
-    "moda": 68,
+    "casa_fofa": 67,
+    "moda": 69,
     "beleza": 4
    }
   },
@@ -4411,7 +4497,7 @@
    "nivel": 2,
    "votos": {
     "moda": 8,
-    "beleza": 1
+    "beleza": 2
    }
   },
   "100166": {
@@ -4438,7 +4524,7 @@
    "nivel": 1,
    "votos": {
     "moda": 1,
-    "casa_fofa": 6,
+    "casa_fofa": 7,
     "cabelo": 2
    }
   },
@@ -4473,8 +4559,8 @@
   "100982": {
    "nivel": 2,
    "votos": {
-    "moda": 2,
-    "casa_fofa": 14,
+    "moda": 4,
+    "casa_fofa": 15,
     "beleza": 20,
     "cabelo": 7
    }
@@ -4510,7 +4596,7 @@
     "moda": 1,
     "cabelo": 2,
     "autocuidado": 2,
-    "beleza": 5,
+    "beleza": 11,
     "casa_fofa": 1
    }
   },
@@ -4520,7 +4606,7 @@
     "moda": 1,
     "cabelo": 1,
     "autocuidado": 2,
-    "beleza": 1
+    "beleza": 2
    }
   },
   "100671": {
@@ -4595,152 +4681,152 @@
    "nivel": 1,
    "votos": {
     "autocuidado": 4,
-    "moda": 637,
+    "moda": 641,
     "casa_fofa": 1
    }
   },
   "100593": {
    "nivel": 2,
    "votos": {
-    "moda": 1411
+    "moda": 1765
    },
-   "achados": 2
+   "achados": 3
   },
   "100068": {
    "nivel": 1,
    "votos": {
-    "moda": 132,
+    "moda": 163,
     "autocuidado": 129
    }
   },
   "100259": {
    "nivel": 2,
    "votos": {
-    "moda": 120,
+    "moda": 148,
     "autocuidado": 4
    }
   },
   "100559": {
    "nivel": 1,
    "votos": {
-    "moda": 347,
+    "moda": 432,
     "beleza": 3
    }
   },
   "100595": {
    "nivel": 2,
    "votos": {
-    "moda": 216
+    "moda": 271
    },
    "achados": 1
   },
   "101067": {
    "nivel": 2,
    "votos": {
-    "moda": 260,
+    "moda": 323,
     "autocuidado": 24
    }
   },
   "100596": {
    "nivel": 2,
    "votos": {
-    "moda": 30,
+    "moda": 37,
     "autocuidado": 1683
    }
   },
   "100603": {
    "nivel": 2,
    "votos": {
-    "moda": 51
+    "moda": 63
    }
   },
   "100263": {
    "nivel": 2,
    "votos": {
-    "moda": 8
+    "moda": 10
    }
   },
   "100560": {
    "nivel": 1,
    "votos": {
-    "moda": 66
+    "moda": 83
    }
   },
   "100558": {
    "nivel": 1,
    "votos": {
-    "moda": 37,
+    "moda": 47,
     "autocuidado": 4
    }
   },
   "100588": {
    "nivel": 2,
    "votos": {
-    "moda": 28
+    "moda": 36
    }
   },
   "101070": {
    "nivel": 2,
    "votos": {
-    "moda": 12,
+    "moda": 16,
     "autocuidado": 40
    }
   },
   "100591": {
    "nivel": 2,
    "votos": {
-    "moda": 9
+    "moda": 11
    }
   },
   "100692": {
    "nivel": 1,
    "votos": {
-    "moda": 5,
+    "moda": 6,
     "autocuidado": 24
    }
   },
   "101060": {
    "nivel": 2,
    "votos": {
-    "moda": 4
+    "moda": 5
    }
   },
   "100563": {
    "nivel": 1,
    "votos": {
-    "moda": 4,
-    "autocuidado": 1
+    "moda": 5,
+    "autocuidado": 2
    }
   },
   "100260": {
    "nivel": 2,
    "votos": {
-    "moda": 4
+    "moda": 5
    }
   },
   "100881": {
    "nivel": 2,
    "votos": {
-    "beleza": 452
+    "beleza": 590
    }
   },
   "100884": {
    "nivel": 2,
    "votos": {
-    "beleza": 8,
+    "beleza": 39,
     "autocuidado": 9
    }
   },
   "102577": {
    "nivel": 2,
    "votos": {
-    "cabelo": 8
+    "cabelo": 10
    }
   },
   "101379": {
    "nivel": 2,
    "votos": {
-    "casa_fofa": 31,
+    "casa_fofa": 50,
     "moda": 14,
     "autocuidado": 20
    }
@@ -4767,8 +4853,8 @@
   "100739": {
    "nivel": 1,
    "votos": {
-    "casa_fofa": 6,
-    "moda": 18
+    "casa_fofa": 7,
+    "moda": 19
    }
   },
   "101409": {
@@ -4799,25 +4885,25 @@
   "100736": {
    "nivel": 1,
    "votos": {
-    "moda": 19,
+    "moda": 21,
     "casa_fofa": 4,
-    "beleza": 1,
+    "beleza": 3,
     "autocuidado": 3
    }
   },
   "100730": {
    "nivel": 1,
    "votos": {
-    "moda": 62,
+    "moda": 218,
     "cabelo": 8,
-    "casa_fofa": 5,
+    "casa_fofa": 6,
     "autocuidado": 18
    }
   },
   "101336": {
    "nivel": 2,
    "votos": {
-    "moda": 14,
+    "moda": 15,
     "casa_fofa": 3
    }
   },
@@ -4830,21 +4916,22 @@
   "101195": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 4,
+    "autocuidado": 5,
     "moda": 2
    }
   },
   "100323": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 5,
-    "casa_fofa": 8
+    "autocuidado": 7,
+    "casa_fofa": 8,
+    "moda": 2
    }
   },
   "101011": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 4,
+    "autocuidado": 5,
     "moda": 42,
     "beleza": 2
    }
@@ -4852,7 +4939,7 @@
   "100330": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 11
+    "autocuidado": 12
    }
   },
   "100878": {
@@ -4877,7 +4964,7 @@
   "102005": {
    "nivel": 2,
    "votos": {
-    "beleza": 11,
+    "beleza": 19,
     "autocuidado": 4
    }
   },
@@ -4916,7 +5003,7 @@
    "nivel": 2,
    "votos": {
     "cabelo": 8,
-    "moda": 43,
+    "moda": 196,
     "autocuidado": 1
    }
   },
@@ -4929,14 +5016,14 @@
   "101431": {
    "nivel": 2,
    "votos": {
-    "casa_fofa": 3
+    "casa_fofa": 4
    }
   },
   "101113": {
    "nivel": 2,
    "votos": {
-    "casa_fofa": 3,
-    "autocuidado": 20,
+    "casa_fofa": 4,
+    "autocuidado": 30,
     "beleza": 1
    }
   },
@@ -4967,7 +5054,7 @@
   "100882": {
    "nivel": 2,
    "votos": {
-    "beleza": 2955
+    "beleza": 2994
    }
   },
   "102578": {
@@ -5039,7 +5126,8 @@
   "101224": {
    "nivel": 2,
    "votos": {
-    "casa_fofa": 38
+    "casa_fofa": 146,
+    "moda": 2
    }
   },
   "100971": {
@@ -5058,7 +5146,7 @@
    "nivel": 1,
    "votos": {
     "casa_fofa": 3,
-    "moda": 2
+    "moda": 4
    }
   },
   "100714": {
@@ -5067,7 +5155,8 @@
     "casa_fofa": 2,
     "autocuidado": 2,
     "cabelo": 2,
-    "beleza": 4
+    "beleza": 4,
+    "moda": 3
    }
   },
   "101176": {
@@ -5229,7 +5318,7 @@
    "nivel": 1,
    "votos": {
     "autocuidado": 4,
-    "casa_fofa": 4,
+    "casa_fofa": 9,
     "beleza": 1
    }
   },
@@ -5237,7 +5326,7 @@
    "nivel": 2,
    "votos": {
     "autocuidado": 4,
-    "casa_fofa": 4
+    "casa_fofa": 9
    }
   },
   "100687": {
@@ -5300,13 +5389,13 @@
   "100098": {
    "nivel": 1,
    "votos": {
-    "moda": 15
+    "moda": 25
    }
   },
   "100337": {
    "nivel": 2,
    "votos": {
-    "moda": 3
+    "moda": 4
    }
   },
   "101245": {
@@ -5318,7 +5407,7 @@
   "101248": {
    "nivel": 2,
    "votos": {
-    "casa_fofa": 51
+    "casa_fofa": 55
    }
   },
   "100574": {
@@ -5350,7 +5439,7 @@
    "nivel": 1,
    "votos": {
     "moda": 15,
-    "casa_fofa": 3,
+    "casa_fofa": 4,
     "autocuidado": 1
    }
   },
@@ -5385,7 +5474,7 @@
    "nivel": 2,
    "votos": {
     "moda": 2,
-    "beleza": 9
+    "beleza": 18
    }
   },
   "101349": {
@@ -5398,14 +5487,14 @@
    "nivel": 2,
    "votos": {
     "moda": 2,
-    "beleza": 6
+    "beleza": 12
    }
   },
   "101009": {
    "nivel": 2,
    "votos": {
     "moda": 2,
-    "beleza": 41,
+    "beleza": 44,
     "autocuidado": 1,
     "casa_fofa": 2,
     "cabelo": 7
@@ -5414,8 +5503,8 @@
   "101400": {
    "nivel": 2,
    "votos": {
-    "moda": 18,
-    "casa_fofa": 1
+    "moda": 19,
+    "casa_fofa": 2
    }
   },
   "101938": {
@@ -5442,7 +5531,7 @@
   "101363": {
    "nivel": 2,
    "votos": {
-    "beleza": 3,
+    "beleza": 5,
     "casa_fofa": 1
    }
   },
@@ -5450,8 +5539,8 @@
    "nivel": 2,
    "votos": {
     "beleza": 40,
-    "casa_fofa": 18,
-    "moda": 1,
+    "casa_fofa": 29,
+    "moda": 2,
     "autocuidado": 60
    },
    "achados": 1
@@ -5467,63 +5556,63 @@
    "nivel": 2,
    "votos": {
     "beleza": 10,
-    "moda": 2
+    "moda": 27
    }
   },
   "100106": {
    "nivel": 1,
    "votos": {
-    "moda": 22
+    "moda": 24
    }
   },
   "100363": {
    "nivel": 2,
    "votos": {
-    "moda": 8
+    "moda": 10
    }
   },
   "100353": {
    "nivel": 2,
    "votos": {
-    "moda": 58
+    "moda": 63
    }
   },
   "100355": {
    "nivel": 2,
    "votos": {
-    "moda": 6
+    "moda": 7
    }
   },
   "100104": {
    "nivel": 1,
    "votos": {
-    "moda": 1411
+    "moda": 1413
    }
   },
   "101331": {
    "nivel": 2,
    "votos": {
-    "moda": 5,
-    "casa_fofa": 2,
+    "moda": 6,
+    "casa_fofa": 3,
     "autocuidado": 17
    }
   },
   "100110": {
    "nivel": 1,
    "votos": {
-    "moda": 18
+    "moda": 19
    }
   },
   "100378": {
    "nivel": 2,
    "votos": {
-    "moda": 13
+    "moda": 14
    }
   },
   "100276": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 8,
+    "autocuidado": 12,
     "casa_fofa": 2,
     "beleza": 2
    }
@@ -5597,13 +5686,13 @@
   "100108": {
    "nivel": 1,
    "votos": {
-    "moda": 4
+    "moda": 5
    }
   },
   "100321": {
    "nivel": 2,
    "votos": {
-    "moda": 23,
+    "moda": 39,
     "autocuidado": 2
    }
   },
@@ -5654,7 +5743,8 @@
    "nivel": 2,
    "votos": {
     "moda": 8,
-    "autocuidado": 35
+    "autocuidado": 35,
+    "beleza": 65
    }
   },
   "100270": {
@@ -5720,7 +5810,8 @@
   "101208": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 2
+    "autocuidado": 2,
+    "moda": 10
    }
   },
   "101209": {
@@ -5733,20 +5824,21 @@
    "nivel": 2,
    "votos": {
     "autocuidado": 3,
-    "casa_fofa": 8,
-    "cabelo": 4
+    "casa_fofa": 12,
+    "cabelo": 4,
+    "moda": 3
    }
   },
   "100340": {
    "nivel": 2,
    "votos": {
-    "moda": 5
+    "moda": 9
    }
   },
   "100917": {
    "nivel": 2,
    "votos": {
-    "moda": 3
+    "moda": 6
    }
   },
   "100918": {
@@ -5758,7 +5850,7 @@
   "101350": {
    "nivel": 2,
    "votos": {
-    "moda": 19
+    "moda": 20
    }
   },
   "100326": {
@@ -5770,14 +5862,15 @@
   "101348": {
    "nivel": 2,
    "votos": {
-    "moda": 1
+    "moda": 2
    }
   },
   "101295": {
    "nivel": 2,
    "votos": {
     "autocuidado": 1,
-    "moda": 11
+    "moda": 11,
+    "casa_fofa": 1
    }
   },
   "100876": {
@@ -5886,19 +5979,19 @@
   "101399": {
    "nivel": 2,
    "votos": {
-    "casa_fofa": 3
+    "casa_fofa": 5
    }
   },
   "101374": {
    "nivel": 2,
    "votos": {
-    "casa_fofa": 2
+    "casa_fofa": 4
    }
   },
   "101413": {
    "nivel": 2,
    "votos": {
-    "casa_fofa": 1,
+    "casa_fofa": 2,
     "cabelo": 2
    }
   },
@@ -5943,7 +6036,8 @@
    "nivel": 2,
    "votos": {
     "autocuidado": 1,
-    "beleza": 4
+    "beleza": 4,
+    "moda": 3
    }
   },
   "101193": {
@@ -5985,13 +6079,13 @@
   "100956": {
    "nivel": 2,
    "votos": {
-    "moda": 5
+    "moda": 8
    }
   },
   "101257": {
    "nivel": 2,
    "votos": {
-    "moda": 4
+    "moda": 7
    }
   },
   "101229": {
@@ -6005,14 +6099,14 @@
    "votos": {
     "cabelo": 26,
     "autocuidado": 6,
-    "beleza": 1
+    "beleza": 3
    }
   },
   "100868": {
    "nivel": 2,
    "votos": {
     "cabelo": 2,
-    "beleza": 12
+    "beleza": 18
    }
   },
   "100704": {
@@ -6105,7 +6199,7 @@
    "nivel": 2,
    "votos": {
     "autocuidado": 58,
-    "beleza": 11
+    "beleza": 18
    }
   },
   "101135": {
@@ -6142,49 +6236,49 @@
   "102008": {
    "nivel": 2,
    "votos": {
-    "beleza": 19
+    "beleza": 38
    }
   },
   "100164": {
    "nivel": 2,
    "votos": {
-    "beleza": 25
+    "beleza": 46
    }
   },
   "100870": {
    "nivel": 2,
    "votos": {
-    "beleza": 3
+    "beleza": 6
    }
   },
   "102011": {
    "nivel": 2,
    "votos": {
-    "beleza": 6
+    "beleza": 13
    }
   },
   "102006": {
    "nivel": 2,
    "votos": {
-    "beleza": 6
+    "beleza": 8
    }
   },
   "100923": {
    "nivel": 2,
    "votos": {
-    "beleza": 4
+    "beleza": 9
    }
   },
   "101435": {
    "nivel": 2,
    "votos": {
-    "beleza": 1
+    "beleza": 3
    }
   },
   "101362": {
    "nivel": 2,
    "votos": {
-    "beleza": 1
+    "beleza": 2
    }
   },
   "100177": {
@@ -6397,7 +6491,8 @@
   "100128": {
    "nivel": 2,
    "votos": {
-    "autocuidado": 2
+    "autocuidado": 2,
+    "beleza": 25
    }
   },
   "100384": {
@@ -6572,6 +6667,60 @@
    "nivel": 2,
    "votos": {
     "casa_fofa": 1
+   }
+  },
+  "101297": {
+   "nivel": 2,
+   "votos": {
+    "moda": 12
+   }
+  },
+  "101395": {
+   "nivel": 2,
+   "votos": {
+    "moda": 6
+   }
+  },
+  "100951": {
+   "nivel": 2,
+   "votos": {
+    "moda": 3
+   }
+  },
+  "101390": {
+   "nivel": 2,
+   "votos": {
+    "moda": 2
+   }
+  },
+  "101319": {
+   "nivel": 2,
+   "votos": {
+    "moda": 7
+   }
+  },
+  "101330": {
+   "nivel": 2,
+   "votos": {
+    "moda": 1
+   }
+  },
+  "100085": {
+   "nivel": 1,
+   "votos": {
+    "moda": 1
+   }
+  },
+  "101221": {
+   "nivel": 2,
+   "votos": {
+    "moda": 4
+   }
+  },
+  "100604": {
+   "nivel": 2,
+   "votos": {
+    "moda": 1
    }
   }
  },
@@ -6790,13 +6939,13 @@
   },
   "1418026242": {
    "nome": "Rivello Calçados",
-   "achados": 1,
+   "achados": 2,
    "usos": 0,
    "desde": "2026-10-15"
   },
   "1198407784": {
    "nome": "Romantic Crown.02",
-   "achados": 1,
+   "achados": 2,
    "usos": 0,
    "desde": "2026-10-15"
   },
