@@ -147,10 +147,10 @@
   "caixa de transporte pet": {
    "cat": "pet",
    "origem": "fixa",
-   "usos": 4,
+   "usos": 5,
    "achados": 0,
    "criado": "2026-10-09",
-   "ultimo_uso": "2026-10-12"
+   "ultimo_uso": "2026-10-16"
   },
   "aspirador automotivo": {
    "cat": "automotivo",
@@ -179,7 +179,7 @@
   "mini projetor portátil": {
    "cat": "eletronicos",
    "origem": "fixa",
-   "usos": 5,
+   "usos": 6,
    "achados": 0,
    "criado": "2026-10-09",
    "ultimo_uso": "2026-10-16"
@@ -323,10 +323,10 @@
   "carteira inteligente": {
    "cat": "masculino",
    "origem": "fixa",
-   "usos": 4,
+   "usos": 5,
    "achados": 0,
    "criado": "2026-10-09",
-   "ultimo_uso": "2026-10-12"
+   "ultimo_uso": "2026-10-16"
   },
   "smartwatch": {
    "cat": "eletronicos",
@@ -459,7 +459,7 @@
   "kit limpeza automotiva": {
    "cat": "automotivo",
    "origem": "fixa",
-   "usos": 6,
+   "usos": 7,
    "achados": 0,
    "criado": "2026-10-09",
    "ultimo_uso": "2026-10-16"
@@ -475,10 +475,10 @@
   "mochila masculina": {
    "cat": "masculino",
    "origem": "fixa",
-   "usos": 6,
+   "usos": 7,
    "achados": 2,
    "criado": "2026-10-09",
-   "ultimo_uso": "2026-10-14"
+   "ultimo_uso": "2026-10-16"
   },
   "mop giratório": {
    "cat": "lar",
@@ -747,8 +747,8 @@
   "organizador guarda roupa": {
    "cat": "lar",
    "origem": "fixa",
-   "usos": 3,
-   "achados": 1,
+   "usos": 4,
+   "achados": 3,
    "criado": "2026-10-09",
    "ultimo_uso": "2026-10-16"
   },
@@ -763,7 +763,7 @@
   "tapete banheiro": {
    "cat": "lar",
    "origem": "fixa",
-   "usos": 4,
+   "usos": 5,
    "achados": 2,
    "criado": "2026-10-09",
    "ultimo_uso": "2026-10-16"
@@ -771,10 +771,10 @@
   "carregador veicular": {
    "cat": "automotivo",
    "origem": "fixa",
-   "usos": 3,
+   "usos": 4,
    "achados": 1,
    "criado": "2026-10-09",
-   "ultimo_uso": "2026-10-10"
+   "ultimo_uso": "2026-10-16"
   },
   "quebra cabeça infantil": {
    "cat": "brinquedos",
@@ -899,10 +899,10 @@
   "lâmpada inteligente": {
    "cat": "eletronicos",
    "origem": "fixa",
-   "usos": 5,
+   "usos": 6,
    "achados": 1,
    "criado": "2026-10-09",
-   "ultimo_uso": "2026-10-15"
+   "ultimo_uso": "2026-10-16"
   },
   "brinquedo interativo gato": {
    "cat": "pet",
@@ -1011,10 +1011,10 @@
   "compressor de ar portátil": {
    "cat": "automotivo",
    "origem": "fixa",
-   "usos": 8,
+   "usos": 9,
    "achados": 11,
    "criado": "2026-10-09",
-   "ultimo_uso": "2026-10-15"
+   "ultimo_uso": "2026-10-16"
   },
   "caminha pet": {
    "cat": "pet",
@@ -1163,10 +1163,10 @@
   "robô brinquedo": {
    "cat": "brinquedos",
    "origem": "fixa",
-   "usos": 8,
+   "usos": 9,
    "achados": 9,
    "criado": "2026-10-09",
-   "ultimo_uso": "2026-10-15"
+   "ultimo_uso": "2026-10-16"
   },
   "suporte de tablet ventosa": {
    "cat": "automotivo",
@@ -1651,10 +1651,10 @@
   "brinquedo montessori": {
    "cat": "brinquedos",
    "origem": "fixa",
-   "usos": 4,
+   "usos": 5,
    "achados": 0,
    "criado": "2026-10-10",
-   "ultimo_uso": "2026-10-15"
+   "ultimo_uso": "2026-10-16"
   },
   "air fryer acessórios": {
    "cat": "lar",
@@ -2003,10 +2003,10 @@
   "boné masculino": {
    "cat": "masculino",
    "origem": "fixa",
-   "usos": 2,
+   "usos": 3,
    "achados": 0,
    "criado": "2026-10-12",
-   "ultimo_uso": "2026-10-14"
+   "ultimo_uso": "2026-10-16"
   },
   "mini gravador voz": {
    "cat": "eletronicos",
@@ -2659,10 +2659,10 @@
   "cabo carregador retrátil": {
    "cat": "eletronicos",
    "origem": "ia",
-   "usos": 2,
+   "usos": 3,
    "achados": 1,
    "criado": "2026-10-14",
-   "ultimo_uso": "2026-10-15"
+   "ultimo_uso": "2026-10-16"
   },
   "organizador prateleira dobrável": {
    "cat": "lar",
@@ -3031,39 +3031,119 @@
    "achados": 0,
    "criado": "2026-10-16",
    "ultimo_uso": "2026-10-16"
+  },
+  "suporte celular magnético": {
+   "cat": "automotivo",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-16",
+   "ultimo_uso": "2026-10-16"
+  },
+  "câmera porta‑luz": {
+   "cat": "eletronicos",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-16",
+   "ultimo_uso": "2026-10-16"
+  },
+  "porta‑chaves giratório": {
+   "cat": "lar",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-16",
+   "ultimo_uso": "2026-10-16"
+  },
+  "cinto multifuncional couro": {
+   "cat": "masculino",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-16",
+   "ultimo_uso": "2026-10-16"
+  },
+  "câmera pet interativa": {
+   "cat": "pet",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-16",
+   "ultimo_uso": "2026-10-16"
+  },
+  "puzzle magnético esfera": {
+   "cat": "brinquedos",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-16",
+   "ultimo_uso": "2026-10-16"
+  },
+  "lanterna lava lamp": {
+   "cat": "brinquedos",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-16",
+   "ultimo_uso": "2026-10-16"
+  },
+  "porta‑canivete discreto": {
+   "cat": "masculino",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-16",
+   "ultimo_uso": "2026-10-16"
+  },
+  "brinquedo laser automático": {
+   "cat": "pet",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-16",
+   "ultimo_uso": "2026-10-16"
+  },
+  "organizador porta‑copos ventilado": {
+   "cat": "automotivo",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-10-16",
+   "ultimo_uso": "2026-10-16"
   }
  },
  "categorias": {
   "100637": {
    "nivel": 0,
    "votos": {
-    "masculino": 6452,
-    "lar": 102,
-    "brinquedos": 47,
-    "automotivo": 437,
-    "eletronicos": 832,
+    "masculino": 6527,
+    "lar": 130,
+    "brinquedos": 62,
+    "automotivo": 444,
+    "eletronicos": 849,
     "pet": 117
    }
   },
   "100725": {
    "nivel": 1,
    "votos": {
-    "masculino": 5689,
-    "lar": 89,
-    "brinquedos": 45,
-    "automotivo": 433,
-    "eletronicos": 789,
+    "masculino": 5696,
+    "lar": 112,
+    "brinquedos": 60,
+    "automotivo": 439,
+    "eletronicos": 806,
     "pet": 114
    }
   },
   "101273": {
    "nivel": 2,
    "votos": {
-    "masculino": 5120,
-    "lar": 69,
-    "brinquedos": 25,
-    "automotivo": 158,
-    "eletronicos": 543,
+    "masculino": 5125,
+    "lar": 77,
+    "brinquedos": 40,
+    "automotivo": 160,
+    "eletronicos": 558,
     "pet": 92
    },
    "usos": 1,
@@ -3072,21 +3152,21 @@
   "100636": {
    "nivel": 0,
    "votos": {
-    "masculino": 4911,
-    "lar": 40660,
-    "automotivo": 3148,
-    "pet": 1958,
-    "eletronicos": 9319,
-    "brinquedos": 2744
+    "masculino": 5013,
+    "lar": 42104,
+    "automotivo": 3409,
+    "pet": 1959,
+    "eletronicos": 9949,
+    "brinquedos": 2748
    }
   },
   "100715": {
    "nivel": 1,
    "votos": {
-    "masculino": 4019,
-    "automotivo": 1206,
-    "eletronicos": 357,
-    "lar": 550,
+    "masculino": 4102,
+    "automotivo": 1376,
+    "eletronicos": 362,
+    "lar": 557,
     "pet": 51,
     "brinquedos": 13
    }
@@ -3094,10 +3174,10 @@
   "101191": {
    "nivel": 2,
    "votos": {
-    "masculino": 3814,
-    "automotivo": 686,
-    "eletronicos": 176,
-    "lar": 468,
+    "masculino": 3877,
+    "automotivo": 779,
+    "eletronicos": 178,
+    "lar": 471,
     "brinquedos": 13,
     "pet": 45
    },
@@ -3108,10 +3188,10 @@
   "100644": {
    "nivel": 0,
    "votos": {
-    "eletronicos": 4856,
+    "eletronicos": 4861,
     "lar": 171,
-    "automotivo": 122,
-    "masculino": 46,
+    "automotivo": 126,
+    "masculino": 47,
     "pet": 120,
     "brinquedos": 26
    }
@@ -3133,30 +3213,30 @@
   "100631": {
    "nivel": 0,
    "votos": {
-    "pet": 37362,
-    "masculino": 444,
-    "automotivo": 361,
-    "brinquedos": 86,
-    "lar": 864,
-    "eletronicos": 36
+    "pet": 38515,
+    "masculino": 445,
+    "automotivo": 379,
+    "brinquedos": 93,
+    "lar": 1126,
+    "eletronicos": 43
    }
   },
   "100668": {
    "nivel": 1,
    "votos": {
-    "pet": 28902,
-    "automotivo": 361,
-    "masculino": 22,
-    "brinquedos": 86,
-    "eletronicos": 32,
-    "lar": 110
+    "pet": 30030,
+    "automotivo": 379,
+    "masculino": 23,
+    "brinquedos": 93,
+    "eletronicos": 38,
+    "lar": 111
    }
   },
   "100920": {
    "nivel": 2,
    "votos": {
-    "pet": 7796,
-    "lar": 10,
+    "pet": 7829,
+    "lar": 11,
     "automotivo": 1
    },
    "usos": 4,
@@ -3166,29 +3246,29 @@
   "100632": {
    "nivel": 0,
    "votos": {
-    "brinquedos": 33894,
-    "masculino": 240,
-    "lar": 254,
-    "pet": 465,
-    "eletronicos": 310,
+    "brinquedos": 35414,
+    "masculino": 252,
+    "lar": 259,
+    "pet": 513,
+    "eletronicos": 314,
     "automotivo": 241
    }
   },
   "100684": {
    "nivel": 1,
    "votos": {
-    "brinquedos": 33515,
+    "brinquedos": 35034,
     "lar": 63,
-    "eletronicos": 120,
+    "eletronicos": 122,
     "masculino": 15,
-    "pet": 307,
+    "pet": 353,
     "automotivo": 20
    }
   },
   "101007": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 6316,
+    "brinquedos": 6374,
     "pet": 3
    },
    "achados": 12,
@@ -3200,10 +3280,10 @@
    "votos": {
     "brinquedos": 477,
     "pet": 83,
-    "lar": 213,
+    "lar": 217,
     "automotivo": 35,
-    "masculino": 88,
-    "eletronicos": 2293
+    "masculino": 99,
+    "eletronicos": 2294
    }
   },
   "100734": {
@@ -3213,7 +3293,7 @@
     "pet": 10,
     "lar": 25,
     "masculino": 4,
-    "eletronicos": 1919
+    "eletronicos": 1920
    }
   },
   "101378": {
@@ -3227,19 +3307,19 @@
   "100639": {
    "nivel": 0,
    "votos": {
-    "brinquedos": 5496,
-    "masculino": 279,
+    "brinquedos": 5577,
+    "masculino": 292,
     "automotivo": 20,
-    "pet": 47,
-    "eletronicos": 122,
-    "lar": 22
+    "pet": 165,
+    "eletronicos": 128,
+    "lar": 170
    }
   },
   "100739": {
    "nivel": 1,
    "votos": {
-    "brinquedos": 4674,
-    "pet": 19,
+    "brinquedos": 4721,
+    "pet": 137,
     "masculino": 12,
     "automotivo": 8,
     "eletronicos": 51,
@@ -3249,7 +3329,7 @@
   "101409": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 231,
+    "brinquedos": 236,
     "automotivo": 4,
     "eletronicos": 5,
     "pet": 5
@@ -3258,10 +3338,10 @@
   "101012": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 14233,
-    "eletronicos": 48,
+    "brinquedos": 14930,
+    "eletronicos": 50,
     "lar": 3,
-    "pet": 35
+    "pet": 47
    },
    "achados": 6,
    "usos": 1,
@@ -3270,9 +3350,9 @@
   "101011": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 464,
+    "brinquedos": 475,
     "automotivo": 15,
-    "pet": 9,
+    "pet": 14,
     "eletronicos": 2
    },
    "achados": 10,
@@ -3282,31 +3362,31 @@
   "100635": {
    "nivel": 0,
    "votos": {
-    "brinquedos": 84,
-    "eletronicos": 8131,
-    "automotivo": 42,
+    "brinquedos": 86,
+    "eletronicos": 8269,
+    "automotivo": 51,
     "lar": 136,
     "masculino": 41,
-    "pet": 193
+    "pet": 196
    }
   },
   "100703": {
    "nivel": 1,
    "votos": {
-    "brinquedos": 67,
-    "eletronicos": 1948,
-    "automotivo": 34,
+    "brinquedos": 69,
+    "eletronicos": 2011,
+    "automotivo": 43,
     "lar": 93,
     "masculino": 33,
-    "pet": 42
+    "pet": 45
    }
   },
   "101111": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 62,
+    "brinquedos": 64,
     "eletronicos": 398,
-    "automotivo": 14,
+    "automotivo": 17,
     "lar": 93,
     "pet": 38,
     "masculino": 12
@@ -3317,9 +3397,9 @@
    "votos": {
     "masculino": 12144,
     "brinquedos": 46,
-    "lar": 1499,
-    "automotivo": 53,
-    "eletronicos": 520,
+    "lar": 1502,
+    "automotivo": 55,
+    "eletronicos": 534,
     "pet": 67
    }
   },
@@ -3327,9 +3407,9 @@
    "nivel": 1,
    "votos": {
     "masculino": 1132,
-    "lar": 316,
-    "eletronicos": 348,
-    "automotivo": 45,
+    "lar": 319,
+    "eletronicos": 361,
+    "automotivo": 46,
     "pet": 4
    }
   },
@@ -3439,9 +3519,9 @@
    "nivel": 2,
    "votos": {
     "masculino": 159,
-    "eletronicos": 277,
-    "automotivo": 45,
-    "lar": 249
+    "eletronicos": 290,
+    "automotivo": 46,
+    "lar": 252
    }
   },
   "100870": {
@@ -3455,8 +3535,8 @@
    "votos": {
     "masculino": 645,
     "lar": 20,
-    "brinquedos": 12,
-    "eletronicos": 50,
+    "brinquedos": 15,
+    "eletronicos": 53,
     "pet": 67,
     "automotivo": 13
    }
@@ -3481,7 +3561,7 @@
     "lar": 213,
     "automotivo": 2,
     "brinquedos": 9,
-    "eletronicos": 23
+    "eletronicos": 24
    }
   },
   "101176": {
@@ -3509,9 +3589,9 @@
    "nivel": 1,
    "votos": {
     "masculino": 8,
-    "lar": 2605,
+    "lar": 3108,
     "brinquedos": 203,
-    "eletronicos": 582,
+    "eletronicos": 586,
     "automotivo": 107,
     "pet": 41
    }
@@ -3552,7 +3632,7 @@
     "masculino": 4,
     "pet": 9,
     "lar": 14,
-    "eletronicos": 3
+    "eletronicos": 4
    }
   },
   "102002": {
@@ -3561,7 +3641,7 @@
     "masculino": 18,
     "lar": 4,
     "pet": 2,
-    "eletronicos": 2
+    "eletronicos": 3
    }
   },
   "102010": {
@@ -3569,30 +3649,30 @@
    "votos": {
     "masculino": 6,
     "pet": 2,
-    "eletronicos": 2
+    "eletronicos": 3
    }
   },
   "100009": {
    "nivel": 0,
    "votos": {
-    "masculino": 1941,
-    "eletronicos": 95,
-    "automotivo": 12,
+    "masculino": 2848,
+    "eletronicos": 96,
+    "automotivo": 13,
     "brinquedos": 24,
-    "lar": 16,
+    "lar": 29,
     "pet": 8
    }
   },
   "100025": {
    "nivel": 1,
    "votos": {
-    "masculino": 24
+    "masculino": 28
    }
   },
   "100148": {
    "nivel": 2,
    "votos": {
-    "masculino": 14
+    "masculino": 18
    }
   },
   "100874": {
@@ -3639,10 +3719,10 @@
   "100013": {
    "nivel": 0,
    "votos": {
-    "eletronicos": 24449,
+    "eletronicos": 25103,
     "lar": 1014,
-    "masculino": 4361,
-    "automotivo": 6279,
+    "masculino": 4849,
+    "automotivo": 6774,
     "brinquedos": 32,
     "pet": 12
    }
@@ -3650,10 +3730,10 @@
   "100075": {
    "nivel": 1,
    "votos": {
-    "eletronicos": 19259,
+    "eletronicos": 19909,
     "lar": 1006,
-    "masculino": 2194,
-    "automotivo": 5611,
+    "masculino": 2393,
+    "automotivo": 6106,
     "brinquedos": 32,
     "pet": 3
    }
@@ -3661,9 +3741,9 @@
   "100284": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 4547,
-    "masculino": 211,
-    "automotivo": 841,
+    "eletronicos": 5157,
+    "masculino": 221,
+    "automotivo": 925,
     "lar": 793
    },
    "achados": 1
@@ -3671,61 +3751,62 @@
   "102187": {
    "nivel": 0,
    "votos": {
-    "eletronicos": 1831,
-    "lar": 908,
-    "automotivo": 28504,
+    "eletronicos": 2056,
+    "lar": 1011,
+    "automotivo": 30556,
     "pet": 6,
-    "masculino": 186,
+    "masculino": 188,
     "brinquedos": 70
    }
   },
   "102249": {
    "nivel": 1,
    "votos": {
-    "eletronicos": 962,
-    "automotivo": 13050,
-    "lar": 308,
+    "eletronicos": 1067,
+    "automotivo": 13511,
+    "lar": 403,
     "brinquedos": 13,
-    "masculino": 43
+    "masculino": 45
    }
   },
   "102593": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 483,
-    "automotivo": 1185,
+    "eletronicos": 541,
+    "automotivo": 1408,
     "lar": 18
    }
   },
   "100287": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 1822,
-    "masculino": 15
+    "eletronicos": 1847,
+    "masculino": 15,
+    "automotivo": 8
    }
   },
   "102265": {
    "nivel": 1,
    "votos": {
-    "eletronicos": 246,
-    "automotivo": 4240,
+    "eletronicos": 285,
+    "automotivo": 5002,
     "masculino": 53,
-    "lar": 2
+    "lar": 6
    }
   },
   "102267": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 135,
-    "automotivo": 395,
+    "eletronicos": 171,
+    "automotivo": 610,
     "lar": 2
    }
   },
   "102260": {
    "nivel": 1,
    "votos": {
-    "eletronicos": 200,
-    "automotivo": 266,
+    "eletronicos": 209,
+    "automotivo": 335,
     "masculino": 2,
     "brinquedos": 6,
     "lar": 5
@@ -3734,8 +3815,8 @@
   "102551": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 146,
-    "automotivo": 164,
+    "eletronicos": 155,
+    "automotivo": 230,
     "masculino": 2,
     "brinquedos": 6
    }
@@ -3743,8 +3824,8 @@
   "102524": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 234,
-    "automotivo": 2224,
+    "eletronicos": 258,
+    "automotivo": 2376,
     "brinquedos": 7,
     "lar": 5
    }
@@ -3752,10 +3833,10 @@
   "100010": {
    "nivel": 0,
    "votos": {
-    "eletronicos": 6930,
+    "eletronicos": 7776,
     "lar": 4038,
-    "automotivo": 1965,
-    "masculino": 191,
+    "automotivo": 1970,
+    "masculino": 196,
     "brinquedos": 705,
     "pet": 25
    }
@@ -3763,23 +3844,23 @@
   "100042": {
    "nivel": 1,
    "votos": {
-    "eletronicos": 2474,
+    "eletronicos": 2526,
     "lar": 85,
-    "automotivo": 11
+    "automotivo": 13
    }
   },
   "100213": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 1491,
+    "eletronicos": 1494,
     "lar": 9
    }
   },
   "102224": {
    "nivel": 1,
    "votos": {
-    "eletronicos": 314,
-    "automotivo": 4245,
+    "eletronicos": 383,
+    "automotivo": 4274,
     "lar": 108,
     "brinquedos": 17
    }
@@ -3787,8 +3868,8 @@
   "102226": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 13,
-    "automotivo": 94
+    "eletronicos": 20,
+    "automotivo": 100
    },
    "usos": 1,
    "ultimo_uso": "2026-10-12"
@@ -3796,8 +3877,8 @@
   "102528": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 167,
-    "automotivo": 1180,
+    "eletronicos": 183,
+    "automotivo": 1245,
     "brinquedos": 6,
     "lar": 12
    },
@@ -3808,7 +3889,7 @@
    "nivel": 1,
    "votos": {
     "lar": 9992,
-    "eletronicos": 7298,
+    "eletronicos": 7888,
     "automotivo": 232,
     "brinquedos": 1740,
     "masculino": 106,
@@ -3819,7 +3900,7 @@
    "nivel": 1,
    "votos": {
     "lar": 39,
-    "eletronicos": 2859,
+    "eletronicos": 3621,
     "automotivo": 287,
     "brinquedos": 683,
     "masculino": 4
@@ -3829,7 +3910,7 @@
    "nivel": 2,
    "votos": {
     "lar": 39,
-    "eletronicos": 2698,
+    "eletronicos": 3440,
     "automotivo": 192,
     "brinquedos": 580
    }
@@ -3838,9 +3919,9 @@
    "nivel": 2,
    "votos": {
     "lar": 116,
-    "automotivo": 411,
+    "automotivo": 414,
     "brinquedos": 20,
-    "eletronicos": 367,
+    "eletronicos": 375,
     "masculino": 14
    },
    "achados": 1
@@ -3849,9 +3930,9 @@
    "nivel": 1,
    "votos": {
     "lar": 66,
-    "eletronicos": 151,
+    "eletronicos": 162,
     "brinquedos": 16,
-    "masculino": 15,
+    "masculino": 19,
     "pet": 20,
     "automotivo": 7
    }
@@ -3869,7 +3950,7 @@
    "nivel": 2,
    "votos": {
     "lar": 16,
-    "eletronicos": 2,
+    "eletronicos": 10,
     "automotivo": 4
    }
   },
@@ -3877,8 +3958,8 @@
    "nivel": 1,
    "votos": {
     "lar": 50,
-    "eletronicos": 182,
-    "automotivo": 92,
+    "eletronicos": 185,
+    "automotivo": 94,
     "pet": 120,
     "masculino": 28,
     "brinquedos": 4
@@ -3888,7 +3969,7 @@
    "nivel": 2,
    "votos": {
     "lar": 10,
-    "eletronicos": 57,
+    "eletronicos": 60,
     "pet": 8,
     "masculino": 24,
     "brinquedos": 4,
@@ -3898,9 +3979,9 @@
   "101165": {
    "nivel": 2,
    "votos": {
-    "lar": 139,
+    "lar": 140,
     "brinquedos": 74,
-    "eletronicos": 153,
+    "eletronicos": 154,
     "automotivo": 22,
     "pet": 25
    }
@@ -3910,23 +3991,25 @@
    "votos": {
     "lar": 18,
     "automotivo": 533,
-    "masculino": 3
+    "masculino": 3,
+    "eletronicos": 3
    }
   },
   "102252": {
    "nivel": 2,
    "votos": {
     "lar": 9,
-    "automotivo": 8
+    "automotivo": 8,
+    "eletronicos": 3
    }
   },
   "100716": {
    "nivel": 1,
    "votos": {
-    "automotivo": 297,
+    "automotivo": 384,
     "pet": 311,
     "masculino": 228,
-    "lar": 1803,
+    "lar": 1808,
     "eletronicos": 24,
     "brinquedos": 6
    }
@@ -3934,7 +4017,7 @@
   "101209": {
    "nivel": 2,
    "votos": {
-    "automotivo": 154,
+    "automotivo": 202,
     "lar": 3,
     "masculino": 7,
     "pet": 3
@@ -3945,7 +4028,7 @@
   "102272": {
    "nivel": 1,
    "votos": {
-    "automotivo": 3133,
+    "automotivo": 3835,
     "pet": 6,
     "eletronicos": 19,
     "lar": 254,
@@ -3955,13 +4038,13 @@
   "102576": {
    "nivel": 2,
    "votos": {
-    "automotivo": 123
+    "automotivo": 164
    }
   },
   "102569": {
    "nivel": 2,
    "votos": {
-    "automotivo": 196
+    "automotivo": 263
    },
    "usos": 1,
    "ultimo_uso": "2026-10-09"
@@ -3969,7 +4052,7 @@
   "102578": {
    "nivel": 2,
    "votos": {
-    "automotivo": 647,
+    "automotivo": 853,
     "masculino": 53,
     "pet": 2
    }
@@ -3977,7 +4060,7 @@
   "102575": {
    "nivel": 2,
    "votos": {
-    "automotivo": 332,
+    "automotivo": 439,
     "pet": 4
    },
    "usos": 1,
@@ -3986,7 +4069,7 @@
   "102572": {
    "nivel": 2,
    "votos": {
-    "automotivo": 375,
+    "automotivo": 500,
     "eletronicos": 12,
     "masculino": 6
    },
@@ -3996,14 +4079,14 @@
   "102570": {
    "nivel": 2,
    "votos": {
-    "automotivo": 106,
+    "automotivo": 143,
     "masculino": 10
    }
   },
   "101215": {
    "nivel": 2,
    "votos": {
-    "automotivo": 37,
+    "automotivo": 42,
     "pet": 72,
     "masculino": 12,
     "lar": 43,
@@ -4014,13 +4097,13 @@
   "102573": {
    "nivel": 2,
    "votos": {
-    "automotivo": 47
+    "automotivo": 63
    }
   },
   "102568": {
    "nivel": 2,
    "votos": {
-    "automotivo": 152
+    "automotivo": 207
    },
    "usos": 1,
    "ultimo_uso": "2026-10-10"
@@ -4028,7 +4111,7 @@
   "102574": {
    "nivel": 2,
    "votos": {
-    "automotivo": 85
+    "automotivo": 114
    },
    "usos": 1,
    "ultimo_uso": "2026-10-16"
@@ -4036,7 +4119,7 @@
   "101201": {
    "nivel": 2,
    "votos": {
-    "automotivo": 75,
+    "automotivo": 105,
     "pet": 113,
     "lar": 39,
     "masculino": 147,
@@ -4047,7 +4130,7 @@
   "102571": {
    "nivel": 2,
    "votos": {
-    "automotivo": 34
+    "automotivo": 48
    },
    "usos": 1,
    "ultimo_uso": "2026-10-14"
@@ -4055,16 +4138,16 @@
   "102238": {
    "nivel": 2,
    "votos": {
-    "automotivo": 6
+    "automotivo": 8
    }
   },
   "100038": {
    "nivel": 1,
    "votos": {
-    "automotivo": 1659,
-    "eletronicos": 213,
+    "automotivo": 1662,
+    "eletronicos": 217,
     "lar": 1615,
-    "masculino": 174,
+    "masculino": 179,
     "brinquedos": 3,
     "pet": 20
    }
@@ -4072,7 +4155,7 @@
   "100177": {
    "nivel": 2,
    "votos": {
-    "automotivo": 1642,
+    "automotivo": 1643,
     "eletronicos": 18,
     "lar": 1051,
     "pet": 12
@@ -4083,7 +4166,7 @@
   "102577": {
    "nivel": 2,
    "votos": {
-    "automotivo": 1036,
+    "automotivo": 1041,
     "eletronicos": 7,
     "lar": 254
    }
@@ -4091,9 +4174,9 @@
   "100016": {
    "nivel": 0,
    "votos": {
-    "automotivo": 15,
-    "masculino": 928,
-    "lar": 16,
+    "automotivo": 16,
+    "masculino": 1025,
+    "lar": 19,
     "brinquedos": 3,
     "eletronicos": 5
    }
@@ -4101,9 +4184,9 @@
   "100097": {
    "nivel": 1,
    "votos": {
-    "automotivo": 10,
+    "automotivo": 11,
     "masculino": 13,
-    "lar": 6,
+    "lar": 9,
     "brinquedos": 3,
     "eletronicos": 5
    }
@@ -4111,31 +4194,31 @@
   "100348": {
    "nivel": 2,
    "votos": {
-    "automotivo": 4
+    "automotivo": 5
    }
   },
   "102188": {
    "nivel": 1,
    "votos": {
-    "automotivo": 52,
-    "lar": 9,
+    "automotivo": 63,
+    "lar": 13,
     "eletronicos": 12
    }
   },
   "102200": {
    "nivel": 2,
    "votos": {
-    "automotivo": 23,
+    "automotivo": 28,
     "lar": 3
    }
   },
   "101213": {
    "nivel": 2,
    "votos": {
-    "automotivo": 12,
+    "automotivo": 14,
     "lar": 2
    },
-   "achados": 1
+   "achados": 2
   },
   "100670": {
    "nivel": 1,
@@ -4160,7 +4243,7 @@
    "nivel": 2,
    "votos": {
     "pet": 152,
-    "automotivo": 115,
+    "automotivo": 133,
     "eletronicos": 6,
     "brinquedos": 6,
     "lar": 28
@@ -4170,7 +4253,7 @@
   "100673": {
    "nivel": 1,
    "votos": {
-    "pet": 103
+    "pet": 104
    }
   },
   "100712": {
@@ -4181,13 +4264,13 @@
     "masculino": 8,
     "eletronicos": 1,
     "brinquedos": 2,
-    "automotivo": 9
+    "automotivo": 10
    }
   },
   "100671": {
    "nivel": 1,
    "votos": {
-    "pet": 1626,
+    "pet": 1627,
     "masculino": 60,
     "lar": 37
    }
@@ -4195,16 +4278,16 @@
   "100938": {
    "nivel": 2,
    "votos": {
-    "pet": 152,
+    "pet": 153,
     "masculino": 1
    }
   },
   "100919": {
    "nivel": 2,
    "votos": {
-    "pet": 6552,
-    "brinquedos": 80,
-    "eletronicos": 21,
+    "pet": 6850,
+    "brinquedos": 87,
+    "eletronicos": 26,
     "automotivo": 2,
     "lar": 1
    },
@@ -4232,8 +4315,8 @@
   "100922": {
    "nivel": 2,
    "votos": {
-    "pet": 136,
-    "masculino": 6,
+    "pet": 137,
+    "masculino": 7,
     "automotivo": 6,
     "lar": 2
    }
@@ -4243,8 +4326,8 @@
    "votos": {
     "pet": 730,
     "automotivo": 47,
-    "lar": 4679,
-    "eletronicos": 19,
+    "lar": 4699,
+    "eletronicos": 22,
     "brinquedos": 6,
     "masculino": 1
    }
@@ -4253,7 +4336,7 @@
    "nivel": 2,
    "votos": {
     "pet": 6,
-    "lar": 37
+    "lar": 38
    }
   },
   "100718": {
@@ -4262,7 +4345,7 @@
     "pet": 7,
     "lar": 313,
     "eletronicos": 11,
-    "automotivo": 192,
+    "automotivo": 195,
     "brinquedos": 20,
     "masculino": 6
    }
@@ -4273,7 +4356,7 @@
     "pet": 2,
     "eletronicos": 11,
     "lar": 34,
-    "automotivo": 36,
+    "automotivo": 39,
     "brinquedos": 11,
     "masculino": 2
    }
@@ -4291,7 +4374,7 @@
   "101014": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 1727,
+    "brinquedos": 1729,
     "pet": 4,
     "eletronicos": 9
    }
@@ -4302,7 +4385,7 @@
     "brinquedos": 80,
     "pet": 54,
     "automotivo": 3,
-    "lar": 26,
+    "lar": 30,
     "masculino": 17
    }
   },
@@ -4311,7 +4394,7 @@
    "votos": {
     "brinquedos": 62,
     "pet": 52,
-    "lar": 4
+    "lar": 8
    }
   },
   "100732": {
@@ -4321,7 +4404,7 @@
     "pet": 18,
     "automotivo": 26,
     "lar": 143,
-    "masculino": 58,
+    "masculino": 69,
     "eletronicos": 356
    }
   },
@@ -4334,8 +4417,8 @@
   "100633": {
    "nivel": 0,
    "votos": {
-    "brinquedos": 546,
-    "masculino": 996,
+    "brinquedos": 547,
+    "masculino": 1038,
     "eletronicos": 50,
     "lar": 25,
     "pet": 4,
@@ -4345,8 +4428,8 @@
   "100689": {
    "nivel": 1,
    "votos": {
-    "brinquedos": 146,
-    "masculino": 694,
+    "brinquedos": 147,
+    "masculino": 725,
     "eletronicos": 45
    }
   },
@@ -4354,7 +4437,7 @@
    "nivel": 2,
    "votos": {
     "brinquedos": 11,
-    "masculino": 22
+    "masculino": 32
    }
   },
   "100678": {
@@ -4363,7 +4446,7 @@
     "brinquedos": 5,
     "eletronicos": 9,
     "masculino": 173,
-    "lar": 24,
+    "lar": 29,
     "pet": 2
    }
   },
@@ -4378,7 +4461,7 @@
    "nivel": 1,
    "votos": {
     "masculino": 8,
-    "eletronicos": 711,
+    "eletronicos": 727,
     "lar": 10,
     "brinquedos": 19,
     "pet": 2
@@ -4398,7 +4481,7 @@
     "lar": 2011,
     "pet": 2,
     "masculino": 5,
-    "eletronicos": 25,
+    "eletronicos": 26,
     "automotivo": 2
    }
   },
@@ -4441,7 +4524,7 @@
   "100717": {
    "nivel": 1,
    "votos": {
-    "lar": 12434,
+    "lar": 12451,
     "brinquedos": 141,
     "eletronicos": 295,
     "masculino": 372,
@@ -4475,8 +4558,8 @@
    "nivel": 2,
    "votos": {
     "lar": 41,
-    "brinquedos": 388,
-    "pet": 5,
+    "brinquedos": 411,
+    "pet": 6,
     "masculino": 4
    },
    "usos": 1,
@@ -4522,7 +4605,7 @@
   "101237": {
    "nivel": 2,
    "votos": {
-    "lar": 529,
+    "lar": 535,
     "brinquedos": 42,
     "eletronicos": 239,
     "masculino": 58,
@@ -4542,20 +4625,20 @@
   "100721": {
    "nivel": 1,
    "votos": {
-    "lar": 4675,
+    "lar": 5484,
     "automotivo": 418,
-    "masculino": 60,
+    "masculino": 69,
     "brinquedos": 36,
-    "pet": 21,
-    "eletronicos": 94
+    "pet": 22,
+    "eletronicos": 95
    }
   },
   "101256": {
    "nivel": 2,
    "votos": {
-    "lar": 545,
+    "lar": 615,
     "brinquedos": 7,
-    "masculino": 23,
+    "masculino": 24,
     "automotivo": 45,
     "eletronicos": 6
    }
@@ -4571,7 +4654,7 @@
    "votos": {
     "lar": 13,
     "automotivo": 2,
-    "eletronicos": 2
+    "eletronicos": 3
    }
   },
   "100212": {
@@ -4589,7 +4672,7 @@
   "101224": {
    "nivel": 2,
    "votos": {
-    "lar": 1290,
+    "lar": 1299,
     "automotivo": 288,
     "pet": 1
    }
@@ -4670,16 +4753,16 @@
   "100669": {
    "nivel": 1,
    "votos": {
-    "pet": 3164,
-    "eletronicos": 4,
-    "lar": 639
+    "pet": 3184,
+    "eletronicos": 5,
+    "lar": 900
    }
   },
   "100923": {
    "nivel": 2,
    "votos": {
-    "pet": 214,
-    "lar": 61
+    "pet": 225,
+    "lar": 85
    },
    "usos": 1,
    "ultimo_uso": "2026-10-13",
@@ -4695,14 +4778,14 @@
   "102269": {
    "nivel": 2,
    "votos": {
-    "automotivo": 1703,
-    "eletronicos": 44
+    "automotivo": 1939,
+    "eletronicos": 47
    }
   },
   "101193": {
    "nivel": 2,
    "votos": {
-    "automotivo": 503,
+    "automotivo": 577,
     "masculino": 5,
     "eletronicos": 10
    },
@@ -4712,7 +4795,7 @@
   "102564": {
    "nivel": 2,
    "votos": {
-    "automotivo": 2069,
+    "automotivo": 2370,
     "eletronicos": 43,
     "masculino": 8
    },
@@ -4721,50 +4804,51 @@
   "102239": {
    "nivel": 2,
    "votos": {
-    "automotivo": 1274,
+    "automotivo": 1285,
     "lar": 45,
-    "eletronicos": 16,
+    "eletronicos": 18,
     "brinquedos": 2
    }
   },
   "102592": {
    "nivel": 2,
    "votos": {
-    "automotivo": 384,
+    "automotivo": 385,
     "lar": 15
    }
   },
   "102264": {
    "nivel": 1,
    "votos": {
-    "automotivo": 14
+    "automotivo": 17
    }
   },
   "102563": {
    "nivel": 2,
    "votos": {
-    "automotivo": 14
+    "automotivo": 17
    }
   },
   "102567": {
    "nivel": 2,
    "votos": {
-    "automotivo": 73,
+    "automotivo": 83,
     "eletronicos": 24,
-    "masculino": 32
+    "masculino": 32,
+    "lar": 4
    }
   },
   "102211": {
    "nivel": 2,
    "votos": {
-    "automotivo": 20
+    "automotivo": 26
    }
   },
   "102227": {
    "nivel": 2,
    "votos": {
-    "automotivo": 2684,
-    "eletronicos": 248,
+    "automotivo": 2692,
+    "eletronicos": 308,
     "lar": 60,
     "brinquedos": 15
    },
@@ -4774,25 +4858,25 @@
   "100017": {
    "nivel": 0,
    "votos": {
-    "automotivo": 8,
+    "automotivo": 9,
     "eletronicos": 15,
     "brinquedos": 538,
-    "masculino": 93,
+    "masculino": 99,
     "pet": 18
    }
   },
   "100108": {
    "nivel": 1,
    "votos": {
-    "automotivo": 8,
-    "masculino": 7,
+    "automotivo": 9,
+    "masculino": 10,
     "pet": 2
    }
   },
   "102243": {
    "nivel": 1,
    "votos": {
-    "automotivo": 2875,
+    "automotivo": 2888,
     "brinquedos": 29,
     "masculino": 8,
     "eletronicos": 67,
@@ -4802,7 +4886,7 @@
   "102536": {
    "nivel": 2,
    "votos": {
-    "automotivo": 104,
+    "automotivo": 108,
     "eletronicos": 32,
     "lar": 6
    }
@@ -4810,7 +4894,7 @@
   "100661": {
    "nivel": 1,
    "votos": {
-    "automotivo": 8,
+    "automotivo": 9,
     "masculino": 1912
    }
   },
@@ -4831,7 +4915,7 @@
   "100040": {
    "nivel": 1,
    "votos": {
-    "eletronicos": 22,
+    "eletronicos": 23,
     "automotivo": 2,
     "lar": 3
    }
@@ -4839,15 +4923,15 @@
   "100189": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 16
+    "eletronicos": 17
    }
   },
   "100290": {
    "nivel": 2,
    "votos": {
     "eletronicos": 3112,
-    "masculino": 1134,
-    "automotivo": 654,
+    "masculino": 1288,
+    "automotivo": 834,
     "brinquedos": 6
    }
   },
@@ -4855,7 +4939,9 @@
    "nivel": 2,
    "votos": {
     "eletronicos": 16,
-    "lar": 17
+    "lar": 17,
+    "automotivo": 2,
+    "masculino": 3
    },
    "achados": 1
   },
@@ -4901,8 +4987,8 @@
   "100924": {
    "nivel": 2,
    "votos": {
-    "pet": 466,
-    "lar": 104
+    "pet": 468,
+    "lar": 149
    },
    "usos": 1,
    "ultimo_uso": "2026-10-11"
@@ -4911,11 +4997,11 @@
    "nivel": 1,
    "votos": {
     "pet": 359,
-    "brinquedos": 65,
+    "brinquedos": 68,
     "automotivo": 70,
     "masculino": 6,
-    "lar": 1901,
-    "eletronicos": 15
+    "lar": 1980,
+    "eletronicos": 18
    }
   },
   "101175": {
@@ -4931,7 +5017,7 @@
   "100917": {
    "nivel": 2,
    "votos": {
-    "pet": 1151,
+    "pet": 1889,
     "masculino": 14,
     "automotivo": 214
    }
@@ -4950,8 +5036,8 @@
    "votos": {
     "lar": 12,
     "masculino": 15,
-    "eletronicos": 88,
-    "automotivo": 87
+    "eletronicos": 90,
+    "automotivo": 89
    }
   },
   "100730": {
@@ -4980,17 +5066,17 @@
   "101262": {
    "nivel": 2,
    "votos": {
-    "lar": 441,
-    "masculino": 5,
+    "lar": 452,
+    "masculino": 7,
     "automotivo": 105,
-    "eletronicos": 37
+    "eletronicos": 38
    }
   },
   "100722": {
    "nivel": 1,
    "votos": {
     "lar": 85,
-    "brinquedos": 487,
+    "brinquedos": 488,
     "automotivo": 47,
     "eletronicos": 55,
     "masculino": 17
@@ -5022,8 +5108,8 @@
    "nivel": 2,
    "votos": {
     "lar": 26,
-    "masculino": 96,
-    "eletronicos": 163,
+    "masculino": 116,
+    "eletronicos": 165,
     "automotivo": 2
    }
   },
@@ -5031,8 +5117,8 @@
    "nivel": 2,
    "votos": {
     "lar": 13,
-    "automotivo": 127,
-    "eletronicos": 198,
+    "automotivo": 142,
+    "eletronicos": 199,
     "masculino": 59
    }
   },
@@ -5046,7 +5132,7 @@
   "100676": {
    "nivel": 1,
    "votos": {
-    "pet": 4,
+    "pet": 6,
     "automotivo": 7,
     "eletronicos": 13,
     "masculino": 16,
@@ -5056,7 +5142,7 @@
   "100961": {
    "nivel": 2,
    "votos": {
-    "pet": 4,
+    "pet": 6,
     "automotivo": 7,
     "eletronicos": 13,
     "masculino": 16,
@@ -5066,7 +5152,7 @@
   "100918": {
    "nivel": 2,
    "votos": {
-    "pet": 1835,
+    "pet": 1869,
     "eletronicos": 2,
     "masculino": 2
    },
@@ -5076,8 +5162,8 @@
   "100928": {
    "nivel": 2,
    "votos": {
-    "pet": 56,
-    "lar": 15
+    "pet": 61,
+    "lar": 21
    },
    "usos": 1,
    "ultimo_uso": "2026-10-12"
@@ -5086,8 +5172,8 @@
    "nivel": 2,
    "votos": {
     "automotivo": 3382,
-    "lar": 170,
-    "eletronicos": 6
+    "lar": 178,
+    "eletronicos": 11
    }
   },
   "101356": {
@@ -5101,8 +5187,8 @@
    "nivel": 0,
    "votos": {
     "automotivo": 32,
-    "masculino": 6090,
-    "lar": 10,
+    "masculino": 7286,
+    "lar": 12,
     "eletronicos": 2
    }
   },
@@ -5110,8 +5196,8 @@
    "nivel": 1,
    "votos": {
     "automotivo": 32,
-    "masculino": 3224,
-    "lar": 10,
+    "masculino": 3497,
+    "lar": 12,
     "eletronicos": 2
    }
   },
@@ -5119,14 +5205,14 @@
    "nivel": 2,
    "votos": {
     "automotivo": 10,
-    "masculino": 58
+    "masculino": 60
    }
   },
   "100608": {
    "nivel": 2,
    "votos": {
     "automotivo": 16,
-    "masculino": 1783
+    "masculino": 1905
    }
   },
   "102521": {
@@ -5140,7 +5226,7 @@
    "nivel": 2,
    "votos": {
     "automotivo": 44,
-    "lar": 533,
+    "lar": 535,
     "eletronicos": 48
    },
    "usos": 1,
@@ -5150,24 +5236,24 @@
    "nivel": 2,
    "votos": {
     "automotivo": 6,
-    "masculino": 1064,
+    "masculino": 1099,
     "lar": 7
    }
   },
   "100640": {
    "nivel": 0,
    "votos": {
-    "automotivo": 2681,
-    "masculino": 3,
-    "eletronicos": 69,
-    "lar": 5
+    "automotivo": 2870,
+    "masculino": 4,
+    "eletronicos": 79,
+    "lar": 24
    }
   },
   "100749": {
    "nivel": 1,
    "votos": {
     "automotivo": 570,
-    "eletronicos": 42
+    "eletronicos": 44
    }
   },
   "101457": {
@@ -5180,8 +5266,8 @@
   "100747": {
    "nivel": 1,
    "votos": {
-    "automotivo": 2046,
-    "eletronicos": 18,
+    "automotivo": 2235,
+    "eletronicos": 26,
     "lar": 5
    }
   },
@@ -5197,8 +5283,8 @@
    "votos": {
     "automotivo": 119,
     "eletronicos": 23,
-    "masculino": 576,
-    "lar": 252,
+    "masculino": 603,
+    "lar": 254,
     "brinquedos": 3
    }
   },
@@ -5207,8 +5293,8 @@
    "votos": {
     "automotivo": 84,
     "eletronicos": 22,
-    "masculino": 510,
-    "lar": 220
+    "masculino": 511,
+    "lar": 222
    }
   },
   "100324": {
@@ -5234,7 +5320,7 @@
    "nivel": 1,
    "votos": {
     "automotivo": 5,
-    "masculino": 573,
+    "masculino": 614,
     "lar": 9
    }
   },
@@ -5242,7 +5328,7 @@
    "nivel": 2,
    "votos": {
     "automotivo": 2,
-    "masculino": 120
+    "masculino": 128
    },
    "usos": 1,
    "ultimo_uso": "2026-10-13"
@@ -5250,47 +5336,47 @@
   "102246": {
    "nivel": 2,
    "votos": {
-    "automotivo": 31
+    "automotivo": 39
    }
   },
   "100338": {
    "nivel": 2,
    "votos": {
     "automotivo": 3,
-    "masculino": 400,
+    "masculino": 418,
     "lar": 3
    }
   },
   "100569": {
    "nivel": 1,
    "votos": {
-    "masculino": 416
+    "masculino": 656
    }
   },
   "100095": {
    "nivel": 1,
    "votos": {
-    "masculino": 28
+    "masculino": 34
    }
   },
   "100728": {
    "nivel": 1,
    "votos": {
-    "masculino": 329,
+    "masculino": 380,
     "eletronicos": 27,
     "pet": 3,
-    "automotivo": 4,
+    "automotivo": 5,
     "brinquedos": 2,
-    "lar": 13
+    "lar": 18
    }
   },
   "101323": {
    "nivel": 2,
    "votos": {
-    "masculino": 36,
+    "masculino": 42,
     "pet": 1,
     "eletronicos": 11,
-    "automotivo": 4
+    "automotivo": 5
    },
    "usos": 1,
    "ultimo_uso": "2026-10-11"
@@ -5298,41 +5384,42 @@
   "100092": {
    "nivel": 1,
    "votos": {
-    "masculino": 150
+    "masculino": 157
    }
   },
   "100729": {
    "nivel": 1,
    "votos": {
-    "masculino": 31,
+    "masculino": 42,
     "eletronicos": 5
    }
   },
   "100023": {
    "nivel": 1,
    "votos": {
-    "masculino": 2
+    "masculino": 3
    }
   },
   "101329": {
    "nivel": 2,
    "votos": {
-    "masculino": 192,
+    "masculino": 193,
     "eletronicos": 10,
     "pet": 2,
-    "brinquedos": 2
+    "brinquedos": 2,
+    "lar": 2
    }
   },
   "100564": {
    "nivel": 1,
    "votos": {
-    "masculino": 1748
+    "masculino": 2236
    }
   },
   "100283": {
    "nivel": 2,
    "votos": {
-    "masculino": 128,
+    "masculino": 152,
     "automotivo": 6,
     "brinquedos": 3,
     "eletronicos": 10
@@ -5347,7 +5434,7 @@
   "100570": {
    "nivel": 1,
    "votos": {
-    "masculino": 183
+    "masculino": 227
    }
   },
   "100727": {
@@ -5374,7 +5461,7 @@
   "100674": {
    "nivel": 1,
    "votos": {
-    "masculino": 27,
+    "masculino": 39,
     "eletronicos": 21,
     "automotivo": 204,
     "pet": 8,
@@ -5391,8 +5478,8 @@
   "100610": {
    "nivel": 2,
    "votos": {
-    "masculino": 154,
-    "lar": 3,
+    "masculino": 263,
+    "lar": 5,
     "eletronicos": 2
    },
    "usos": 1,
@@ -5401,10 +5488,11 @@
   "101259": {
    "nivel": 2,
    "votos": {
-    "masculino": 3,
+    "masculino": 7,
     "automotivo": 20,
-    "lar": 1943
-   }
+    "lar": 2525
+   },
+   "achados": 2
   },
   "101183": {
    "nivel": 2,
@@ -5425,8 +5513,8 @@
   "100034": {
    "nivel": 1,
    "votos": {
-    "masculino": 8,
-    "eletronicos": 5,
+    "masculino": 10,
+    "eletronicos": 6,
     "brinquedos": 12,
     "lar": 8,
     "pet": 6,
@@ -5460,7 +5548,7 @@
   "100074": {
    "nivel": 1,
    "votos": {
-    "masculino": 2165,
+    "masculino": 2453,
     "eletronicos": 4915,
     "automotivo": 572
    }
@@ -5468,21 +5556,21 @@
   "100270": {
    "nivel": 2,
    "votos": {
-    "masculino": 1578,
+    "masculino": 1595,
     "eletronicos": 4887
    }
   },
   "100534": {
    "nivel": 0,
    "votos": {
-    "masculino": 567,
+    "masculino": 589,
     "eletronicos": 538
    }
   },
   "100574": {
    "nivel": 1,
    "votos": {
-    "masculino": 302,
+    "masculino": 324,
     "eletronicos": 38
    }
   },
@@ -5503,21 +5591,21 @@
   "100726": {
    "nivel": 1,
    "votos": {
-    "masculino": 226,
+    "masculino": 232,
     "eletronicos": 7
    }
   },
   "101300": {
    "nivel": 2,
    "votos": {
-    "masculino": 98,
+    "masculino": 101,
     "eletronicos": 7
    }
   },
   "100012": {
    "nivel": 0,
    "votos": {
-    "masculino": 888,
+    "masculino": 909,
     "automotivo": 7,
     "brinquedos": 4,
     "lar": 4
@@ -5526,7 +5614,7 @@
   "100067": {
    "nivel": 1,
    "votos": {
-    "masculino": 160
+    "masculino": 162
    }
   },
   "101034": {
@@ -5534,19 +5622,19 @@
    "votos": {
     "masculino": 7,
     "eletronicos": 45,
-    "brinquedos": 7
+    "brinquedos": 8
    }
   },
   "100064": {
    "nivel": 1,
    "votos": {
-    "masculino": 435
+    "masculino": 439
    }
   },
   "100692": {
    "nivel": 1,
    "votos": {
-    "masculino": 125,
+    "masculino": 130,
     "lar": 25,
     "brinquedos": 2
    }
@@ -5554,7 +5642,7 @@
   "101061": {
    "nivel": 2,
    "votos": {
-    "masculino": 111,
+    "masculino": 116,
     "lar": 25
    },
    "achados": 1
@@ -5563,30 +5651,33 @@
    "nivel": 2,
    "votos": {
     "masculino": 45
-   }
+   },
+   "usos": 1,
+   "ultimo_uso": "2026-10-16",
+   "achados": 1
   },
   "100063": {
    "nivel": 1,
    "votos": {
-    "masculino": 136
+    "masculino": 150
    }
   },
   "100255": {
    "nivel": 2,
    "votos": {
-    "masculino": 105
+    "masculino": 112
    }
   },
   "100065": {
    "nivel": 1,
    "votos": {
-    "masculino": 10
+    "masculino": 11
    }
   },
   "101305": {
    "nivel": 2,
    "votos": {
-    "masculino": 63
+    "masculino": 64
    }
   },
   "100066": {
@@ -5605,7 +5696,7 @@
   "100690": {
    "nivel": 1,
    "votos": {
-    "masculino": 145,
+    "masculino": 150,
     "brinquedos": 5,
     "eletronicos": 5,
     "pet": 2
@@ -5614,7 +5705,7 @@
   "101046": {
    "nivel": 2,
    "votos": {
-    "masculino": 102,
+    "masculino": 106,
     "eletronicos": 5,
     "pet": 2
    }
@@ -5622,7 +5713,7 @@
   "100011": {
    "nivel": 0,
    "votos": {
-    "masculino": 1212,
+    "masculino": 1266,
     "eletronicos": 1,
     "lar": 13,
     "brinquedos": 9,
@@ -5632,20 +5723,20 @@
   "100057": {
    "nivel": 1,
    "votos": {
-    "masculino": 94,
+    "masculino": 114,
     "brinquedos": 6
    }
   },
   "100613": {
    "nivel": 2,
    "votos": {
-    "masculino": 45
+    "masculino": 46
    }
   },
   "100039": {
    "nivel": 1,
    "votos": {
-    "eletronicos": 583,
+    "eletronicos": 593,
     "lar": 263,
     "automotivo": 1
    }
@@ -5653,7 +5744,7 @@
   "100181": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 583,
+    "eletronicos": 593,
     "lar": 263
    },
    "achados": 1
@@ -5672,9 +5763,9 @@
   "100178": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 52,
+    "eletronicos": 54,
     "lar": 25,
-    "masculino": 174,
+    "masculino": 176,
     "automotivo": 4,
     "pet": 7
    }
@@ -5682,7 +5773,7 @@
   "100176": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 127,
+    "eletronicos": 129,
     "automotivo": 13,
     "lar": 522,
     "brinquedos": 3
@@ -5714,7 +5805,7 @@
   "101008": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 3850,
+    "brinquedos": 3854,
     "eletronicos": 14,
     "pet": 28,
     "lar": 6,
@@ -5727,7 +5818,7 @@
   "100737": {
    "nivel": 1,
    "votos": {
-    "brinquedos": 598,
+    "brinquedos": 624,
     "automotivo": 6,
     "lar": 9,
     "masculino": 9,
@@ -5738,7 +5829,7 @@
   "101385": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 513,
+    "brinquedos": 537,
     "automotivo": 6,
     "lar": 1,
     "masculino": 9,
@@ -5765,10 +5856,10 @@
   "100738": {
    "nivel": 1,
    "votos": {
-    "brinquedos": 131,
+    "brinquedos": 133,
     "masculino": 194,
-    "eletronicos": 45,
-    "lar": 9,
+    "eletronicos": 51,
+    "lar": 157,
     "pet": 1,
     "automotivo": 1
    }
@@ -5776,17 +5867,17 @@
   "101396": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 97,
+    "brinquedos": 98,
     "masculino": 190,
-    "eletronicos": 36,
-    "lar": 2
+    "eletronicos": 42,
+    "lar": 148
    }
   },
   "100532": {
    "nivel": 0,
    "votos": {
     "brinquedos": 238,
-    "masculino": 66,
+    "masculino": 73,
     "automotivo": 5
    }
   },
@@ -5820,7 +5911,7 @@
   "101010": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 1041,
+    "brinquedos": 1079,
     "pet": 182
    },
    "achados": 20,
@@ -5837,7 +5928,7 @@
    "nivel": 1,
    "votos": {
     "brinquedos": 23,
-    "masculino": 25
+    "masculino": 26
    }
   },
   "101022": {
@@ -5849,33 +5940,34 @@
   "101174": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 41,
+    "brinquedos": 44,
     "automotivo": 12,
-    "lar": 1355
+    "lar": 1361
    },
-   "achados": 6,
-   "usos": 3,
-   "ultimo_uso": "2026-10-13"
+   "achados": 7,
+   "usos": 4,
+   "ultimo_uso": "2026-10-16"
   },
   "101015": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 372,
+    "brinquedos": 384,
     "masculino": 11,
-    "pet": 5,
+    "pet": 33,
     "eletronicos": 12,
     "lar": 1
    },
    "usos": 2,
    "ultimo_uso": "2026-10-15",
-   "achados": 1
+   "achados": 2
   },
   "101166": {
    "nivel": 2,
    "votos": {
     "brinquedos": 18,
     "automotivo": 26,
-    "masculino": 6
+    "masculino": 6,
+    "eletronicos": 3
    }
   },
   "100559": {
@@ -5902,7 +5994,7 @@
   "101006": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 705,
+    "brinquedos": 753,
     "eletronicos": 33,
     "pet": 18,
     "lar": 11
@@ -5948,8 +6040,8 @@
     "brinquedos": 26,
     "automotivo": 28,
     "masculino": 25,
-    "lar": 369,
-    "pet": 3,
+    "lar": 419,
+    "pet": 4,
     "eletronicos": 1
    }
   },
@@ -5987,7 +6079,7 @@
    "nivel": 1,
    "votos": {
     "automotivo": 85,
-    "eletronicos": 353,
+    "eletronicos": 358,
     "lar": 1207
    }
   },
@@ -5995,7 +6087,7 @@
    "nivel": 2,
    "votos": {
     "automotivo": 83,
-    "eletronicos": 349,
+    "eletronicos": 354,
     "lar": 840
    }
   },
@@ -6012,7 +6104,7 @@
   "102525": {
    "nivel": 2,
    "votos": {
-    "automotivo": 40,
+    "automotivo": 50,
     "eletronicos": 11
    }
   },
@@ -6021,7 +6113,7 @@
    "votos": {
     "automotivo": 95,
     "brinquedos": 90,
-    "eletronicos": 137,
+    "eletronicos": 156,
     "masculino": 4
    }
   },
@@ -6029,7 +6121,7 @@
    "nivel": 2,
    "votos": {
     "automotivo": 516,
-    "eletronicos": 32
+    "eletronicos": 34
    },
    "usos": 1,
    "ultimo_uso": "2026-10-09"
@@ -6037,7 +6129,7 @@
   "102228": {
    "nivel": 2,
    "votos": {
-    "automotivo": 79,
+    "automotivo": 81,
     "eletronicos": 6
    }
   },
@@ -6064,8 +6156,8 @@
   "101425": {
    "nivel": 2,
    "votos": {
-    "automotivo": 49,
-    "eletronicos": 10
+    "automotivo": 88,
+    "eletronicos": 15
    }
   },
   "101431": {
@@ -6079,7 +6171,8 @@
    "nivel": 1,
    "votos": {
     "automotivo": 15,
-    "masculino": 3
+    "masculino": 4,
+    "lar": 19
    }
   },
   "102240": {
@@ -6092,8 +6185,8 @@
    "nivel": 1,
    "votos": {
     "automotivo": 10,
-    "eletronicos": 41,
-    "masculino": 25,
+    "eletronicos": 45,
+    "masculino": 31,
     "pet": 1
    }
   },
@@ -6101,8 +6194,8 @@
    "nivel": 2,
    "votos": {
     "automotivo": 10,
-    "eletronicos": 34,
-    "masculino": 21
+    "eletronicos": 35,
+    "masculino": 27
    }
   },
   "102189": {
@@ -6116,8 +6209,8 @@
   "101943": {
    "nivel": 1,
    "votos": {
-    "automotivo": 26,
-    "eletronicos": 59,
+    "automotivo": 28,
+    "eletronicos": 61,
     "masculino": 4,
     "lar": 3
    }
@@ -6144,15 +6237,15 @@
   "102523": {
    "nivel": 2,
    "votos": {
-    "lar": 29,
+    "lar": 116,
     "automotivo": 15,
-    "masculino": 43
+    "masculino": 45
    }
   },
   "101230": {
    "nivel": 2,
    "votos": {
-    "lar": 35,
+    "lar": 37,
     "masculino": 289,
     "eletronicos": 13,
     "automotivo": 3
@@ -6164,7 +6257,7 @@
    "nivel": 2,
    "votos": {
     "lar": 7,
-    "masculino": 1
+    "masculino": 12
    }
   },
   "101227": {
@@ -6177,16 +6270,16 @@
    "nivel": 2,
    "votos": {
     "brinquedos": 13,
-    "eletronicos": 24
+    "eletronicos": 25
    }
   },
   "100535": {
    "nivel": 0,
    "votos": {
     "brinquedos": 38,
-    "eletronicos": 4597,
+    "eletronicos": 4604,
     "masculino": 44,
-    "automotivo": 27,
+    "automotivo": 32,
     "lar": 7
    }
   },
@@ -6194,7 +6287,7 @@
    "nivel": 1,
    "votos": {
     "brinquedos": 23,
-    "eletronicos": 341,
+    "eletronicos": 346,
     "lar": 4
    }
   },
@@ -6202,7 +6295,7 @@
    "nivel": 2,
    "votos": {
     "brinquedos": 19,
-    "eletronicos": 309,
+    "eletronicos": 313,
     "lar": 4
    },
    "achados": 1,
@@ -6221,7 +6314,7 @@
   "101013": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 4419,
+    "brinquedos": 5045,
     "eletronicos": 2,
     "pet": 18,
     "lar": 1
@@ -6249,7 +6342,7 @@
     "lar": 10,
     "masculino": 23,
     "pet": 8,
-    "eletronicos": 20,
+    "eletronicos": 22,
     "automotivo": 13
    }
   },
@@ -6265,7 +6358,7 @@
   "100272": {
    "nivel": 2,
    "votos": {
-    "masculino": 515,
+    "masculino": 772,
     "automotivo": 567,
     "eletronicos": 1
    }
@@ -6273,8 +6366,8 @@
   "100279": {
    "nivel": 2,
    "votos": {
-    "masculino": 21,
-    "automotivo": 2817,
+    "masculino": 31,
+    "automotivo": 3015,
     "eletronicos": 1568,
     "lar": 1,
     "pet": 3,
@@ -6284,7 +6377,7 @@
   "100273": {
    "nivel": 2,
    "votos": {
-    "masculino": 67,
+    "masculino": 81,
     "eletronicos": 26,
     "automotivo": 5
    }
@@ -6292,19 +6385,19 @@
   "100951": {
    "nivel": 2,
    "votos": {
-    "masculino": 23
+    "masculino": 33
    }
   },
   "100609": {
    "nivel": 2,
    "votos": {
-    "masculino": 120
+    "masculino": 124
    }
   },
   "100339": {
    "nivel": 2,
    "votos": {
-    "masculino": 23,
+    "masculino": 35,
     "lar": 6
    },
    "usos": 2,
@@ -6313,50 +6406,51 @@
   "100278": {
    "nivel": 2,
    "votos": {
-    "masculino": 6,
+    "masculino": 7,
     "eletronicos": 17
    }
   },
   "100036": {
    "nivel": 1,
    "votos": {
-    "masculino": 40,
+    "masculino": 42,
     "brinquedos": 4,
     "eletronicos": 13,
     "pet": 2,
-    "automotivo": 1
+    "automotivo": 1,
+    "lar": 9
    }
   },
   "100109": {
    "nivel": 1,
    "votos": {
-    "masculino": 7
+    "masculino": 10
    }
   },
   "100374": {
    "nivel": 2,
    "votos": {
-    "masculino": 7
+    "masculino": 10
    }
   },
   "100049": {
    "nivel": 1,
    "votos": {
-    "masculino": 11
+    "masculino": 16
    }
   },
   "100035": {
    "nivel": 1,
    "votos": {
-    "masculino": 21,
+    "masculino": 29,
     "brinquedos": 3
    }
   },
   "100745": {
    "nivel": 1,
    "votos": {
-    "masculino": 24,
-    "brinquedos": 46,
+    "masculino": 37,
+    "brinquedos": 50,
     "pet": 2,
     "eletronicos": 2
    }
@@ -6364,25 +6458,25 @@
   "100342": {
    "nivel": 2,
    "votos": {
-    "masculino": 10
+    "masculino": 12
    }
   },
   "100556": {
    "nivel": 1,
    "votos": {
-    "masculino": 15
+    "masculino": 22
    }
   },
   "100586": {
    "nivel": 2,
    "votos": {
-    "masculino": 15
+    "masculino": 22
    }
   },
   "100258": {
    "nivel": 2,
    "votos": {
-    "masculino": 13
+    "masculino": 20
    }
   },
   "102519": {
@@ -6395,15 +6489,15 @@
    "nivel": 2,
    "votos": {
     "automotivo": 23,
-    "pet": 11280,
+    "pet": 11304,
     "lar": 69,
-    "eletronicos": 3
+    "eletronicos": 4
    }
   },
   "102601": {
    "nivel": 1,
    "votos": {
-    "automotivo": 63,
+    "automotivo": 65,
     "masculino": 1,
     "eletronicos": 2
    }
@@ -6452,9 +6546,9 @@
   "100926": {
    "nivel": 2,
    "votos": {
-    "pet": 2359,
-    "eletronicos": 4,
-    "lar": 452
+    "pet": 2361,
+    "eletronicos": 5,
+    "lar": 635
    },
    "usos": 1,
    "ultimo_uso": "2026-10-12"
@@ -6472,7 +6566,7 @@
    "nivel": 2,
    "votos": {
     "pet": 41,
-    "lar": 7
+    "lar": 10
    },
    "usos": 1,
    "ultimo_uso": "2026-10-14"
@@ -6488,11 +6582,11 @@
   "100077": {
    "nivel": 1,
    "votos": {
-    "eletronicos": 42,
+    "eletronicos": 46,
     "automotivo": 84,
     "pet": 9,
     "lar": 8,
-    "masculino": 2
+    "masculino": 3
    }
   },
   "102543": {
@@ -6513,8 +6607,8 @@
    "nivel": 1,
    "votos": {
     "eletronicos": 53,
-    "automotivo": 4,
-    "masculino": 414
+    "automotivo": 5,
+    "masculino": 415
    }
   },
   "100151": {
@@ -6527,7 +6621,7 @@
   "100584": {
    "nivel": 1,
    "votos": {
-    "eletronicos": 102,
+    "eletronicos": 103,
     "masculino": 26,
     "lar": 3
    }
@@ -6542,7 +6636,7 @@
    "nivel": 1,
    "votos": {
     "eletronicos": 771,
-    "automotivo": 26
+    "automotivo": 31
    }
   },
   "100620": {
@@ -6557,7 +6651,7 @@
    "votos": {
     "automotivo": 71,
     "masculino": 19,
-    "lar": 197,
+    "lar": 199,
     "eletronicos": 3
    }
   },
@@ -6567,7 +6661,7 @@
     "automotivo": 10,
     "pet": 67,
     "brinquedos": 27,
-    "eletronicos": 23,
+    "eletronicos": 25,
     "lar": 24
    }
   },
@@ -6584,14 +6678,14 @@
    "votos": {
     "automotivo": 18,
     "pet": 7,
-    "masculino": 1
+    "masculino": 3
    }
   },
   "100086": {
    "nivel": 1,
    "votos": {
     "automotivo": 16,
-    "masculino": 62,
+    "masculino": 88,
     "lar": 32
    }
   },
@@ -6599,21 +6693,21 @@
    "nivel": 2,
    "votos": {
     "automotivo": 9,
-    "masculino": 19,
+    "masculino": 23,
     "lar": 28
    }
   },
   "102244": {
    "nivel": 2,
    "votos": {
-    "automotivo": 17
+    "automotivo": 18
    }
   },
   "100323": {
    "nivel": 2,
    "votos": {
     "automotivo": 7,
-    "masculino": 7
+    "masculino": 22
    }
   },
   "101132": {
@@ -6653,7 +6747,7 @@
    "nivel": 2,
    "votos": {
     "automotivo": 7,
-    "lar": 88
+    "lar": 105
    }
   },
   "101419": {
@@ -6667,7 +6761,7 @@
    "votos": {
     "automotivo": 1,
     "pet": 17,
-    "lar": 39
+    "lar": 40
    }
   },
   "102518": {
@@ -6695,7 +6789,7 @@
   "101407": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 1508,
+    "brinquedos": 1530,
     "automotivo": 4,
     "eletronicos": 4,
     "pet": 2
@@ -6707,14 +6801,15 @@
   "101404": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 26,
-    "masculino": 9
+    "brinquedos": 27,
+    "masculino": 9,
+    "pet": 118
    }
   },
   "100686": {
    "nivel": 1,
    "votos": {
-    "brinquedos": 14,
+    "brinquedos": 15,
     "eletronicos": 6,
     "lar": 3
    }
@@ -6722,7 +6817,7 @@
   "101991": {
    "nivel": 2,
    "votos": {
-    "automotivo": 84,
+    "automotivo": 85,
     "lar": 37,
     "pet": 109,
     "eletronicos": 1
@@ -6731,7 +6826,7 @@
   "101424": {
    "nivel": 2,
    "votos": {
-    "automotivo": 627,
+    "automotivo": 777,
     "eletronicos": 6
    }
   },
@@ -6756,11 +6851,13 @@
    "nivel": 2,
    "votos": {
     "automotivo": 5,
-    "lar": 128,
-    "eletronicos": 14,
+    "lar": 145,
+    "eletronicos": 17,
     "masculino": 1
    },
-   "achados": 1
+   "achados": 2,
+   "usos": 1,
+   "ultimo_uso": "2026-10-16"
   },
   "101248": {
    "nivel": 2,
@@ -6773,7 +6870,7 @@
   "101258": {
    "nivel": 2,
    "votos": {
-    "lar": 192,
+    "lar": 193,
     "automotivo": 158,
     "pet": 1,
     "brinquedos": 3,
@@ -6789,7 +6886,7 @@
   "100032": {
    "nivel": 1,
    "votos": {
-    "masculino": 88
+    "masculino": 308
    }
   },
   "100981": {
@@ -6804,7 +6901,8 @@
    "nivel": 1,
    "votos": {
     "pet": 226,
-    "lar": 12
+    "lar": 12,
+    "eletronicos": 3
    }
   },
   "101146": {
@@ -6823,9 +6921,9 @@
   "100220": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 149,
+    "eletronicos": 162,
     "lar": 54,
-    "automotivo": 6
+    "automotivo": 7
    }
   },
   "102535": {
@@ -6839,7 +6937,7 @@
    "nivel": 2,
    "votos": {
     "automotivo": 1,
-    "masculino": 391,
+    "masculino": 392,
     "eletronicos": 15
    },
    "usos": 2,
@@ -6855,16 +6953,16 @@
    "nivel": 2,
    "votos": {
     "masculino": 2,
-    "eletronicos": 248,
-    "automotivo": 15
+    "eletronicos": 276,
+    "automotivo": 19
    }
   },
   "100634": {
    "nivel": 0,
    "votos": {
-    "masculino": 2,
+    "masculino": 3,
     "brinquedos": 11,
-    "eletronicos": 44,
+    "eletronicos": 48,
     "pet": 4,
     "lar": 1
    }
@@ -6873,7 +6971,7 @@
    "nivel": 1,
    "votos": {
     "masculino": 1,
-    "eletronicos": 36,
+    "eletronicos": 37,
     "lar": 1
    }
   },
@@ -6882,7 +6980,7 @@
    "votos": {
     "masculino": 615,
     "brinquedos": 6,
-    "eletronicos": 28,
+    "eletronicos": 29,
     "pet": 57,
     "lar": 5
    }
@@ -6891,7 +6989,7 @@
    "nivel": 2,
    "votos": {
     "masculino": 612,
-    "eletronicos": 19,
+    "eletronicos": 20,
     "pet": 4
    },
    "usos": 1,
@@ -6901,7 +6999,7 @@
    "nivel": 2,
    "votos": {
     "masculino": 4,
-    "automotivo": 3,
+    "automotivo": 4,
     "eletronicos": 25
    }
   },
@@ -6935,7 +7033,7 @@
    "nivel": 2,
    "votos": {
     "pet": 4,
-    "brinquedos": 2434,
+    "brinquedos": 2453,
     "masculino": 3,
     "eletronicos": 24
    },
@@ -6952,7 +7050,7 @@
   "100280": {
    "nivel": 2,
    "votos": {
-    "automotivo": 256,
+    "automotivo": 258,
     "masculino": 19,
     "eletronicos": 425
    }
@@ -6967,13 +7065,13 @@
   "100276": {
    "nivel": 2,
    "votos": {
-    "automotivo": 29,
-    "eletronicos": 2850,
+    "automotivo": 32,
+    "eletronicos": 2853,
     "lar": 4
    },
    "achados": 2,
-   "usos": 2,
-   "ultimo_uso": "2026-10-13"
+   "usos": 3,
+   "ultimo_uso": "2026-10-16"
   },
   "101203": {
    "nivel": 2,
@@ -7008,9 +7106,10 @@
   "101113": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 90,
+    "eletronicos": 117,
     "brinquedos": 3,
-    "masculino": 3
+    "masculino": 3,
+    "automotivo": 1
    }
   },
   "100868": {
@@ -7060,21 +7159,21 @@
   "100643": {
    "nivel": 0,
    "votos": {
-    "brinquedos": 138,
-    "masculino": 3
+    "brinquedos": 141,
+    "masculino": 6
    }
   },
   "100777": {
    "nivel": 1,
    "votos": {
-    "brinquedos": 138,
-    "masculino": 3
+    "brinquedos": 141,
+    "masculino": 6
    }
   },
   "101541": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 106
+    "brinquedos": 108
    }
   },
   "101068": {
@@ -7118,8 +7217,8 @@
    "nivel": 2,
    "votos": {
     "masculino": 86,
-    "eletronicos": 97,
-    "automotivo": 107,
+    "eletronicos": 99,
+    "automotivo": 110,
     "brinquedos": 3
    }
   },
@@ -7148,7 +7247,7 @@
   "100288": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 697,
+    "eletronicos": 698,
     "automotivo": 16,
     "masculino": 565
    }
@@ -7193,14 +7292,14 @@
    "nivel": 2,
    "votos": {
     "brinquedos": 5,
-    "masculino": 2
+    "masculino": 3
    }
   },
   "100698": {
    "nivel": 1,
    "votos": {
     "brinquedos": 11,
-    "masculino": 1,
+    "masculino": 2,
     "pet": 4
    }
   },
@@ -7215,7 +7314,7 @@
   "100741": {
    "nivel": 1,
    "votos": {
-    "brinquedos": 20,
+    "brinquedos": 22,
     "eletronicos": 12,
     "pet": 2,
     "masculino": 8,
@@ -7225,7 +7324,7 @@
   "101411": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 20
+    "brinquedos": 22
    }
   },
   "100581": {
@@ -7238,7 +7337,7 @@
   "101569": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 32
+    "brinquedos": 33
    }
   },
   "101352": {
@@ -7252,7 +7351,7 @@
    "nivel": 2,
    "votos": {
     "masculino": 32,
-    "lar": 17
+    "lar": 21
    }
   },
   "101194": {
@@ -7278,13 +7377,13 @@
    "nivel": 2,
    "votos": {
     "masculino": 7,
-    "eletronicos": 6
+    "eletronicos": 7
    }
   },
   "100700": {
    "nivel": 1,
    "votos": {
-    "eletronicos": 5248,
+    "eletronicos": 5307,
     "pet": 146,
     "automotivo": 4,
     "lar": 43
@@ -7293,7 +7392,7 @@
   "101100": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 4956,
+    "eletronicos": 5010,
     "pet": 115,
     "automotivo": 4,
     "lar": 23
@@ -7308,7 +7407,7 @@
   "101104": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 288,
+    "eletronicos": 293,
     "pet": 31,
     "lar": 20
    }
@@ -7316,7 +7415,7 @@
   "100699": {
    "nivel": 1,
    "votos": {
-    "eletronicos": 785,
+    "eletronicos": 788,
     "pet": 5,
     "automotivo": 4,
     "brinquedos": 17
@@ -7355,7 +7454,7 @@
   "100216": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 130
+    "eletronicos": 133
    }
   },
   "101094": {
@@ -7374,8 +7473,8 @@
   "101120": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 34,
-    "pet": 4,
+    "eletronicos": 38,
+    "pet": 7,
     "automotivo": 4
    }
   },
@@ -7407,7 +7506,7 @@
   "100983": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 19,
+    "eletronicos": 21,
     "lar": 4
    }
   },
@@ -7415,7 +7514,7 @@
    "nivel": 1,
    "votos": {
     "eletronicos": 1,
-    "masculino": 61
+    "masculino": 73
    }
   },
   "100227": {
@@ -7428,7 +7527,7 @@
   "100217": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 583,
+    "eletronicos": 606,
     "lar": 6
    }
   },
@@ -7448,7 +7547,8 @@
    "nivel": 2,
    "votos": {
     "masculino": 12,
-    "automotivo": 4
+    "automotivo": 4,
+    "lar": 15
    }
   },
   "100127": {
@@ -7462,7 +7562,7 @@
    "nivel": 2,
    "votos": {
     "pet": 2,
-    "eletronicos": 51,
+    "eletronicos": 54,
     "automotivo": 4
    }
   },
@@ -7470,13 +7570,13 @@
    "nivel": 2,
    "votos": {
     "pet": 4,
-    "eletronicos": 11
+    "eletronicos": 13
    }
   },
   "100672": {
    "nivel": 1,
    "votos": {
-    "pet": 8
+    "pet": 11
    }
   },
   "100944": {
@@ -7505,7 +7605,7 @@
    "nivel": 2,
    "votos": {
     "eletronicos": 6,
-    "masculino": 84
+    "masculino": 128
    }
   },
   "101163": {
@@ -7569,7 +7669,7 @@
   "100163": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 5,
+    "eletronicos": 6,
     "lar": 5,
     "automotivo": 2,
     "pet": 2
@@ -7624,7 +7724,7 @@
    "nivel": 2,
    "votos": {
     "brinquedos": 2,
-    "eletronicos": 34
+    "eletronicos": 35
    }
   },
   "101032": {
@@ -7664,13 +7764,13 @@
   "100214": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 38
+    "eletronicos": 40
    }
   },
   "101388": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 24,
+    "brinquedos": 26,
     "pet": 3
    }
   },
@@ -7691,7 +7791,7 @@
    "nivel": 2,
    "votos": {
     "masculino": 8,
-    "automotivo": 2,
+    "automotivo": 3,
     "eletronicos": 2
    }
   },
@@ -7715,7 +7815,7 @@
    "nivel": 2,
    "votos": {
     "masculino": 5,
-    "lar": 17,
+    "lar": 20,
     "brinquedos": 3
    }
   },
@@ -7744,7 +7844,7 @@
   "100008": {
    "nivel": 1,
    "votos": {
-    "brinquedos": 6,
+    "brinquedos": 9,
     "lar": 5,
     "eletronicos": 2,
     "pet": 2
@@ -7753,7 +7853,7 @@
   "101158": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 363,
+    "eletronicos": 366,
     "automotivo": 3,
     "brinquedos": 32
    },
@@ -7764,7 +7864,7 @@
    "nivel": 2,
    "votos": {
     "pet": 6,
-    "automotivo": 6
+    "automotivo": 7
    }
   },
   "100927": {
@@ -7797,20 +7897,20 @@
   "100583": {
    "nivel": 1,
    "votos": {
-    "eletronicos": 11,
+    "eletronicos": 12,
     "automotivo": 1
    }
   },
   "100695": {
    "nivel": 1,
    "votos": {
-    "eletronicos": 8
+    "eletronicos": 11
    }
   },
   "101081": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 8
+    "eletronicos": 11
    }
   },
   "100070": {
@@ -7840,7 +7940,7 @@
   "100089": {
    "nivel": 1,
    "votos": {
-    "masculino": 122
+    "masculino": 152
    }
   },
   "100264": {
@@ -7859,7 +7959,7 @@
   "100340": {
    "nivel": 2,
    "votos": {
-    "masculino": 14
+    "masculino": 15
    }
   },
   "100343": {
@@ -7871,14 +7971,14 @@
   "100054": {
    "nivel": 1,
    "votos": {
-    "masculino": 1022,
+    "masculino": 1036,
     "brinquedos": 3
    }
   },
   "100244": {
    "nivel": 2,
    "votos": {
-    "masculino": 817,
+    "masculino": 831,
     "brinquedos": 3
    }
   },
@@ -7941,7 +8041,7 @@
   "100226": {
    "nivel": 2,
    "votos": {
-    "masculino": 58
+    "masculino": 70
    }
   },
   "100055": {
@@ -7959,7 +8059,7 @@
   "100060": {
    "nivel": 1,
    "votos": {
-    "masculino": 8
+    "masculino": 9
    }
   },
   "101043": {
@@ -7977,7 +8077,7 @@
   "101023": {
    "nivel": 2,
    "votos": {
-    "masculino": 20
+    "masculino": 21
    }
   },
   "100245": {
@@ -8043,13 +8143,14 @@
     "eletronicos": 1688,
     "lar": 4,
     "brinquedos": 19,
-    "masculino": 1
+    "masculino": 2
    }
   },
   "101983": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 1537
+    "eletronicos": 1537,
+    "masculino": 1
    }
   },
   "101986": {
@@ -8106,7 +8207,7 @@
   "101173": {
    "nivel": 2,
    "votos": {
-    "lar": 234,
+    "lar": 264,
     "brinquedos": 3
    }
   },
@@ -8128,7 +8229,7 @@
   "101208": {
    "nivel": 2,
    "votos": {
-    "lar": 16
+    "lar": 18
    }
   },
   "101205": {
@@ -8141,7 +8242,7 @@
   "101117": {
    "nivel": 2,
    "votos": {
-    "automotivo": 1,
+    "automotivo": 2,
     "eletronicos": 36,
     "masculino": 15,
     "brinquedos": 2
@@ -8150,29 +8251,29 @@
   "102250": {
    "nivel": 2,
    "votos": {
-    "automotivo": 179,
+    "automotivo": 189,
     "lar": 40,
-    "eletronicos": 5
+    "eletronicos": 6
    }
   },
   "100624": {
    "nivel": 2,
    "votos": {
-    "automotivo": 2,
+    "automotivo": 7,
     "eletronicos": 15
    }
   },
   "100215": {
    "nivel": 2,
    "votos": {
-    "automotivo": 1,
+    "automotivo": 2,
     "eletronicos": 63
    }
   },
   "101987": {
    "nivel": 2,
    "votos": {
-    "automotivo": 3,
+    "automotivo": 4,
     "eletronicos": 8
    }
   },
@@ -8227,7 +8328,7 @@
   "101206": {
    "nivel": 2,
    "votos": {
-    "lar": 15
+    "lar": 17
    }
   },
   "100956": {
@@ -8313,7 +8414,7 @@
    "nivel": 2,
    "votos": {
     "pet": 16,
-    "lar": 697,
+    "lar": 902,
     "automotivo": 66
    },
    "usos": 2,
@@ -8330,9 +8431,9 @@
   "101399": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 8,
+    "brinquedos": 9,
     "masculino": 4,
-    "lar": 7,
+    "lar": 9,
     "pet": 1,
     "eletronicos": 4,
     "automotivo": 1
@@ -8341,13 +8442,13 @@
   "100565": {
    "nivel": 1,
    "votos": {
-    "masculino": 506
+    "masculino": 656
    }
   },
   "100606": {
    "nivel": 2,
    "votos": {
-    "masculino": 496
+    "masculino": 643
    },
    "usos": 1,
    "ultimo_uso": "2026-10-14"
@@ -8355,25 +8456,25 @@
   "100322": {
    "nivel": 2,
    "votos": {
-    "masculino": 33
+    "masculino": 40
    }
   },
   "100326": {
    "nivel": 2,
    "votos": {
-    "masculino": 4
+    "masculino": 5
    }
   },
   "100090": {
    "nivel": 1,
    "votos": {
-    "masculino": 42
+    "masculino": 55
    }
   },
   "100336": {
    "nivel": 2,
    "votos": {
-    "masculino": 39
+    "masculino": 51
    },
    "usos": 1,
    "ultimo_uso": "2026-10-14"
@@ -8381,14 +8482,14 @@
   "100607": {
    "nivel": 2,
    "votos": {
-    "masculino": 10
+    "masculino": 13
    }
   },
   "102527": {
    "nivel": 2,
    "votos": {
     "automotivo": 252,
-    "eletronicos": 3
+    "eletronicos": 4
    },
    "usos": 1,
    "ultimo_uso": "2026-10-12"
@@ -8410,7 +8511,8 @@
   "101429": {
    "nivel": 2,
    "votos": {
-    "automotivo": 200
+    "automotivo": 200,
+    "eletronicos": 3
    }
   },
   "100188": {
@@ -8436,7 +8538,7 @@
   "100029": {
    "nivel": 1,
    "votos": {
-    "lar": 8,
+    "lar": 12,
     "brinquedos": 2,
     "masculino": 2
    }
@@ -8450,14 +8552,16 @@
   "101159": {
    "nivel": 2,
    "votos": {
-    "lar": 793
+    "lar": 1090
    },
-   "achados": 1
+   "achados": 1,
+   "usos": 1,
+   "ultimo_uso": "2026-10-16"
   },
   "101136": {
    "nivel": 2,
    "votos": {
-    "lar": 5
+    "lar": 7
    }
   },
   "100952": {
@@ -8594,21 +8698,21 @@
   "101253": {
    "nivel": 2,
    "votos": {
-    "lar": 377,
-    "masculino": 4,
+    "lar": 442,
+    "masculino": 6,
     "automotivo": 10
    }
   },
   "101170": {
    "nivel": 2,
    "votos": {
-    "lar": 221
+    "lar": 264
    }
   },
   "101255": {
    "nivel": 2,
    "votos": {
-    "lar": 148
+    "lar": 158
    },
    "achados": 1
   },
@@ -8641,26 +8745,26 @@
   "100566": {
    "nivel": 1,
    "votos": {
-    "masculino": 5
+    "masculino": 6
    }
   },
   "100337": {
    "nivel": 2,
    "votos": {
-    "masculino": 3
+    "masculino": 4
    }
   },
   "101263": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 9,
+    "brinquedos": 10,
     "lar": 2
    }
   },
   "101251": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 7,
+    "eletronicos": 10,
     "pet": 1,
     "masculino": 4
    }
@@ -8670,7 +8774,7 @@
    "votos": {
     "masculino": 4,
     "lar": 12,
-    "automotivo": 6
+    "automotivo": 7
    }
   },
   "101430": {
@@ -8963,7 +9067,7 @@
   "100167": {
    "nivel": 2,
    "votos": {
-    "masculino": 7
+    "masculino": 9
    }
   },
   "101231": {
@@ -8994,7 +9098,8 @@
   "100062": {
    "nivel": 1,
    "votos": {
-    "pet": 2
+    "pet": 2,
+    "masculino": 1
    }
   },
   "100937": {
@@ -9062,13 +9167,13 @@
   "100702": {
    "nivel": 1,
    "votos": {
-    "eletronicos": 8
+    "eletronicos": 21
    }
   },
   "101105": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 8
+    "eletronicos": 14
    }
   },
   "100986": {
@@ -9102,7 +9207,7 @@
   "101200": {
    "nivel": 2,
    "votos": {
-    "automotivo": 7,
+    "automotivo": 9,
     "lar": 18
    }
   },
@@ -9164,14 +9269,14 @@
   "100028": {
    "nivel": 1,
    "votos": {
-    "masculino": 1335,
+    "masculino": 2004,
     "automotivo": 1
    }
   },
   "101027": {
    "nivel": 2,
    "votos": {
-    "masculino": 43
+    "masculino": 64
    },
    "usos": 1,
    "ultimo_uso": "2026-10-16"
@@ -9179,13 +9284,13 @@
   "100059": {
    "nivel": 1,
    "votos": {
-    "masculino": 3
+    "masculino": 4
    }
   },
   "101284": {
    "nivel": 2,
    "votos": {
-    "masculino": 2
+    "masculino": 3
    }
   },
   "102234": {
@@ -9250,7 +9355,9 @@
    "votos": {
     "brinquedos": 17
    },
-   "achados": 1
+   "achados": 3,
+   "usos": 1,
+   "ultimo_uso": "2026-10-16"
   },
   "101331": {
    "nivel": 2,
@@ -9292,7 +9399,7 @@
   "100626": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 3
+    "eletronicos": 4
    }
   },
   "102262": {
@@ -9304,7 +9411,7 @@
   "101204": {
    "nivel": 2,
    "votos": {
-    "lar": 1552
+    "lar": 1553
    }
   },
   "101202": {
@@ -9316,7 +9423,7 @@
   "101546": {
    "nivel": 2,
    "votos": {
-    "masculino": 3
+    "masculino": 6
    }
   },
   "101976": {
@@ -9391,7 +9498,7 @@
   "100723": {
    "nivel": 1,
    "votos": {
-    "lar": 72,
+    "lar": 76,
     "pet": 1
    }
   },
@@ -9480,7 +9587,7 @@
   "100968": {
    "nivel": 2,
    "votos": {
-    "lar": 6
+    "lar": 8
    }
   },
   "100879": {
@@ -9680,7 +9787,7 @@
   "100943": {
    "nivel": 2,
    "votos": {
-    "pet": 5
+    "pet": 8
    }
   },
   "100124": {
@@ -9728,7 +9835,7 @@
   "102204": {
    "nivel": 2,
    "votos": {
-    "lar": 1
+    "lar": 5
    }
   },
   "101134": {
@@ -9794,7 +9901,8 @@
   "101327": {
    "nivel": 2,
    "votos": {
-    "masculino": 2
+    "masculino": 2,
+    "lar": 3
    }
   },
   "101002": {
@@ -9935,6 +10043,60 @@
    "votos": {
     "brinquedos": 1
    }
+  },
+  "101306": {
+   "nivel": 2,
+   "votos": {
+    "masculino": 2
+   }
+  },
+  "102610": {
+   "nivel": 2,
+   "votos": {
+    "automotivo": 3
+   }
+  },
+  "101108": {
+   "nivel": 2,
+   "votos": {
+    "eletronicos": 4
+   }
+  },
+  "101107": {
+   "nivel": 2,
+   "votos": {
+    "eletronicos": 3
+   }
+  },
+  "101147": {
+   "nivel": 2,
+   "votos": {
+    "eletronicos": 3
+   }
+  },
+  "101110": {
+   "nivel": 2,
+   "votos": {
+    "eletronicos": 4
+   }
+  },
+  "100345": {
+   "nivel": 2,
+   "votos": {
+    "lar": 3
+   }
+  },
+  "101283": {
+   "nivel": 2,
+   "votos": {
+    "masculino": 1
+   }
+  },
+  "101281": {
+   "nivel": 2,
+   "votos": {
+    "automotivo": 1
+   }
   }
  },
  "lojas": {
@@ -10063,9 +10225,9 @@
   "1661007426": {
    "nome": "Invention Hunters",
    "achados": 8,
-   "usos": 4,
+   "usos": 5,
    "desde": "2026-10-10",
-   "ultimo_uso": "2026-10-15"
+   "ultimo_uso": "2026-10-16"
   },
   "1776101877": {
    "nome": "BazarFácil",
@@ -10237,9 +10399,10 @@
   },
   "1891305947": {
    "nome": "BrincaMais Kids",
-   "achados": 1,
-   "usos": 0,
-   "desde": "2026-10-12"
+   "achados": 2,
+   "usos": 1,
+   "desde": "2026-10-12",
+   "ultimo_uso": "2026-10-16"
   },
   "1634348313": {
    "nome": "Brilora",
@@ -10306,8 +10469,9 @@
   "242908589": {
    "nome": "hotwind2.br",
    "achados": 1,
-   "usos": 0,
-   "desde": "2026-10-12"
+   "usos": 1,
+   "desde": "2026-10-12",
+   "ultimo_uso": "2026-10-16"
   },
   "916652740": {
    "nome": "DeinShop",
@@ -10410,7 +10574,7 @@
   },
   "1177903362": {
    "nome": "Coala Essências Oficial",
-   "achados": 1,
+   "achados": 2,
    "usos": 0,
    "desde": "2026-10-13"
   },
@@ -10429,8 +10593,9 @@
   "1566370991": {
    "nome": "VALMERI.BR",
    "achados": 2,
-   "usos": 0,
-   "desde": "2026-10-14"
+   "usos": 1,
+   "desde": "2026-10-14",
+   "ultimo_uso": "2026-10-16"
   },
   "1654637312": {
    "nome": "Rio Sol ",
@@ -10501,7 +10666,7 @@
   },
   "1784598596": {
    "nome": "STARMEGA loja shop",
-   "achados": 1,
+   "achados": 2,
    "usos": 0,
    "desde": "2026-10-15"
   },
@@ -10579,6 +10744,42 @@
   },
   "1512084630": {
    "nome": "LIFE STYLE 1",
+   "achados": 1,
+   "usos": 0,
+   "desde": "2026-10-16"
+  },
+  "1474372582": {
+   "nome": "Caixinhas da Felicidade",
+   "achados": 1,
+   "usos": 0,
+   "desde": "2026-10-16"
+  },
+  "318621368": {
+   "nome": "Kit Utilidades",
+   "achados": 1,
+   "usos": 0,
+   "desde": "2026-10-16"
+  },
+  "437195453": {
+   "nome": "ARMD - Móveis e decoração",
+   "achados": 1,
+   "usos": 0,
+   "desde": "2026-10-16"
+  },
+  "1602372907": {
+   "nome": "Armyz Oficial",
+   "achados": 1,
+   "usos": 0,
+   "desde": "2026-10-16"
+  },
+  "843273344": {
+   "nome": "Grupo Torneiras Casa & Banho ",
+   "achados": 1,
+   "usos": 0,
+   "desde": "2026-10-16"
+  },
+  "1046010418": {
+   "nome": "PAPEL.PAPELARIA",
    "achados": 1,
    "usos": 0,
    "desde": "2026-10-16"
