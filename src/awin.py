@@ -294,18 +294,16 @@ if __name__ == "__main__":   # teste: python -m src.awin  (com AWIN_FEED_URL e A
                 saida.append("fotos do feed: " + ", ".join(tamanhos))
                 saida.append(f"url da foto: {o['imagem']}")
                 saida.append(f"página do produto: {o.get('pagina', '')}")
-                try:   # a página da marca costuma ter a foto grande no og:image
-                    import re as _re
-                    import requests as _rq
-                    html = _rq.get(o["pagina"], timeout=30, headers={"User-Agent": "Mozilla/5.0"}).text
-                    og = _re.search(r'property=["\']og:image["\'][^>]*content=["\']([^"\']+)', html) or \
-                        _re.search(r'content=["\']([^"\']+)["\'][^>]*property=["\']og:image', html)
-                    saida.append(f"og:image da página: {og.group(1) if og else 'não achei'}")
-                    if og:
-                        f = imagem._baixar_foto(og.group(1))
-                        saida.append(f"og:image tamanho: {f.size[0]}x{f.size[1]}")
-                except Exception as e:
-                    saida.append(f"página: erro {type(e).__name__} {str(e)[:100]}")
+                m = re.search(r"^(https?://[^/]+)/arquivos/ids/(\d+)", o["imagem"])
+                if m:   # loja VTEX: testa pedir a foto em tamanho maior pela URL
+                    base, ident = m.groups()
+                    for suf in (f"/arquivos/ids/{ident}", f"/arquivos/ids/{ident}-1000-1000", f"/arquivos/ids/{ident}-1000-1000/foto.jpg",
+                                f"/arquivos/ids/{ident}-1500-1500/foto.jpg", f"/arquivos/ids/{ident}_1", f"/arquivos/ids/{ident}_2"):
+                        try:
+                            f = imagem._baixar_foto(base + suf)
+                            saida.append(f"vtex {suf.split('ids/')[1]} = {f.size[0]}x{f.size[1]}")
+                        except Exception as e:
+                            saida.append(f"vtex {suf.split('ids/')[1]} = erro {type(e).__name__}")
                 saida += [f"=== {o['nome']} | legenda: {t['fonte']}", f"título: {t['titulo']}", estado, t["legenda"], ""]
         except Exception as e:
             saida.append(f"ERRO: {type(e).__name__} {str(e)[:200]}")
