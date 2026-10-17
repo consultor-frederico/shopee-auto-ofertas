@@ -279,8 +279,12 @@ if __name__ == "__main__":   # teste: python -m src.awin  (com AWIN_FEED_URL e A
                 o["titulo"], o["legenda"] = t["titulo"], t["legenda"]
                 try:
                     foto = imagem._baixar_foto(o["imagem"])
-                    arte = Path(tempfile.mkdtemp()) / "arte.jpg"
+                    pasta = Path(sys.argv[sys.argv.index("--salvar") + 1]) if "--salvar" in sys.argv else Path(tempfile.mkdtemp())
+                    pasta.mkdir(parents=True, exist_ok=True)
+                    arte = pasta / f"{config.PERFIL}_{o['id']}.jpg"
                     imagem.gerar(o, arte, foto=foto)
+                    (pasta / f"{config.PERFIL}_{o['id']}.txt").write_text(
+                        f"{o['titulo']}\n\n{o['legenda']}\n\n{o['link_afiliado'].split('?')[0]}\n", encoding="utf-8")
                     estado = f"arte ok ({arte.stat().st_size // 1024} KB, foto {foto.size[0]}x{foto.size[1]})"
                 except Exception as e:
                     estado = f"ARTE FALHOU: {type(e).__name__} {str(e)[:150]}"

@@ -10,6 +10,8 @@ on:
 jobs:
   testar:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write   # só para guardar os exemplos na branch previa-shark (a main não é alterada)
     env:
       AWIN_FEED_URL: ${{ secrets.AWIN_FEED_URL }}
       GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
@@ -25,8 +27,18 @@ jobs:
       - name: Prévia Garimpo VIP
         env:
           PERFIL: garimpo
-        run: python -m src.awin --previa
+        run: python -m src.awin --previa --salvar /tmp/previa
       - name: Prévia Ana Novo Achados
         env:
           PERFIL: ana
-        run: python -m src.awin --previa
+        run: python -m src.awin --previa --salvar /tmp/previa
+      - name: Guardar exemplos na branch previa-shark
+        run: |
+          git config user.name "GarimpoBot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch --orphan previa-shark
+          git rm -rf -q . 2>/dev/null || true
+          cp /tmp/previa/* . 2>/dev/null || { echo "sem exemplos para guardar"; exit 0; }
+          git add -A
+          git commit -q -m "Exemplos de posts da Shark Ninja"
+          git push -f origin previa-shark
