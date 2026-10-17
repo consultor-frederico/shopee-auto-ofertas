@@ -256,20 +256,28 @@ if __name__ == "__main__":   # teste: python -m src.awin  (com AWIN_FEED_URL e A
         print("⏸️  Segredo AWIN_FEED_URL ainda não cadastrado.")
         sys.exit(0)
     config.AWIN_ATIVO = True
+
+    def aviso_unico(titulo, linhas):   # o GitHub mostra só 10 anotações por passo: junta tudo em uma
+        print(f"::notice title={titulo}::" + "%0A".join(linhas or ["(nenhum)"]))
+        for l in linhas:
+            print(l)
+
     try:
         linhas = baixar_linhas()
-        print(f"::notice::Feed: {len(linhas)} linhas | colunas: {', '.join(linhas[0].keys()) if linhas else '(vazio)'}")
+        aviso_unico("Feed", [f"{len(linhas)} linhas", "colunas: " + (", ".join(linhas[0].keys()) if linhas else "(vazio)")])
+        recusados = []
         for linha in linhas:
             o = normalizar(linha)
             m = motivo_recusa(o)
             if m:
-                print(f"::notice::RECUSADO ({m}) | {o['nome'][:55]} | in_stock={linha.get('in_stock', '?')!r} | "
-                      f"preço={o['preco']} | foto {'ok' if o['imagem'] else 'FALTA'} | link {'ok' if o['link_afiliado'] else 'FALTA'}")
-        for o in produtos():
-            print(f"::notice::[{o['categoria']}] {o['nome'][:60]} | R$ {o['preco_fmt']}"
-                  f"{' (de R$ ' + str(o['preco_de']) + ')' if o['preco_de'] else ''} | comissão R$ {o['comissao']:.2f} | "
-                  f"foto {'ok' if o['imagem'] else 'FALTA'} | link {'ok' if o['link_afiliado'] else 'FALTA'}"
-                  f"{' | ' + o['voltagem'] if o['voltagem'] else ''}")
+                recusados.append(f"RECUSADO ({m}) | {o['nome'][:55]} | in_stock={linha.get('in_stock', '?')!r} | "
+                                 f"preço={o['preco']} | foto {'ok' if o['imagem'] else 'FALTA'} | "
+                                 f"link {'ok' if o['link_afiliado'] else 'FALTA'}")
+        aviso_unico("Recusados", recusados)
+        validos = [f"[{o['categoria']}] {o['nome'][:60]} | R$ {o['preco_fmt']}"
+                   f"{' (de R$ ' + str(o['preco_de']) + ')' if o['preco_de'] else ''} | comissão R$ {o['comissao']:.2f}"
+                   f"{' | ' + o['voltagem'] if o['voltagem'] else ''}" for o in produtos()]
+        aviso_unico("Produtos que o robô usaria", validos)
     except Exception as e:
         print(f"::error::{e}")
         sys.exit(1)
