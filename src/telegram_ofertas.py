@@ -23,6 +23,11 @@ def candidatas(fila):
            and o.get("link_afiliado") and o.get("titulo") and not o.get("video_manual")
            and (o.get("pedido") or variedade.diferenciado(o))   # só produto diferenciado
            and datetime.strptime(o["criado_em"], FMT).replace(tzinfo=BRT) >= limite]
+    hoje = agora().strftime("%Y-%m-%d")
+    shark_hoje = sum(1 for o in fila["ofertas"].values()
+                     if o.get("plataforma") == "sharkninja" and str(o.get("telegram_em") or "").startswith(hoje))
+    if shark_hoje >= config.SHARK_POR_DIA_TELEGRAM:   # a marca não domina o canal
+        ofs = [o for o in ofs if o.get("plataforma") != "sharkninja"]
     ofs.sort(key=lambda o: o.get("pontos", 0), reverse=True)
     # variedade: tipo de produto que já foi para o canal nas últimas horas fica para depois
     ofs = variedade.ordenar(ofs, variedade.familias_recentes(fila, "telegram_em",
@@ -32,6 +37,8 @@ def candidatas(fila):
     for o in ofs:
         if len(escolhidas) >= POR_EXECUCAO:
             break
+        if o.get("plataforma") == "sharkninja" and any(e.get("plataforma") == "sharkninja" for e in escolhidas):
+            continue   # no máximo 1 da marca por rodada
         if o["categoria"] not in cats and variedade.familia(o) not in fams:
             escolhidas.append(o)
             cats.add(o["categoria"])
@@ -39,6 +46,8 @@ def candidatas(fila):
     for o in ofs:
         if len(escolhidas) >= POR_EXECUCAO:
             break
+        if o.get("plataforma") == "sharkninja" and any(e.get("plataforma") == "sharkninja" for e in escolhidas):
+            continue
         if o not in escolhidas and variedade.familia(o) not in fams:
             escolhidas.append(o)
     return escolhidas

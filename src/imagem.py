@@ -67,11 +67,20 @@ def _estrela(d, cx, cy, r, cor):
 LOJAS = {
     "shopee": {"nome": "SHOPEE", "cor": "#EE4D2D"},
     "aliexpress": {"nome": "ALIEXPRESS", "cor": "#E43225"},
+    "sharkninja": {"nome": "SHARK NINJA", "cor": "#0B3C6F"},
 }
 
 
 def plataforma(oferta):
     return oferta.get("plataforma") or "shopee"
+
+
+def loja_oficial(oferta):
+    """Marca oficial (Shark Ninja pela Awin): não tem nota nem vendas, então a arte mostra isto no lugar."""
+    return plataforma(oferta) == "sharkninja"
+
+
+TEXTO_OFICIAL = "Loja oficial Shark Ninja"
 
 
 def selo_loja(d, oferta, x, y, escala=1.0):
@@ -217,7 +226,10 @@ def gerar(oferta: dict, destino, foto: Image.Image = None):
     info = f"{nota}   •   {vendas}+ vendidos"
     yi = y + 140
     xi = 90 + 44
-    _estrela(d, 90 + 18, yi + 21, 20, DOURADO)
+    if loja_oficial(oferta):
+        info, xi = TEXTO_OFICIAL, 90
+    else:
+        _estrela(d, 90 + 18, yi + 21, 20, DOURADO)
     d.text((xi, yi), info, font=f_info, fill=CINZA)
 
     # Faixa de chamada

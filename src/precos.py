@@ -54,6 +54,9 @@ def conferir(o):
     situacao = "ok"
     if (o.get("plataforma") or "shopee") == "shopee" and not o.get("video_manual"):
         situacao = _consultar(o, antigo)
+    elif o.get("plataforma") == "sharkninja":
+        from . import awin
+        situacao = awin.conferir(o)
     if situacao in ("ok", "mudou"):
         _trocar_na_legenda(o, antigo_fmt, desc_antigo)
     return situacao
@@ -85,7 +88,7 @@ def _consultar(o, antigo):
 
 
 def aviso(o):
-    loja = "AliExpress" if o.get("plataforma") == "aliexpress" else "Shopee"
+    loja = {"aliexpress": "AliExpress", "sharkninja": "Shark Ninja"}.get(o.get("plataforma"), "Shopee")
     quando = o.get("preco_conferido_em") or agora().strftime("%d/%m às %H:%M")
     base = "Preço a partir de" if tem_variacoes(o) else "Preço"
     pix = " Pagando no Pix, a Shopee costuma dar desconto extra." if loja == "Shopee" else ""

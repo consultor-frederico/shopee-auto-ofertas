@@ -48,6 +48,8 @@ def _motivos(oferta):
         preco = f"De R$ {imagem._brl(oferta['preco_de'])} por R$ {oferta['preco_fmt']}"
     else:
         preco = f"Sai por R$ {oferta['preco_fmt']}"
+    if oferta.get("plataforma") == "sharkninja":   # marca oficial: sem nota nem vendas no feed
+        return ["Loja oficial Shark Ninja", "Preço conferido hoje", preco]
     return [nota, f"Mais de {vendas} vendidos", preco]
 
 

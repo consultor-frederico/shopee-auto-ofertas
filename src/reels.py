@@ -215,14 +215,18 @@ def _quadro(t, base, foto, oferta, e=None):
         k = _ease((t - 2.8) / 0.4)
         yi = y2 + 175
         cor = _mix(F, e["info"], k)
-        _estrela(d, 70 + 22, yi + 25, 24, _mix(F, e["estrela"], k))
+        oficial = oferta.get("plataforma") == "sharkninja"
+        if not oficial:
+            _estrela(d, 70 + 22, yi + 25, 24, _mix(F, e["estrela"], k))
         nota = (f"{oferta['avaliacao_pct']:.0f}% avaliações positivas" if oferta.get("avaliacao_pct")
                 else f"{oferta['nota']:.1f}".replace(".", ","))
         vendas = f"{oferta['vendas']:,}".replace(",", ".")
         txt, tam = f"{nota}   •   {vendas}+ vendidos", 40
+        if oficial:
+            txt = "Loja oficial Shark Ninja"
         while tam > 28 and d.textlength(txt, font=_fonte(tam, "SemiBold")) > 1080 - 124 - 40:
             tam -= 2
-        d.text((70 + 54, yi + (40 - tam) // 2), txt, font=_fonte(tam, "SemiBold"), fill=cor)
+        d.text((70 + (0 if oficial else 54), yi + (40 - tam) // 2), txt, font=_fonte(tam, "SemiBold"), fill=cor)
 
     # Chamada (faixa no pé ou pílula flutuante; sobe e pulsa)
     if t >= 3.6:
@@ -256,7 +260,7 @@ def gancho(oferta):
     """Frase do primeiro segundo (2 linhas). Achado escondido tem a sua própria."""
     if eh_achado(oferta):
         return ["ACHADO QUE POUCA", "GENTE CONHECE"]
-    loja = "ALIEXPRESS" if oferta.get("plataforma") == "aliexpress" else "SHOPEE"
+    loja = {"aliexpress": "ALIEXPRESS", "sharkninja": "SHARK NINJA"}.get(oferta.get("plataforma"), "SHOPEE")
     g = GANCHOS[sum(map(ord, str(oferta.get("id", "")))) % len(GANCHOS)]
     return g.format(loja=loja).split("|")
 

@@ -74,6 +74,8 @@ def uau(o):
     if franquia(o):
         return 0.0
     nota = float(o.get("uau", 0) or 0)
+    if o.get("plataforma") == "sharkninja":   # marca oficial (catálogo curado): aspirador/air fryer não são "vitrine"
+        return nota
     return min(nota, TETO_COMUM) if familia(o) in COMUNS else nota
 
 

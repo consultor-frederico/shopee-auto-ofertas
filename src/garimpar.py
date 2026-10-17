@@ -7,7 +7,7 @@ import random
 import sys
 from datetime import datetime, timedelta, timezone
 
-from . import aliexpress, busca_profunda, config, curadoria, legenda, shopee, variedade
+from . import aliexpress, awin, busca_profunda, config, curadoria, legenda, shopee, variedade
 
 BRT = timezone(timedelta(hours=-3))
 FMT = "%Y-%m-%d %H:%M:%S"
@@ -431,6 +431,11 @@ def garimpar(buscar=shopee.buscar_ofertas):
     candidatos = curar(fila, coletar_candidatos(fila, buscar, escolhidas, memoria))
     busca_profunda.registrar(memoria, escolhidas, candidatos)
     busca_profunda.salvar(memoria)
+    # Shark Ninja (Awin): catálogo da marca, regras próprias — entra depois da curadoria da Shopee/AliExpress
+    shark = awin.candidatos(fila, ja_usado)
+    for o in shark:
+        o["so_telegram"] = so_telegram(fila, o["id"])
+    candidatos = candidatos + shark
     lojas_na_fila = {}
     for r in fila["ofertas"].values():
         if r["status"] == "pendente" and r.get("loja"):

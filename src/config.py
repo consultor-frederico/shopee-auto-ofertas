@@ -69,6 +69,16 @@ NIVEIS = {
     "prata": {"vendas": 500, "comissao_rs": 5.0, "comissao_pct": 8.0, "uau": 6},
 }
 COMISSAO_PCT_ALIEXPRESS = 7.0  # AliExpress paga 7% padrão; o corte em R$ (5 prata / 6 ouro) segue igual
+# --- Shark Ninja BR (rede Awin, src/awin.py): marca oficial, catálogo pequeno, sem teto de preço ---
+# Segredo AWIN_FEED_URL = URL do feed (Awin → Ferramentas → Crie um Feed). Ligue com AWIN_ATIVO=1.
+AWIN_FEED_URL = (os.getenv("AWIN_FEED_URL") or "").strip()
+AWIN_ATIVO = os.getenv("AWIN_ATIVO", "0") == "1"
+AWIN_COMISSAO_PCT = float(os.getenv("AWIN_COMISSAO_PCT", "8"))      # CPA do programa Shark-Ninja BR (jun/2026)
+SHARK_POR_GARIMPO = int(os.getenv("SHARK_POR_GARIMPO", "3"))        # produtos novos da marca por rodada, por conta
+SHARK_UAU = 8                                                       # marca oficial: não passa pela nota de "uau" da IA
+SHARK_PONTOS = int(os.getenv("SHARK_PONTOS", "70"))                 # prioridade na fila (Shopee costuma ficar entre 40 e 80)
+SHARK_POR_DIA_INSTAGRAM = int(os.getenv("SHARK_POR_DIA_INSTAGRAM", "1"))   # no máximo isso por dia, em cada conta
+SHARK_POR_DIA_TELEGRAM = int(os.getenv("SHARK_POR_DIA_TELEGRAM", "3"))
 # 💎 Achado escondido: produto excelente e muito diferente que ainda não viralizou (poucas vendas).
 # Pouca prova social → só entra com nota alta e uau altíssimo, e no máximo ACHADOS_POR_DIA no Instagram.
 NIVEL_ACHADO = {"vendas_min": 50, "nota": 4.8, "uau": 8, "comissao_rs": 3.0, "comissao_pct": 8.0}  # R$3 liberado pelo Fred em 09/10/2026

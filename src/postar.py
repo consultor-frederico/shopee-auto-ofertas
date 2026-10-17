@@ -46,6 +46,13 @@ def _ultimos_postados(fila, n=3):
     return sorted(post, key=lambda o: (o["postado_em"], o.get("postado_ts", 0)), reverse=True)[:n]
 
 
+def _shark_hoje(fila, campo):
+    """Quantas ofertas da Shark Ninja já saíram hoje neste canal (campo = "postado_em")."""
+    hoje = agora().strftime("%Y-%m-%d")
+    return sum(1 for o in fila["ofertas"].values()
+               if o.get("plataforma") == "sharkninja" and str(o.get(campo) or "").startswith(hoje))
+
+
 def candidatos_ordenados(fila):
     """Vídeo manual primeiro; depois Ouro (Prata só se faltar Ouro), evitando repetir categoria."""
     candidatos = sorted(_validos(fila), key=lambda o: o.get("pontos", 0), reverse=True)
@@ -55,6 +62,8 @@ def candidatos_ordenados(fila):
     manuais += pedidos_ze[:1]   # "Você pediu, o Zé achou": um por vez, na frente da fila
     resto = [o for o in candidatos if not o.get("video_manual") and not o.get("so_telegram") and not o.get("pedido")
              and o["categoria"] in config.NICHO and variedade.diferenciado(o)]   # outra conta fica de fora; só produto diferenciado
+    if _shark_hoje(fila, "postado_em") >= config.SHARK_POR_DIA_INSTAGRAM:   # a marca não domina a página
+        resto = [o for o in resto if o.get("plataforma") != "sharkninja"]
     # 💎 Achado escondido: entra junto com o Ouro, mas no máximo config.ACHADOS_POR_DIA por dia
     hoje = agora().strftime("%Y-%m-%d")
     achados_hoje = sum(1 for o in fila["ofertas"].values() if o.get("nivel") == "achado"

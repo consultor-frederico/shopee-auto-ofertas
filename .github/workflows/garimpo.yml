@@ -44,6 +44,8 @@ jobs:
           ALIEXPRESS_APP_KEY: ${{ secrets.ALIEXPRESS_APP_KEY }}
           ALIEXPRESS_APP_SECRET: ${{ secrets.ALIEXPRESS_APP_SECRET }}
           ALIEXPRESS_TRACKING_ID: ${{ secrets.ALIEXPRESS_TRACKING_ID }}
+          AWIN_FEED_URL: ${{ secrets.AWIN_FEED_URL }}
+          AWIN_ATIVO: ${{ vars.AWIN_ATIVO || '0' }}   # 1 liga a Shark Ninja; em Settings → Variables dá para desligar de novo
         run: |
           # relatório da rodada salvo no repositório (para conferir o que a busca profunda achou)
           set -o pipefail

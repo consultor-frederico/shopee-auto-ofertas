@@ -69,7 +69,7 @@ def texto_whatsapp(o):
     gancho = []
     for linha in (o.get("legenda") or "").splitlines():
         t = linha.strip()
-        if not t or t.startswith(("#", "📲", "🔖", "🕒")) or "QUERO" in t.upper() or "R$" in t:
+        if not t or t.startswith(("#", "📲", "🔖", "🕒", "🏬")) or "QUERO" in t.upper() or "R$" in t:
             continue
         gancho.append(t.replace("*", ""))
     gancho = gancho[:2]
@@ -89,7 +89,8 @@ def texto_whatsapp(o):
     partes += [f"🔥 *{o['titulo'].replace('*', '')}*", ""]
     if gancho:
         partes += gancho + [""]
-    partes += [preco, f"⭐ {nota} • {vendas}+ vendidos", "",
+    prova = "🏬 Loja oficial Shark Ninja" if plataforma(o) == "sharkninja" else f"⭐ {nota} • {vendas}+ vendidos"
+    partes += [preco, prova, "",
                f"🛒 Compre na {loja}:", o["link_afiliado"], "",
                f"_{precos.aviso(o)}_",
                "_Link de afiliado: você paga o mesmo e ajuda o Garimpo VIP 💛_"]

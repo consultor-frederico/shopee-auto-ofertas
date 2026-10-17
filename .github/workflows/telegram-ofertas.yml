@@ -31,6 +31,8 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
           SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
+          AWIN_FEED_URL: ${{ secrets.AWIN_FEED_URL }}
+          AWIN_ATIVO: ${{ vars.AWIN_ATIVO || '0' }}   # 1 liga a Shark Ninja; em Settings → Variables dá para desligar de novo
         run: python -m src.telegram_ofertas
 
       - name: Salvar fila

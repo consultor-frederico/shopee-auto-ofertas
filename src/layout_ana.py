@@ -22,7 +22,8 @@ ROSA = "#F2A7B8"           # pílula do preço e adesivo
 ROSA_ESCURA = "#D9668A"    # linhas, "QUERO" e detalhes
 CINZA = "#A08893"          # malva (preço antigo e avaliação)
 BRANCO = "#FFFFFF"
-LOJAS = {"shopee": ("Shopee", "#EE4D2D"), "aliexpress": ("AliExpress", "#E43225")}
+LOJAS = {"shopee": ("Shopee", "#EE4D2D"), "aliexpress": ("AliExpress", "#E43225"),
+         "sharkninja": ("Shark Ninja", "#0B3C6F")}
 
 
 def sans(tam, peso="Bold"):
@@ -185,6 +186,8 @@ def bloco_texto(img, oferta, y, largura_total):
                 else f"{oferta['nota']:.1f}".replace(".", ","))
     vendas = f"{oferta['vendas']:,}".replace(",", ".")
     info = f"{nota if '%' in nota else 'nota ' + nota}  ·  {vendas}+ vendidos"
+    if oferta.get("plataforma") == "sharkninja":
+        info = "Loja oficial Shark Ninja"
     f_i = sans(32, "Medium")
     d.text(((l - d.textlength(info, font=f_i)) / 2, y), info, font=f_i, fill=CINZA)
     return y + 46

@@ -12,7 +12,7 @@ import requests
 from .imagem import plataforma
 from .precos import aviso, tem_variacoes
 
-NOME_LOJA = {"shopee": "Shopee", "aliexpress": "AliExpress"}
+NOME_LOJA = {"shopee": "Shopee", "aliexpress": "AliExpress", "sharkninja": "Shark Ninja"}
 
 
 def configurado():
@@ -37,7 +37,7 @@ def legenda(oferta):
     linhas = []
     for linha in (oferta.get("legenda") or "").splitlines():
         t = linha.strip()
-        if (not t or t.startswith(("#", "📲", "🔖", "🕒")) or "QUERO" in t.upper() or "R$" in t):
+        if (not t or t.startswith(("#", "📲", "🔖", "🕒", "🏬")) or "QUERO" in t.upper() or "R$" in t):
             continue
         linhas.append(html.escape(t))
     linhas = linhas[:3]
@@ -55,7 +55,8 @@ def legenda(oferta):
     if oferta.get("nivel") == "achado":
         partes = ["💎 <b>ACHADO ESCONDIDO</b> — pouca gente conhece", ""] + partes
     partes += linhas + [""] if linhas else []
-    partes += [preco, f"⭐ {nota}  •  {vendas}+ vendidos", f"🏷️ Oferta {loja}", "", f"<i>{html.escape(aviso(oferta))}</i>",
+    prova = "🏬 Loja oficial Shark Ninja" if plataforma(oferta) == "sharkninja" else f"⭐ {nota}  •  {vendas}+ vendidos"
+    partes += [preco, prova, f"🏷️ Oferta {loja}", "", f"<i>{html.escape(aviso(oferta))}</i>",
                "<i>Link de afiliado: você paga o mesmo e ajuda o Garimpo VIP 💛</i>"]
     return "\n".join(partes)[:1024]
 
