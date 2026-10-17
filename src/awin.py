@@ -155,6 +155,7 @@ def normalizar(l):
         "voltagem": voltagem(nome),
         "plataforma": PLATAFORMA,
         "imagem": imagem,
+        "imagens_feed": {k: l.get(k, "") for k in ("large_image", "merchant_image_url", "aw_image_url", "merchant_thumb_url") if l.get(k)},
         "link_afiliado": l.get("aw_deep_link", ""),
         "descricao": re.sub(r"\s+", " ", l.get("description", ""))[:500],
         "em_estoque": _em_estoque(l),
@@ -282,6 +283,14 @@ if __name__ == "__main__":   # teste: python -m src.awin  (com AWIN_FEED_URL e A
                     estado = f"arte ok ({arte.stat().st_size // 1024} KB, foto {foto.size[0]}x{foto.size[1]})"
                 except Exception as e:
                     estado = f"ARTE FALHOU: {type(e).__name__} {str(e)[:150]}"
+                tamanhos = []
+                for coluna, url in o.get("imagens_feed", {}).items():   # qual coluna do feed traz a foto maior?
+                    try:
+                        f = imagem._baixar_foto(url)
+                        tamanhos.append(f"{coluna}={f.size[0]}x{f.size[1]}")
+                    except Exception as e:
+                        tamanhos.append(f"{coluna}=erro {type(e).__name__}")
+                saida.append("fotos do feed: " + ", ".join(tamanhos))
                 saida += [f"=== {o['nome']} | legenda: {t['fonte']}", f"título: {t['titulo']}", estado, t["legenda"], ""]
         except Exception as e:
             saida.append(f"ERRO: {type(e).__name__} {str(e)[:200]}")
