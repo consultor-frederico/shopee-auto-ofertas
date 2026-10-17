@@ -93,6 +93,9 @@ export default {
     try { dados = JSON.parse(corpo); } catch (e) { return new Response("ok"); }
     const temComentario = (dados.entry || []).some(e =>
       (e.changes || []).some(c => c.field === "comments")
+      // comentário novo na página do Facebook (campo "feed"); ignora os da própria página (e.id = id da página)
+      || (e.changes || []).some(c => c.field === "feed" && c.value && c.value.item === "comment"
+            && c.value.verb === "add" && String((c.value.from || {}).id) !== String(e.id))
       // mensagem nova no direct (Busca do Zé pelo direct); ignora o eco das mensagens da própria página
       || (e.messaging || []).some(m => (m.message && !m.message.is_echo && m.message.text) || m.postback));
     if (temComentario) ctx.waitUntil(tocarResponder(env));
