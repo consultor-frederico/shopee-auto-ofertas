@@ -29,6 +29,9 @@ ARQ_PROXIMO = config.PASTA_PERFIL / "top_proximo.json"
 FONTE = config.RAIZ / "assets" / "fontes" / "Poppins-Bold.ttf"
 CAPAS = config.RAIZ / "assets" / "ze" / "top"
 QTD = 5
+# O Top é vitrine: a Busca do Zé aceita qualquer preço, mas aqui só entra produto de achado
+TOP_PRECO_MIN = float(os.getenv("TOP_PRECO_MIN", "5"))
+TOP_PRECO_MAX = float(os.getenv("TOP_PRECO_MAX", str(config.PRECO_MAXIMO)))
 DONOS = {"fredericosn"}          # testes do próprio Fred não entram no ranking
 MESES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto",
          "setembro", "outubro", "novembro", "dezembro"]
@@ -108,6 +111,8 @@ def escolher(tipo):
     itens, ids = [], set()
 
     def cabe(o):
+        if not (TOP_PRECO_MIN <= o["preco"] <= TOP_PRECO_MAX):
+            return False
         return o["id"] not in ids and not any(busca_ze._mesmo_produto(o, x["oferta"]) for x in itens)
 
     for termo, pessoas in pedidos_do_periodo(inicio):
