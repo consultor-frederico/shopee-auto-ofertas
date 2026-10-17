@@ -44,13 +44,15 @@ Horários de Brasília. Todos também podem ser disparados em **Actions → Run 
 
 ## Shark Ninja (Awin)
 `src/awin.py` — programa **Shark-Ninja BR** (rede Awin, publisher 3120546, CPA 8%, cookie de 30 dias). Diferente da Shopee e da AliExpress, não há busca por palavra-chave, nem vendas ou nota: o robô lê o **feed de produtos** da marca (CSV com vírgula, gzip) e usa o link de afiliado que já vem pronto em cada produto (`aw_deep_link`).
-- **Segredo `AWIN_FEED_URL`:** URL do feed (Awin → Ferramentas → Crie um Feed → Shark-Ninja BR). Ela contém a chave da Awin: nunca vai para log nem para o chat. **Ligar/desligar:** variável `AWIN_ATIVO` em Settings → Secrets and variables → Actions → *Variables* (`1` liga; sem ela fica desligado).
+- **Segredo `AWIN_FEED_URL`:** URL do feed (Awin → Ferramentas → Crie um Feed → Shark-Ninja BR). Ela contém a chave da Awin: nunca vai para log nem para o chat. **Ligada por padrão** quando o segredo existe. **Para desligar:** crie a variável `AWIN_ATIVO` com valor `0` em Settings → Secrets and variables → Actions → *Variables*.
 - **Cada conta no seu nicho:** Garimpo VIP = casa e cozinha (aspiradores, robôs, air fryer, liquidificador…, categoria `lar`); Ana Novo Achados = secadores e modeladores de cabelo (`cabelo`). Filtro: peça de reposição, produto sem estoque, sem foto ou sem link ficam de fora.
 - **Regras próprias:** sem teto de preço, sem corte por vendas/nota, sem nota de "uau" da IA (marca oficial). As artes, o Telegram e o WhatsApp mostram "Loja oficial Shark Ninja" no lugar de nota e vendas. Ordem de entrada: maior desconto e maior comissão.
 - **Frequência (`src/config.py`):** até 3 produtos novos por rodada de garimpo, **1 por dia no Instagram de cada conta**, até 3 por dia no Telegram (1 por rodada). Produto já usado não volta por 14 dias (Telegram) e 30 dias (Instagram), então o catálogo roda sozinho.
 - **Preço honesto:** antes de postar, `awin.conferir()` baixa o feed de novo; produto que saiu do feed ou ficou sem estoque é descartado e preço que subiu mais de 15% também.
 - **Termos do programa:** permite pessoa física, influenciadores e grupos de oferta; **não permite busca paga (Google Ads)**; cupom que não seja da marca não gera comissão.
-- Teste: **Actions → 13 - Testar Shark Ninja (Awin)** (só lê o feed e mostra o que o robô entendeu; não posta nada).
+- **Fotos:** o feed só traz miniatura (292 px); a loja é VTEX, então `imagem._baixar_foto` pede a foto original (1500 px) e usa a miniatura só se falhar.
+- **Voltagem:** o mesmo produto vem em 110V e 220V; fica uma versão por produto (Bivolt, depois 110V, depois 220V) e o aviso do preço diz para conferir a voltagem.
+- Teste: **Actions → 13 - Testar Shark Ninja (Awin)** (lê o feed, mostra o que o robô entendeu e faz uma prévia de legenda e arte de 2 produtos por conta; não posta nada). O resultado aparece nas anotações do job.
 
 ## Postagem
 `python -m src.postar preparar` → `publicar`

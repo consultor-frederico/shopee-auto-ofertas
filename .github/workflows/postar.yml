@@ -56,7 +56,7 @@ jobs:
           SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           AWIN_FEED_URL: ${{ secrets.AWIN_FEED_URL }}
-          AWIN_ATIVO: ${{ vars.AWIN_ATIVO || '0' }}   # 1 liga a Shark Ninja; em Settings → Variables dá para desligar de novo
+          AWIN_ATIVO: ${{ vars.AWIN_ATIVO || '1' }}   # Shark Ninja ligada; para desligar: Settings → Secrets and variables → Actions → Variables → AWIN_ATIVO = 0
           FORMATO: ${{ github.event.inputs.formato != 'auto' && github.event.inputs.formato || '' }}
           OFERTA_ID: ${{ inputs.oferta_id }}
         run: python -m src.postar preparar

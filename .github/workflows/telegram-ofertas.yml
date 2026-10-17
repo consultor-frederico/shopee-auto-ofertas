@@ -32,7 +32,7 @@ jobs:
           SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
           SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
           AWIN_FEED_URL: ${{ secrets.AWIN_FEED_URL }}
-          AWIN_ATIVO: ${{ vars.AWIN_ATIVO || '0' }}   # 1 liga a Shark Ninja; em Settings → Variables dá para desligar de novo
+          AWIN_ATIVO: ${{ vars.AWIN_ATIVO || '1' }}   # Shark Ninja ligada; para desligar: Settings → Secrets and variables → Actions → Variables → AWIN_ATIVO = 0
         run: python -m src.telegram_ofertas
 
       - name: Salvar fila

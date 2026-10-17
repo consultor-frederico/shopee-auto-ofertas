@@ -1,5 +1,6 @@
 """Monta a arte do post (1080x1350, formato retrato do feed) com foto, preço e selo."""
 import io
+import re
 
 import requests
 from PIL import Image, ImageDraw, ImageFont, ImageOps
@@ -27,10 +28,23 @@ def _fonte(tam, peso="Bold"):
     return f
 
 
+_VTEX = re.compile(r"^(https?://[^/]+)/arquivos/ids/(\d+)")
+
+
 def _baixar_foto(url):
-    r = requests.get(url, timeout=30, headers={"User-Agent": "Mozilla/5.0"})
-    r.raise_for_status()
-    return Image.open(io.BytesIO(r.content)).convert("RGB")
+    """Baixa a foto. Loja VTEX (Shark Ninja): o feed traz a miniatura (…/ids/123_2, 292 px); o endereço sem o
+    sufixo é a foto original (1500 px), então tenta essa primeiro e cai na miniatura se falhar."""
+    m = _VTEX.match(url or "")
+    tentativas = ([f"{m.group(1)}/arquivos/ids/{m.group(2)}"] if m else []) + [url]
+    erro = None
+    for u in tentativas:
+        try:
+            r = requests.get(u, timeout=30, headers={"User-Agent": "Mozilla/5.0"})
+            r.raise_for_status()
+            return Image.open(io.BytesIO(r.content)).convert("RGB")
+        except Exception as e:
+            erro = e
+    raise erro
 
 
 def _quebrar(draw, texto, fonte, largura, max_linhas=2):
