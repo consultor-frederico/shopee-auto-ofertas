@@ -106,7 +106,7 @@ def _chave_modelo(nome):
 
 # Peça de reposição/acessório solto: commodity, não é achado
 _REPOSICAO = re.compile(r"\b(refil|refis|filtro|filtros|reposicao|substituicao|bateria|kit de escovas|"
-                        r"escova de reposicao|pecas?|acessorio avulso)\b")
+                        r"escova de reposicao|pecas?|acessorio avulso|pano|panos|estojo|potes?|case|capa)\b")
 # Produto de cabelo: vai para a Ana. O resto é casa e cozinha: vai para o Garimpo VIP.
 _CABELO = re.compile(r"\b(secador|secadores|modelador|modeladores|flexstyle|speedstyle|hyperair|"
                      r"alisador|alisadora|cachos|cabelo|cabelos|hair|styler|babyliss|escova secadora)\b")
@@ -258,9 +258,35 @@ if __name__ == "__main__":   # teste: python -m src.awin  (com AWIN_FEED_URL e A
     config.AWIN_ATIVO = True
 
     def aviso_unico(titulo, linhas):   # o GitHub mostra só 10 anotações por passo: junta tudo em uma
-        print(f"::notice title={titulo}::" + "%0A".join(linhas or ["(nenhum)"]))
+        codificado = [l.replace("%", "%25").replace("\r", "").replace("\n", "%0A") for l in (linhas or ["(nenhum)"])]
+        print(f"::notice title={titulo}::" + "%0A".join(codificado))
         for l in linhas:
             print(l)
+
+    if "--previa" in sys.argv:   # legenda da IA e arte com a foto real de 2 produtos do perfil (não posta nada)
+        import tempfile
+        from pathlib import Path
+
+        from . import imagem, legenda
+        saida = []
+        try:
+            alvo = [o for o in produtos() if o["categoria"] in config.NICHO][:2]
+            for o in alvo:
+                o.update(uau=config.SHARK_UAU, nivel="ouro")
+                t = legenda.gerar(o)
+                o["titulo"], o["legenda"] = t["titulo"], t["legenda"]
+                try:
+                    foto = imagem._baixar_foto(o["imagem"])
+                    arte = Path(tempfile.mkdtemp()) / "arte.jpg"
+                    imagem.gerar(o, arte, foto=foto)
+                    estado = f"arte ok ({arte.stat().st_size // 1024} KB, foto {foto.size[0]}x{foto.size[1]})"
+                except Exception as e:
+                    estado = f"ARTE FALHOU: {type(e).__name__} {str(e)[:150]}"
+                saida += [f"=== {o['nome']} | legenda: {t['fonte']}", f"título: {t['titulo']}", estado, t["legenda"], ""]
+        except Exception as e:
+            saida.append(f"ERRO: {type(e).__name__} {str(e)[:200]}")
+        aviso_unico(f"Previa {config.PERFIL}", saida)
+        sys.exit(0)
 
     try:
         linhas = baixar_linhas()

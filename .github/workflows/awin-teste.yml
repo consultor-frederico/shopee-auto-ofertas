@@ -1,7 +1,8 @@
 name: 13 - Testar Shark Ninja (Awin)
 
-# Baixa o feed da Awin e mostra o que o robô entenderia de cada produto (categoria, preço, foto, link).
-# Não grava nada e não posta nada. O endereço do feed (que tem a chave) nunca aparece no log.
+# Baixa o feed da Awin e mostra o que o robô entenderia de cada produto (categoria, preço, link) e,
+# no fim, uma prévia da legenda e da arte de 2 produtos de cada conta. Não grava nada e não posta nada.
+# O endereço do feed (que tem a chave) nunca aparece no log.
 
 on:
   workflow_dispatch:
@@ -9,13 +10,23 @@ on:
 jobs:
   testar:
     runs-on: ubuntu-latest
+    env:
+      AWIN_FEED_URL: ${{ secrets.AWIN_FEED_URL }}
+      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: pip install requests
+          cache: pip
+      - run: pip install -r requirements.txt
       - name: Ler o feed da Shark Ninja
-        env:
-          AWIN_FEED_URL: ${{ secrets.AWIN_FEED_URL }}
         run: python -m src.awin
+      - name: Prévia Garimpo VIP
+        env:
+          PERFIL: garimpo
+        run: python -m src.awin --previa
+      - name: Prévia Ana Novo Achados
+        env:
+          PERFIL: ana
+        run: python -m src.awin --previa
