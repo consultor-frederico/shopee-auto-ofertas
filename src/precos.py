@@ -92,4 +92,6 @@ def aviso(o):
     quando = o.get("preco_conferido_em") or agora().strftime("%d/%m às %H:%M")
     base = "Preço a partir de" if tem_variacoes(o) else "Preço"
     pix = " Pagando no Pix, a Shopee costuma dar desconto extra." if loja == "Shopee" else ""
-    return f"🕒 {base} R$ {o['preco_fmt']}, conferido em {quando}.{pix} O preço pode mudar a qualquer momento."
+    volt = (f" ⚡ Versão {o['voltagem']}: confira a voltagem da sua região antes de comprar."
+            if o.get("voltagem") and o["voltagem"] != "Bivolt" else "")
+    return f"🕒 {base} R$ {o['preco_fmt']}, conferido em {quando}.{pix}{volt} O preço pode mudar a qualquer momento."

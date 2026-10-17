@@ -78,8 +78,30 @@ def _em_estoque(l):
     return v not in ("0", "false", "no", "não", "nao", "n", "out of stock")   # vazio = assume que tem
 
 
+_SIMBOLOS = re.compile(r"[®™©℠]")
+
+
 def _sem_acento(t):
-    return unicodedata.normalize("NFKD", t or "").encode("ascii", "ignore").decode().lower()
+    return unicodedata.normalize("NFKD", _SIMBOLOS.sub("", t or "")).encode("ascii", "ignore").decode().lower()
+
+
+# Voltagem: o mesmo produto vem em versões 110V e 220V (e Bivolt). Aparece no título e no aviso do preço,
+# e só uma versão por produto entra no robô (preferência: Bivolt, 110V/127V, 220V).
+_VOLT = re.compile(r"\b(110|127|220)\s?v\b|\bbivolt\b|\b110\s?/\s?220\s?v\b", re.I)
+_PREF_VOLT = {"Bivolt": 0, "110V": 1, "127V": 1, "220V": 2, "": 1}
+
+
+def voltagem(nome):
+    m = _VOLT.search(_SIMBOLOS.sub("", nome or ""))
+    if not m:
+        return ""
+    t = m.group(0).lower().replace(" ", "")
+    return "Bivolt" if "bivolt" in t or "/" in t else t.upper()
+
+
+def _chave_modelo(nome):
+    """Nome sem voltagem: variantes 110V/220V do mesmo produto têm a mesma chave."""
+    return " ".join(_VOLT.sub("", _sem_acento(nome)).split())
 
 
 # Peça de reposição/acessório solto: commodity, não é achado
@@ -108,7 +130,7 @@ def categoria_do_produto(nome, categoria_feed=""):
 
 def normalizar(l):
     """Linha do feed → oferta no formato do robô (mesmos campos de shopee/aliexpress)."""
-    nome = l.get("product_name", "")
+    nome = " ".join(_SIMBOLOS.sub("", l.get("product_name", "")).split())
     preco = _preco(l.get("search_price") or l.get("store_price") or l.get("display_price"))
     antigo = _preco(l.get("product_price_old") or l.get("rrp_price"))
     desconto = round((1 - preco / antigo) * 100) if antigo > preco > 0 else 0
@@ -130,6 +152,7 @@ def normalizar(l):
         "nota": 0.0,
         "loja": LOJA,
         "marca": (l.get("brand_name") or MARCA).strip() or MARCA,
+        "voltagem": voltagem(nome),
         "plataforma": PLATAFORMA,
         "imagem": imagem,
         "link_afiliado": l.get("aw_deep_link", ""),
@@ -168,7 +191,16 @@ def produtos(forcar=False):
                 recusas[m] = recusas.get(m, 0) + 1
                 continue
             ofertas.append(o)
-        print(f"🦈 Shark Ninja (Awin): {len(ofertas)} produtos válidos no feed | recusados: {recusas}")
+        melhores = {}
+        for o in ofertas:   # uma versão por produto (110V/220V): fica a de voltagem preferida, depois a mais barata
+            k = (o["categoria"], _chave_modelo(o["nome"]))
+            if k not in melhores or (_PREF_VOLT.get(o["voltagem"], 1), o["preco"]) < (
+                    _PREF_VOLT.get(melhores[k]["voltagem"], 1), melhores[k]["preco"]):
+                melhores[k] = o
+        variantes = len(ofertas) - len(melhores)
+        ofertas = [o for o in ofertas if melhores[(o["categoria"], _chave_modelo(o["nome"]))] is o]
+        print(f"🦈 Shark Ninja (Awin): {len(ofertas)} produtos válidos no feed | recusados: {recusas}"
+              f"{' | versões de voltagem repetidas: ' + str(variantes) if variantes else ''}")
         _cache["produtos"] = ofertas
     return _cache["produtos"]
 
@@ -225,10 +257,19 @@ if __name__ == "__main__":   # teste: python -m src.awin  (com AWIN_FEED_URL e A
         sys.exit(0)
     config.AWIN_ATIVO = True
     try:
+        linhas = baixar_linhas()
+        print(f"::notice::Feed: {len(linhas)} linhas | colunas: {', '.join(linhas[0].keys()) if linhas else '(vazio)'}")
+        for linha in linhas:
+            o = normalizar(linha)
+            m = motivo_recusa(o)
+            if m:
+                print(f"::notice::RECUSADO ({m}) | {o['nome'][:55]} | in_stock={linha.get('in_stock', '?')!r} | "
+                      f"preço={o['preco']} | foto {'ok' if o['imagem'] else 'FALTA'} | link {'ok' if o['link_afiliado'] else 'FALTA'}")
         for o in produtos():
             print(f"::notice::[{o['categoria']}] {o['nome'][:60]} | R$ {o['preco_fmt']}"
                   f"{' (de R$ ' + str(o['preco_de']) + ')' if o['preco_de'] else ''} | comissão R$ {o['comissao']:.2f} | "
-                  f"foto {'ok' if o['imagem'] else 'FALTA'} | link {'ok' if o['link_afiliado'] else 'FALTA'}")
+                  f"foto {'ok' if o['imagem'] else 'FALTA'} | link {'ok' if o['link_afiliado'] else 'FALTA'}"
+                  f"{' | ' + o['voltagem'] if o['voltagem'] else ''}")
     except Exception as e:
         print(f"::error::{e}")
         sys.exit(1)
