@@ -99,9 +99,10 @@ def _publica(usuario=""):
 
 
 # Espera "humana": o robô não responde no mesmo segundo. Cada comentário espera de 1 a ESPERA_MAX_MIN minutos
-# (tempo fixo por comentário, calculado pelo id), e o comentário novo fica para a próxima rodada de 15 min.
-# RESPOSTA_ESPERA_MAX_MIN=0 desliga.
+# (tempo fixo por comentário, calculado pelo id). A mesma rodada aguarda esse tempo e responde em seguida,
+# sem deixar para a rodada de 15 min. RESPOSTA_ESPERA_MAX_MIN=0 desliga.
 ESPERA_MAX_MIN = max(0, int(os.getenv("RESPOSTA_ESPERA_MAX_MIN", "6") or 0))
+PENDENTES = []   # segundos que faltam para cada comentário segurado nesta rodada
 
 
 def esperando(comentario):
@@ -113,7 +114,11 @@ def esperando(comentario):
     except ValueError:
         return False
     espera = 60 + (zlib.crc32(str(comentario.get("id", "")).encode()) % ESPERA_MAX_MIN) * 60   # em segundos
-    return (datetime.now(timezone.utc).replace(tzinfo=None) - quando).total_seconds() < espera
+    falta = espera - (datetime.now(timezone.utc).replace(tzinfo=None) - quando).total_seconds()
+    if falta > 0:
+        PENDENTES.append(falta)
+        return True
+    return False
 
 
 def _normalizar(txt):
@@ -464,8 +469,17 @@ if __name__ == "__main__":
     try:
         # O aviso da Meta (webhook) às vezes chega antes de o comentário aparecer na API:
         # se nada foi enviado, espera um pouco e confere de novo.
-        if not responder():
+        if not responder() and not PENDENTES:
             time.sleep(20)
+            responder()
+        # Comentário segurado pela espera "humana": aguarda aqui mesmo e responde, em vez de esperar 15 min.
+        for _ in range(2):
+            if not PENDENTES:
+                break
+            falta = min(max(PENDENTES), ESPERA_MAX_MIN * 60) + 5
+            PENDENTES.clear()
+            print(f"⏳ Comentário novo: respondendo em {falta / 60:.1f} min (espera humana).")
+            time.sleep(falta)
             responder()
     except Exception as e:
         print(f"::error::{e}")
