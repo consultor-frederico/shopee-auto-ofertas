@@ -95,3 +95,14 @@ Terça e sexta às 19:37, um post no Instagram com arte própria chamando para o
    - `GH_PAT` — token do GitHub com permissão de escrever segredos neste repositório (para a renovação automática do token do Instagram)
 
 Sem o `IG_ACCESS_TOKEN`, a postagem e as respostas ficam em espera, sem dar erro.
+
+## 🛍️ Carrossel de Achados (workflow 24)
+
+Os posts do feed agora são **carrosséis de 3–5 produtos**, sempre abrindo com um **vídeo do Zé (Garimpo) ou da Ana** e fechando com a chamada "QUERO + número".
+Quem comenta `QUERO 2` recebe o link do 2º; só `QUERO` recebe a lista (registro em `data/<perfil>/top.json`).
+
+- Código: `src/achados.py` (fluxo) e `src/achados_artes.py` (artes). A cada carrossel muda o estilo (3 de produto, 2–3 de slide final, 3 títulos no vídeo, topo/rodapé alternando); contador em `data/<perfil>/achados.json`.
+- Posts de produto único (`postar.yml`) só saem para "Você pediu, o Zé achou" e vídeos manuais (`SO_CARROSSEL=0` volta ao modo antigo).
+- Variáveis: `ACHADOS_QTD` (3–5, padrão 4), `ACHADOS_MINIMO` (padrão 3), `ACHADOS_VARIANTE` (força um estilo, p/ prévia), `ZE_SEMPRE_NO_INICIO` (padrão 1: todo Reels abre com o personagem), `ANA_DIAS` (padrão `1,3,5`).
+- Horários (`agenda.yml`): Garimpo 07:45, 12:45, 18:45; Ana 09:15, 14:30, 19:15.
+- Prévia local: `python -m src.achados previa` (gera em `data/relatorios/achados/`).

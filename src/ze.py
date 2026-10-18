@@ -33,12 +33,13 @@ ARQ = config.PASTA_PERFIL / "ze.json"              # cada conta com o seu rodíz
 ARQ_PROX = config.PASTA_PERFIL / "proximo_ze.json"
 PASTA_SITE = config.RAIZ / "site"
 # dias da semana do post do Zé (0 = segunda ... 6 = domingo); padrão segunda, quarta, sexta e domingo
-# Ana: 1 post próprio por semana, às quintas (ANA_DIAS; 0 = segunda)
-_DIAS = os.getenv("ANA_DIAS", "3") if ANA else os.getenv("ZE_DIAS", "0,2,4,6")
+# Ana: 3 posts próprios por semana, terça, quinta e sábado (ANA_DIAS; 0 = segunda)
+_DIAS = os.getenv("ANA_DIAS", "1,3,5") if ANA else os.getenv("ZE_DIAS", "0,2,4,6")   # Ana: terça, quinta e sábado
 DIAS_SEMANA = {int(d) for d in _DIAS.split(",") if d.strip().isdigit()}
 NOMES_DIAS = ["segunda", "terça", "quarta", "quinta", "sexta", "sábado", "domingo"]
 FINAL_LIGADO = os.getenv("ZE_NO_FINAL", "1") != "0"
 INICIO_LIGADO = os.getenv("ZE_NO_INICIO", "1") != "0"
+SEMPRE_NO_INICIO = os.getenv("ZE_SEMPRE_NO_INICIO", "1") != "0"   # 0 volta ao rodízio (2 no final, 1 no começo)
 PASTA_MUSICAS = config.RAIZ / "assets" / ("ana/musicas" if ANA else "musicas")   # pasta vazia = sem música
 MUSICA_LIGADA = os.getenv("MUSICA_REELS", "1") != "0"
 # Ana: música ambiente, bem de fundo
@@ -233,6 +234,8 @@ def _vez_do_ze():
     """Rodízio de 3 Reels de oferta, para o Zé não aparecer demais:
     1º e 2º → Zé só no final; 3º → Zé só no começo. Depois recomeça.
     Devolve (quer_inicio, quer_final)."""
+    if SEMPRE_NO_INICIO:   # 17/10/2026: todo Reels abre com um vídeo dele(a)
+        return (True, False)
     dados = _carregar()
     n = int(dados.get("ciclo_reels", 0)) % 3
     dados["ciclo_reels"] = (n + 1) % 3

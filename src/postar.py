@@ -21,6 +21,10 @@ from .garimpar import BRT, FMT, agora, carregar_fila, salvar_fila
 PASTA_SITE = config.RAIZ / "site"
 ARQ_PROXIMO = config.PASTA_PERFIL / "proximo.json"
 MAX_TENTATIVAS = 2
+# Desde 17/10/2026 o feed não tem mais post de oferta solta: as ofertas saem no carrossel de achados
+# (src/achados.py, sempre abrindo com um vídeo do Zé ou da Ana). Aqui só saem os pedidos da Busca
+# ("Você pediu, o Zé achou") e os vídeos manuais. SO_CARROSSEL=0 volta ao jeito antigo.
+SO_CARROSSEL = os.getenv("SO_CARROSSEL", "1") != "0"
 # Cada post do feed vai também para o story (desligue com STORIES=0).
 # Na Ana o story tem visual próprio (layout_ana.gerar_story); desligue com ANA_STORIES=0.
 ANA_STORIES = os.getenv("ANA_STORIES", "1") == "1"   # ligado em 13/10/2026
@@ -123,6 +127,11 @@ def preparar():
     oferta = None
     forcada = (os.getenv("OFERTA_ID") or "").strip()
     lista = candidatos_ordenados(fila)
+    if SO_CARROSSEL and not forcada:   # as ofertas saem no carrossel de achados (src/achados.py)
+        lista = [o for o in lista if o.get("video_manual") or o.get("pedido")]
+        if not lista:
+            print("⏳ Sem pedido do Zé nem vídeo manual na fila: as ofertas saem no carrossel de achados.")
+            return
     if forcada:   # teste manual: posta exatamente esta oferta
         lista = [o for o in fila["ofertas"].values() if o["id"] == forcada and o.get("status") == "pendente"]
         if not lista:
