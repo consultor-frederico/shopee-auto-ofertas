@@ -9,7 +9,8 @@ import re
 import sys
 import time
 import unicodedata
-from datetime import datetime, timedelta
+import zlib
+from datetime import datetime, timedelta, timezone
 
 from . import config, facebook, instagram, youtube
 from .garimpar import BRT, FMT, agora, carregar_fila
@@ -68,6 +69,51 @@ if config.PERFIL == "ana":   # a Ana fala do jeito dela (contas independentes), 
                 "Olha o direct! ✨", "Te mandei lá no privado 🥰", "Já tá no seu direct, me conta se gostou! 💚",
                 "Separei pra você, olha o direct 😍", "Mandei! Confere lá 💌", "Prontinho, tá no direct ✨",
                 "Ai, esse é lindo né? Te mandei no direct 💚"]
+else:   # Garimpo VIP: o Zé também responde cada vez de um jeito (os começos têm que estar em busca_ze.MARCAS_ROBO)
+    _AVISO_ZE = f"\n\n(link de afiliado: você paga o mesmo e ajuda a página {config.NOME_MARCA})"
+    DM_BOTAO = _Variado([
+        "Oi! 🤠 O Zé cavou e achou: {titulo}\nToca no botão que abre direto na {loja}. Garimpo bom some rápido! ⛏️" + _AVISO_ZE,
+        "Oi! 🤠 Pedido anotado, achado entregue 💎 {titulo}\nÉ só tocar no botão pra ver na {loja}." + _AVISO_ZE,
+        "Prontinho! 🤠 Olha o que o Zé separou pra você: {titulo}\nO botão abre na {loja}. Corre que o preço pode mudar!" + _AVISO_ZE,
+        "Aaah, boa escolha! 🤠 {titulo}\nToca no botão pra abrir na {loja}." + _AVISO_ZE,
+        "Oi! 🤠 Chegou o seu achado: {titulo}\nO botão abre na {loja}. Quer mais? Comenta o que você procura no post fixado da Busca do Zé! ⛏️" + _AVISO_ZE,
+    ])
+    DM = _Variado([
+        "Oi! 🤠 O Zé cavou e achou: {titulo}\n{link}\nGarimpo bom some rápido! ⛏️" + _AVISO_ZE,
+        "Oi! 🤠 Pedido anotado, achado entregue 💎 {titulo}\n{link}" + _AVISO_ZE,
+        "Prontinho! 🤠 Olha o que o Zé separou pra você: {titulo}\n{link}\nCorre que o preço pode mudar!" + _AVISO_ZE,
+        "Aaah, boa escolha! 🤠 {titulo}\n{link}" + _AVISO_ZE,
+    ])
+    PUBLICAS = ["Te mandei no direct! 📩", "Enviado no seu direct! 💌", "Já está no seu direct! 😉",
+                "Confere o direct, te mandei o link! 📲", "Link enviado no direct! 🛍️",
+                "O Zé cavou e mandou no seu direct ⛏️", "Achado entregue, olha o direct! 💎",
+                "Tá no seu direct, corre lá! 🤠", "Mandei no privado, confere! 📩"]
+
+
+def _publica(usuario=""):
+    """Resposta pública do comentário: cada vez de um jeito, e às vezes chamando a pessoa pelo @."""
+    texto = random.choice(PUBLICAS)
+    if usuario and random.random() < 0.4:
+        return f"@{usuario} {texto}"
+    return texto
+
+
+# Espera "humana": o robô não responde no mesmo segundo. Cada comentário espera de 1 a ESPERA_MAX_MIN minutos
+# (tempo fixo por comentário, calculado pelo id), e o comentário novo fica para a próxima rodada de 15 min.
+# RESPOSTA_ESPERA_MAX_MIN=0 desliga.
+ESPERA_MAX_MIN = max(0, int(os.getenv("RESPOSTA_ESPERA_MAX_MIN", "6") or 0))
+
+
+def esperando(comentario):
+    """True se o comentário ainda é novo demais para o robô responder."""
+    if not ESPERA_MAX_MIN:
+        return False
+    try:
+        quando = datetime.strptime((comentario.get("timestamp") or "")[:19], "%Y-%m-%dT%H:%M:%S")
+    except ValueError:
+        return False
+    espera = 60 + (zlib.crc32(str(comentario.get("id", "")).encode()) % ESPERA_MAX_MIN) * 60   # em segundos
+    return (datetime.now(timezone.utc).replace(tzinfo=None) - quando).total_seconds() < espera
 
 
 def _normalizar(txt):
@@ -177,6 +223,8 @@ def responder(api=instagram):
                 continue
             if not pediu_link(c.get("text", "")) or cid in busca:
                 continue
+            if esperando(c):
+                continue   # comentário novo demais: fica para a próxima rodada (resposta mais humana)
             usuario = c.get("username") or (c.get("from") or {}).get("username", "")
             ja_recebeu = any(r.get("post") == o["id_post"] and r.get("dm") == "ok" and autor
                              and r.get("autor") == autor for r in respondidos.values())
@@ -202,7 +250,7 @@ def responder(api=instagram):
                 enviados += 1
                 if RESPOSTA_PUBLICA:
                     try:
-                        api.responder_comentario(cid, random.choice(PUBLICAS))
+                        api.responder_comentario(cid, _publica(usuario))
                         reg["publica"] = "ok"
                     except Exception as e:
                         reg["publica"] = f"erro: {str(e)[:300]}"
@@ -282,6 +330,8 @@ def responder_top(api, minha, tops, respondidos):
             n = numero_pedido(texto, len(itens))
             if not n and not so_pediu_link(texto):
                 continue   # comentário comum (ou um pedido para a Busca do Zé, que ela mesma atende)
+            if esperando(c):
+                continue
             usuario = c.get("username") or (c.get("from") or {}).get("username", "")
             reg = {"post": post_id, "oferta": itens[n - 1]["id"] if n else "top", "usuario": usuario,
                    "autor": autor, "em": agora().strftime(FMT), "top": n or "todos"}
@@ -307,7 +357,7 @@ def responder_top(api, minha, tops, respondidos):
                 enviados += 1
                 if RESPOSTA_PUBLICA:
                     try:
-                        api.responder_comentario(cid, random.choice(PUBLICAS))
+                        api.responder_comentario(cid, _publica(usuario))
                         reg["publica"] = "ok"
                     except Exception as e:
                         reg["publica"] = f"erro: {str(e)[:300]}"
