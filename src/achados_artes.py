@@ -1,0 +1,329 @@
+"""Artes do carrossel de achados (src/achados.py): várias versões de cada slide, para os posts não ficarem todos
+iguais no feed. A cada carrossel o robô usa uma versão diferente (o contador fica em data/<perfil>/achados.json).
+
+Garimpo VIP — slide de produto: 0 = cartão do feed · 1 = "mina" (fundo escuro) · 2 = "ouro" (fundo dourado);
+              slide final: 0 = saída da mina (laranja) · 1 = noite (azul) ; título do vídeo: 3 textos.
+Ana         — slide de produto: 0 = arco · 1 = polaroid (lavanda) · 2 = círculo (menta);
+              slide final: 3 paletas (rosa, lavanda, menta) e 3 textos; título do vídeo: 3 textos.
+"""
+from PIL import Image, ImageDraw, ImageFilter, ImageOps
+
+from . import config, imagem
+
+L, A = 1080, 1350
+NOMES_LOJA = {"shopee": "SHOPEE", "aliexpress": "ALIEXPRESS", "sharkninja": "SHARK NINJA"}
+
+TITULOS_GARIMPO = [("ACHADOS DO ZÉ", "arrasta pro lado"), ("O ZÉ GARIMPOU", "arrasta e confere"),
+                   ("OLHA O QUE O ZÉ ACHOU", "arrasta pro lado")]
+TITULOS_ANA = [("achadinhos da Ana", "arrasta pro lado"), ("a Ana separou pra você", "arrasta e confere"),
+               ("olha o que eu achei", "arrasta pro lado")]
+FINAIS_GARIMPO = ["Gostou de algum?", "Qual é o seu favorito?", "Bateu o olho em algum?"]
+FINAIS_ANA = ["gostou de algum?", "qual é o seu favorito?", "bateu o olho em algum?"]
+N_PRODUTO, N_FINAL_GARIMPO, N_FINAL_ANA, N_TITULO = 3, 2, 3, 3
+
+
+def _brl_linha(o):
+    return f"R$ {o['preco_fmt']}"
+
+
+def _info(o):
+    if o.get("plataforma") == "sharkninja":
+        return "Loja oficial Shark Ninja"
+    vendas = f"{o.get('vendas', 0):,}".replace(",", ".")
+    if o.get("avaliacao_pct"):
+        return f"{o['avaliacao_pct']:.0f}% aprovação  •  {vendas}+ vendidos"
+    return f"nota {str(o.get('nota', '')).replace('.', ',')}  •  {vendas}+ vendidos"
+
+
+def _loja(o):
+    return NOMES_LOJA.get(o.get("plataforma") or "shopee", "SHOPEE")
+
+
+def _degrade(topo, base):
+    img = Image.new("RGB", (L, A))
+    d = ImageDraw.Draw(img)
+    for y in range(A):
+        k = y / (A - 1)
+        d.line([(0, y), (L, y)], fill=tuple(int(c1 + (c2 - c1) * k) for c1, c2 in zip(topo, base)))
+    return img
+
+
+def _centro(d, y, texto, fonte, cor, stroke=0, cor_stroke=(0, 0, 0)):
+    d.text(((L - d.textlength(texto, font=fonte)) / 2, y), texto, font=fonte, fill=cor,
+           stroke_width=stroke, stroke_fill=cor_stroke)
+
+
+def _ajustar(d, texto, fabrica, tam, largura, minimo=44):
+    """Fonte do maior tamanho (até `tam`) em que o texto cabe na largura."""
+    while tam > minimo:
+        f = fabrica(tam)
+        if d.textlength(texto, font=f) <= largura:
+            return f
+        tam -= 4
+    return fabrica(minimo)
+
+
+def _barra_quero(d, pos, y):
+    fc = imagem._fonte(46, "ExtraBold")
+    partes = [("COMENTE ", imagem.BRANCO), (f"QUERO {pos}", imagem.DOURADO_CLARO), (" E RECEBA O LINK", imagem.BRANCO)]
+    x = (L - sum(d.textlength(t, font=fc) for t, _ in partes)) / 2
+    for t, cor in partes:
+        d.text((x, y), t, font=fc, fill=cor)
+        x += d.textlength(t, font=fc)
+
+
+# ================================================================== GARIMPO VIP — produto
+def produto_garimpo(v, oferta, foto, pos, destino):
+    if v == 1:
+        img = _mina(oferta, foto, pos)
+    elif v == 2:
+        img = _ouro(oferta, foto, pos)
+    else:   # 0: o cartão do feed com o selo do número
+        imagem.gerar(oferta, destino, foto=foto)
+        img = Image.open(destino).convert("RGB")
+        d = ImageDraw.Draw(img)
+        _selo_numero(d, 74, 74, 56, imagem.DOURADO, imagem.ESCURO, imagem._fonte(76, "Black"), pos, imagem.ESCURO)
+        d.rectangle([0, A - 118, L, A], fill=imagem.ESCURO)
+        _barra_quero(d, pos, A - 84)
+    img.save(destino, "JPEG", quality=90, optimize=True)
+
+
+def _selo_numero(d, cx, cy, r, fundo, contorno, fonte, pos, cor):
+    d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=fundo, outline=contorno, width=6)
+    d.text((cx, cy + 2), str(pos), font=fonte, fill=cor, anchor="mm")
+
+
+def _mina(o, foto, pos):
+    from . import top
+    f = top._f
+    im = Image.new("RGB", (L, A))
+    d = ImageDraw.Draw(im)
+    for y in range(A):
+        k = y / A
+        d.line([(0, y), (L, y)], fill=(int(80 - 36 * k), int(38 - 18 * k), int(10 - 5 * k)))
+    borda = (45, 20, 5)
+    d.ellipse((50, 40, 190, 180), fill=top.AM)
+    d.text((120, 112), str(pos), font=f(96), fill=borda, anchor="mm")
+    d.text((220, 58), "ACHADO DO ZÉ", font=f(32), fill=top.AM)
+    d.text((220, 98), f"oferta {_loja(o).title()}", font=f(52), fill=top.BR)
+    d.rounded_rectangle((60, 220, L - 60, 900), 36, fill=top.CARD)
+    fo = foto.copy()
+    fo.thumbnail((L - 180, 620), Image.LANCZOS)
+    im.paste(fo, ((L - fo.width) // 2, 250 + (620 - fo.height) // 2))
+    if o.get("desconto"):
+        t = f"-{o['desconto']}%"
+        ft = f(36)
+        w = d.textlength(t, font=ft)
+        d.rounded_rectangle((L - 90 - w - 40, 250, L - 90, 312), 30, fill=top.VERMELHO)
+        d.text((L - 90 - w - 20, 258), t, font=ft, fill=top.BR)
+    y = 930
+    for ln in top._quebrar(d, o["titulo"], f(40), L - 140):
+        top._ctext(d, y, ln, f(40), top.BR)
+        y += 52
+    variacoes = o.get("preco_max") and o["preco_max"] > o["preco"] * 1.02
+    top._ctext(d, y + 12, "a partir de" if variacoes else "por", f(30), top.BEGE)
+    top._ctext(d, y + 44, _brl_linha(o), f(80), top.AM, 4, borda)
+    top._ctext(d, y + 150, _info(o), f(32), top.BR)
+    t = f"Comenta  QUERO {pos}  que o Zé te manda o link"
+    ft = f(34)
+    w = d.textlength(t, font=ft)
+    d.rounded_rectangle(((L - w) / 2 - 30, A - 112, (L + w) / 2 + 30, A - 44), 34, fill=top.VERDE)
+    top._ctext(d, A - 104, t, ft, top.BR)
+    return im
+
+
+def _ouro(o, foto, pos):
+    im = Image.new("RGB", (L, A), (226, 178, 54))
+    d = ImageDraw.Draw(im)
+    d.ellipse((-260, -260, 640, 640), fill=(238, 200, 98))
+    d.ellipse((520, 760, 1380, 1620), fill=(212, 162, 38))
+    d.ellipse((120, 150, 960, 990), fill=imagem.BRANCO)
+    fo = ImageOps.contain(foto, (620, 620), Image.LANCZOS)
+    im.paste(fo, (540 - fo.width // 2, 570 - fo.height // 2))
+    _selo_numero(d, 100, 100, 62, imagem.ESCURO, imagem.BRANCO, imagem._fonte(78, "Black"), pos, (238, 200, 98))
+    loja = _loja(o)
+    fl = imagem._fonte(34, "ExtraBold")
+    w = d.textlength(loja, font=fl)
+    d.rounded_rectangle((L - 70 - w - 56, 58, L - 70, 128), 35, fill=imagem.ESCURO)
+    d.text((L - 70 - w - 28, 93), loja, font=fl, fill=imagem.BRANCO, anchor="lm")
+    if o.get("desconto"):
+        cx, cy, r = 880, 920, 92
+        d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=(205, 48, 36), outline=imagem.BRANCO, width=6)
+        d.text((cx, cy - 12), f"-{o['desconto']}%", font=imagem._fonte(50, "Black"), fill=imagem.BRANCO, anchor="mm")
+        d.text((cx, cy + 34), "OFF", font=imagem._fonte(32, "ExtraBold"), fill=imagem.BRANCO, anchor="mm")
+    y = 965
+    ft = imagem._fonte(44, "ExtraBold")
+    for ln in imagem._quebrar(d, o["titulo"], ft, L - 150, max_linhas=2):
+        _centro(d, y, ln, ft, imagem.ESCURO)
+        y += 54
+    _centro(d, y + 6, _brl_linha(o), imagem._fonte(104, "Black"), imagem.ESCURO)
+    _centro(d, y + 128, _info(o), imagem._fonte(32, "SemiBold"), (92, 58, 12))
+    d.rectangle([0, A - 118, L, A], fill=imagem.ESCURO)
+    _barra_quero(d, pos, A - 84)
+    return im
+
+
+# ================================================================== ANA — produto
+def produto_ana(v, oferta, foto, pos, destino):
+    from . import layout_ana as la
+    if v == 1:
+        img = _polaroid(oferta, foto, pos)
+    elif v == 2:
+        img = _circulo(oferta, foto, pos)
+    else:   # 0: o arco do feed com o selo do número
+        imagem.gerar(oferta, destino, foto=foto)
+        img = Image.open(destino).convert("RGB")
+        d = ImageDraw.Draw(img)
+        cx, cy, r = L // 2, 66, 56
+        d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=la.ROSA_ESCURA, outline=la.BRANCO, width=6)
+        d.text((cx, cy + 2), str(pos), font=la.serif(78), fill=la.BRANCO, anchor="mm")
+    img.save(destino, "JPEG", quality=90, optimize=True)
+
+
+def _numero_ana(img, cx, cy, pos, r=56):
+    from . import layout_ana as la
+    d = ImageDraw.Draw(img)
+    d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=la.ROSA_ESCURA, outline=la.BRANCO, width=6)
+    d.text((cx, cy + 2), str(pos), font=la.serif(76), fill=la.BRANCO, anchor="mm")
+
+
+def _polaroid(o, foto, pos):
+    from . import layout_ana as la
+    img = _degrade((252, 243, 250), (238, 224, 244))
+    lp, ap = 820, 1000
+    pol = Image.new("RGBA", (lp, ap), (0, 0, 0, 0))
+    d = ImageDraw.Draw(pol)
+    d.rounded_rectangle((0, 0, lp - 1, ap - 1), 22, fill=la.BRANCO)
+    d.rectangle((46, 46, lp - 46, 46 + 728), fill=(250, 247, 249))
+    fo = ImageOps.contain(foto, (700, 700), Image.LANCZOS)
+    pol.paste(fo, (lp // 2 - fo.width // 2, 46 + 364 - fo.height // 2))
+    ft = la.serif(46)
+    y = 806
+    for ln in la.quebrar(d, o["titulo"], ft, lp - 100, max_linhas=2):
+        d.text(((lp - d.textlength(ln, font=ft)) / 2, y), ln, font=ft, fill=la.TEXTO)
+        y += 54
+    sombra = Image.new("RGBA", (lp + 120, ap + 120), (0, 0, 0, 0))
+    ImageDraw.Draw(sombra).rounded_rectangle((60, 70, lp + 60, ap + 70), 22, fill=(90, 40, 80, 70))
+    sombra = sombra.filter(ImageFilter.GaussianBlur(18))
+    sombra.alpha_composite(pol, (60, 60))
+    girada = sombra.rotate(-3, resample=Image.BICUBIC, expand=True)
+    img.paste(girada, ((L - girada.width) // 2, 20), girada)
+    if o.get("desconto"):
+        la.adesivo(img, 880, 300, f"-{o['desconto']}%", "OFF", r=92, angulo=10)
+    _numero_ana(img, 112, 112, pos)
+    d = ImageDraw.Draw(img)
+    fp = la.sans(70, "Black")
+    t = _brl_linha(o)
+    w = d.textlength(t, font=fp)
+    d.rounded_rectangle(((L - w) / 2 - 60, 1060, (L + w) / 2 + 60, 1160), 50, fill=la.ROSA)
+    d.text((L / 2, 1112), t, font=fp, fill=la.TEXTO, anchor="mm")
+    _centro(d, 1180, _info(o), la.sans(30, "Medium"), la.CINZA)
+    la.botao_cta(img, A - 80, L, escala=0.95)
+    return img
+
+
+def _circulo(o, foto, pos):
+    from . import layout_ana as la
+    img = _degrade((240, 250, 245), (212, 238, 224))
+    d = ImageDraw.Draw(img)
+    d.ellipse((140, 120, 940, 920), fill=la.BRANCO, outline=la.ROSA_ESCURA, width=8)
+    fo = ImageOps.contain(foto, (620, 620), Image.LANCZOS)
+    img.paste(fo, (540 - fo.width // 2, 520 - fo.height // 2))
+    _numero_ana(img, 190, 190, pos)
+    if o.get("desconto"):
+        la.adesivo(img, 872, 240, f"-{o['desconto']}%", "OFF", r=92, angulo=10)
+    d = ImageDraw.Draw(img)
+    ft = la.serif(56)
+    y = 945
+    for ln in la.quebrar(d, o["titulo"], ft, L - 150, max_linhas=2):
+        d.text(((L - d.textlength(ln, font=ft)) / 2, y), ln, font=ft, fill=la.TEXTO)
+        y += 62
+    fp = la.sans(66, "Black")
+    t = _brl_linha(o)
+    w = d.textlength(t, font=fp)
+    d.rounded_rectangle(((L - w) / 2 - 56, 1082, (L + w) / 2 + 56, 1176), 47, fill=la.TEXTO)
+    d.text((L / 2, 1130), t, font=fp, fill=la.BRANCO, anchor="mm")
+    _centro(d, 1192, _info(o), la.sans(30, "Medium"), la.CINZA)
+    la.botao_cta(img, A - 62, L, escala=0.85)
+    return img
+
+
+# ================================================================== slides finais
+def final_garimpo(v, n, n_variante):
+    from . import top
+    tipo = "semana" if v % N_FINAL_GARIMPO == 0 else "mes"   # laranja (saída da mina) ou azul (noite)
+    tm = top.TEMAS[tipo]
+    bg, img, m, ih = top._cena(tipo)
+    im = Image.new("RGB", (L, A), tm["fundo"])
+    im.paste(bg.crop((0, 0, L, A)), (0, 0))
+    im.paste(img, (0, 0), m)
+    d = ImageDraw.Draw(im)
+    es = tm["borda"]
+    top._ctext(d, 830, FINAIS_GARIMPO[n_variante % 3], top._f(66), top.AM, 5, es)
+    for i, ln in enumerate([f"Comenta  QUERO + o número (1 a {n})", "que o Zé te manda o link no direct"]):
+        top._ctext(d, 935 + i * 60, ln, top._f(42), top.BR, 3, es)
+    t = f"Segue o @{config.ARROBA.lstrip('@')} pra não perder o próximo"
+    f = top._f(30)
+    w = d.textlength(t, font=f)
+    d.rounded_rectangle(((L - w) / 2 - 30, A - 130, (L + w) / 2 + 30, A - 62), 34, fill=top.AM)
+    top._ctext(d, A - 121, t, f, es)
+    return im
+
+
+PALETAS_ANA = [((0xFF, 0xF8, 0xF4), (0xFB, 0xE3, 0xE8)), ((252, 243, 250), (238, 224, 244)),
+               ((240, 250, 245), (212, 238, 224))]
+
+
+def final_ana(v, n):
+    from . import layout_ana as la
+    topo, base = PALETAS_ANA[v % 3]
+    img = _degrade(topo, base)
+    av = la.avatar(300)
+    if av:
+        img.paste(av, ((L - av.width) // 2, 130), av)
+    d = ImageDraw.Draw(img)
+    _centro(d, 520, FINAIS_ANA[v % 3], la.serif(92), la.TEXTO)
+    f2 = la.sans(44, "Medium")
+    for i, ln in enumerate([f"comenta QUERO + o número (1 a {n})", "que eu te mando o link no direct"]):
+        _centro(d, 660 + i * 62, ln, f2, la.TEXTO)
+    la.botao_cta(img, 930, L, escala=1.1)
+    _centro(d, A - 150, "me segue pra não perder o próximo achadinho", la.sans(34, "Medium"), la.ROSA_ESCURA)
+    return img
+
+
+# ================================================================== título do vídeo de abertura
+def faixa_titulo(destino_png, v, dias_bf=None):
+    """Título por cima do vídeo (PNG transparente): texto e posição (em cima ou embaixo) mudam a cada carrossel;
+    nos 45 dias antes da Black Friday entra a etiqueta com a contagem."""
+    ana = config.PERFIL == "ana"
+    img = Image.new("RGBA", (L, A), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    titulo, sub = (TITULOS_ANA if ana else TITULOS_GARIMPO)[v % N_TITULO]
+    if ana:
+        from . import layout_ana as la
+        f = _ajustar(d, titulo, la.serif, 86, L - 200)
+        fs = la.sans(38, "SemiBold")
+        fundo, cor, cor_sub = (255, 248, 244, 225), la.TEXTO, la.ROSA_ESCURA
+    else:
+        f = _ajustar(d, titulo, lambda t: imagem._fonte(t, "Black"), 86, L - 200)
+        fs = imagem._fonte(38, "SemiBold")
+        fundo, cor, cor_sub = (45, 28, 12, 215), imagem.DOURADO_CLARO, imagem.BRANCO
+    tw = d.textlength(sub, font=fs) + 70
+    w = max(d.textlength(titulo, font=f), tw) + 90
+    x0 = (L - w) / 2
+    em_cima = v % 2 == 0
+    y0 = 56 if em_cima else A - 290
+    d.rounded_rectangle((x0, y0, x0 + w, y0 + 194), 44, fill=fundo)
+    d.text(((L - d.textlength(titulo, font=f)) / 2, y0 + 22), titulo, font=f, fill=cor)
+    xs = (L - tw) / 2
+    d.text((xs, y0 + 122), sub, font=fs, fill=cor_sub)
+    from .carrossel import _seta
+    _seta(d, xs + tw - 50, y0 + 122 + fs.size * 0.62, cor_sub, tam=16)
+    if dias_bf and 0 < dias_bf <= 45:
+        fc = la.sans(34, "SemiBold") if ana else imagem._fonte(34, "SemiBold")
+        t = f"faltam {dias_bf} dias pra Black Friday"
+        wc = d.textlength(t, font=fc) + 60
+        yc = y0 + 212 if em_cima else y0 - 70
+        d.rounded_rectangle(((L - wc) / 2, yc, (L + wc) / 2, yc + 56), 28, fill=(205, 48, 36, 235))
+        d.text((L / 2, yc + 29), t, font=fc, fill=(255, 255, 255), anchor="mm")
+    img.save(destino_png)

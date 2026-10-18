@@ -191,7 +191,7 @@ def responder(api=instagram):
                 print(f"📩 {n} buscas da Ana pedidas no direct.")
         except Exception as e:
             print(f"::warning::Busca da Ana falhou: {e}")
-    tops = posts_top() if config.PERFIL == "garimpo" and api is instagram else {}
+    tops = posts_top() if api is instagram else {}   # Top 5 e carrosséis de achados (os dois perfis)
     if not posts and not tops:
         print("Nenhum post nos últimos 7 dias.")
         return -1
@@ -309,6 +309,10 @@ def so_pediu_link(texto):
 DM_TOP_TODOS = ("Oi! 🤠 Aqui é o Zé Garimpo. Os links do {titulo}:\n\n{lista}\n\n"
                 "Corre que preço de oferta muda rápido! 🛒\n"
                 f"(links de afiliado: você paga o mesmo e ajuda a página {config.NOME_MARCA})")
+if config.PERFIL == "ana":
+    DM_TOP_TODOS = ("Oi! 💚 Aqui é a Ana. Os links do {titulo}:\n\n{lista}\n\n"
+                    "Corre que esses somem rápido! ✨\n"
+                    "(são links de afiliada: você paga o mesmo e me ajuda a continuar caçando achadinhos 💚)")
 
 
 def responder_top(api, minha, tops, respondidos):
@@ -340,7 +344,8 @@ def responder_top(api, minha, tops, respondidos):
                     it = itens[n - 1]
                     titulo = it["nome"][:60]
                     try:
-                        api.resposta_privada_botao(minha["user_id"], cid, DM_BOTAO.format(titulo=titulo, loja="Shopee"),
+                        api.resposta_privada_botao(minha["user_id"], cid,
+                                                   DM_BOTAO.format(titulo=titulo, loja=NOME_LOJA.get(it.get("plataforma") or "shopee", "loja")),
                                                    it["link_afiliado"], TITULO_BOTAO)
                         reg["formato"] = "botao"
                     except Exception as e:
@@ -350,7 +355,8 @@ def responder_top(api, minha, tops, respondidos):
                 else:   # só "QUERO": uma resposta privada por comentário → manda a lista com os 5 links
                     lista = "\n\n".join(f"{num[i]} {it['nome'][:50]} — R$ {it['preco_fmt']}\n{it['link_afiliado']}"
                                          for i, it in enumerate(itens))
-                    titulo = "Top 5 da semana" if info.get("tipo") == "semana" else "Top 5 do mês"
+                    titulo = ("Top 5 da semana" if info.get("tipo") == "semana" else "Top 5 do mês"
+                              if info.get("tipo") == "mes" else "carrossel de achados")
                     api.resposta_privada(minha["user_id"], cid, DM_TOP_TODOS.format(titulo=titulo, lista=lista))
                     reg["formato"] = "lista"
                 reg["dm"] = "ok"

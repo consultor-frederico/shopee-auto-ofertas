@@ -28,7 +28,10 @@ jobs:
           echo "⏰ Agora: $(date +'%d/%m %H:%M') → quarto de hora $HQ (dia $DOW)"
           WFS="responder.yml"                                        # sempre: respostas EU QUERO
           case "$HQ" in 06:45|11:45|17:45) WFS="$WFS garimpo.yml" ;; esac
-          case "$HQ" in 07:45|10:45|12:45|15:45|18:45|20:45) WFS="$WFS postar.yml" ;; esac
+          # 17/10/2026: o feed não tem mais post de oferta solta. Carrossel de achados (abre com o Zé): 3 por dia.
+          case "$HQ" in 07:45|12:45|18:45) WFS="$WFS achados.yml" ;; esac
+          # postar.yml agora só entrega "Você pediu, o Zé achou" e vídeos manuais (não faz nada se não houver)
+          case "$HQ" in 10:45|15:45|20:45) WFS="$WFS postar.yml" ;; esac
           if [ "$Q" = "15" ] && [ $((10#$H)) -ge 8 ] && [ $((10#$H)) -le 22 ]; then WFS="$WFS telegram-ofertas.yml"; fi
           case "$HQ" in 00:15|08:15|12:15|18:15) WFS="$WFS campanhas.yml" ;; esac
           case "$HQ" in 09:00|12:00|18:00|20:30) WFS="$WFS whatsapp.yml" ;; esac   # kit do Canal do WhatsApp no seu Telegram privado
@@ -45,9 +48,10 @@ jobs:
           ANA_LIGADA=1
           ANA=""
           case "$HQ" in 06:30|11:30|17:00) ANA="$ANA garimpo.yml" ;; esac
-          case "$HQ" in 09:15|12:15|14:30|17:30|19:15|21:30) ANA="$ANA postar.yml" ;; esac
+          # 17/10/2026: carrossel de achados que abre com a Ana: 3 por dia (a Ana não tem mais post de oferta solta)
+          case "$HQ" in 09:15|14:30|19:15) ANA="$ANA achados.yml" ;; esac
           if [ "$HQ" = "08:45" ] && [ "$DOW" = "1" ]; then ANA="$ANA token.yml"; fi
-          if [ "$HQ" = "16:00" ]; then ANA="$ANA ze.yml"; fi        # post próprio da Ana: só às terças, quintas e sábados (ANA_DIAS)
+          if [ "$HQ" = "16:00" ]; then ANA="$ANA ze.yml"; fi        # post próprio da Ana: terças, quintas e sábados (ANA_DIAS)
           for WF in $WFS; do
             echo "▶️  $WF"
             gh api -X POST "repos/$REPO/actions/workflows/$WF/dispatches" -f ref=main || echo "::warning::falhou $WF"

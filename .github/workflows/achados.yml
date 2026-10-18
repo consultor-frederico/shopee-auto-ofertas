@@ -1,0 +1,104 @@
+name: 24 - Carrossel de Achados
+run-name: 24 - Carrossel de Achados (${{ inputs.perfil || 'garimpo' }}${{ inputs.so_previa && ' - prévia' || '' }})
+
+# Desde 17/10/2026 o feed não tem mais post de oferta solta: cada post é um carrossel que abre com um vídeo do
+# Zé (Garimpo VIP) ou da Ana, seguido de 3 a 5 produtos e de um slide de chamada. Quem dispara é o relógio (agenda.yml).
+on:
+  workflow_dispatch:
+    inputs:
+      perfil:
+        description: 'Conta do Instagram'
+        type: choice
+        options: [garimpo, ana]
+        default: garimpo
+      so_previa:
+        description: 'Só gerar a prévia (não posta; os slides ficam em data/relatorios/achados)'
+        type: boolean
+        default: false
+
+concurrency:
+  group: grava-repositorio
+  cancel-in-progress: false
+
+jobs:
+  achados:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+    env:
+      PERFIL: ${{ inputs.perfil || 'garimpo' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Prévia (não posta)
+        if: inputs.so_previa
+        env:
+          SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
+          SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
+          AWIN_FEED_URL: ${{ secrets.AWIN_FEED_URL }}
+          AWIN_ATIVO: ${{ vars.AWIN_ATIVO || '1' }}
+        run: python -m src.achados previa
+
+      - name: Preparar o carrossel
+        id: prep
+        if: ${{ !inputs.so_previa }}
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_ACCESS_TOKEN_ANA: ${{ secrets.IG_ACCESS_TOKEN_ANA }}
+          SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
+          SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
+          AWIN_FEED_URL: ${{ secrets.AWIN_FEED_URL }}
+          AWIN_ATIVO: ${{ vars.AWIN_ATIVO || '1' }}
+        run: python -m src.achados preparar
+
+      - name: Enviar mídia ao GitHub Pages
+        if: steps.prep.outputs.tem_post == 'true'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - name: Publicar o site
+        id: deploy
+        if: steps.prep.outputs.tem_post == 'true'
+        uses: actions/deploy-pages@v4
+        continue-on-error: true   # às vezes o GitHub ainda não "enxerga" o pacote recém-enviado
+      - name: Esperar e tentar de novo
+        if: (steps.prep.outputs.tem_post == 'true') && steps.deploy.outcome == 'failure'
+        run: sleep 30
+      - id: deploy2
+        if: (steps.prep.outputs.tem_post == 'true') && steps.deploy.outcome == 'failure'
+        uses: actions/deploy-pages@v4
+
+      - name: Publicar o carrossel no Instagram
+        if: steps.prep.outputs.tem_post == 'true'
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_ACCESS_TOKEN_ANA: ${{ secrets.IG_ACCESS_TOKEN_ANA }}
+          PAGES_URL: ${{ steps.deploy.outputs.page_url || steps.deploy2.outputs.page_url }}
+        run: python -m src.achados publicar
+
+      - name: Salvar
+        if: always() && !inputs.so_previa
+        run: |
+          git config user.name "GarimpoBot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A data
+          git diff --cached --quiet && exit 0
+          git commit -m "🛍️ Carrossel de achados ($PERFIL) $(TZ=America/Sao_Paulo date +'%d/%m/%Y %H:%M')"
+          # outro workflow pode ter salvo junto: tenta de novo até 5 vezes
+          for i in 1 2 3 4 5; do
+            git pull --rebase && git push && break
+            [ $i = 5 ] && exit 1
+            sleep $((i * 5))
+          done
