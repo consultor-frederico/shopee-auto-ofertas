@@ -33,8 +33,8 @@ ARQ = config.PASTA_PERFIL / "ze.json"              # cada conta com o seu rodíz
 ARQ_PROX = config.PASTA_PERFIL / "proximo_ze.json"
 PASTA_SITE = config.RAIZ / "site"
 # dias da semana do post do Zé (0 = segunda ... 6 = domingo); padrão segunda, quarta, sexta e domingo
-# Ana: 3 posts próprios por semana, terça, quinta e sábado (ANA_DIAS; 0 = segunda)
-_DIAS = os.getenv("ANA_DIAS", "1,3,5") if ANA else os.getenv("ZE_DIAS", "0,2,4,6")   # Ana: terça, quinta e sábado
+# Ana: vídeo próprio todo dia (ANA_DIAS; 0 = segunda)
+_DIAS = os.getenv("ANA_DIAS", "0,1,2,3,4,5,6") if ANA else os.getenv("ZE_DIAS", "0,2,4,6")   # Ana: todos os dias
 DIAS_SEMANA = {int(d) for d in _DIAS.split(",") if d.strip().isdigit()}
 NOMES_DIAS = ["segunda", "terça", "quarta", "quinta", "sexta", "sábado", "domingo"]
 FINAL_LIGADO = os.getenv("ZE_NO_FINAL", "1") != "0"

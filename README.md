@@ -103,6 +103,6 @@ Quem comenta `QUERO 2` recebe o link do 2º; só `QUERO` recebe a lista (registr
 
 - Código: `src/achados.py` (fluxo) e `src/achados_artes.py` (artes). A cada carrossel muda o estilo (3 de produto, 2–3 de slide final, 3 títulos no vídeo, topo/rodapé alternando); contador em `data/<perfil>/achados.json`.
 - Posts de produto único (`postar.yml`) só saem para "Você pediu, o Zé achou" e vídeos manuais (`SO_CARROSSEL=0` volta ao modo antigo).
-- Variáveis: `ACHADOS_QTD` (3–5, padrão 4), `ACHADOS_MINIMO` (padrão 3), `ACHADOS_VARIANTE` (força um estilo, p/ prévia), `ZE_SEMPRE_NO_INICIO` (padrão 1: todo Reels abre com o personagem), `ANA_DIAS` (padrão `1,3,5`).
+- Variáveis: `ACHADOS_QTD` (3–5, padrão 4), `ACHADOS_MINIMO` (padrão 3), `ACHADOS_VARIANTE` (força um estilo, p/ prévia), `ZE_SEMPRE_NO_INICIO` (padrão 1: todo Reels abre com o personagem), `ANA_DIAS` (padrão `0,1,2,3,4,5,6`: vídeo próprio da Ana todo dia).
 - Horários (`agenda.yml`): Garimpo 07:45, 12:45, 18:45; Ana 09:15, 14:30, 19:15.
 - Prévia local: `python -m src.achados previa` (gera em `data/relatorios/achados/`).
