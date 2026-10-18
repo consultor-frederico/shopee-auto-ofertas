@@ -48,26 +48,70 @@ PEDIDO = ("🙋 VOCÊ PEDE, O ZÉ ACHA! Comenta aqui embaixo o produto que você
           "(ex.: \"fone bluetooth\", \"air fryer\"). O Zé garimpa, posta o achado marcando você "
           "e ainda manda o link no seu direct! 👇")
 LEGENDAS = [
-    "⛏️ O Zé Garimpo não para! Todo dia ele cava a Shopee e o AliExpress atrás dos achados "
-    "que valem a pena, para você não cair em furada. 💎",
-    "🤠 Quem tem o Zé Garimpo do lado não paga caro! Ele confere preço, nota e vendas antes "
-    "de mostrar qualquer produto. ✨",
-    "💰 Achadinho bom é achadinho garimpado! O Zé passa o dia peneirando ofertas e só "
-    "traz o que vale ouro. 🏆",
-    "✨ Mais um dia de garimpo! O Zé Garimpo encontra os achados e você só escolhe. 🛒",
+    "🤠 Você sabe quantos achados o Zé descartou hoje pra te mostrar só os que valem? "
+    "Ele peneira a Shopee e o AliExpress todo dia. Segue o Zé pra ver o que sobrou de ouro! ⛏️💎",
+    "💰 Achadinho bom é achadinho garimpado! O Zé confere preço, nota e vendas antes de mostrar "
+    "qualquer coisa. Segue a página pra não perder nenhum. ✨",
+    "⛏️ Mais um dia de garimpo! O Zé cava, você escolhe. Segue o @garimpovip4 pra receber os achados "
+    "antes de acabarem. 🛒",
+    "🏆 Aqui só entra o que passou pela peneira do Zé: nota alta, vendas e preço bom. "
+    "Segue pra ver o próximo achado! 💎",
 ]
+# Contagem regressiva para a Black Friday (entra sozinha nos 45 dias antes)
+LEGENDAS_BF = [
+    "⏳ Faltam {dias} dias pra Black Friday! O Zé já está de olho nas ofertas e vai garimpar o que vale. "
+    "Segue pra não perder! ⛏️",
+    "🔥 Black Friday chegando: faltam {dias} dias. O Zé separa o ouro e deixa a furada de lado. "
+    "Segue a página pra ver primeiro! 💎",
+    "🤠 {dias} dias pra Black Friday e o Zé já está cavando! Segue e comenta o que você quer comprar "
+    "que ele procura pra você. 🛒",
+]
+LEGENDAS_BF_HOJE = ["🔥 É HOJE! Black Friday! O Zé está garimpando as melhores ofertas. "
+                    "Fica de olho nos posts e no direct! ⛏️💎"]
 HASHTAGS = "#zegarimpo #garimpovip #achadinhos #achadinhosshopee #achadosdashopee"
 
 # Posts próprios da Ana (sem oferta): tom de amiga, sem prometer teste de produto
 LEGENDAS_ANA = [
     "💚 Oi, gente! Aqui é a Ana. Todo dia eu caço achadinhos de beleza, moda, autocuidado e casa "
-    "pra você não precisar ficar horas procurando. ✨",
+    "pra você não precisar ficar horas procurando. Me segue pra ver o que eu achei! ✨",
     "☕ Pausa pro cafezinho e já volto com mais achados! Me segue pra não perder nenhum. 💚",
-    "🛍️ Achadinho bom é aquele que cabe no bolso e deixa o dia mais gostoso. Bora caçar achadinho juntas? ✨",
-    "✨ Me conta aqui nos comentários: que tipo de achadinho você quer ver mais por aqui? 💬",
+    "🛍️ Achadinho bom é aquele que cabe no bolso e deixa o dia mais gostoso. Bora caçar achadinho juntas? "
+    "Me segue e vem comigo! ✨",
+    "✨ Me conta aqui nos comentários: que tipo de achadinho você quer ver mais por aqui? "
+    "Eu leio tudo e caço pra você! 💬",
 ]
+LEGENDAS_ANA_BF = [
+    "⏳ Faltam {dias} dias pra Black Friday! Já estou de olho nos achadinhos de beleza, moda e casa. "
+    "Me segue pra ver primeiro! 💚",
+    "🔥 {dias} dias pra Black Friday! Me conta nos comentários o que você quer comprar que eu procuro pra você. ✨",
+    "💚 Black Friday chegando, faltam {dias} dias. Eu separo os achados que valem e te mostro por aqui. "
+    "Me segue pra não perder! 🛍️",
+]
+LEGENDAS_ANA_BF_HOJE = ["🔥 É HOJE! Black Friday! Estou caçando os melhores achadinhos pra você. "
+                        "Fica de olho nos posts e no direct! 💚"]
 PEDIDO_ANA = "💬 Comenta o que você mais gosta de ver: beleza, moda, autocuidado ou casa? Eu leio tudo! 💚"
 HASHTAGS_ANA = "#ananovoachados #achadinhosfemininos #autocuidado #achadinhos #achadosdashopee"
+
+
+def dias_para_black_friday(hoje=None):
+    """Dias até a Black Friday (sexta depois da 4ª quinta de novembro). Negativo se já passou este ano."""
+    hoje = (hoje or _agora()).date()
+    nov1 = hoje.replace(month=11, day=1)
+    quinta4 = nov1 + timedelta(days=(3 - nov1.weekday()) % 7 + 21)
+    return ((quinta4 + timedelta(days=1)) - hoje).days
+
+
+def _legenda_propria(n):
+    """Legenda do post próprio: nos 45 dias antes da Black Friday entra a contagem regressiva."""
+    dias = dias_para_black_friday()
+    if 0 <= dias <= 45:
+        if dias == 0:
+            lista = LEGENDAS_ANA_BF_HOJE if ANA else LEGENDAS_BF_HOJE
+        else:
+            lista = LEGENDAS_ANA_BF if ANA else LEGENDAS_BF
+        return lista[n % len(lista)].format(dias=dias)
+    lista = LEGENDAS_ANA if ANA else LEGENDAS
+    return lista[n % len(lista)]
 
 
 def _ffmpeg():
@@ -333,9 +377,9 @@ def preparar():
         from . import busca_reels
         leg = busca_reels.LEGENDAS[0] + "\n\n" + busca_reels.HASHTAGS
     elif ANA:
-        leg = LEGENDAS_ANA[n % len(LEGENDAS_ANA)] + "\n\n" + PEDIDO_ANA + "\n\n" + HASHTAGS_ANA
+        leg = _legenda_propria(n) + "\n\n" + PEDIDO_ANA + "\n\n" + HASHTAGS_ANA
     else:
-        leg = LEGENDAS[n % len(LEGENDAS)] + "\n\n" + PEDIDO + "\n\n" + HASHTAGS
+        leg = _legenda_propria(n) + "\n\n" + PEDIDO + "\n\n" + HASHTAGS
     ARQ_PROX.write_text(json.dumps({"arquivo": f"midia/{nome}", "video": video.name, "legenda": leg},
                                    ensure_ascii=False), encoding="utf-8")
     print(f"🎬 Post {'da Ana' if ANA else 'do Zé'} preparado: {video.name}")

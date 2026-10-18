@@ -81,6 +81,8 @@ Terça e sexta às 19:37, um post no Instagram com arte própria chamando para o
 - Gatilhos: "eu quero", "quero", "link", "manda".
 - Manda o link na resposta privada (direct) e responde publicamente "te mandei no direct".
 - Registro em `data/respondidos.json` para não repetir.
+- **Respostas humanas (17/10/2026):** o Zé e a Ana respondem cada vez de um jeito (várias versões de direct e de comentário público, às vezes chamando a pessoa pelo @). O robô também espera de 1 a 6 minutos antes de responder cada comentário (tempo fixo por comentário; o comentário novo fica para a rodada seguinte). Para mudar: variável `RESPOSTA_ESPERA_MAX_MIN` (0 desliga). Os começos das mensagens do robô precisam estar em `MARCAS_ROBO` (`src/busca_ze.py`), senão a Busca do Zé acha que foi o Fred que escreveu.
+- **Legendas dos posts próprios do Zé e da Ana:** abrem com gancho e pedem para seguir; nos 45 dias antes da Black Friday entra a contagem regressiva ("faltam N dias"), calculada sozinha (`ze.dias_para_black_friday`).
 - **Instantâneo:** o webhook do Instagram chama o Cloudflare Worker (`webhook/worker.js`), que dispara esta rotina na hora (~30–60 s). A cada 15 min ela também roda como reserva.
 
 ## Configuração (uma vez)
