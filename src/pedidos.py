@@ -150,10 +150,11 @@ def _refinar(reg):
 
 
 def _aceitavel(o):
+    from .garimpar import internacional
     nome = o["nome"].lower()
     return (o["link_afiliado"] and o["imagem"] and o["nota"] >= 4.5 and o["vendas"] >= 50
             and o["comissao"] >= 1 and 0 < o["preco"] <= config.PRECO_MAXIMO
-            and not any(p in nome for p in config.PALAVRAS_PROIBIDAS))
+            and not any(p in nome for p in config.PALAVRAS_PROIBIDAS) and not internacional(o))
 
 
 def _melhor(nos, termo, fila):

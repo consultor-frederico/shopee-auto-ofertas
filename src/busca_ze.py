@@ -164,6 +164,9 @@ def _aceitavel(o, rigoroso=True):
     if not (o["link_afiliado"] and o["imagem"] and 0 < o["preco"] and (not PRECO_MAX or o["preco"] <= PRECO_MAX)
             and not any(p in nome for p in config.PALAVRAS_PROIBIDAS)):
         return False
+    from .garimpar import internacional
+    if internacional(o):
+        return False
     if rigoroso:
         return o["nota"] >= 4.5 and o["vendas"] >= 50
     return o["nota"] >= 4.3 and o["vendas"] >= 10
