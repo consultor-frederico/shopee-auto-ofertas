@@ -57,6 +57,7 @@ def candidatas(fila):
     limite = agora() - timedelta(days=DIAS_CANAL)
     ofs = [o for o in fila["ofertas"].values()
            if o.get("status") in ("pendente", "postado") and not o.get("whatsapp")
+           and (o.get("plataforma") or "shopee") == "shopee"   # por enquanto, o canal só tem Shopee
            and o.get("link_afiliado") and o.get("titulo") and o.get("imagem") and not o.get("video_manual")
            and datetime.strptime(o["criado_em"], FMT).replace(tzinfo=BRT) >= limite]
     ofs.sort(key=lambda o: (o["criado_em"], o.get("pontos", 0)), reverse=True)
