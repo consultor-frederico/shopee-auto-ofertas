@@ -20,7 +20,7 @@ from datetime import datetime, timedelta, timezone
 
 import requests
 
-from . import config, instagram, telegram
+from . import config, metricas, telegram
 
 DIAS = 7
 BRT = timezone(timedelta(hours=-3))
@@ -89,12 +89,15 @@ def checar_codigo():
     return bom, saida.getvalue().strip()[-500:]
 
 
-def checar_instagram():
+def checar_instagram(arroba, segredo):
+    token = os.getenv(segredo, "").strip()
+    if not token:
+        return False, f"⏸️ {arroba}: segredo {segredo} não configurado"
     try:
-        c = instagram._req("GET", "me", params={"fields": "username,followers_count,media_count"})
-        midias = instagram._req("GET", "me/media", params={"fields": "timestamp", "limit": 1}).get("data") or []
+        c = metricas._get(token, "me", {"fields": "username,followers_count,media_count"})
+        midias = metricas._get(token, "me/media", {"fields": "timestamp", "limit": 1}).get("data") or []
     except Exception as e:
-        return False, f"❌ Instagram com problema: {html.escape(str(e))[:300]}"
+        return False, f"❌ {arroba} com problema: {html.escape(str(e))[:300]}"
     texto = (f"@{c.get('username')}: {c.get('followers_count', '?')} seguidores, "
              f"{c.get('media_count', '?')} posts")
     if not midias:
@@ -119,7 +122,7 @@ def checar_fila():
 
 
 def montar():
-    linhas = [f"🩺 <b>Revisão semanal do Garimpo VIP</b> — {datetime.now(BRT):%d/%m/%Y %H:%M}", ""]
+    linhas = [f"🩺 <b>Status do robô (Garimpo VIP e Ana)</b> — {datetime.now(BRT):%d/%m/%Y %H:%M}", ""]
     tudo_ok = True
     try:
         problemas, ok, total = checar_workflows()
@@ -134,7 +137,11 @@ def montar():
     bom, erro = checar_codigo()
     tudo_ok &= bool(bom)
     linhas.append("✅ Código compila sem erros" if bom else f"❌ Código com erro:\n<code>{html.escape(erro)}</code>")
-    for ok_parte, linha in (checar_instagram(), checar_fila()):
+    for arroba, segredo in metricas.CONTAS:
+        ok_parte, linha = checar_instagram(arroba, segredo)
+        tudo_ok &= ok_parte
+        linhas.append(linha)
+    for ok_parte, linha in (checar_fila(),):
         tudo_ok &= ok_parte
         linhas.append(linha)
     linhas += ["", "👍 Tudo certo, pode deixar rodar." if tudo_ok else "👀 Tem coisa para olhar — abre uma conversa com o Claude e cola esta mensagem."]
