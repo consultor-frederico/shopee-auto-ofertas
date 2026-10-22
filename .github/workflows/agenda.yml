@@ -60,6 +60,8 @@ jobs:
             "2026-10-27 10:00") MANUAL="ze3:garimpo" ;;
             "2026-10-27 10:15") MANUAL="ana3:ana" ;;
           esac
+          # Status do robô todo dia às 08:00 (Brasília), mandado no seu Telegram privado
+          if [ "$HQ" = "08:00" ]; then WFS="$WFS revisao.yml"; fi
           for M in $MANUAL; do
             gh api -X POST "repos/$REPO/actions/workflows/publicar-manual.yml/dispatches" -f ref=main -f "inputs[nome]=${M%%:*}" -f "inputs[perfil]=${M##*:}" || echo "::warning::falhou post ${M%%:*}"
           done
