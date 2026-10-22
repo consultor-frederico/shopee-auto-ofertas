@@ -1,0 +1,77 @@
+"""Aprovação pelo Telegram privado: você responde "ok <id>" no bot e a oferta fica aprovada.
+
+Só obedece mensagens vindas do SEU chat privado (TELEGRAM_CHAT_PRIVADO), nunca de outro chat.
+Esta etapa só marca a oferta como aprovada e responde com a confirmação. A postagem no
+Instagram vem numa etapa seguinte (a arte precisa estar publicada no site antes).
+
+Uso: python -m src.aprovacao
+Segredos: TELEGRAM_BOT_TOKEN e TELEGRAM_CHAT_PRIVADO.
+"""
+import json
+import os
+import re
+import sys
+
+from . import config, telegram
+from .garimpar import agora, carregar_fila, salvar_fila
+
+ARQ_ESTADO = config.PASTA_PERFIL / "aprovacao.json"   # último update lido, para não repetir comandos
+RE_OK = re.compile(r"^\s*ok\s+(\S+)\s*$", re.I)
+
+
+def _estado():
+    if ARQ_ESTADO.exists():
+        return json.loads(ARQ_ESTADO.read_text(encoding="utf-8"))
+    return {"ultimo_update": 0}
+
+
+def _salvar_estado(est):
+    ARQ_ESTADO.parent.mkdir(parents=True, exist_ok=True)
+    ARQ_ESTADO.write_text(json.dumps(est, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def _responder(chat, texto):
+    telegram._api("sendMessage", data={"chat_id": chat, "text": texto, "disable_web_page_preview": "true"})
+
+
+def rodar():
+    chat = os.getenv("TELEGRAM_CHAT_PRIVADO", "").strip()
+    if not os.getenv("TELEGRAM_BOT_TOKEN", "").strip() or not chat:
+        print("⏸️  Faltam TELEGRAM_BOT_TOKEN ou TELEGRAM_CHAT_PRIVADO — aprovação em espera.")
+        return
+    est = _estado()
+    ups = telegram._api("getUpdates", data={"offset": est["ultimo_update"] + 1, "limit": 100})
+    if not ups:
+        print("Nenhuma mensagem nova.")
+        return
+    fila = carregar_fila()
+    mudou = False
+    for u in ups:
+        est["ultimo_update"] = max(est["ultimo_update"], u["update_id"])
+        msg = u.get("message") or {}
+        # só o seu chat privado manda comando; qualquer outro é ignorado
+        if str((msg.get("chat") or {}).get("id")) != chat:
+            continue
+        m = RE_OK.match(msg.get("text") or "")
+        if not m:
+            continue
+        oid = m.group(1)
+        oferta = fila["ofertas"].get(oid)
+        if not oferta:
+            _responder(chat, f"❓ Não achei a oferta {oid} na fila. Confira o número e mande de novo.")
+            continue
+        oferta["aprovado_por_voce"] = agora().strftime("%d/%m/%Y %H:%M")
+        mudou = True
+        _responder(chat, f"✅ Aprovado: {oferta.get('titulo', oid)}. A postagem no Instagram entra na próxima etapa.")
+        print(f"✅ Aprovada: {oid} — {oferta.get('titulo', '')}")
+    if mudou:
+        salvar_fila(fila)
+    _salvar_estado(est)
+
+
+if __name__ == "__main__":
+    try:
+        rodar()
+    except Exception as e:
+        print(f"::error::{e}")
+        sys.exit(1)
