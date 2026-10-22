@@ -16,7 +16,7 @@ on:
         default: garimpo
 
 concurrency:
-  group: grava-repositorio
+  group: publicar-manual
   cancel-in-progress: false
 
 permissions:
