@@ -169,6 +169,8 @@ def gravar_faixa(video, saida):
 def _musica(video, saida):
     """Música das outras postagens do Zé (assets/musicas/) por baixo da voz, que abaixa quando ele fala."""
     from .ze import MUSICA_LIGADA, _com_musica, _duracao, escolher_musicas
+    if "comtrilha" in Path(video).name:   # vídeo com trilha própria: não põe música
+        return saida
     musica = escolher_musicas({"id": Path(video).name}, _duracao(saida)) if MUSICA_LIGADA else []
     if not musica:
         return saida

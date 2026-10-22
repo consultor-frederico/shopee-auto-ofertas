@@ -365,8 +365,8 @@ def preparar():
         busca_reels.gravar_faixa(video, pasta / nome)   # já põe a música
     else:
         shutil.copy(video, pasta / nome)
-    com_trilha = ANA and "comtrilha" in video.name   # ana_nome_comtrilha.mp4 já tem trilha própria: não põe música
-    if ANA and MUSICA_LIGADA and not busca and not com_trilha:   # os vídeos da Ana vêm só com a voz: põe musiquinha (mais baixa quando ela fala)
+    com_trilha = "comtrilha" in video.name   # *_comtrilha.mp4 já tem trilha própria: não põe música
+    if MUSICA_LIGADA and not busca and not com_trilha:   # sem trilha própria: põe musiquinha (mais baixa quando ela fala), Zé e Ana
         musicas = escolher_musicas({"id": video.name}, _duracao(pasta / nome))
         if musicas:
             try:
