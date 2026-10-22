@@ -7,11 +7,11 @@ seu Telegram PRIVADO. Nada é publicado aqui; a postagem depende do seu "ok".
 Uso: LINK="https://shopee..." python -m src.link_manual
 Segredos: SHOPEE_APP_ID, SHOPEE_APP_SECRET, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_PRIVADO.
 """
-import html
 import os
 import sys
+import tempfile
 
-from . import config, garimpar, shopee, telegram, video_manual, whatsapp_kit
+from . import config, garimpar, imagem, shopee, telegram, video_manual, whatsapp_kit
 from .garimpar import agora, carregar_fila, salvar_fila
 
 
@@ -20,30 +20,21 @@ def _responder(chat, texto):
 
 
 def _mandar_oferta(chat, o):
-    """Foto do produto (se houver) com o link e o comando 'ok <id>' tocável (toque para copiar)."""
-    nome = html.escape(o["nome"])
-    texto = (
-        f"🛍️ <b>Link manual pronto</b>\n\n"
-        f"{nome}\n"
-        f"💰 R$ {o['preco_fmt']} · ⭐ {o['nota']} · {o['vendas']}+ vendidos\n"
-        f"🏬 {html.escape(o['loja'])}\n\n"
-        f"🔗 Seu link de afiliado:\n{html.escape(o['link_afiliado'])}"
-    )
+    """Arte completa do produto com o texto padrão (copiável) e o botão de aprovação, numa mensagem."""
+    texto = whatsapp_kit.texto_whatsapp(o)[:1000]   # legenda do Telegram aceita até 1024 caracteres
     teclado = '{"inline_keyboard":[[{"text":"✅ Aprovar","callback_data":"ok:%s"}]]}' % o["id"]
-    if o.get("imagem"):
-        try:
-            telegram._api("sendPhoto", data={"chat_id": chat, "photo": o["imagem"], "caption": texto,
-                                             "parse_mode": "HTML", "reply_markup": teclado})
-            return
-        except Exception as e:
-            print(f"::warning::Foto não enviada ({e}); mandando só o texto.")
-    telegram._api("sendMessage", data={"chat_id": chat, "text": texto, "parse_mode": "HTML",
-                                       "disable_web_page_preview": "true", "reply_markup": teclado})
-    # texto pronto para copiar e colar no WhatsApp: preço que pode mudar + aviso de link de afiliado
-    telegram._api("sendMessage", data={"chat_id": chat, "text": "📋 Texto pronto para o WhatsApp:",
-                                       "disable_web_page_preview": "true"})
-    telegram._api("sendMessage", data={"chat_id": chat, "text": whatsapp_kit.texto_whatsapp(o),
-                                       "disable_web_page_preview": "true"})
+    try:
+        pasta = tempfile.mkdtemp()
+        arte = os.path.join(pasta, f"{o['id']}.jpg")
+        imagem.gerar(o, arte, foto=imagem._baixar_foto(o["imagem"]))
+        with open(arte, "rb") as f:
+            telegram._api("sendPhoto", data={"chat_id": chat, "caption": texto, "reply_markup": teclado},
+                          files={"photo": f})
+        return
+    except Exception as e:
+        print(f"::warning::Arte não gerada ({e}); mandando o texto sem arte.")
+    telegram._api("sendMessage", data={"chat_id": chat, "text": texto, "disable_web_page_preview": "true",
+                                       "reply_markup": teclado})
 
 
 def rodar():
