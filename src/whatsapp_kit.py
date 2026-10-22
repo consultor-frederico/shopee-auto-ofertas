@@ -138,6 +138,18 @@ def rodar():
         descobrir_chat()
         return
     fila = carregar_fila()
+    forcada = (os.getenv("WHATSAPP_OFERTA") or "").strip()
+    if forcada:   # reenvio manual de uma oferta específica, no formato atual
+        o = fila["ofertas"].get(forcada)
+        if not o:
+            print(f"::warning::Oferta {forcada} não encontrada na fila.")
+            return
+        pasta = Path(tempfile.mkdtemp())
+        arte = pasta / f"{o['id']}.jpg"
+        imagem.gerar(o, arte, foto=imagem._baixar_foto(o["imagem"]))
+        enviar(o, arte)
+        print(f"📲 Reenviada: {o['id']} — {o.get('titulo', '')}")
+        return
     pool = candidatas(fila)
     if not pool:
         print("Nenhuma oferta nova para o WhatsApp.")

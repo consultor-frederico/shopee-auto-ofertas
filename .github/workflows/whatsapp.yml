@@ -3,6 +3,9 @@ name: 17 - Kit do Canal do WhatsApp
 on:
   workflow_dispatch:
     inputs:
+      oferta:
+        description: 'Reenviar uma oferta específica (número da fila)'
+        required: false
       teste:
         description: 'Teste: envia 1 oferta sem a análise do canal'
         type: boolean
@@ -35,6 +38,7 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_PRIVADO: ${{ secrets.TELEGRAM_CHAT_PRIVADO }}
           WHATSAPP_TESTE: ${{ inputs.teste && '1' || '0' }}
+          WHATSAPP_OFERTA: ${{ inputs.oferta }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
           SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
