@@ -28,6 +28,7 @@ O workflow "9 - Post do Zé Garimpo" (todo dia às 13:30, só posta às segundas
 destes como Reels no Instagram, story, Facebook e YouTube Shorts. Vídeo que nunca saiu vai primeiro;
 depois volta o que está há mais tempo sem sair. O post é apagado com 15 dias, junto das ofertas.
 Registro em `data/ze.json`. Para incluir um vídeo novo, coloque `ze_nome.mp4` (8 s, com música) aqui.
+Vídeo novo sem trilha própria: nomeie `ze_nome_semtrilha.mp4` e o robô põe a música. Com trilha própria: `ze_nome_comtrilha.mp4` (o robô não põe música). Os antigos já têm música gravada e ficam como estão.
 
 | Arquivo | Cena | Música |
 |---|---|---|
