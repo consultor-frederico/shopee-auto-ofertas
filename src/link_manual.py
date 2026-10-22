@@ -11,7 +11,7 @@ import html
 import os
 import sys
 
-from . import config, garimpar, shopee, telegram, video_manual
+from . import config, garimpar, shopee, telegram, video_manual, whatsapp_kit
 from .garimpar import agora, carregar_fila, salvar_fila
 
 
@@ -27,8 +27,7 @@ def _mandar_oferta(chat, o):
         f"{nome}\n"
         f"💰 R$ {o['preco_fmt']} · ⭐ {o['nota']} · {o['vendas']}+ vendidos\n"
         f"🏬 {html.escape(o['loja'])}\n\n"
-        f"🔗 Seu link de afiliado:\n{html.escape(o['link_afiliado'])}\n\n"
-        f"Para aprovar, toque e cole: <code>ok {o['id']}</code>"
+        f"🔗 Seu link de afiliado:\n{html.escape(o['link_afiliado'])}"
     )
     teclado = '{"inline_keyboard":[[{"text":"✅ Aprovar","callback_data":"ok:%s"}]]}' % o["id"]
     if o.get("imagem"):
@@ -40,6 +39,11 @@ def _mandar_oferta(chat, o):
             print(f"::warning::Foto não enviada ({e}); mandando só o texto.")
     telegram._api("sendMessage", data={"chat_id": chat, "text": texto, "parse_mode": "HTML",
                                        "disable_web_page_preview": "true", "reply_markup": teclado})
+    # texto pronto para copiar e colar no WhatsApp: preço que pode mudar + aviso de link de afiliado
+    telegram._api("sendMessage", data={"chat_id": chat, "text": "📋 Texto pronto para o WhatsApp:",
+                                       "disable_web_page_preview": "true"})
+    telegram._api("sendMessage", data={"chat_id": chat, "text": whatsapp_kit.texto_whatsapp(o),
+                                       "disable_web_page_preview": "true"})
 
 
 def rodar():
