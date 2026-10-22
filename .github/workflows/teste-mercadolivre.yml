@@ -1,0 +1,27 @@
+name: 24 - Testar busca do Mercado Livre
+
+on:
+  workflow_dispatch:
+    inputs:
+      termo:
+        description: 'Termo da busca'
+        default: 'lego'
+
+jobs:
+  testar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+      - name: Testar busca do Mercado Livre
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_PRIVADO: ${{ secrets.TELEGRAM_CHAT_PRIVADO }}
+        run: python -m src.teste_mercadolivre "${{ inputs.termo }}"
