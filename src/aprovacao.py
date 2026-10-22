@@ -48,14 +48,29 @@ def rodar():
     mudou = False
     for u in ups:
         est["ultimo_update"] = max(est["ultimo_update"], u["update_id"])
-        msg = u.get("message") or {}
-        # só o seu chat privado manda comando; qualquer outro é ignorado
-        if str((msg.get("chat") or {}).get("id")) != chat:
+        # toque no botão "✅ Aprovar" (callback) ou texto "ok <id>"
+        cq = u.get("callback_query")
+        if cq:
+            origem = str(((cq.get("message") or {}).get("chat") or {}).get("id"))
+            if origem != chat:
+                continue
+            dado = cq.get("data") or ""
+            oid = dado[3:] if dado.startswith("ok:") else None
+            try:
+                telegram._api("answerCallbackQuery", data={"callback_query_id": cq["id"]})
+            except Exception:
+                pass
+        else:
+            msg = u.get("message") or {}
+            # só o seu chat privado manda comando; qualquer outro é ignorado
+            if str((msg.get("chat") or {}).get("id")) != chat:
+                continue
+            m = RE_OK.match(msg.get("text") or "")
+            if not m:
+                continue
+            oid = m.group(1)
+        if not oid:
             continue
-        m = RE_OK.match(msg.get("text") or "")
-        if not m:
-            continue
-        oid = m.group(1)
         oferta = fila["ofertas"].get(oid)
         if not oferta:
             _responder(chat, f"❓ Não achei a oferta {oid} na fila. Confira o número e mande de novo.")

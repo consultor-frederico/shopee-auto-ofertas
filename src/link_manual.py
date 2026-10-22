@@ -30,15 +30,16 @@ def _mandar_oferta(chat, o):
         f"🔗 Seu link de afiliado:\n{html.escape(o['link_afiliado'])}\n\n"
         f"Para aprovar, toque e cole: <code>ok {o['id']}</code>"
     )
+    teclado = '{"inline_keyboard":[[{"text":"✅ Aprovar","callback_data":"ok:%s"}]]}' % o["id"]
     if o.get("imagem"):
         try:
             telegram._api("sendPhoto", data={"chat_id": chat, "photo": o["imagem"], "caption": texto,
-                                             "parse_mode": "HTML"})
+                                             "parse_mode": "HTML", "reply_markup": teclado})
             return
         except Exception as e:
             print(f"::warning::Foto não enviada ({e}); mandando só o texto.")
     telegram._api("sendMessage", data={"chat_id": chat, "text": texto, "parse_mode": "HTML",
-                                       "disable_web_page_preview": "true"})
+                                       "disable_web_page_preview": "true", "reply_markup": teclado})
 
 
 def rodar():
