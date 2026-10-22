@@ -7,6 +7,7 @@ Segredos: TELEGRAM_BOT_TOKEN (o mesmo bot do canal) e TELEGRAM_CHAT_PRIVADO (o s
 Se TELEGRAM_CHAT_PRIVADO ainda não existir, a rodada mostra no log o número do seu chat
 (mande qualquer mensagem para o bot antes).
 """
+import json
 import os
 import sys
 import tempfile
@@ -118,20 +119,14 @@ def texto_whatsapp(o):
 
 
 def enviar(o, arte):
+    """Uma mensagem só: a arte com a oferta na legenda e o botão ✅ Aprovar embaixo."""
     chat = chat_privado()
-    texto = texto_whatsapp(o)
+    texto = texto_whatsapp(o)[:1000]   # legenda do Telegram aceita até 1024 caracteres
+    aprovar = {"text": "✅ Aprovar", "callback_data": "ok:%s" % o["id"]}
     with open(arte, "rb") as f:
-        teclado = '{"inline_keyboard":[[{"text":"✅ Aprovar","callback_data":"ok:%s"}]]}' % o["id"]
-        telegram._api("sendPhoto", data={"chat_id": chat, "caption": f"Nº {o['id']}", "reply_markup": teclado},
+        telegram._api("sendPhoto", data={"chat_id": chat, "caption": texto,
+                                         "reply_markup": json.dumps({"inline_keyboard": [[aprovar]]})},
                       files={"photo": f})
-    botao = '{"inline_keyboard":[[{"text":"📲 Mandar no WhatsApp","url":"%s"}]]}' % (
-        "https://wa.me/?text=" + quote(texto))
-    try:
-        telegram._api("sendMessage", data={"chat_id": chat, "text": texto, "reply_markup": botao,
-                                           "disable_web_page_preview": "true"})
-    except Exception as e:   # texto longo demais para o botão: manda só o texto para copiar
-        print(f"⚠️  Sem botão do WhatsApp ({e}); enviando só o texto.")
-        telegram._api("sendMessage", data={"chat_id": chat, "text": texto, "disable_web_page_preview": "true"})
 
 
 def rodar():
