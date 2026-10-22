@@ -52,6 +52,17 @@ jobs:
           case "$HQ" in 09:15|14:30|19:15) ANA="$ANA achados.yml" ;; esac
           if [ "$HQ" = "08:45" ] && [ "$DOW" = "1" ]; then ANA="$ANA token.yml"; fi
           if [ "$HQ" = "16:00" ]; then ANA="$ANA ze.yml"; fi        # post próprio da Ana: terças, quintas e sábados (ANA_DIAS)
+          # Posts de marca aprovados pelo Fred (manuais/posts.json), dia e horário combinados (Brasília)
+          DATA=$(date +%F); MANUAL=""
+          case "$DATA $HQ" in
+            "2026-10-24 10:00") MANUAL="ze2:garimpo" ;;
+            "2026-10-25 10:00") MANUAL="ana2:ana" ;;
+            "2026-10-27 10:00") MANUAL="ze3:garimpo" ;;
+            "2026-10-27 10:15") MANUAL="ana3:ana" ;;
+          esac
+          for M in $MANUAL; do
+            gh api -X POST "repos/$REPO/actions/workflows/publicar-manual.yml/dispatches" -f ref=main -f "inputs[nome]=${M%%:*}" -f "inputs[perfil]=${M##*:}" || echo "::warning::falhou post ${M%%:*}"
+          done
           for WF in $WFS; do
             echo "▶️  $WF"
             gh api -X POST "repos/$REPO/actions/workflows/$WF/dispatches" -f ref=main || echo "::warning::falhou $WF"

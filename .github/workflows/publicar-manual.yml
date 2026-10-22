@@ -1,0 +1,79 @@
+name: 26 - Publicar post aprovado (manual)
+
+# Publica um dos posts de marca aprovados pelo Fred (manuais/posts.json). Disparado pelo relógio
+# (agenda.yml) no dia e horário combinados, ou à mão pelo workflow_dispatch.
+on:
+  workflow_dispatch:
+    inputs:
+      nome:
+        description: 'Nome do post (ex.: ze1, ana2)'
+        type: string
+        required: true
+      perfil:
+        description: 'Conta do Instagram'
+        type: choice
+        options: [garimpo, ana]
+        default: garimpo
+
+concurrency:
+  group: grava-repositorio
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Preparar a arte no site
+        run: |
+          mkdir -p site/manuais
+          cp manuais/*.png site/manuais/
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - id: deploy
+        uses: actions/deploy-pages@v4
+
+      - name: Publicar no Instagram
+        env:
+          NOME: ${{ inputs.nome }}
+          PERFIL: ${{ inputs.perfil }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_ACCESS_TOKEN_ANA: ${{ secrets.IG_ACCESS_TOKEN_ANA }}
+          PAGES_URL: ${{ steps.deploy.outputs.page_url }}
+        run: python -m src.publicar_manual "$NOME"
+
+      - name: Salvar registro
+        if: always()
+        run: |
+          git config user.name "GarimpoBot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A data
+          git diff --cached --quiet && exit 0
+          git commit -m "📌 Post de marca ($NOME) $(TZ=America/Sao_Paulo date +'%d/%m/%Y %H:%M')"
+          for i in 1 2 3 4 5; do
+            git pull --rebase -q && git push -q && break
+            sleep 5
+          done
+        env:
+          NOME: ${{ inputs.nome }}
