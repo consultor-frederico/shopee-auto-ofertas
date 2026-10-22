@@ -10,7 +10,7 @@ import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from . import config, instagram, postar
+from . import config, instagram, postar, telegram
 
 RAIZ = Path(__file__).resolve().parent.parent
 POSTS = RAIZ / "manuais" / "posts.json"
@@ -25,11 +25,26 @@ def _ler(caminho, padrao):
         return padrao
 
 
-def rodar(nome):
+def enviar_whatsapp(nome, p):
+    """Manda a arte e a legenda no seu Telegram privado, para você postar no grupo do WhatsApp."""
+    if p["perfil"] != "garimpo":
+        raise SystemExit("Só o Garimpo VIP vai para o WhatsApp. Post da Ana não sai daqui.")
+    base = (os.getenv("PAGES_URL") or "").rstrip("/")
+    if not base:
+        raise RuntimeError("PAGES_URL ausente: o deploy do GitHub Pages não rodou.")
+    url = f"{base}/manuais/{nome}.png"
+    postar._esperar_url(url)
+    telegram._api("sendPhoto", data={"chat_id": os.getenv("TELEGRAM_CHAT_PRIVADO", "").strip(), "photo": url, "caption": p["legenda"]})
+    print(f"📲 {nome} enviado no seu Telegram privado para postar no WhatsApp")
+
+
+def rodar(nome, destino="instagram"):
     posts = {p["nome"]: p for p in _ler(POSTS, [])}
     p = posts.get(nome)
     if not p:
         raise SystemExit(f"Post {nome} não existe em manuais/posts.json")
+    if destino == "whatsapp":
+        return enviar_whatsapp(nome, p)
     if p["perfil"] != config.PERFIL:
         raise SystemExit(f"Post {nome} é do perfil {p['perfil']}, mas a rodada é {config.PERFIL}. Nada foi publicado.")
     registro = _ler(REGISTRO, {})
@@ -54,5 +69,5 @@ def rodar(nome):
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        raise SystemExit("Uso: python -m src.publicar_manual <nome>")
-    rodar(sys.argv[1])
+        raise SystemExit("Uso: python -m src.publicar_manual <nome> [instagram|whatsapp]")
+    rodar(sys.argv[1], sys.argv[2] if len(sys.argv) > 2 else "instagram")
