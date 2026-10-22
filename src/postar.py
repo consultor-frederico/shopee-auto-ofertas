@@ -64,6 +64,7 @@ def candidatos_ordenados(fila):
     manuais = [o for o in candidatos if o.get("video_manual")]
     pedidos_ze = [o for o in candidatos if o.get("pedido") and not o.get("video_manual")]
     manuais += pedidos_ze[:1]   # "Você pediu, o Zé achou": um por vez, na frente da fila
+    preferidos = [o for o in candidatos if o.get("preferencial") and not o.get("video_manual")]   # aprovadas por você
     resto = [o for o in candidatos if not o.get("video_manual") and not o.get("so_telegram") and not o.get("pedido")
              and o["categoria"] in config.NICHO and variedade.diferenciado(o)]   # outra conta fica de fora; só produto diferenciado
     if _shark_hoje(fila, "postado_em") >= config.SHARK_POR_DIA_INSTAGRAM:   # a marca não domina a página
@@ -82,7 +83,7 @@ def candidatos_ordenados(fila):
         base = [o for o in resto if o.get("nivel") != "achado" and variedade.familia(o) not in fams] or base
     base = [o for o in base if o["categoria"] not in recentes] + [o for o in base if o["categoria"] in recentes]
     # variedade: tipo de produto que saiu nas últimas HORAS_ENTRE_FAMILIA horas vai para o fim
-    return manuais + variedade.ordenar(base, fams)
+    return manuais + preferidos + variedade.ordenar(base, fams)
 
 
 def formato_da_vez(fila):

@@ -76,6 +76,7 @@ def rodar():
             _responder(chat, f"❓ Não achei a oferta {oid} na fila. Confira o número e mande de novo.")
             continue
         oferta["aprovado_por_voce"] = agora().strftime("%d/%m/%Y %H:%M")
+        oferta["preferencial"] = True   # entra na frente da fila do Instagram
         mudou = True
         _responder(chat, f"✅ Aprovado: {oferta.get('titulo', oid)}. A postagem no Instagram entra na próxima etapa.")
         print(f"✅ Aprovada: {oid} — {oferta.get('titulo', '')}")
