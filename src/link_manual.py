@@ -7,6 +7,7 @@ seu Telegram PRIVADO. Nada é publicado aqui; a postagem depende do seu "ok".
 Uso: LINK="https://shopee..." python -m src.link_manual
 Segredos: SHOPEE_APP_ID, SHOPEE_APP_SECRET, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_PRIVADO.
 """
+import html
 import os
 import sys
 
@@ -16,6 +17,28 @@ from .garimpar import agora, carregar_fila, salvar_fila
 
 def _responder(chat, texto):
     telegram._api("sendMessage", data={"chat_id": chat, "text": texto, "disable_web_page_preview": "true"})
+
+
+def _mandar_oferta(chat, o):
+    """Foto do produto (se houver) com o link e o comando 'ok <id>' tocável (toque para copiar)."""
+    nome = html.escape(o["nome"])
+    texto = (
+        f"🛍️ <b>Link manual pronto</b>\n\n"
+        f"{nome}\n"
+        f"💰 R$ {o['preco_fmt']} · ⭐ {o['nota']} · {o['vendas']}+ vendidos\n"
+        f"🏬 {html.escape(o['loja'])}\n\n"
+        f"🔗 Seu link de afiliado:\n{html.escape(o['link_afiliado'])}\n\n"
+        f"Para aprovar, toque e cole: <code>ok {o['id']}</code>"
+    )
+    if o.get("imagem"):
+        try:
+            telegram._api("sendPhoto", data={"chat_id": chat, "photo": o["imagem"], "caption": texto,
+                                             "parse_mode": "HTML"})
+            return
+        except Exception as e:
+            print(f"::warning::Foto não enviada ({e}); mandando só o texto.")
+    telegram._api("sendMessage", data={"chat_id": chat, "text": texto, "parse_mode": "HTML",
+                                       "disable_web_page_preview": "true"})
 
 
 def rodar():
@@ -42,15 +65,7 @@ def rodar():
     fila = carregar_fila()
     fila["ofertas"][o["id"]] = o
     salvar_fila(fila)
-    preco = f"R$ {o['preco_fmt']}"
-    _responder(chat, (
-        f"🛍️ Link manual pronto\n\n"
-        f"{o['nome']}\n"
-        f"💰 {preco} · ⭐ {o['nota']} · {o['vendas']}+ vendidos\n"
-        f"🏬 {o['loja']}\n\n"
-        f"🔗 Seu link de afiliado:\n{o['link_afiliado']}\n\n"
-        f"Para aprovar, responda: ok {o['id']}"
-    ))
+    _mandar_oferta(chat, o)
     print(f"✅ Link manual salvo: {o['id']} — {o['nome']}")
 
 
