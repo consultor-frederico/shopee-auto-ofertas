@@ -121,7 +121,10 @@ def texto_whatsapp(o):
 def enviar(o, arte):
     """Uma mensagem só: a arte com a oferta na legenda e o botão ✅ Aprovar embaixo."""
     chat = chat_privado()
-    texto = texto_whatsapp(o)[:1000]   # legenda do Telegram aceita até 1024 caracteres
+    texto = texto_whatsapp(o)
+    if len(texto) > 1000:   # legenda do Telegram aceita até 1024: tira a descrição, mantém o aviso inteiro
+        texto = texto_whatsapp(dict(o, legenda=""))
+    texto = texto[:1000]
     aprovar = {"text": "✅ Aprovar", "callback_data": "ok:%s" % o["id"]}
     with open(arte, "rb") as f:
         telegram._api("sendPhoto", data={"chat_id": chat, "caption": texto,
