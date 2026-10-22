@@ -151,6 +151,13 @@ def rodar():
         print("🧪 Modo teste: enviando a oferta de maior pontuação sem a análise do canal.")
     else:
         analise = curadoria.classificar_whatsapp(pool)
+        if not analise:   # a IA não respondeu: avisa, para não passar a rodada sem perceber
+            try:
+                telegram._api("sendMessage", data={"chat_id": chat_privado(), "disable_web_page_preview": "true",
+                              "text": "⚠️ Kit do WhatsApp: a análise dos critérios não respondeu nesta rodada. "
+                                      "Nenhuma oferta automática foi enviada ao canal. Confira a chave da IA (GROQ)."})
+            except Exception as e:
+                print(f"::warning::Não consegui avisar a falha da análise: {e}")
         ofs = aprovadas(pool, analise)
         salvar_fila(fila)   # guarda as marcações de reprovado/pendente/repetido
     if not ofs:
