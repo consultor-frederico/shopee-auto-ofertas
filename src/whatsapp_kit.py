@@ -95,7 +95,8 @@ def texto_whatsapp(o):
     apartir = "a partir de " if tem_variacoes(o) else ""
     preco = f"💰 {apartir}*R$ {o['preco_fmt']}*"
     if o.get("preco_de"):
-        preco = f"💰 de ~R$ {telegram._brl(o['preco_de'])}~ por {apartir}*R$ {o['preco_fmt']}*"
+        ligacao = "" if apartir else "por "   # "de ~R$ X~ a partir de *R$ Y*" (sem "por a partir de")
+        preco = f"💰 de ~R$ {telegram._brl(o['preco_de'])}~ {ligacao}{apartir}*R$ {o['preco_fmt']}*"
         if o.get("desconto"):
             preco += f" (-{o['desconto']}%)"
     nota = (f"{o['avaliacao_pct']:.0f}% avaliações positivas" if o.get("avaliacao_pct")
