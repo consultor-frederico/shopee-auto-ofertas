@@ -27,5 +27,7 @@ ou manda no direct) recebe 3 achados no direct. `busca/busca_fixo.mp4` é o Reel
 publicado pelo workflow "18 - Reels da Busca" com perfil = ana (não é apagado e não entra em rodízio).
 
 ## Música
+Vídeo que já tem trilha própria: nomeie `ana_nome_comtrilha.mp4`. O robô não põe música nele.
+Sem `comtrilha` no nome, o robô põe as músicas de `assets/ana/musicas/` como antes.
 Os vídeos da Ana vêm só com a voz. O robô põe trilha de `assets/ana/musicas/` (músicas só dela, nunca as do
 Garimpo VIP), como música ambiente bem baixinha (VOLUME_MUSICA 0.35), mais baixa ainda quando ela fala.
