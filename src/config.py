@@ -1,4 +1,5 @@
 """Configurações do Garimpo VIP. Ajuste aqui o nicho, os filtros e o ritmo."""
+import json
 import os
 from pathlib import Path
 
@@ -91,6 +92,16 @@ SIMILARIDADE_MAX = 0.55        # nomes mais parecidos que isso contam como o mes
 PALAVRAS_PROIBIDAS = [
     "réplica", "replica", "vape", "cigarro", "arma", "faca tática", "sex", "erótic",
     "lingerie", "remédio", "emagrecedor", "suplemento",
+]
+
+# --- Só produto do Brasil ---
+# O Fred combinou não indicar compra internacional. A API de afiliados não diz de onde o produto sai,
+# então o robô barra pelo que dá para ver: palavras no nome do produto ou da loja e lojas já conhecidas.
+# Para barrar uma loja, coloque o shopId dela em data/lojas_internacionais.json (lista de números).
+TERMOS_INTERNACIONAL = [
+    "importado", "importada", "importados", "importadas", "internacional", "do exterior",
+    "china", "chinês", "chines", "overseas", "cross border", "crossborder",
+    "global store", "globalstore", "global shop", "global mall",
 ]
 
 # --- Ritmo ---
@@ -216,6 +227,10 @@ CORES = _P["cores"]
 TOM, PUBLICO = _P["tom"], _P["publico"]
 TELEGRAM_ATIVO = _P["telegram"]
 PALAVRAS_PROIBIDAS = PALAVRAS_PROIBIDAS + _P.get("proibidas", [])
+try:
+    LOJAS_INTERNACIONAIS = {str(i) for i in json.loads((PASTA_DADOS / "lojas_internacionais.json").read_text())}
+except (OSError, ValueError):
+    LOJAS_INTERNACIONAIS = set()
 PASTA_PERFIL = _P["pasta_dados"]                 # fila e respostas de cada conta
 ARQ_FILA = PASTA_PERFIL / "fila.json"            # ofertas garimpadas e seu status
 ARQ_PALAVRAS = PASTA_PERFIL / "palavras.json"    # memória das buscas: quais termos trazem achados

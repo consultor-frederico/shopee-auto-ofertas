@@ -4,6 +4,7 @@ Uso: python -m src.garimpar
 """
 import json
 import random
+import re
 import sys
 from datetime import datetime, timedelta, timezone
 
@@ -33,6 +34,14 @@ def _num(v, padrao=0.0):
         return float(v)
     except (TypeError, ValueError):
         return padrao
+
+
+def internacional(o):
+    """Compra internacional (o Fred combinou só indicar produto do Brasil)."""
+    if str(o.get("loja_id")) in config.LOJAS_INTERNACIONAIS:
+        return True
+    texto = f' {o.get("nome", "")} {o.get("loja", "")} '.lower()
+    return any(re.search(rf"\b{re.escape(t)}\b", texto) for t in config.TERMOS_INTERNACIONAL)
 
 
 def normalizar(no, categoria, palavra):
@@ -97,6 +106,8 @@ def motivo_recusa(o):
         return "preço fora da faixa"
     if any(p in nome for p in config.PALAVRAS_PROIBIDAS):
         return "palavra proibida"
+    if internacional(o):
+        return "compra internacional"
     return None
 
 
@@ -213,7 +224,7 @@ def _por_categoria_aprendida(mem, nos, rotulo):
     return ofertas
 
 
-TERMOS_LOJA = ["utilidades", "variedades", "importados", "store", "shop", "casa", "pet", "tech",
+TERMOS_LOJA = ["utilidades", "variedades", "store", "shop", "casa", "pet", "tech",
                "eletronicos", "auto", "brinquedos", "kids", "achados", "presentes", "gadgets", "magazine"]
 
 
