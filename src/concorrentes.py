@@ -60,5 +60,9 @@ def linhas():
             saida.append(f"@{d.get('username', usuario)}: {d.get('followers_count', '?')} seguidores, "
                          f"{d.get('media_count', '?')} posts. {_sinais(midias)}")
         except Exception as e:
-            saida.append(f"@{usuario}: sem dado ({str(e)[:100]})")
+            if "HTTP 400" in str(e):
+                motivo = "conta pessoal, privada ou não encontrada (a API só lê contas profissionais públicas)"
+            else:
+                motivo = str(e)[:100]
+            saida.append(f"@{usuario}: sem dado ({motivo})")
     return saida
