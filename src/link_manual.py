@@ -55,6 +55,8 @@ def rodar():
         _responder(chat, f"❓ A API da Shopee não devolveu oferta para o produto {item_id}. Ele pode estar fora do ar ou sem programa de afiliado.")
         return
     o = garimpar.normalizar(nos[0], "manual", "link manual")
+    o["titulo"] = o["nome"]   # arte e texto usam "titulo"
+    o["legenda"] = ""
     o["status"] = "pendente"
     o["origem"] = "link_manual"
     o["criado_em"] = agora().strftime(garimpar.FMT)
