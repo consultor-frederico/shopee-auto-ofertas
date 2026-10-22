@@ -52,26 +52,21 @@ def _gh(caminho, params=None):
 
 
 def checar_workflows():
+    """Consulta cada rotina pelo arquivo (não pela lista geral, que é longa e pode vir incompleta)."""
     desde = (datetime.now(timezone.utc) - timedelta(days=DIAS)).strftime("%Y-%m-%dT%H:%M:%SZ")
-    runs, pagina = [], 1
-    while pagina <= 20:
-        lote = _gh("actions/runs", {"created": f">={desde}", "per_page": 100, "page": pagina})["workflow_runs"]
-        runs += lote
-        if len(lote) < 100:
-            break
-        pagina += 1
     por_wf = {}
-    for r in runs:
-        arq = (r.get("path") or "").split("/")[-1]
-        d = por_wf.setdefault(arq, {"total": 0, "falhas": 0, "ultima_falha": None, "nome": r.get("name")})
-        d["total"] += 1
-        if r.get("conclusion") in ("failure", "timed_out", "startup_failure"):
-            d["falhas"] += 1
-            d["ultima_falha"] = max(d["ultima_falha"] or "", r["created_at"])
+    for arq, nome in PRODUCAO.items():
+        runs = _gh(f"actions/workflows/{arq}/runs", {"created": f">={desde}", "per_page": 100}).get("workflow_runs", [])
+        d = {"total": len(runs), "falhas": 0, "ultima_falha": None}
+        for r in runs:
+            if r.get("conclusion") in ("failure", "timed_out", "startup_failure"):
+                d["falhas"] += 1
+                d["ultima_falha"] = max(d["ultima_falha"] or "", r["created_at"])
+        por_wf[arq] = d
     problemas, ok = [], 0
     for arq, nome in PRODUCAO.items():
-        d = por_wf.get(arq)
-        if not d or d["total"] == 0:
+        d = por_wf[arq]
+        if d["total"] == 0:
             problemas.append(f"⛔ <b>{nome}</b>: não rodou nenhuma vez na semana")
         elif d["falhas"]:
             quando = datetime.fromisoformat(d["ultima_falha"].replace("Z", "+00:00")).astimezone(BRT)
@@ -79,7 +74,7 @@ def checar_workflows():
                              f"(última {quando:%d/%m %H:%M})")
         else:
             ok += 1
-    return problemas, ok, len(runs)
+    return problemas, ok, sum(d["total"] for d in por_wf.values())
 
 
 def checar_codigo():
