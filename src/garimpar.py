@@ -62,6 +62,7 @@ def normalizar(no, categoria, palavra):
         "imagem": no.get("imageUrl") or "",
         "link_afiliado": no.get("offerLink") or "",
         "preco_max": _num(no.get("priceMax")) or None,
+        "internacional": shopee.eh_internacional(no.get("productLink")) is True,
     })
 
 

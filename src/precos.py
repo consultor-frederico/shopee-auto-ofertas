@@ -94,4 +94,6 @@ def aviso(o):
     pix = " Pagando no Pix, a Shopee costuma dar desconto extra." if loja == "Shopee" else ""
     volt = (f" ⚡ Versão {o['voltagem']}: confira a voltagem da sua região antes de comprar."
             if o.get("voltagem") and o["voltagem"] != "Bivolt" else "")
-    return f"🕒 {base} R$ {o['preco_fmt']}, conferido em {quando}.{pix}{volt} O preço pode mudar a qualquer momento."
+    intl = (" 🌎 Produto internacional: vem do exterior, então o prazo de entrega e os impostos de importação podem ser cobrados."
+            if o.get("internacional") else "")
+    return f"🕒 {base} R$ {o['preco_fmt']}, conferido em {quando}.{pix}{volt}{intl} O preço pode mudar a qualquer momento."

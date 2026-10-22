@@ -17,10 +17,9 @@ import requests
 URL = "https://api-sg.aliexpress.com/sync"
 METODO_BUSCA = "aliexpress.affiliate.product.query"
 METODO_EM_ALTA = "aliexpress.affiliate.hotproduct.query"   # produtos em alta (lista separada)
-# Desligado (10/10/2026): o Fred combinou não postar compra internacional, só produto do Brasil.
-# A API da AliExpress não diz de onde o produto sai; "entrega em 7 dias" ainda pega envio da China
-# (Choice). Para religar, mude para True — só se houver um jeito de garantir estoque no Brasil.
-ATIVO = False
+# Ligado (22/10/2026, pedido do Fred): produto internacional entra, sempre com aviso na legenda e
+# na resposta (ver precos.aviso e busca_ze.mensagem). A API não diz de onde o produto sai.
+ATIVO = True
 DIAS_ENTREGA_MAX = 7          # "já está no Brasil": entrega rápida para o Brasil
 AVALIACAO_MIN_PCT = 95.0      # vendedor confiável: ≥ 95% de avaliações positivas
 
@@ -136,6 +135,7 @@ def normalizar(p, categoria, palavra):
         "imagem": p.get("product_main_image_url") or "",
         "video": p.get("product_video_url") or "",
         "link_afiliado": p.get("promotion_link") or "",
+        "internacional": True,   # a API não diz de onde sai: sempre com aviso de internacional
     }
 
 

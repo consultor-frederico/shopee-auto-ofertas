@@ -264,7 +264,8 @@ def mensagem(t, ofs):
     for i, o in enumerate(ofs, 1):
         vendas = f"{o['vendas']:,}".replace(",", ".")
         nota = f"{o['nota']:.1f}".replace(".", ",")
-        linhas.append(f"{i}️⃣ {_curto(o['nome'])} — R$ {o['preco_fmt']} (⭐ {nota}, {vendas}+ vendidos)")
+        intl = " 🌎 internacional" if o.get("internacional") else ""
+        linhas.append(f"{i}️⃣ {_curto(o['nome'])} — R$ {o['preco_fmt']} (⭐ {nota}, {vendas}+ vendidos){intl}")
     linhas += ["", "Toque no botão do que gostou 👇",
                (AVISO_ANA if ANA else f"(links de afiliado: você paga o mesmo e ajuda o {config.NOME_MARCA})")]
     return "\n".join(linhas)

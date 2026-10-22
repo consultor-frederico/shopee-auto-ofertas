@@ -61,6 +61,16 @@ def consultar(query: str, tentativas: int = 4) -> dict:
     raise ErroShopee("Shopee não respondeu depois de várias tentativas.")
 
 
+def eh_internacional(link):
+    """True se o produto é de outro país da Shopee (ex.: shopee.com.my, shopee.sg);
+    False se é shopee.com.br; None se o link não diz (sem link ou domínio desconhecido)."""
+    from urllib.parse import urlparse
+    host = urlparse(link or "").netloc.lower().split(":")[0]
+    if not host or "shopee" not in host:
+        return None
+    return not host.endswith(".com.br")
+
+
 def _nos(filtro: str, pagina: int, limite: int, ordem: int) -> list:
     query = (f"query{{productOfferV2({filtro}sortType:{ordem},"
              f"page:{pagina},limit:{limite}){{nodes{{{CAMPOS}}}}}}}")
