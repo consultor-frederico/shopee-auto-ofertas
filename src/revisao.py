@@ -53,10 +53,17 @@ def _gh(caminho, params=None):
 
 def checar_workflows():
     """Consulta cada rotina pelo arquivo (não pela lista geral, que é longa e pode vir incompleta)."""
-    desde = (datetime.now(timezone.utc) - timedelta(days=DIAS)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    corte = datetime.now(timezone.utc) - timedelta(days=DIAS)
     por_wf = {}
     for arq, nome in PRODUCAO.items():
-        runs = _gh(f"actions/workflows/{arq}/runs", {"created": f">={desde}", "per_page": 100}).get("workflow_runs", [])
+        runs, pagina = [], 1
+        while pagina <= 30:   # rotinas que rodam a cada 15 min: várias páginas por semana
+            lote = _gh(f"actions/workflows/{arq}/runs", {"per_page": 100, "page": pagina}).get("workflow_runs", [])
+            runs += [r for r in lote if datetime.fromisoformat(r["created_at"].replace("Z", "+00:00")) >= corte]
+            antigas = [r for r in lote if datetime.fromisoformat(r["created_at"].replace("Z", "+00:00")) < corte]
+            if len(lote) < 100 or antigas:
+                break
+            pagina += 1
         d = {"total": len(runs), "falhas": 0, "ultima_falha": None}
         for r in runs:
             if r.get("conclusion") in ("failure", "timed_out", "startup_failure"):
