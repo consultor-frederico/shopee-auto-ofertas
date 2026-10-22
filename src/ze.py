@@ -366,7 +366,9 @@ def preparar():
     else:
         shutil.copy(video, pasta / nome)
     com_trilha = "comtrilha" in video.name   # *_comtrilha.mp4 já tem trilha própria: não põe música
-    if MUSICA_LIGADA and not busca and not com_trilha:   # sem trilha própria: põe musiquinha (mais baixa quando ela fala), Zé e Ana
+    # Ana: todo vídeo sem _comtrilha recebe música. Zé: só os marcados _semtrilha (os antigos já têm música gravada).
+    precisa_musica = (not com_trilha) and (ANA or "semtrilha" in video.name)
+    if MUSICA_LIGADA and not busca and precisa_musica:   # põe musiquinha (mais baixa quando ela fala)
         musicas = escolher_musicas({"id": video.name}, _duracao(pasta / nome))
         if musicas:
             try:
