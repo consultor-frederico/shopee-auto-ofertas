@@ -46,17 +46,19 @@ def descobrir_chat():
         print(f"::notice::Chat privado encontrado: {nome} → cadastre o segredo TELEGRAM_CHAT_PRIVADO = {cid}")
 
 
+DIAS_CANAL = int(os.getenv("WHATSAPP_DIAS_CANAL", "7"))   # janela de ofertas analisadas para o canal
 LOTE_ANALISE = int(os.getenv("WHATSAPP_LOTE_ANALISE", "20"))   # quantas ofertas a IA avalia por rodada
 
 
 def candidatas(fila):
     """Pool de ofertas ainda não analisadas para o canal, da mais promissora para a menos."""
-    limite = agora() - timedelta(days=config.DIAS_VALIDADE_PENDENTE)
+    # o canal olha 7 dias de ofertas (as da grade normal), dando preferência às mais recentes
+    limite = agora() - timedelta(days=DIAS_CANAL)
     ofs = [o for o in fila["ofertas"].values()
            if o.get("status") in ("pendente", "postado") and not o.get("whatsapp")
            and o.get("link_afiliado") and o.get("titulo") and o.get("imagem") and not o.get("video_manual")
            and datetime.strptime(o["criado_em"], FMT).replace(tzinfo=BRT) >= limite]
-    ofs.sort(key=lambda o: o.get("pontos", 0), reverse=True)
+    ofs.sort(key=lambda o: (o["criado_em"], o.get("pontos", 0)), reverse=True)
     return ofs[:LOTE_ANALISE]
 
 
