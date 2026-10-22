@@ -143,9 +143,13 @@ def rodar():
     if not pool:
         print("Nenhuma oferta nova para o WhatsApp.")
         return
-    analise = curadoria.classificar_whatsapp(pool)
-    ofs = aprovadas(pool, analise)
-    salvar_fila(fila)   # guarda as marcações de reprovado/pendente/repetido
+    if os.getenv("WHATSAPP_TESTE") == "1":   # teste manual: manda a 1ª oferta sem a análise
+        ofs = pool[:1]
+        print("🧪 Modo teste: enviando a oferta de maior pontuação sem a análise do canal.")
+    else:
+        analise = curadoria.classificar_whatsapp(pool)
+        ofs = aprovadas(pool, analise)
+        salvar_fila(fila)   # guarda as marcações de reprovado/pendente/repetido
     if not ofs:
         print(f"Nenhuma oferta aprovada para o canal nesta rodada ({len(analise)} analisadas).")
         return
