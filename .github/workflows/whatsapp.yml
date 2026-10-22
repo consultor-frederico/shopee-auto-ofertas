@@ -35,6 +35,7 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_PRIVADO: ${{ secrets.TELEGRAM_CHAT_PRIVADO }}
           WHATSAPP_TESTE: ${{ inputs.teste && '1' || '0' }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
           SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
         run: python -m src.whatsapp_kit
