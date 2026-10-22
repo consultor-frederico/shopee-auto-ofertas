@@ -27,8 +27,7 @@ def _mandar_oferta(chat, o):
         f"{nome}\n"
         f"💰 R$ {o['preco_fmt']} · ⭐ {o['nota']} · {o['vendas']}+ vendidos\n"
         f"🏬 {html.escape(o['loja'])}\n\n"
-        f"🔗 Seu link de afiliado:\n{html.escape(o['link_afiliado'])}\n\n"
-        f"Para aprovar, toque e cole: <code>ok {o['id']}</code>"
+        f"🔗 Seu link de afiliado:\n{html.escape(o['link_afiliado'])}"
     )
     teclado = '{"inline_keyboard":[[{"text":"✅ Aprovar","callback_data":"ok:%s"}]]}' % o["id"]
     if o.get("imagem"):
