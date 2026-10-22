@@ -77,3 +77,63 @@ def notas_uau(ofertas, lote=40):
         except Exception as e:
             print(f"⚠️  Curadoria por IA falhou neste lote ({e}).")
     return notas
+
+
+# Critérios do Canal do WhatsApp (definidos pelo Fred em 22/10/2026): mais seletivo que o Instagram.
+PROMPT_WHATSAPP = """Você é o curador do Canal do WhatsApp do Garimpo VIP.
+Avalie cada produto com estes critérios:
+
+1. ORIGINALIDADE: o produto deve apresentar uma ideia, função, formato ou utilização diferente do convencional.
+2. DIFERENCIAÇÃO: deve ter algo especial que o distinga claramente dos produtos comuns.
+3. EFEITO SURPRESA: deve despertar curiosidade, admiração, diversão ou vontade de mostrar a outras pessoas.
+4. CRIATIVIDADE: priorize invenções inteligentes, soluções inesperadas e objetos pouco conhecidos.
+5. POTENCIAL DE DESCOBERTA: dê preferência a produtos que não sejam facilmente encontrados em qualquer loja tradicional.
+
+Regras obrigatórias:
+- Seja extremamente seletivo. Qualidade acima de quantidade.
+- Não aprove produtos apenas porque são baratos, populares ou estão em promoção.
+- Rejeite produtos genéricos, repetitivos, convencionais ou sem diferencial evidente.
+- Não aprove um produto comum por causa de nome ou descrição exagerados.
+- Não estabeleça limite de preço: o diferencial é mais importante que o valor.
+- Não confunda aparência diferente com inovação real.
+- Não invente características nem presuma que o produto é raro ou inédito sem evidências.
+- Se o nome não der informação suficiente para avaliar, marque PENDENTE.
+
+Classificação:
+APROVADO: produto claramente diferenciado, criativo e com forte potencial de despertar curiosidade.
+REPROVADO: produto comum, genérico, repetitivo ou sem diferencial relevante.
+PENDENTE: informação insuficiente para decidir com segurança.
+
+Para cada produto, informe o status, uma justificativa objetiva e o diferencial (vazio se não houver).
+
+Produtos:
+{lista}
+
+Responda APENAS com JSON no formato {{"analise": {{"<id>": {{"status": "APROVADO|REPROVADO|PENDENTE", "justificativa": "...", "diferencial": "..."}}, ...}}}} para todos os ids."""
+
+
+def classificar_whatsapp(ofertas, lote=20):
+    """Devolve {id: {status, justificativa, diferencial}} pelos critérios do canal.
+    Sem IA disponível, devolve {} e ninguém é aprovado (falha fechada: nada é enviado)."""
+    if not config.GROQ_API_KEY or not ofertas:
+        return {}
+    analise = {}
+    for i in range(0, len(ofertas), lote):
+        if i:
+            time.sleep(6)
+        parte = ofertas[i:i + lote]
+        lista = "\n".join(f'- id {o["id"]}: {o["nome"][:110]}' for o in parte)
+        try:
+            bruto = legenda._chamar_groq(PROMPT_WHATSAPP.format(lista=lista))
+            dados = json.loads(re.search(r"\{.*\}", bruto, re.S).group(0))
+            for k, v in (dados.get("analise") or {}).items():
+                status = str((v or {}).get("status", "")).upper().strip()
+                if status in ("APROVADO", "REPROVADO", "PENDENTE"):
+                    analise[str(k)] = {
+                        "status": status,
+                        "justificativa": str(v.get("justificativa", ""))[:300],
+                        "diferencial": str(v.get("diferencial", ""))[:200],
+                    }
+        except Exception as e:
+            print(f"⚠️  Análise do WhatsApp falhou neste lote ({e}).")
+    return analise

@@ -15,7 +15,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from urllib.parse import quote
 
-from . import config, imagem, precos, telegram
+from . import config, curadoria, imagem, precos, telegram
 from .garimpar import BRT, FMT, agora, carregar_fila, salvar_fila
 from .imagem import plataforma
 from .precos import tem_variacoes
@@ -46,22 +46,39 @@ def descobrir_chat():
         print(f"::notice::Chat privado encontrado: {nome} → cadastre o segredo TELEGRAM_CHAT_PRIVADO = {cid}")
 
 
+LOTE_ANALISE = int(os.getenv("WHATSAPP_LOTE_ANALISE", "20"))   # quantas ofertas a IA avalia por rodada
+
+
 def candidatas(fila):
+    """Pool de ofertas ainda não analisadas para o canal, da mais promissora para a menos."""
     limite = agora() - timedelta(days=config.DIAS_VALIDADE_PENDENTE)
     ofs = [o for o in fila["ofertas"].values()
            if o.get("status") in ("pendente", "postado") and not o.get("whatsapp")
            and o.get("link_afiliado") and o.get("titulo") and o.get("imagem") and not o.get("video_manual")
            and datetime.strptime(o["criado_em"], FMT).replace(tzinfo=BRT) >= limite]
     ofs.sort(key=lambda o: o.get("pontos", 0), reverse=True)
-    escolhidas, cats = [], set()
-    for o in ofs:   # alterna nichos
-        if len(escolhidas) < POR_EXECUCAO and o.get("categoria") not in cats:
-            escolhidas.append(o)
-            cats.add(o.get("categoria"))
+    return ofs[:LOTE_ANALISE]
+
+
+def aprovadas(ofs, analise):
+    """Só sai o que a análise do canal marcou como APROVADO. Repetidos/parecidos ficam de fora.
+    REPROVADO e PENDENTE são marcados para não serem analisados de novo."""
+    escolhidas = []
     for o in ofs:
-        if len(escolhidas) < POR_EXECUCAO and o not in escolhidas:
+        a = analise.get(str(o["id"]))
+        if not a:
+            continue
+        o["whatsapp_analise"] = a
+        if a["status"] == "REPROVADO":
+            o["whatsapp"] = "reprovado"
+        elif a["status"] == "PENDENTE":
+            o["whatsapp"] = "pendente_analise"
+        elif a["status"] == "APROVADO":
+            if any(curadoria.parecido(o["nome"], e["nome"]) for e in escolhidas):
+                o["whatsapp"] = "repetido"
+                continue
             escolhidas.append(o)
-    return escolhidas
+    return escolhidas[:POR_EXECUCAO]
 
 
 def texto_whatsapp(o):
@@ -122,9 +139,15 @@ def rodar():
         descobrir_chat()
         return
     fila = carregar_fila()
-    ofs = candidatas(fila)
-    if not ofs:
+    pool = candidatas(fila)
+    if not pool:
         print("Nenhuma oferta nova para o WhatsApp.")
+        return
+    analise = curadoria.classificar_whatsapp(pool)
+    ofs = aprovadas(pool, analise)
+    salvar_fila(fila)   # guarda as marcações de reprovado/pendente/repetido
+    if not ofs:
+        print(f"Nenhuma oferta aprovada para o canal nesta rodada ({len(analise)} analisadas).")
         return
     pasta = Path(tempfile.mkdtemp())
     enviadas = 0
