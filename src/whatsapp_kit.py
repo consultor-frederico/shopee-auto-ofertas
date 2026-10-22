@@ -118,7 +118,7 @@ def enviar(o, arte):
     chat = chat_privado()
     texto = texto_whatsapp(o)
     with open(arte, "rb") as f:
-        telegram._api("sendPhoto", data={"chat_id": chat, "caption": "📲 Arte para o Canal do WhatsApp (salve e poste com o texto abaixo)"},
+        telegram._api("sendPhoto", data={"chat_id": chat, "caption": f"📲 Arte para o Canal do WhatsApp — Nº {o['id']}\n(salve e poste com o texto abaixo; para aprovar, responda: ok {o['id']})"},
                       files={"photo": f})
     botao = '{"inline_keyboard":[[{"text":"📲 Mandar no WhatsApp","url":"%s"}]]}' % (
         "https://wa.me/?text=" + quote(texto))
