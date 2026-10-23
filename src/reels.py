@@ -21,7 +21,7 @@ import subprocess
 
 from PIL import Image, ImageDraw, ImageOps
 
-from . import config
+from . import config, marcas
 from .imagem import (FUNDO, SOMBRA, BRANCO, CINZA, DOURADO, DOURADO_CLARO, ESCURO, LARANJA,
                      _baixar_foto, _brl, _estrela, _fonte, eh_achado,
                      moldura_achado, selo_achado, selo_loja)
@@ -215,7 +215,7 @@ def _quadro(t, base, foto, oferta, e=None):
         k = _ease((t - 2.8) / 0.4)
         yi = y2 + 175
         cor = _mix(F, e["info"], k)
-        oficial = oferta.get("plataforma") == "sharkninja"
+        oficial = marcas.eh_marca(oferta)
         if not oficial:
             _estrela(d, 70 + 22, yi + 25, 24, _mix(F, e["estrela"], k))
         nota = (f"{oferta['avaliacao_pct']:.0f}% avaliações positivas" if oferta.get("avaliacao_pct")
@@ -223,7 +223,7 @@ def _quadro(t, base, foto, oferta, e=None):
         vendas = f"{oferta['vendas']:,}".replace(",", ".")
         txt, tam = f"{nota}   •   {vendas}+ vendidos", 40
         if oficial:
-            txt = "Loja oficial Shark Ninja"
+            txt = marcas.texto_oficial(oferta)
         while tam > 28 and d.textlength(txt, font=_fonte(tam, "SemiBold")) > 1080 - 124 - 40:
             tam -= 2
         d.text((70 + (0 if oficial else 54), yi + (40 - tam) // 2), txt, font=_fonte(tam, "SemiBold"), fill=cor)
@@ -260,7 +260,8 @@ def gancho(oferta):
     """Frase do primeiro segundo (2 linhas). Achado escondido tem a sua própria."""
     if eh_achado(oferta):
         return ["ACHADO QUE POUCA", "GENTE CONHECE"]
-    loja = {"aliexpress": "ALIEXPRESS", "sharkninja": "SHARK NINJA"}.get(oferta.get("plataforma"), "SHOPEE")
+    loja = "ALIEXPRESS" if oferta.get("plataforma") == "aliexpress" else (
+        marcas.nome(oferta).upper() if marcas.eh_marca(oferta) else "SHOPEE")
     g = GANCHOS[sum(map(ord, str(oferta.get("id", "")))) % len(GANCHOS)]
     return g.format(loja=loja).split("|")
 

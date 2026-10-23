@@ -432,7 +432,7 @@ def garimpar(buscar=shopee.buscar_ofertas):
     candidatos = curar(fila, coletar_candidatos(fila, buscar, escolhidas, memoria))
     busca_profunda.registrar(memoria, escolhidas, candidatos)
     busca_profunda.salvar(memoria)
-    # Shark Ninja (Awin): catálogo da marca, regras próprias — entra depois da curadoria da Shopee/AliExpress
+    # Marcas oficiais (Awin: Shark Ninja, Arno): catálogo da marca, regras próprias — entra depois da curadoria da Shopee/AliExpress
     shark = awin.candidatos(fila, ja_usado)
     for o in shark:
         o["so_telegram"] = so_telegram(fila, o["id"])
