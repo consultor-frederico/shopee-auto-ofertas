@@ -1682,7 +1682,13 @@
       "status": "pendente",
       "criado_em": "2026-10-23 06:52:47",
       "postado_em": "",
-      "id_post": ""
+      "id_post": "",
+      "whatsapp_analise": {
+        "status": "PENDENTE",
+        "justificativa": "Descrição confusa e incompleta impede avaliar se o espelho possui funcionalidades únicas ou design inovador.",
+        "diferencial": ""
+      },
+      "whatsapp": "pendente_analise"
     },
     "18798303717": {
       "id": "18798303717",
@@ -12270,10 +12276,11 @@
       "story": "ok",
       "fb_post": "644929202033021_122197293986862672",
       "whatsapp_analise": {
-        "status": "APROVADO",
-        "justificativa": "Luminária retrô recarregável com controle tátil e design diferenciado oferece estética e funcionalidade incomuns.",
-        "diferencial": "Cúpula transparente, controle por toque e recarga sem fio."
-      }
+        "status": "REPROVADO",
+        "justificativa": "Luminária LED recarregável com controle por toque é um item já comum no mercado; não apresenta diferencial significativo.",
+        "diferencial": ""
+      },
+      "whatsapp": "reprovado"
     },
     "19497667714": {
       "id": "19497667714",
@@ -12895,8 +12902,8 @@
       "fb_post": "644929202033021_122197383212862672",
       "whatsapp_analise": {
         "status": "APROVADO",
-        "justificativa": "Comedouro labirinto que estimula o animal a comer devagar, combina alimentação e entretenimento, produto pouco encontrado.",
-        "diferencial": "Design em 3 níveis que retarda a ingestão."
+        "justificativa": "Comedouro em formato de labirinto que retarda a alimentação estimula o comportamento natural dos pets, combinando interatividade e funcionalidade inédita.",
+        "diferencial": "Design de labirinto de 3 níveis que controla a velocidade de alimentação."
       }
     },
     "19398131052": {
@@ -13012,7 +13019,7 @@
       "criado_em": "2026-10-17 06:52:47",
       "postado_em": "2026-10-19 18:47:09",
       "id_post": "",
-      "preco_conferido_em": "19/10 às 18:45",
+      "preco_conferido_em": "23/10 às 09:00",
       "telegram": "ok",
       "telegram_em": "2026-10-17 10:15:35",
       "formato": "achados",
@@ -13021,9 +13028,10 @@
       "permalink": "https://www.instagram.com/p/DesQdn9iNKy/",
       "whatsapp_analise": {
         "status": "APROVADO",
-        "justificativa": "Caneta 3D que imprime objetos pequenos, oferece experiência educativa e criativa não comum em brinquedos tradicionais.",
-        "diferencial": "Impressão 3D portátil com filamentos coloridos."
-      }
+        "justificativa": "Caneta 3D que imprime objetos a partir de filamento oferece experiência criativa e educativa pouco comum, gerando surpresa e potencial de descoberta.",
+        "diferencial": "Impressão 3D portátil em formato de caneta, permite criação instantânea de objetos."
+      },
+      "whatsapp": "descartado"
     },
     "56805965031": {
       "id": "56805965031",
@@ -16742,7 +16750,13 @@
       "formato": "achados",
       "postado_ts": 1792752413.0026588,
       "achados_post": "18067291667685370",
-      "permalink": "https://www.instagram.com/p/De1YE7_AXfT/"
+      "permalink": "https://www.instagram.com/p/De1YE7_AXfT/",
+      "whatsapp_analise": {
+        "status": "REPROVADO",
+        "justificativa": "Mochilas de maternidade com bolsos e trocador são produtos já amplamente disponíveis; falta de inovação ou efeito surpresa.",
+        "diferencial": ""
+      },
+      "whatsapp": "reprovado"
     },
     "ae1005008666590054": {
       "id": "ae1005008666590054",
@@ -16845,7 +16859,13 @@
       "status": "pendente",
       "criado_em": "2026-10-23 06:53:16",
       "postado_em": "",
-      "id_post": ""
+      "id_post": "",
+      "whatsapp_analise": {
+        "status": "REPROVADO",
+        "justificativa": "Nome sugestivo de 'Caminhão De Engolir Dinossauro' não indica funcionalidade inovadora ou diferencial real; parece um brinquedo comum sem evidência de originalidade.",
+        "diferencial": ""
+      },
+      "whatsapp": "reprovado"
     }
   },
   "ultimo_garimpo": "2026-10-23 06:53:16"
