@@ -22,7 +22,7 @@ from datetime import timedelta
 
 from PIL import Image, ImageDraw
 
-from . import achados_artes as artes, config, imagem, instagram
+from . import achados_artes as artes, config, imagem, instagram, marcas
 from .garimpar import FMT, agora, carregar_fila, salvar_fila
 
 ANA = config.PERFIL == "ana"
@@ -54,7 +54,7 @@ def escolher(fila, conferir=True):
     def tentar(o, so_categoria_nova):
         nonlocal shark
         fam = variedade.familia(o)
-        if o["id"] in ids or fam in familias or (o.get("plataforma") == "sharkninja" and shark):
+        if o["id"] in ids or fam in familias or (marcas.eh_marca(o) and shark):
             return
         if so_categoria_nova and o.get("categoria") in categorias:
             return
@@ -76,7 +76,7 @@ def escolher(fila, conferir=True):
         ids.add(o["id"])
         familias.add(fam)
         categorias.add(o.get("categoria"))
-        shark = shark or o.get("plataforma") == "sharkninja"
+        shark = shark or marcas.eh_marca(o)
         print(f"🛍️  {len(itens)}. {o['titulo'][:60]} — R$ {o['preco_fmt']} ({o.get('categoria')})")
 
     for so_categoria_nova in (True, False):

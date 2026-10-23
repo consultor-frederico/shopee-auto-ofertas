@@ -1,7 +1,8 @@
-name: 13 - Testar Shark Ninja (Awin)
+name: 13 - Testar marcas da Awin (Shark Ninja, Arno)
 
 # Baixa o feed da Awin e mostra o que o robô entenderia de cada produto (categoria, preço, link) e,
-# no fim, uma prévia da legenda e da arte de 2 produtos de cada conta. Não grava nada e não posta nada.
+# no fim, uma prévia da legenda e da arte de 1 produto de cada marca, em cada conta. Para a Arno (feed parado),
+# compara o preço do feed com o da loja hoje. Não grava nada e não posta nada.
 # O endereço do feed (que tem a chave) nunca aparece no log.
 
 on:
@@ -22,7 +23,7 @@ jobs:
           python-version: '3.12'
           cache: pip
       - run: pip install -r requirements.txt
-      - name: Ler o feed da Shark Ninja
+      - name: Ler o feed das marcas
         run: python -m src.awin
       - name: Prévia Garimpo VIP
         env:

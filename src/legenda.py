@@ -6,7 +6,7 @@ import time
 
 import requests
 
-from . import config
+from . import config, marcas
 
 _modelo_escolhido = None
 
@@ -49,12 +49,12 @@ def _tag_ok(tag):
 
 def montar_hashtags(categoria, do_produto=(), plataforma=None):
     """No máximo 5: a ampla do perfil, a da categoria, até 2 do próprio produto (vindas da IA) e a da marca."""
-    if plataforma == "sharkninja":   # marca oficial: troca as tags de "achadinhos da Shopee" pela da marca
+    if marcas.eh_marca(plataforma or "shopee"):   # marca oficial: troca as tags de "achadinhos da Shopee" pela da marca
         produto = [t if t.startswith("#") else "#" + t for t in (do_produto or [])]
         produto = [t for t in produto if _tag_ok(t)][:1]
         ampla = "#achadinhosfemininos" if config.PERFIL == "ana" else "#achadinhos"
         da_categoria = "#cabelo" if categoria == "cabelo" else "#casaorganizada"
-        tags = list(dict.fromkeys(t.lower() for t in [ampla, da_categoria, "#sharkninja"] + produto))
+        tags = list(dict.fromkeys(t.lower() for t in [ampla, da_categoria, marcas.MARCAS[plataforma]["hashtag"]] + produto))
         marca = [config.HASHTAG_MARCA] if config.HASHTAG_MARCA else []
         return " ".join(tags[:MAX_TAGS - len(marca)] + marca)
     base = (_TAGS.get(categoria) or _TAGS["manual"]).split()
@@ -99,7 +99,7 @@ Regras:
   Nada genérico como #viral, #fyp, #explore, #ofertas ou #promoção."""
 
 def _prompt_oficial():
-    """Mesmo prompt, para produto de marca oficial (Shark Ninja): sem nota, vendas nem 'Shopee'."""
+    """Mesmo prompt, para produto de marca oficial (Shark Ninja, Arno): sem nota, vendas nem 'Shopee'."""
     trocas = [
         ("página de achadinhos da Shopee chamada", "página de achadinhos chamada"),
         ("Avaliação: {nota} estrelas, {vendas} vendidos.{achado}",
@@ -248,7 +248,7 @@ def _legenda_padrao(oferta):
     abre = "✨ Achadinho que separei:" if config.PERFIL == "ana" else "🔥 Achadinho do dia:"
     if oferta.get("nivel") == "achado":
         abre = "💎 Achado escondido que pouca gente conhece:"
-    prova = ("🏬 Loja oficial Shark Ninja" if oferta.get("plataforma") == "sharkninja"
+    prova = (f"🏬 {marcas.texto_oficial(oferta)}" if marcas.eh_marca(oferta)
              else f"⭐ Nota {nota} e mais de {vendas} vendidos")
     return (f"{abre} {oferta['titulo']}\n"
             f"{prova}\n"
@@ -314,7 +314,7 @@ def gerar(oferta: dict) -> dict:
         print("⚠️  GROQ_API_KEY não configurada: usando legenda padrão.")
     else:
         desconto = f" ({oferta['desconto']}% OFF)" if oferta.get("desconto") else ""
-        modelo = PROMPT_OFICIAL if oferta.get("plataforma") == "sharkninja" else PROMPT
+        modelo = PROMPT_OFICIAL if marcas.eh_marca(oferta) else PROMPT
         prompt = modelo.format(cta=CTA, marca=config.NOME_MARCA, publico=config.PUBLICO, tom=config.TOM,
                                proibido=PROIBIDO_ANA if config.PERFIL == "ana" else "",
                                nome=oferta["nome"], preco=oferta["preco_fmt"], desconto=desconto,

@@ -16,7 +16,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from urllib.parse import quote
 
-from . import config, curadoria, imagem, precos, telegram
+from . import config, curadoria, imagem, marcas, precos, telegram
 from .garimpar import BRT, FMT, agora, carregar_fila, salvar_fila
 from .imagem import plataforma
 from .precos import tem_variacoes
@@ -111,7 +111,7 @@ def texto_whatsapp(o):
     partes += [f"🔥 *{o['titulo'].replace('*', '')}*", ""]
     if gancho:
         partes += gancho + [""]
-    prova = "🏬 Loja oficial Shark Ninja" if plataforma(o) == "sharkninja" else f"⭐ {nota} • {vendas}+ vendidos"
+    prova = f"🏬 {marcas.texto_oficial(o)}" if marcas.eh_marca(o) else f"⭐ {nota} • {vendas}+ vendidos"
     partes += [preco, prova, "",
                f"🛒 Compre na {loja}:", o["link_afiliado"], "",
                f"_{precos.aviso(o)}_",

@@ -1,15 +1,17 @@
-"""Shark Ninja BR pela Awin (feed de produtos do programa de afiliados).
+"""Marcas oficiais pela Awin (Shark Ninja BR, Arno BR): feed de produtos dos programas de afiliados.
 
-Diferente da Shopee e da AliExpress, aqui não há busca por palavra-chave nem vendas/nota: o
-programa da marca tem um catálogo pequeno (feed CSV da Awin) e cada produto já vem com o link de
-afiliado pronto (aw_deep_link). Por isso a Shark Ninja entra no robô por um caminho próprio:
+Diferente da Shopee e da AliExpress, aqui não há busca por palavra-chave nem vendas/nota: cada
+programa tem um catálogo pequeno (feed CSV da Awin) e cada produto já vem com o link de
+afiliado pronto (aw_deep_link). Um feed só traz todas as marcas (coluna merchant_name); a tabela de
+marcas fica em src/marcas.py. As marcas entram no robô por um caminho próprio:
 
 - as regras da Shopee (vendas, nota, teto de preço) não valem — são produtos da marca oficial;
 - cada conta fica com o seu nicho: Garimpo VIP = casa e cozinha (aspiradores, air fryer, etc.),
   Ana Novo Achados = cabelo (secadores e modeladores);
-- no máximo SHARK_POR_GARIMPO produtos novos entram na fila por rodada, e há limite diário de
-  postagem (ver postar.py e telegram_ofertas.py), para a marca não dominar a página;
-- antes de postar, o preço e o estoque são conferidos de novo no feed (conferir()).
+- no máximo SHARK_POR_GARIMPO produtos novos de cada marca entram na fila por rodada, e há limite
+  diário de postagem por marca (ver postar.py e telegram_ofertas.py), para a marca não dominar a página;
+- antes de postar, o preço e o estoque são conferidos de novo no feed (conferir()). Marca com feed
+  parado (Arno: conferir_site) tem o preço conferido na própria loja (VTEX), ao entrar na fila e antes de postar.
 
 Segredos: AWIN_FEED_URL (URL do feed gerada em Ferramentas → Crie um Feed, CSV com vírgula e gzip;
 contém a chave da Awin, por isso nunca vai para o log). Ligue com AWIN_ATIVO=1.
@@ -25,10 +27,7 @@ import unicodedata
 import requests
 
 from . import config
-
-PLATAFORMA = "sharkninja"
-LOJA = "Shark-Ninja BR"
-MARCA = "Shark Ninja"
+from .marcas import MARCAS
 
 _cache = {"produtos": None}
 
@@ -112,12 +111,26 @@ _CABELO = re.compile(r"\b(secador|secadores|modelador|modeladores|flexstyle|spee
                      r"alisador|alisadora|cachos|cabelo|cabelos|hair|styler|babyliss|escova secadora)\b")
 
 
-def _tipo(nome):
+_PALAVRAS_MARCA = {"shark", "ninja", "arno"}
+
+
+def _tipo(nome, plataforma):
     """Primeira palavra do nome que não seja a marca ("Shark Aspirador Vertical" → "aspirador")."""
     for p in re.findall(r"[a-z0-9]+", _sem_acento(nome)):
-        if p not in ("shark", "ninja") and len(p) > 2:
+        if p not in _PALAVRAS_MARCA and len(p) > 2:
             return p
-    return "shark ninja"
+    return MARCAS[plataforma]["nome"].lower()
+
+
+def plataforma_da_linha(l):
+    """Qual marca é a linha do feed, pelo nome do anunciante. Feed antigo sem a coluna = Shark Ninja."""
+    anunciante = _sem_acento(l.get("merchant_name", ""))
+    if not anunciante:
+        return "sharkninja"
+    for p, m in MARCAS.items():
+        if any(a in anunciante for a in m["anunciante"]):
+            return p
+    return None   # anunciante que o robô ainda não conhece (falta linha em src/marcas.py)
 
 
 def categoria_do_produto(nome, categoria_feed=""):
@@ -130,6 +143,8 @@ def categoria_do_produto(nome, categoria_feed=""):
 
 def normalizar(l):
     """Linha do feed → oferta no formato do robô (mesmos campos de shopee/aliexpress)."""
+    plat = plataforma_da_linha(l) or "desconhecida"
+    m = MARCAS.get(plat, {"nome": l.get("merchant_name", ""), "loja": l.get("merchant_name", ""), "prefixo": "xx"})
     nome = " ".join(_SIMBOLOS.sub("", l.get("product_name", "")).split())
     preco = _preco(l.get("search_price") or l.get("store_price") or l.get("display_price"))
     antigo = _preco(l.get("product_price_old") or l.get("rrp_price"))
@@ -138,10 +153,10 @@ def normalizar(l):
     pid = l.get("aw_product_id") or l.get("merchant_product_id") or ""
     cat = categoria_do_produto(nome, l.get("merchant_category") or l.get("category_name") or "")
     o = {
-        "id": f"sn{pid}",
+        "id": f"{m['prefixo']}{pid}",
         "nome": nome,
         "categoria": cat,
-        "palavra": _tipo(nome),
+        "palavra": _tipo(nome, plat) if plat in MARCAS else "",
         "preco": preco,
         "preco_fmt": f"{preco:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."),
         "preco_de": round(antigo, 2) if antigo > preco else None,
@@ -150,10 +165,10 @@ def normalizar(l):
         "comissao_pct": config.AWIN_COMISSAO_PCT,
         "vendas": 0,                     # o feed não traz vendas nem nota: a arte mostra "loja oficial"
         "nota": 0.0,
-        "loja": LOJA,
-        "marca": (l.get("brand_name") or MARCA).strip() or MARCA,
+        "loja": m["loja"],
+        "marca": (l.get("brand_name") or m["nome"]).strip() or m["nome"],
         "voltagem": voltagem(nome),
-        "plataforma": PLATAFORMA,
+        "plataforma": plat,
         "imagem": imagem,
         "imagens_feed": {k: l.get(k, "") for k in ("large_image", "merchant_image_url", "aw_image_url", "merchant_thumb_url") if l.get(k)},
         "link_afiliado": l.get("aw_deep_link", ""),
@@ -166,7 +181,9 @@ def normalizar(l):
 
 
 def motivo_recusa(o):
-    """Corte duro da Shark Ninja (sem teto de preço, sem vendas/nota)."""
+    """Corte duro das marcas oficiais (sem teto de preço, sem vendas/nota)."""
+    if o["plataforma"] not in MARCAS:
+        return "anunciante sem cadastro em src/marcas.py"
     if not o["id"][2:]:
         return "sem id"
     if not o["link_afiliado"].startswith("https://") or not o["imagem"].startswith("http"):
@@ -195,13 +212,16 @@ def produtos(forcar=False):
             ofertas.append(o)
         melhores = {}
         for o in ofertas:   # uma versão por produto (110V/220V): fica a de voltagem preferida, depois a mais barata
-            k = (o["categoria"], _chave_modelo(o["nome"]))
+            k = (o["plataforma"], o["categoria"], _chave_modelo(o["nome"]))
             if k not in melhores or (_PREF_VOLT.get(o["voltagem"], 1), o["preco"]) < (
                     _PREF_VOLT.get(melhores[k]["voltagem"], 1), melhores[k]["preco"]):
                 melhores[k] = o
         variantes = len(ofertas) - len(melhores)
-        ofertas = [o for o in ofertas if melhores[(o["categoria"], _chave_modelo(o["nome"]))] is o]
-        print(f"🦈 Shark Ninja (Awin): {len(ofertas)} produtos válidos no feed | recusados: {recusas}"
+        ofertas = [o for o in ofertas if melhores[(o["plataforma"], o["categoria"], _chave_modelo(o["nome"]))] is o]
+        por_marca = {}
+        for o in ofertas:
+            por_marca[MARCAS[o["plataforma"]]["nome"]] = por_marca.get(MARCAS[o["plataforma"]]["nome"], 0) + 1
+        print(f"🏬 Marcas (Awin): {len(ofertas)} produtos válidos no feed {por_marca} | recusados: {recusas}"
               f"{' | versões de voltagem repetidas: ' + str(variantes) if variantes else ''}")
         _cache["produtos"] = ofertas
     return _cache["produtos"]
@@ -210,26 +230,69 @@ def produtos(forcar=False):
 # ---------------------------------------------------------------- uso no garimpo
 
 def candidatos(fila, ja_usado):
-    """Ofertas novas da Shark Ninja para este perfil (no máximo SHARK_POR_GARIMPO), prontas para a fila.
+    """Ofertas novas das marcas para este perfil (no máximo SHARK_POR_GARIMPO de cada), prontas para a fila.
     `ja_usado(fila, id)` é a regra de não repetir (garimpar.ja_usado)."""
     if not configurado():
         return []
     try:
         todas = produtos()
     except Exception as e:
-        print(f"::warning::{e} A Shark Ninja fica de fora desta rodada.")
+        print(f"::warning::{e} As marcas oficiais ficam de fora desta rodada.")
         return []
     do_perfil = [o for o in todas if o["categoria"] in config.NICHO and not ja_usado(fila, o["id"])]
     # entra primeiro o que está em promoção e o que paga mais; o resto rodiza porque ja_usado bloqueia o que já saiu
     do_perfil.sort(key=lambda o: (o["desconto"], o["comissao"]), reverse=True)
-    escolhidas = []
-    for o in do_perfil[:config.SHARK_POR_GARIMPO]:
+    escolhidas, por_marca = [], {}
+    for o in do_perfil:
+        plat = o["plataforma"]
+        if por_marca.get(plat, 0) >= config.SHARK_POR_GARIMPO:
+            continue
         o = dict(o)
+        if MARCAS[plat]["conferir_site"] and _conferir_site(o) in ("sumiu", "erro"):
+            continue   # feed parado: só entra o que a loja confirma que existe, com o preço de hoje
         o.update({"uau": config.SHARK_UAU, "nivel": "ouro", "origem_busca": "marca",
                   "pontos": config.SHARK_PONTOS, "so_telegram": False})
         escolhidas.append(o)
-    print(f"🦈 Shark Ninja para o perfil {config.PERFIL}: {len(do_perfil)} disponíveis, {len(escolhidas)} entram na rodada.")
+        por_marca[plat] = por_marca.get(plat, 0) + 1
+    print(f"🏬 Marcas para o perfil {config.PERFIL}: {len(do_perfil)} disponíveis, entram na rodada: "
+          f"{ {MARCAS[p]['nome']: n for p, n in por_marca.items()} or 'nenhuma'}.")
     return escolhidas
+
+
+_PAGINA_VTEX = re.compile(r"^(https?://[^/?#]+)/([^/?#]+)/p\b")
+
+
+def _conferir_site(o):
+    """Preço e estoque na loja da marca (VTEX), para quando o feed da Awin está parado.
+    Atualiza o e devolve 'ok', 'mudou', 'sumiu' ou 'erro' (loja fora do ar / página fora do padrão)."""
+    m = _PAGINA_VTEX.match(o.get("pagina") or "")
+    if not m:
+        return "erro"
+    base, slug = m.groups()
+    try:
+        r = requests.get(f"{base}/api/catalog_system/pub/products/search/{slug}/p", timeout=30,
+                         headers={"User-Agent": "Mozilla/5.0"})
+        r.raise_for_status()
+        produtos_site = r.json()
+    except Exception as e:
+        print(f"::warning::Não consegui conferir {o['id']} na loja ({type(e).__name__}).")
+        return "erro"
+    ofertas_site = [s["commertialOffer"] for p in produtos_site for i in p.get("items", [])
+                    for s in i.get("sellers", []) if (s.get("commertialOffer") or {}).get("AvailableQuantity", 0) > 0
+                    and (s["commertialOffer"].get("Price") or 0) > 0]
+    if not ofertas_site:
+        return "sumiu"
+    melhor = min(ofertas_site, key=lambda c: c["Price"])
+    antigo = o.get("preco") or 0
+    preco, de = float(melhor["Price"]), float(melhor.get("ListPrice") or 0)
+    o["preco"] = preco
+    o["preco_fmt"] = f"{preco:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+    o["preco_de"] = round(de, 2) if de > preco else None
+    o["desconto"] = round((1 - preco / de) * 100) if de > preco > 0 else 0
+    o["comissao"] = round(preco * config.AWIN_COMISSAO_PCT / 100, 2)
+    from .precos import ajustar_de
+    ajustar_de(o)
+    return "mudou" if abs(preco - antigo) >= 0.01 else "ok"
 
 
 def conferir(o):
@@ -245,6 +308,15 @@ def conferir(o):
         return "sumiu"     # saiu do feed, sem estoque ou sem preço
     antigo = o.get("preco") or 0
     from .precos import SUBIDA_MAX
+    if MARCAS.get(o.get("plataforma"), {}).get("conferir_site"):
+        o["link_afiliado"] = atual["link_afiliado"]
+        situacao = _conferir_site(o)
+        if situacao == "erro":
+            print(f"::warning::{o['id']}: loja não respondeu; não posto com o preço do feed parado.")
+            return "sumiu"
+        if situacao != "sumiu" and antigo and o["preco"] > antigo * SUBIDA_MAX:
+            return "subiu"
+        return situacao
     if antigo and atual["preco"] > antigo * SUBIDA_MAX:
         return "subiu"
     mudou = abs(atual["preco"] - antigo) >= 0.01
@@ -272,7 +344,8 @@ if __name__ == "__main__":   # teste: python -m src.awin  (com AWIN_FEED_URL e A
         from . import imagem, legenda
         saida = []
         try:
-            alvo = [o for o in produtos() if o["categoria"] in config.NICHO][:2]
+            do_nicho = [o for o in produtos() if o["categoria"] in config.NICHO]
+            alvo = [next(o for o in do_nicho if o["plataforma"] == p) for p in dict.fromkeys(o["plataforma"] for o in do_nicho)][:3]
             for o in alvo:
                 o.update(uau=config.SHARK_UAU, nivel="ouro")
                 t = legenda.gerar(o)
@@ -326,10 +399,18 @@ if __name__ == "__main__":   # teste: python -m src.awin  (com AWIN_FEED_URL e A
                                  f"preço={o['preco']} | foto {'ok' if o['imagem'] else 'FALTA'} | "
                                  f"link {'ok' if o['link_afiliado'] else 'FALTA'}")
         aviso_unico("Recusados", recusados)
-        validos = [f"[{o['categoria']}] {o['nome'][:60]} | R$ {o['preco_fmt']}"
+        validos = [f"[{MARCAS[o['plataforma']]['nome']} · {o['categoria']}] {o['nome'][:60]} | R$ {o['preco_fmt']}"
                    f"{' (de R$ ' + str(o['preco_de']) + ')' if o['preco_de'] else ''} | comissão R$ {o['comissao']:.2f}"
                    f"{' | ' + o['voltagem'] if o['voltagem'] else ''}" for o in produtos()]
         aviso_unico("Produtos que o robô usaria", validos)
+        site = []   # marca com feed parado: compara o preço do feed com o da loja hoje
+        for o in [o for o in produtos() if MARCAS[o["plataforma"]]["conferir_site"]][:8]:
+            o, feed = dict(o), o["preco_fmt"]
+            situacao = _conferir_site(o)
+            site.append(f"{o['nome'][:55]} | feed R$ {feed} | loja hoje: "
+                        + (f"R$ {o['preco_fmt']}" if situacao in ("ok", "mudou") else situacao.upper()))
+        if site:
+            aviso_unico("Preço na loja (feed parado)", site)
     except Exception as e:
         print(f"::error::{e}")
         sys.exit(1)

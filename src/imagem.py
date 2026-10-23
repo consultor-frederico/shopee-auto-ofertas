@@ -5,7 +5,7 @@ import re
 import requests
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
-from . import config
+from . import config, marcas
 
 L, A = 1080, 1350
 # Paleta da conta (config.PERFIS): no Garimpo VIP é a do logo (marrom e dourado)
@@ -32,7 +32,7 @@ _VTEX = re.compile(r"^(https?://[^/]+)/arquivos/ids/(\d+)")
 
 
 def _baixar_foto(url):
-    """Baixa a foto. Loja VTEX (Shark Ninja): o feed traz a miniatura (…/ids/123_2, 292 px); o endereço sem o
+    """Baixa a foto. Loja VTEX (Shark Ninja, Arno): o feed traz a miniatura (…/ids/123_2, 292 px); o endereço sem o
     sufixo é a foto original (1500 px), então tenta essa primeiro e cai na miniatura se falhar."""
     m = _VTEX.match(url or "")
     tentativas = ([f"{m.group(1)}/arquivos/ids/{m.group(2)}"] if m else []) + [url]
@@ -81,7 +81,7 @@ def _estrela(d, cx, cy, r, cor):
 LOJAS = {
     "shopee": {"nome": "SHOPEE", "cor": "#EE4D2D"},
     "aliexpress": {"nome": "ALIEXPRESS", "cor": "#E43225"},
-    "sharkninja": {"nome": "SHARK NINJA", "cor": "#0B3C6F"},
+    **{p: {"nome": m["nome"].upper(), "cor": m["cor"]} for p, m in marcas.MARCAS.items()},
 }
 
 
@@ -90,11 +90,8 @@ def plataforma(oferta):
 
 
 def loja_oficial(oferta):
-    """Marca oficial (Shark Ninja pela Awin): não tem nota nem vendas, então a arte mostra isto no lugar."""
-    return plataforma(oferta) == "sharkninja"
-
-
-TEXTO_OFICIAL = "Loja oficial Shark Ninja"
+    """Marca oficial (Shark Ninja, Arno pela Awin): não tem nota nem vendas, então a arte mostra isto no lugar."""
+    return marcas.eh_marca(oferta)
 
 
 def selo_loja(d, oferta, x, y, escala=1.0):
@@ -241,7 +238,7 @@ def gerar(oferta: dict, destino, foto: Image.Image = None):
     yi = y + 140
     xi = 90 + 44
     if loja_oficial(oferta):
-        info, xi = TEXTO_OFICIAL, 90
+        info, xi = marcas.texto_oficial(oferta), 90
     else:
         _estrela(d, 90 + 18, yi + 21, 20, DOURADO)
     d.text((xi, yi), info, font=f_info, fill=CINZA)

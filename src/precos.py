@@ -7,6 +7,8 @@
 """
 import re
 
+from . import marcas
+
 
 def agora():
     from .garimpar import agora as _a
@@ -54,7 +56,7 @@ def conferir(o):
     situacao = "ok"
     if (o.get("plataforma") or "shopee") == "shopee" and not o.get("video_manual"):
         situacao = _consultar(o, antigo)
-    elif o.get("plataforma") == "sharkninja":
+    elif marcas.eh_marca(o):
         from . import awin
         situacao = awin.conferir(o)
     if situacao in ("ok", "mudou"):
@@ -88,7 +90,7 @@ def _consultar(o, antigo):
 
 
 def aviso(o):
-    loja = {"aliexpress": "AliExpress", "sharkninja": "Shark Ninja"}.get(o.get("plataforma"), "Shopee")
+    loja = "AliExpress" if o.get("plataforma") == "aliexpress" else (marcas.nome(o) if marcas.eh_marca(o) else "Shopee")
     quando = o.get("preco_conferido_em") or agora().strftime("%d/%m às %H:%M")
     base = "Preço a partir de" if tem_variacoes(o) else "Preço"
     pix = " Pagando no Pix, a Shopee costuma dar desconto extra." if loja == "Shopee" else ""

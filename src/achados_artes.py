@@ -8,10 +8,10 @@ Ana         — slide de produto: 0 = arco · 1 = polaroid (lavanda) · 2 = cír
 """
 from PIL import Image, ImageDraw, ImageFilter, ImageOps
 
-from . import config, imagem
+from . import config, imagem, marcas
 
 L, A = 1080, 1350
-NOMES_LOJA = {"shopee": "SHOPEE", "aliexpress": "ALIEXPRESS", "sharkninja": "SHARK NINJA"}
+NOMES_LOJA = {"shopee": "SHOPEE", "aliexpress": "ALIEXPRESS", **{p: m["nome"].upper() for p, m in marcas.MARCAS.items()}}
 
 TITULOS_GARIMPO = [("ACHADOS DO ZÉ", "arrasta pro lado"), ("O ZÉ GARIMPOU", "arrasta e confere"),
                    ("OLHA O QUE O ZÉ ACHOU", "arrasta pro lado")]
@@ -27,8 +27,8 @@ def _brl_linha(o):
 
 
 def _info(o):
-    if o.get("plataforma") == "sharkninja":
-        return "Loja oficial Shark Ninja"
+    if marcas.eh_marca(o):
+        return marcas.texto_oficial(o)
     vendas = f"{o.get('vendas', 0):,}".replace(",", ".")
     if o.get("avaliacao_pct"):
         return f"{o['avaliacao_pct']:.0f}% aprovação  •  {vendas}+ vendidos"

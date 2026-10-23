@@ -10,7 +10,7 @@ import subprocess
 
 from PIL import Image, ImageDraw, ImageOps
 
-from . import config, imagem
+from . import config, imagem, marcas
 
 L, A = 1080, 1350
 ZE_NO_CARROSSEL = os.getenv("ZE_NO_CARROSSEL", "1") != "0"
@@ -48,8 +48,8 @@ def _motivos(oferta):
         preco = f"De R$ {imagem._brl(oferta['preco_de'])} por R$ {oferta['preco_fmt']}"
     else:
         preco = f"Sai por R$ {oferta['preco_fmt']}"
-    if oferta.get("plataforma") == "sharkninja":   # marca oficial: sem nota nem vendas no feed
-        return ["Loja oficial Shark Ninja", "Preço conferido hoje", preco]
+    if marcas.eh_marca(oferta):   # marca oficial: sem nota nem vendas no feed
+        return [marcas.texto_oficial(oferta), "Preço conferido hoje", preco]
     return [nota, f"Mais de {vendas} vendidos", preco]
 
 

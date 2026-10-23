@@ -9,10 +9,11 @@ import sys
 
 import requests
 
+from . import marcas
 from .imagem import plataforma
 from .precos import aviso, tem_variacoes
 
-NOME_LOJA = {"shopee": "Shopee", "aliexpress": "AliExpress", "sharkninja": "Shark Ninja"}
+NOME_LOJA = {"shopee": "Shopee", "aliexpress": "AliExpress", **{p: m["nome"] for p, m in marcas.MARCAS.items()}}
 
 
 def configurado():
@@ -55,7 +56,7 @@ def legenda(oferta):
     if oferta.get("nivel") == "achado":
         partes = ["💎 <b>ACHADO ESCONDIDO</b> — pouca gente conhece", ""] + partes
     partes += linhas + [""] if linhas else []
-    prova = "🏬 Loja oficial Shark Ninja" if plataforma(oferta) == "sharkninja" else f"⭐ {nota}  •  {vendas}+ vendidos"
+    prova = f"🏬 {marcas.texto_oficial(oferta)}" if marcas.eh_marca(oferta) else f"⭐ {nota}  •  {vendas}+ vendidos"
     partes += [preco, prova, f"🏷️ Oferta {loja}", "", f"<i>{html.escape(aviso(oferta))}</i>",
                "<i>Link de afiliado: você paga o mesmo e ajuda o Garimpo VIP 💛</i>"]
     return "\n".join(partes)[:1024]

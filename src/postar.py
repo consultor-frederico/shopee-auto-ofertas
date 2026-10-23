@@ -15,7 +15,7 @@ from datetime import datetime, timedelta
 
 import requests
 
-from . import carrossel, config, facebook, precos, imagem, instagram, legenda, reels, story, telegram, video_manual, youtube, ze, variedade
+from . import carrossel, config, facebook, marcas, precos, imagem, instagram, legenda, reels, story, telegram, video_manual, youtube, ze, variedade
 from .garimpar import BRT, FMT, agora, carregar_fila, salvar_fila
 
 PASTA_SITE = config.RAIZ / "site"
@@ -50,13 +50,6 @@ def _ultimos_postados(fila, n=3):
     return sorted(post, key=lambda o: (o["postado_em"], o.get("postado_ts", 0)), reverse=True)[:n]
 
 
-def _shark_hoje(fila, campo):
-    """Quantas ofertas da Shark Ninja já saíram hoje neste canal (campo = "postado_em")."""
-    hoje = agora().strftime("%Y-%m-%d")
-    return sum(1 for o in fila["ofertas"].values()
-               if o.get("plataforma") == "sharkninja" and str(o.get(campo) or "").startswith(hoje))
-
-
 def candidatos_ordenados(fila):
     """Vídeo manual primeiro; depois Ouro (Prata só se faltar Ouro), evitando repetir categoria."""
     candidatos = sorted(_validos(fila), key=lambda o: o.get("pontos", 0), reverse=True)
@@ -67,8 +60,8 @@ def candidatos_ordenados(fila):
     preferidos = [o for o in candidatos if o.get("preferencial") and not o.get("video_manual")]   # aprovadas por você
     resto = [o for o in candidatos if not o.get("video_manual") and not o.get("so_telegram") and not o.get("pedido")
              and o["categoria"] in config.NICHO and variedade.diferenciado(o)]   # outra conta fica de fora; só produto diferenciado
-    if _shark_hoje(fila, "postado_em") >= config.SHARK_POR_DIA_INSTAGRAM:   # a marca não domina a página
-        resto = [o for o in resto if o.get("plataforma") != "sharkninja"]
+    cheias = {p for p, n in marcas.hoje_por_marca(fila, "postado_em", agora().strftime("%Y-%m-%d")).items() if n >= config.SHARK_POR_DIA_INSTAGRAM}
+    resto = [o for o in resto if o.get("plataforma") not in cheias]   # cada marca no máximo X por dia: não domina a página
     # 💎 Achado escondido: entra junto com o Ouro, mas no máximo config.ACHADOS_POR_DIA por dia
     hoje = agora().strftime("%Y-%m-%d")
     achados_hoje = sum(1 for o in fila["ofertas"].values() if o.get("nivel") == "achado"

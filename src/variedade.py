@@ -10,7 +10,7 @@ diferentes (não caem no filtro de produto repetido), mas para quem segue a pág
 """
 from datetime import datetime, timedelta
 
-from . import config, curadoria
+from . import config, curadoria, marcas
 
 # Palavras que, em qualquer ponto do nome, definem a família. A ordem importa:
 # a primeira família que bater vence (ex.: "relógio smartwatch" → smartwatch).
@@ -74,7 +74,7 @@ def uau(o):
     if franquia(o):
         return 0.0
     nota = float(o.get("uau", 0) or 0)
-    if o.get("plataforma") == "sharkninja":   # marca oficial (catálogo curado): aspirador/air fryer não são "vitrine"
+    if marcas.eh_marca(o):   # marca oficial (catálogo curado): aspirador/air fryer não são "vitrine"
         return nota
     return min(nota, TETO_COMUM) if familia(o) in COMUNS else nota
 
