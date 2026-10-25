@@ -167,11 +167,17 @@ def rodar():
         if not o:
             print(f"::warning::Oferta {forcada} não encontrada na fila.")
             return
+        situacao = precos.conferir(o)   # reenvio também confere o preço na loja antes de mandar
+        if situacao in ("sumiu", "subiu"):
+            print(f"::warning::Oferta {forcada} não enviada: o preço {situacao} na loja.")
+            salvar_fila(fila)
+            return
         pasta = Path(tempfile.mkdtemp())
         arte = pasta / f"{o['id']}.jpg"
         imagem.gerar(o, arte, foto=imagem._baixar_foto(o["imagem"]))
         enviar(o, arte)
-        print(f"📲 Reenviada: {o['id']} — {o.get('titulo', '')}")
+        salvar_fila(fila)   # guarda o preço conferido
+        print(f"📲 Reenviada: {o['id']} — {o.get('titulo', '')} (R$ {o['preco_fmt']})")
         return
     pool = candidatas(fila)
     if not pool:
