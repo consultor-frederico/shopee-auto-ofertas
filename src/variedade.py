@@ -66,6 +66,8 @@ FRANQUIAS = ["transformers", "optimus", "bumblebee", "megatron", "marvel", "iron
 
 def franquia(o):
     txt = _texto(o if isinstance(o, str) else o.get("nome", ""))
+    if not isinstance(o, str) and marcas.eh_marca(o):   # o nome da própria marca (Lego) não conta como franquia
+        txt = txt.replace(_texto(marcas.nome(o)), " ")
     return any(_texto(f) in txt for f in FRANQUIAS)
 
 

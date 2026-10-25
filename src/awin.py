@@ -111,7 +111,7 @@ _CABELO = re.compile(r"\b(secador|secadores|modelador|modeladores|flexstyle|spee
                      r"alisador|alisadora|cachos|cabelo|cabelos|hair|styler|babyliss|escova secadora)\b")
 
 
-_PALAVRAS_MARCA = {"shark", "ninja", "arno"}
+_PALAVRAS_MARCA = {"shark", "ninja", "arno", "lego"}
 
 
 def _tipo(nome, plataforma):
@@ -151,7 +151,7 @@ def normalizar(l):
     desconto = round((1 - preco / antigo) * 100) if antigo > preco > 0 else 0
     imagem = l.get("large_image") or l.get("merchant_image_url") or l.get("aw_image_url") or ""
     pid = l.get("aw_product_id") or l.get("merchant_product_id") or ""
-    cat = categoria_do_produto(nome, l.get("merchant_category") or l.get("category_name") or "")
+    cat = m.get("categoria") or categoria_do_produto(nome, l.get("merchant_category") or l.get("category_name") or "")
     o = {
         "id": f"{m['prefixo']}{pid}",
         "nome": nome,
@@ -196,6 +196,13 @@ def motivo_recusa(o):
         return "sem nome"
     if o["categoria"] is None:
         return "acessório ou reposição"
+    m = MARCAS[o["plataforma"]]
+    if m.get("preco_max") and o["preco"] > m["preco_max"]:
+        return f"acima de R$ {m['preco_max']}"
+    if m.get("sem_licencas"):
+        from .variedade import franquia
+        if franquia(o):
+            return "licença (franquia)"
     return None
 
 

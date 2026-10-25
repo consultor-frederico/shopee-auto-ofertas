@@ -7,6 +7,9 @@ lê esta tabela.
 - anunciante: pedaços do nome do anunciante na coluna merchant_name do feed (sem acento, minúsculas)
 - prefixo: começo do id na fila ("sn123"), para não misturar com ids da Shopee
 - conferir_site: o feed da marca demora a atualizar, então o preço é conferido na loja (VTEX) antes de postar
+- categoria: categoria fixa da marca (senão: cabelo vai para a Ana e o resto é "lar" no Garimpo VIP)
+- preco_max: teto de preço só desta marca (as outras não têm teto)
+- sem_licencas: produto de licença (Star Wars, Marvel, Harry Potter…: lista de franquias em variedade.py) fica de fora
 """
 
 MARCAS = {
@@ -14,6 +17,9 @@ MARCAS = {
                    "anunciante": ("shark", "ninja"), "hashtag": "#sharkninja", "conferir_site": False},
     "arno": {"nome": "Arno", "loja": "Arno BR", "cor": "#C8102E", "prefixo": "ar",
              "anunciante": ("arno",), "hashtag": "#arno", "conferir_site": True},
+    "lego": {"nome": "Lego", "loja": "Lego BR", "cor": "#D01012", "prefixo": "lg",
+             "anunciante": ("lego",), "hashtag": "#lego", "conferir_site": False,
+             "categoria": "brinquedos", "preco_max": 300, "sem_licencas": True},
 }
 
 
