@@ -3,10 +3,11 @@
 <meta name="robots" content="noindex">
 <title>Garimpo VIP · WhatsApp</title>
 <!-- Kit do Canal do WhatsApp: um toque compartilha a arte com o texto já na legenda.
-     A arte e o texto ficam em data/zap/<id>.jpg|.txt no repositório (o workflow 17 grava). -->
+     ?id=<oferta>: arte e texto em data/zap/<id>.jpg|.txt (o workflow 17 grava).
+     ?d=<nome>: vídeo de divulgação em assets/divulgacao/<nome>.mp4|.txt (workflow 27). -->
 <style>
 body{font-family:system-ui,sans-serif;max-width:520px;margin:0 auto;padding:16px;background:#F3EFE8;color:#24150A;line-height:1.5}
-img{width:100%;border-radius:12px;display:block}
+img,video{width:100%;border-radius:12px;display:block}
 button{width:100%;padding:16px;margin-top:12px;border:0;border-radius:12px;font-size:18px;font-weight:700;background:#25D366;color:#fff}
 button.sec{background:#8A6A1F}
 pre{white-space:pre-wrap;font-family:inherit;background:#fff;padding:12px;border-radius:12px;font-size:14px}
@@ -14,30 +15,36 @@ pre{white-space:pre-wrap;font-family:inherit;background:#fff;padding:12px;border
 </style></head>
 <body>
 <p id="aviso">Carregando a oferta…</p>
-<img id="arte" alt="">
+<img id="arte" alt="" hidden><video id="video" controls playsinline hidden></video>
 <button id="compartilhar" hidden>📲 Compartilhar no WhatsApp</button>
-<button id="baixar" class="sec" hidden>⬇️ Baixar a foto</button>
+<button id="baixar" class="sec" hidden>⬇️ Baixar</button>
 <button id="copiar" class="sec" hidden>📋 Copiar o texto</button>
 <pre id="texto"></pre>
 <script>
-const id = new URLSearchParams(location.search).get("id") || "";
-const base = "https://raw.githubusercontent.com/consultor-frederico/shopee-auto-ofertas/main/data/zap/" + id;
+const qs = new URLSearchParams(location.search);
+const raiz = "https://raw.githubusercontent.com/consultor-frederico/shopee-auto-ofertas/main/";
+const ehVideo = qs.has("d");
+const id = (ehVideo ? qs.get("d") : qs.get("id")) || "";
+const base = raiz + (ehVideo ? "assets/divulgacao/" : "data/zap/") + id;
+const ext = ehVideo ? ".mp4" : ".jpg", tipo = ehVideo ? "video/mp4" : "image/jpeg";
 const $ = s => document.getElementById(s);
 let texto = "", foto = null;
 
 async function carregar(tentativa) {
   if (!/^[\w-]+$/.test(id)) { $("aviso").textContent = "Link sem oferta."; return; }
   try {
-    const [t, f] = await Promise.all([fetch(base + ".txt", {cache: "no-store"}), fetch(base + ".jpg", {cache: "no-store"})]);
+    const [t, f] = await Promise.all([fetch(base + ".txt", {cache: "no-store"}), fetch(base + ext, {cache: "no-store"})]);
     if (!t.ok || !f.ok) throw new Error("ainda não publicado");
     texto = await t.text();
-    foto = new File([await f.blob()], "garimpo-" + id + ".jpg", {type: "image/jpeg"});
+    foto = new File([await f.blob()], "garimpo-" + id + ext, {type: tipo});
   } catch (e) {   // o robô grava os arquivos segundos depois de mandar o Telegram
     if (tentativa < 6) { $("aviso").textContent = "Preparando a oferta…"; return setTimeout(() => carregar(tentativa + 1), 5000); }
     $("aviso").textContent = "Não achei esta oferta. Tente de novo em 1 minuto.";
     return;
   }
-  $("arte").src = URL.createObjectURL(foto);
+  const midia = $(ehVideo ? "video" : "arte");
+  midia.src = URL.createObjectURL(foto);
+  midia.hidden = false;
   $("texto").textContent = texto;
   $("aviso").textContent = "Toque no botão verde e escolha o seu Canal.";
   const podeArquivo = navigator.canShare && navigator.canShare({files: [foto]});
