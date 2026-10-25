@@ -53,8 +53,18 @@ def baixar_linhas():
         # a URL leva a chave da Awin: nunca mostrar o endereço, só o tipo do erro
         raise RuntimeError(f"Awin: falha ao baixar o feed ({type(e).__name__}"
                            f"{' ' + str(e.response.status_code) if getattr(e, 'response', None) is not None else ''}).") from None
-    leitor = csv.DictReader(io.StringIO(_texto(r.content)))
-    return [{(k or "").strip(): (v or "").strip() for k, v in linha.items()} for linha in leitor]
+    texto = _texto(r.content)
+    cabecalho = texto.split("\n", 1)[0]
+    sep = max([",", "\t", "|", ";"], key=cabecalho.count)   # aceita o feed com vírgula, tab, barra ou ponto e vírgula
+    linhas, tortas = [], 0
+    for linha in csv.DictReader(io.StringIO(texto), delimiter=sep):
+        if None in linha or None in linha.values():   # coluna a mais ou a menos: linha desalinhada, dados não confiáveis
+            tortas += 1
+            continue
+        linhas.append({(k or "").strip(): (v or "").strip() for k, v in linha.items()})
+    if tortas:
+        print(f"::warning::Awin: {tortas} linhas do feed com colunas desalinhadas foram ignoradas.")
+    return linhas
 
 
 def _preco(v):
