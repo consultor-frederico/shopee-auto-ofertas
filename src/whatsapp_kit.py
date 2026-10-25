@@ -120,17 +120,16 @@ def texto_whatsapp(o):
 
 
 def enviar(o, arte):
-    """Uma mensagem só: a arte com a oferta na legenda e o botão ✅ Aprovar embaixo."""
+    """Duas mensagens: a arte sozinha (para salvar/compartilhar no WhatsApp) e o texto sozinho
+    (para copiar inteiro). Foto com legenda não serve: ao "Copiar" no Telegram só vai o texto."""
     chat = chat_privado()
-    texto = texto_whatsapp(o)
-    if len(texto) > 1000:   # legenda do Telegram aceita até 1024: tira a descrição, mantém o aviso inteiro
-        texto = texto_whatsapp(dict(o, legenda=""))
-    texto = texto[:1000]
-    aprovar = {"text": "✅ Aprovar", "callback_data": "ok:%s" % o["id"]}
+    texto = texto_whatsapp(o)[:4000]   # mensagem de texto aceita até 4096
     with open(arte, "rb") as f:
-        telegram._api("sendPhoto", data={"chat_id": chat, "caption": texto,
-                                         "reply_markup": json.dumps({"inline_keyboard": [[aprovar]]})},
+        telegram._api("sendPhoto", data={"chat_id": chat, "caption": "📸 1) Salve ou compartilhe esta foto no Canal"},
                       files={"photo": f})
+    aprovar = {"text": "✅ Aprovar", "callback_data": "ok:%s" % o["id"]}
+    telegram._api("sendMessage", data={"chat_id": chat, "text": texto, "disable_web_page_preview": "true",
+                                       "reply_markup": json.dumps({"inline_keyboard": [[aprovar]]})})
 
 
 def rodar():
