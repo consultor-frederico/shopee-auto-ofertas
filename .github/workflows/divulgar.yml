@@ -1,0 +1,34 @@
+name: 27 - Vídeo de divulgação no Telegram privado
+
+# Manda assets/divulgacao/<nome>.mp4 com o texto de <nome>.txt para o seu Telegram privado,
+# para repassar nos grupos.
+on:
+  workflow_dispatch:
+    inputs:
+      nome:
+        description: 'Nome do vídeo em assets/divulgacao (sem .mp4)'
+        required: true
+        default: 'ze_canal_whatsapp'
+
+jobs:
+  enviar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Enviar
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_PRIVADO: ${{ secrets.TELEGRAM_CHAT_PRIVADO }}
+          NOME: ${{ inputs.nome }}
+        run: python -m src.divulgar "$NOME"
