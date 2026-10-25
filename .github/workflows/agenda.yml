@@ -57,6 +57,8 @@ jobs:
           case "$DATA $HQ" in
             "2026-10-24 10:00") MANUAL="ze2:garimpo" ;;
             "2026-10-25 10:00") MANUAL="ana2:ana" ;;
+            "2026-10-26 10:00") MANUAL="ze2:garimpo" ;;   # reagendado: falhou 24/10 (erro já corrigido)
+            "2026-10-26 10:15") MANUAL="ana2:ana" ;;      # reagendado: falhou 25/10
             "2026-10-27 10:00") MANUAL="ze3:garimpo" ;;
             "2026-10-27 10:15") MANUAL="ana3:ana" ;;
           esac
