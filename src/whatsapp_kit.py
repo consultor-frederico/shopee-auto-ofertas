@@ -121,11 +121,11 @@ def texto_whatsapp(o):
 
 def enviar(o, arte):
     """Duas mensagens: a arte sozinha (para salvar/compartilhar no WhatsApp) e o texto sozinho
-    (para copiar inteiro). Foto com legenda não serve: ao "Copiar" no Telegram só vai o texto."""
+    (para copiar inteiro). O "Copiar" do Telegram nunca leva a foto: ela vai pelo "Salvar na galeria"."""
     chat = chat_privado()
     texto = texto_whatsapp(o)[:4000]   # mensagem de texto aceita até 4096
     with open(arte, "rb") as f:
-        telegram._api("sendPhoto", data={"chat_id": chat, "caption": "📸 1) Salve ou compartilhe esta foto no Canal"},
+        telegram._api("sendPhoto", data={"chat_id": chat},
                       files={"photo": f})
     aprovar = {"text": "✅ Aprovar", "callback_data": "ok:%s" % o["id"]}
     telegram._api("sendMessage", data={"chat_id": chat, "text": texto, "disable_web_page_preview": "true",
