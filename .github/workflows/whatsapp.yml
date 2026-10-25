@@ -42,6 +42,7 @@ jobs:
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
           SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
+          AWIN_FEED_URL: ${{ secrets.AWIN_FEED_URL }}   # confere preço/estoque das marcas (Arno, Shark) antes de mandar
         run: python -m src.whatsapp_kit
 
       - name: Salvar fila
