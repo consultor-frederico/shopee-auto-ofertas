@@ -68,6 +68,6 @@ def rodar(nome, destino="instagram"):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
+    if len(sys.argv) not in (2, 3):
         raise SystemExit("Uso: python -m src.publicar_manual <nome> [instagram|whatsapp]")
     rodar(sys.argv[1], sys.argv[2] if len(sys.argv) > 2 else "instagram")
