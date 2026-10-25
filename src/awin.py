@@ -146,7 +146,7 @@ def plataforma_da_linha(l):
 def categoria_do_produto(nome, categoria_feed=""):
     """'cabelo' (Ana) ou 'lar' (Garimpo VIP). Devolve None se for acessório/reposição."""
     t = _sem_acento(f"{nome} {categoria_feed}")
-    if _REPOSICAO.search(_sem_acento(nome)):
+    if _REPOSICAO.search(re.sub(r"\bcafeteira (de )?filtro\b", "cafeteira", _sem_acento(nome))):   # "Cafeteira Filtro" é aparelho
         return None
     return "cabelo" if _CABELO.search(t) else "lar"
 
