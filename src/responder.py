@@ -172,6 +172,9 @@ def responder(api=instagram):
             n = pedidos.coletar(api, minha)
             if n:
                 print(f"🙋 {n} pedidos novos nos posts do Zé.")
+            n = pedidos.entregar_privados(minha["user_id"])
+            if n:
+                print(f"📩 {n} pedidos sensíveis entregues no direct.")
         except Exception as e:
             print(f"::warning::Pedidos do Zé falharam: {e}")
         try:   # 🔎 Busca do Zé (post fixo com #BuscaDoZe)

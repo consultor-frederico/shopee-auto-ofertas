@@ -58,6 +58,21 @@ def _sem_acento(txt):
     return unicodedata.normalize("NFKD", txt).encode("ascii", "ignore").decode().lower()
 
 
+# Pedidos sensíveis (lingerie, íntimo, sex shop...): NUNCA entram no quadro público nem marcam a pessoa.
+# A resposta pública é neutra e o achado vai só no direct de quem pediu. A lista pega o óbvio; a IA cobre o resto.
+SENSIVEIS = ["lingerie", "lingeri", "calcinha", "cueca", "sutia", "corset", "espartilho", "sexy", "sexual", "sensual",
+             "sexo", "erotic", "intim", "consolo", "vibrador", "lubrificante", "camisinha", "preservativo",
+             "porno", "bdsm", "fantasia sexual", "anticoncep", "pilula"]
+# Palavras da config.PALAVRAS_PROIBIDAS que, para pedido privado, deixam de barrar (o resto continua barrado)
+PROIBIDAS_LIBERADAS_NO_PRIVADO = ["sex", "erótic", "lingerie"]
+RESPOSTA_PRIVADA_NEUTRA = "Anotado! Te chamo no direct 📩"
+
+
+def sensivel_por_palavra(*textos):
+    t = _sem_acento(" ".join(textos))
+    return any(_sem_acento(w) in t for w in SENSIVEIS)
+
+
 PEDE = re.compile(r"\b(procur|quer|queria|busc|ach|garimp|precis|gostaria|tem\b|traz|encontr)")
 
 
@@ -105,10 +120,19 @@ def coletar(api, minha):
                 continue
             usuario = c.get("username") or (c.get("from") or {}).get("username", "")
             texto = c.get("text", "")
-            termo = "" if pediu_link(texto) and len(texto.split()) <= 3 else _termo(texto)
+            termo, sensivel = _pedido(texto)
             reg = {"post": p["id_post"], "usuario": usuario, "autor": autor, "texto": c.get("text", ""),
                    "termo": termo, "em": _agora().strftime(_fmt()), "status": "novo" if termo else "ignorado"}
-            if termo:
+            if termo and sensivel:
+                reg["privado"] = True   # só direct: sem marcação, sem termo no público, sem post no quadro
+                try:
+                    api.responder_comentario(cid, RESPOSTA_PRIVADA_NEUTRA)
+                    reg["resposta"] = "ok"
+                except Exception as e:
+                    reg["resposta"] = f"erro: {str(e)[:200]}"
+                novos += 1
+                print(f"🔒 Pedido sensível de @{usuario}: entrega só no direct.")
+            elif termo:
                 try:
                     modelo = RESPOSTAS[len(dados) % len(RESPOSTAS)]
                     api.responder_comentario(cid, modelo.format(u=usuario, t=termo, T=termo.capitalize()))
@@ -133,33 +157,59 @@ def _termo(texto):
 
 # ------------------------------------------------------------------ 2) atender (garimpo)
 PROMPT_TERMO = """Um seguidor de uma página de achadinhos da Shopee comentou: "{texto}"
-Se ele está pedindo um produto, responda só com JSON {{"produto": "<termo curto de busca na Shopee, 1 a 4 palavras>"}}.
-Se não é pedido de produto (elogio, piada, pergunta, spam, algo proibido ou adulto), responda {{"produto": ""}}."""
+Se ele está pedindo um produto, responda só com JSON {{"produto": "<termo curto de busca na Shopee, 1 a 4 palavras>", "sensivel": false}}.
+Se o produto pedido é íntimo ou sexual (lingerie, roupa íntima, sex shop, produto erótico ou sensual), use "sensivel": true.
+Se não é pedido de produto (elogio, piada, pergunta, spam, algo proibido como droga ou arma), responda {{"produto": "", "sensivel": false}}."""
 
 
-def _refinar(reg):
-    """Termo de busca segundo a IA ("" = não é pedido). None se a IA não respondeu."""
+def _classificar(texto):
+    """(termo, sensível) segundo a IA. None se a IA não respondeu."""
     if not config.GROQ_API_KEY:
         return None
     from .legenda import _chamar_groq
     try:
-        bruto = _chamar_groq(PROMPT_TERMO.format(texto=reg["texto"][:200].replace('"', "'")))
-        return str(json.loads(re.search(r"\{.*\}", bruto, re.S).group(0)).get("produto", "")).strip().lower()[:50]
+        bruto = _chamar_groq(PROMPT_TERMO.format(texto=(texto or "")[:200].replace('"', "'")))
+        dados = json.loads(re.search(r"\{.*\}", bruto, re.S).group(0))
+        termo = str(dados.get("produto", "")).strip().lower()[:50]
+        return termo, bool(dados.get("sensivel")) and bool(termo)
     except Exception:
         return None
 
 
-def _aceitavel(o):
+def _refinar(reg):
+    """Termo de busca segundo a IA ("" = não é pedido ou é sensível). None se a IA não respondeu."""
+    r = _classificar(reg["texto"])
+    if r is None:
+        return None
+    termo, sensivel = r
+    return "" if sensivel else termo
+
+
+def _pedido(texto):
+    """(termo, sensível) de um comentário. Termo vazio = não é pedido de produto."""
+    from .responder import pediu_link
+    if pediu_link(texto) and len(texto.split()) <= 3:
+        return "", False
+    r = _classificar(texto)
+    if r is None:
+        termo, ia_sensivel = termo_do_comentario(texto), False
+    else:
+        termo, ia_sensivel = r
+    return termo, bool(termo) and (ia_sensivel or sensivel_por_palavra(termo, texto))
+
+
+def _aceitavel(o, privado=False):
     nome = o["nome"].lower()
+    proibidas = [p for p in config.PALAVRAS_PROIBIDAS if not (privado and p in PROIBIDAS_LIBERADAS_NO_PRIVADO)]
     return (o["link_afiliado"] and o["imagem"] and o["nota"] >= 4.5 and o["vendas"] >= 50
             and o["comissao"] >= 1 and 0 < o["preco"] <= config.PRECO_MAXIMO
-            and not any(p in nome for p in config.PALAVRAS_PROIBIDAS))
+            and not any(p in nome for p in proibidas))
 
 
-def _melhor(nos, termo, fila):
+def _melhor(nos, termo, fila, privado=False):
     from .garimpar import ja_usado, normalizar
     ofs = [normalizar(n, "pedido", termo) for n in nos]
-    ofs = [o for o in ofs if _aceitavel(o) and not ja_usado(fila, o["id"])]
+    ofs = [o for o in ofs if _aceitavel(o, privado) and not ja_usado(fila, o["id"])]
     if not ofs:
         return None
     return max(ofs, key=lambda o: (o["nota"] >= 4.8, min(o["vendas"], 5000) * o["nota"] + o["comissao"] * 50))
@@ -184,6 +234,22 @@ def atender(fila):
     entrou = 0
     for cid, reg in pendentes[:POR_GARIMPO]:
         reg["tentativas"] = reg.get("tentativas", 0) + 1
+        if reg.get("privado"):
+            termo = reg["termo"]
+            try:
+                o = _melhor(shopee.buscar_ofertas(termo, 1, 40, 2), termo, fila, privado=True)
+            except Exception as e:
+                print(f"⚠️  Busca do pedido sensível '{termo}' falhou: {e}")
+                o = None
+            if not o:
+                if reg["tentativas"] >= MAX_TENTATIVAS:
+                    reg["status"] = "nao_achou"
+                continue
+            reg.update({"status": "achado_privado", "achado": {"titulo": o["nome"][:80],
+                        "preco_fmt": o["preco_fmt"], "link_afiliado": o["link_afiliado"]}})
+            entrou += 1
+            print(f"🔒 Pedido sensível de @{reg['usuario']} achado (só no direct).")
+            continue
         termo = _refinar(reg)
         termo = reg["termo"] if termo is None else termo
         if not termo:
@@ -237,3 +303,32 @@ def entregar(oferta, ig_id):
     if reg:
         dados[p["comentario"]] = reg
         salvar(dados)
+
+
+# ------------------------------------------------------------------ 4) entregar_privados (direct, sem post)
+def entregar_privados(ig_id):
+    """Manda no direct o achado dos pedidos sensíveis. Nunca aparece no feed nem marca a pessoa."""
+    from . import instagram
+    dados = carregar()
+    limite = (_agora() - timedelta(days=DIAS_JANELA)).strftime(_fmt())
+    feitos = 0
+    for cid, reg in dados.items():
+        if reg.get("status") != "achado_privado":
+            continue
+        if reg.get("em", "") < limite:   # o Instagram só aceita resposta privada até 7 dias após o comentário
+            reg["status"] = "expirado"
+            continue
+        a = reg["achado"]
+        texto = (f"Oi! 🤠 Aqui é o Zé Garimpo. Você pediu {reg['termo']} e eu achei: {a['titulo']} "
+                 f"por R$ {a['preco_fmt']}! Toque no botão para ver na Shopee 👇\n"
+                 f"(link de afiliado: você paga o mesmo e ajuda o {config.NOME_MARCA})")
+        try:
+            instagram.resposta_privada_botao(ig_id, cid, texto, a["link_afiliado"], "🛒 Ver o achado")
+            reg["status"] = "entregue"
+            feitos += 1
+            print(f"📩 Pedido sensível entregue no direct de @{reg['usuario']}.")
+        except Exception as e:
+            reg["entrega"] = f"erro: {str(e)[:200]}"
+            print(f"::warning::Não consegui mandar o pedido sensível no direct de @{reg['usuario']}: {e}")
+    salvar(dados)
+    return feitos
