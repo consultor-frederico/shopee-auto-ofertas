@@ -24,7 +24,9 @@ def rodar(nome):
     if not video.exists():
         raise RuntimeError(f"Não achei {video.relative_to(config.RAIZ)}.")
     # o "Copiar" do Telegram não leva o vídeo: o botão abre a página que manda vídeo + texto juntos
-    compartilhar = {"text": "📲 Compartilhar no WhatsApp", "url": PAGINA + nome}
+    sha = os.getenv("GITHUB_SHA", "").strip()   # fixa a versão: o raw do GitHub demora 5 min para ver o "main" novo
+    versao = f"&v={sha}" if sha else ""
+    compartilhar = {"text": "📲 Compartilhar no WhatsApp", "url": PAGINA + nome + versao}
     legenda = texto.read_text(encoding="utf-8").strip()[:1024] if texto.exists() else ""
     with open(video, "rb") as f:
         telegram._api("sendVideo", data={"chat_id": chat, "caption": legenda, "supports_streaming": "true",

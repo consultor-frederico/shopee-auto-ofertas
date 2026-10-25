@@ -22,7 +22,9 @@ pre{white-space:pre-wrap;font-family:inherit;background:#fff;padding:12px;border
 <pre id="texto"></pre>
 <script>
 const qs = new URLSearchParams(location.search);
-const raiz = "https://raw.githubusercontent.com/consultor-frederico/shopee-auto-ofertas/main/";
+// v = commit do envio: o raw do GitHub guarda cópia de "main" por 5 min e mandaria o texto antigo
+const ref = /^[0-9a-f]{7,40}$/.test(qs.get("v") || "") ? qs.get("v") : "main";
+const raiz = "https://raw.githubusercontent.com/consultor-frederico/shopee-auto-ofertas/" + ref + "/";
 const ehVideo = qs.has("d");
 const id = (ehVideo ? qs.get("d") : qs.get("id")) || "";
 const base = raiz + (ehVideo ? "assets/divulgacao/" : "data/zap/") + id;
