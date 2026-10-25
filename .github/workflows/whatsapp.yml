@@ -50,6 +50,7 @@ jobs:
           git config user.name "GarimpoBot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/fila.json
+          [ -d data/zap ] && git add data/zap
           git diff --cached --quiet && exit 0
           git commit -m "📲 WhatsApp $(TZ=America/Sao_Paulo date +'%d/%m/%Y %H:%M')"
           # outro workflow pode ter salvo junto: tenta de novo até 5 vezes

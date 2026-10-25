@@ -119,17 +119,37 @@ def texto_whatsapp(o):
     return "\n".join(partes)
 
 
+PASTA_ZAP = config.PASTA_DADOS / "zap"   # arte + texto lidos pela página zap.html do site
+PAGINA_ZAP = "https://consultor-frederico.github.io/shopee-auto-ofertas/zap.html?id="
+DIAS_ZAP = 7
+
+
+def guardar_zap(o, arte, texto):
+    """Grava arte e texto para a página de compartilhar (um toque: foto + legenda no WhatsApp)."""
+    PASTA_ZAP.mkdir(parents=True, exist_ok=True)
+    limite = time.time() - DIAS_ZAP * 86400
+    for velho in PASTA_ZAP.iterdir():
+        if velho.stat().st_mtime < limite:
+            velho.unlink()
+    (PASTA_ZAP / f"{o['id']}.jpg").write_bytes(Path(arte).read_bytes())
+    (PASTA_ZAP / f"{o['id']}.txt").write_text(texto, encoding="utf-8")
+
+
 def enviar(o, arte):
-    """Duas mensagens: a arte sozinha (para salvar/compartilhar no WhatsApp) e o texto sozinho
-    (para copiar inteiro). O "Copiar" do Telegram nunca leva a foto: ela vai pelo "Salvar na galeria"."""
+    """A arte com a oferta na legenda e dois botões: 📲 Compartilhar (abre a página que manda
+    foto + texto juntos para o WhatsApp; o "Copiar" do Telegram nunca leva a foto) e ✅ Aprovar."""
     chat = chat_privado()
-    texto = texto_whatsapp(o)[:4000]   # mensagem de texto aceita até 4096
-    with open(arte, "rb") as f:
-        telegram._api("sendPhoto", data={"chat_id": chat},
-                      files={"photo": f})
+    texto = texto_whatsapp(o)
+    guardar_zap(o, arte, texto)
+    if len(texto) > 1000:   # legenda do Telegram aceita até 1024: tira a descrição, mantém o aviso inteiro
+        texto = texto_whatsapp(dict(o, legenda=""))
+    texto = texto[:1000]
+    compartilhar = {"text": "📲 Compartilhar no WhatsApp", "url": PAGINA_ZAP + str(o["id"])}
     aprovar = {"text": "✅ Aprovar", "callback_data": "ok:%s" % o["id"]}
-    telegram._api("sendMessage", data={"chat_id": chat, "text": texto, "disable_web_page_preview": "true",
-                                       "reply_markup": json.dumps({"inline_keyboard": [[aprovar]]})})
+    with open(arte, "rb") as f:
+        telegram._api("sendPhoto", data={"chat_id": chat, "caption": texto,
+                                         "reply_markup": json.dumps({"inline_keyboard": [[compartilhar], [aprovar]]})},
+                      files={"photo": f})
 
 
 def rodar():

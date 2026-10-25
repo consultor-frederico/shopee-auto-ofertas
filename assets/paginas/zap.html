@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Garimpo VIP · WhatsApp</title>
+<!-- Kit do Canal do WhatsApp: um toque compartilha a arte com o texto já na legenda.
+     A arte e o texto ficam em data/zap/<id>.jpg|.txt no repositório (o workflow 17 grava). -->
+<style>
+body{font-family:system-ui,sans-serif;max-width:520px;margin:0 auto;padding:16px;background:#F3EFE8;color:#24150A;line-height:1.5}
+img{width:100%;border-radius:12px;display:block}
+button{width:100%;padding:16px;margin-top:12px;border:0;border-radius:12px;font-size:18px;font-weight:700;background:#25D366;color:#fff}
+button.sec{background:#8A6A1F}
+pre{white-space:pre-wrap;font-family:inherit;background:#fff;padding:12px;border-radius:12px;font-size:14px}
+#aviso{font-weight:700;color:#8A6A1F;min-height:1.5em}
+</style></head>
+<body>
+<p id="aviso">Carregando a oferta…</p>
+<img id="arte" alt="">
+<button id="compartilhar" hidden>📲 Compartilhar no WhatsApp</button>
+<button id="baixar" class="sec" hidden>⬇️ Baixar a foto</button>
+<button id="copiar" class="sec" hidden>📋 Copiar o texto</button>
+<pre id="texto"></pre>
+<script>
+const id = new URLSearchParams(location.search).get("id") || "";
+const base = "https://raw.githubusercontent.com/consultor-frederico/shopee-auto-ofertas/main/data/zap/" + id;
+const $ = s => document.getElementById(s);
+let texto = "", foto = null;
+
+async function carregar(tentativa) {
+  if (!/^[\w-]+$/.test(id)) { $("aviso").textContent = "Link sem oferta."; return; }
+  try {
+    const [t, f] = await Promise.all([fetch(base + ".txt", {cache: "no-store"}), fetch(base + ".jpg", {cache: "no-store"})]);
+    if (!t.ok || !f.ok) throw new Error("ainda não publicado");
+    texto = await t.text();
+    foto = new File([await f.blob()], "garimpo-" + id + ".jpg", {type: "image/jpeg"});
+  } catch (e) {   // o robô grava os arquivos segundos depois de mandar o Telegram
+    if (tentativa < 6) { $("aviso").textContent = "Preparando a oferta…"; return setTimeout(() => carregar(tentativa + 1), 5000); }
+    $("aviso").textContent = "Não achei esta oferta. Tente de novo em 1 minuto.";
+    return;
+  }
+  $("arte").src = URL.createObjectURL(foto);
+  $("texto").textContent = texto;
+  $("aviso").textContent = "Toque no botão verde e escolha o seu Canal.";
+  const podeArquivo = navigator.canShare && navigator.canShare({files: [foto]});
+  $("compartilhar").hidden = !podeArquivo;
+  $("baixar").hidden = $("copiar").hidden = false;
+  if (!podeArquivo) $("aviso").textContent = "Este navegador não compartilha foto: baixe a foto e copie o texto.";
+}
+
+function copiar() {
+  return navigator.clipboard ? navigator.clipboard.writeText(texto).catch(() => {}) : Promise.resolve();
+}
+
+$("compartilhar").onclick = async () => {
+  copiar();   // se o WhatsApp não puser o texto na legenda, é só colar
+  try {
+    await navigator.share({files: [foto], text: texto});
+  } catch (e) {
+    if (e.name !== "AbortError") $("aviso").textContent = "Não deu para compartilhar: baixe a foto e copie o texto.";
+  }
+};
+$("copiar").onclick = () => copiar().then(() => { $("aviso").textContent = "Texto copiado ✅"; });
+$("baixar").onclick = () => {
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(foto); a.download = foto.name; a.click();
+};
+carregar(0);
+</script>
+</body></html>
