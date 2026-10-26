@@ -166,7 +166,10 @@ def da_marca(fila, plat, qtd):
     todas = [o for o in awin.produtos() if o["plataforma"] == plat and o["id"] not in ja_foi]
     todas.sort(key=lambda o: (o["desconto"], o["comissao"]), reverse=True)
     if qtd <= 0:   # só lista no log, para escolher (não manda nada)
-        for o in todas[:80]:
+        capas = [o for o in todas if "capa" in o["nome"].lower() or "capinha" in o["nome"].lower()]
+        com_desc = sum(1 for o in todas if o["desconto"] > 0)
+        print(f"🔎 {len(todas)} produtos, {len(capas)} capas, {com_desc} com desconto")
+        for o in capas[:50] + [o for o in todas if o not in capas][:30]:
             print(f"🔎 {o['id']}  R$ {o['preco_fmt']:>9}  -{o['desconto']}%  {o['categoria']:<10} {o['nome'][:90]}")
         return []
     escolhidas = []
