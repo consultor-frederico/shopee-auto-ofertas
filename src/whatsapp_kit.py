@@ -160,7 +160,7 @@ def da_marca(fila, plat, qtd):
         print(f"::warning::Marca '{plat}' não cadastrada em src/marcas.py.")
         return []
     if not awin.configurado():
-        print("::warning::Falta o segredo AWIN_FEED_URL.")
+        print("::warning::Awin desligada (AWIN_ATIVO) ou sem o segredo AWIN_FEED_URL.")
         return []
     ja_foi = {k for k, o in fila["ofertas"].items() if o.get("whatsapp")}
     todas = [o for o in awin.produtos() if o["plataforma"] == plat and o["id"] not in ja_foi]
