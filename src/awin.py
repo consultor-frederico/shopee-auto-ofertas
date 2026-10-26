@@ -109,9 +109,13 @@ def voltagem(nome):
     return "Bivolt" if "bivolt" in t or "/" in t else t.upper()
 
 
-def _chave_modelo(nome):
-    """Nome sem voltagem: variantes 110V/220V do mesmo produto têm a mesma chave."""
-    return " ".join(_VOLT.sub("", _sem_acento(nome)).split())
+def _chave_modelo(nome, plataforma=None):
+    """Nome sem voltagem: variantes 110V/220V do mesmo produto têm a mesma chave.
+    Acessório de celular: também sem o modelo do aparelho."""
+    t = _VOLT.sub("", _sem_acento(nome))
+    if MARCAS.get(plataforma, {}).get("acessorios_celular"):
+        t = _APARELHO.sub("", t)
+    return " ".join(t.split())
 
 
 # Peça de reposição/acessório solto: commodity, não é achado
@@ -123,12 +127,17 @@ _CABELO = re.compile(r"\b(secador|secadores|modelador|modeladores|flexstyle|spee
 
 
 # VX Case: o que vende é acessório de celular, então tem regra própria
-_PELICULA = re.compile(r"\b(pelicula|peliculas|vidro temperado|hidrogel|protetor de tela|protetor de camera|lente de camera)\b")
-_CAPA = re.compile(r"\b(capa|capas|capinha|case|cases|bumper)\b")
+_PELICULA = re.compile(r"\b(pelicula|peliculas|vidro temperado|hidrogel|protetor de tela|protetor de camera|lente de camera|"
+                       r"protetor de lentes?|aro de protecao|aro metalico)\b")
+_CAPA = re.compile(r"\b(capa|capas|capinha|case|cases|bumper|cover|estojo)\b")
 _CAPA_FEMININA = re.compile(r"\b(rosa|pink|lilas|floral|flor|flores|glitter|brilho|perola|perolas|coracao|coracoes|"
                             r"borboleta|borboletas|nude|candy|fofa|fofo|lavanda|cerejeira|strass|cristal|alca|cordao|"
                             r"pulseira|chaveiro)\b")
-_SEM_GRACA = re.compile(r"\b(cabo|cabos|adaptador|adaptadores)\b")
+_SEM_GRACA = re.compile(r"\b(cabo|cabos|adaptador|adaptadores|cleaning|clean|limpeza|paninho|caneta|porta cartao|hug|"
+                        r"pasta|planner preta)\b")
+# modelo do aparelho no nome: a mesma capa para iPhone 15, 15 Plus, 15 Pro... vira um produto só
+_APARELHO = re.compile(r"\b(para )?(iphone|galaxy|ipad|moto|redmi|xiaomi)"
+                       r"( (\d+\w*|[sag]\d+\w*|note|pro|max|plus|ultra|fe|mini|air|xr|xs|se|edge|g\d+\w*))*\b")
 
 _PALAVRAS_MARCA = {"shark", "ninja", "arno", "vx", "case"}
 
@@ -241,12 +250,12 @@ def produtos(forcar=False):
             ofertas.append(o)
         melhores = {}
         for o in ofertas:   # uma versão por produto (110V/220V): fica a de voltagem preferida, depois a mais barata
-            k = (o["plataforma"], o["categoria"], _chave_modelo(o["nome"]))
+            k = (o["plataforma"], o["categoria"], _chave_modelo(o["nome"], o["plataforma"]))
             if k not in melhores or (_PREF_VOLT.get(o["voltagem"], 1), o["preco"]) < (
                     _PREF_VOLT.get(melhores[k]["voltagem"], 1), melhores[k]["preco"]):
                 melhores[k] = o
         variantes = len(ofertas) - len(melhores)
-        ofertas = [o for o in ofertas if melhores[(o["plataforma"], o["categoria"], _chave_modelo(o["nome"]))] is o]
+        ofertas = [o for o in ofertas if melhores[(o["plataforma"], o["categoria"], _chave_modelo(o["nome"], o["plataforma"]))] is o]
         por_marca = {}
         for o in ofertas:
             por_marca[MARCAS[o["plataforma"]]["nome"]] = por_marca.get(MARCAS[o["plataforma"]]["nome"], 0) + 1
