@@ -7,6 +7,8 @@ lê esta tabela.
 - anunciante: pedaços do nome do anunciante na coluna merchant_name do feed (sem acento, minúsculas)
 - prefixo: começo do id na fila ("sn123"), para não misturar com ids da Shopee
 - conferir_site: o feed da marca demora a atualizar, então o preço é conferido na loja (VTEX) antes de postar
+- comissao_pct: CPA do programa (sem a chave vale config.AWIN_COMISSAO_PCT)
+- acessorios_celular: loja de acessórios de celular (regras próprias em awin.categoria_do_produto)
 """
 
 MARCAS = {
@@ -14,7 +16,16 @@ MARCAS = {
                    "anunciante": ("shark", "ninja"), "hashtag": "#sharkninja", "conferir_site": False},
     "arno": {"nome": "Arno", "loja": "Arno BR", "cor": "#C8102E", "prefixo": "ar",
              "anunciante": ("arno",), "hashtag": "#arno", "conferir_site": True},
+    # aprovada em 26/10/2026, CPA 10%
+    "vxcase": {"nome": "VX Case", "loja": "VX Case BR", "cor": "#111111", "prefixo": "vx",
+               "anunciante": ("vx case", "vxcase"), "hashtag": "#vxcase", "conferir_site": False,
+               "comissao_pct": 10.0, "acessorios_celular": True},
 }
+
+
+def comissao_pct(plataforma):
+    from . import config
+    return MARCAS.get(plataforma, {}).get("comissao_pct", config.AWIN_COMISSAO_PCT)
 
 
 def _plat(o):

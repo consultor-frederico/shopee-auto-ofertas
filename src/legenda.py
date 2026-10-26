@@ -53,7 +53,7 @@ def montar_hashtags(categoria, do_produto=(), plataforma=None):
         produto = [t if t.startswith("#") else "#" + t for t in (do_produto or [])]
         produto = [t for t in produto if _tag_ok(t)][:1]
         ampla = "#achadinhosfemininos" if config.PERFIL == "ana" else "#achadinhos"
-        da_categoria = "#cabelo" if categoria == "cabelo" else "#casaorganizada"
+        da_categoria = {"cabelo": "#cabelo", "eletronicos": "#tecnologia", "moda": "#capinhadecelular"}.get(categoria, "#casaorganizada")
         tags = list(dict.fromkeys(t.lower() for t in [ampla, da_categoria, marcas.MARCAS[plataforma]["hashtag"]] + produto))
         marca = [config.HASHTAG_MARCA] if config.HASHTAG_MARCA else []
         return " ".join(tags[:MAX_TAGS - len(marca)] + marca)

@@ -1,4 +1,4 @@
-"""Marcas oficiais pela Awin (Shark Ninja BR, Arno BR): feed de produtos dos programas de afiliados.
+"""Marcas oficiais pela Awin (Shark Ninja BR, Arno BR, VX Case BR): feed de produtos dos programas de afiliados.
 
 Diferente da Shopee e da AliExpress, aqui não há busca por palavra-chave nem vendas/nota: cada
 programa tem um catálogo pequeno (feed CSV da Awin) e cada produto já vem com o link de
@@ -7,7 +7,8 @@ marcas fica em src/marcas.py. As marcas entram no robô por um caminho próprio:
 
 - as regras da Shopee (vendas, nota, teto de preço) não valem — são produtos da marca oficial;
 - cada conta fica com o seu nicho: Garimpo VIP = casa e cozinha (aspiradores, air fryer, etc.),
-  Ana Novo Achados = cabelo (secadores e modeladores);
+  Ana Novo Achados = cabelo (secadores e modeladores); VX Case: fones, carregadores e caixas de som no
+  Garimpo VIP, capinhas femininas na Ana (película e capa comum ficam de fora);
 - no máximo SHARK_POR_GARIMPO produtos novos de cada marca entram na fila por rodada, e há limite
   diário de postagem por marca (ver postar.py e telegram_ofertas.py), para a marca não dominar a página;
 - antes de postar, o preço e o estoque são conferidos de novo no feed (conferir()). Marca com feed
@@ -27,7 +28,7 @@ import unicodedata
 import requests
 
 from . import config
-from .marcas import MARCAS
+from .marcas import MARCAS, comissao_pct
 
 _cache = {"produtos": None}
 
@@ -121,7 +122,15 @@ _CABELO = re.compile(r"\b(secador|secadores|modelador|modeladores|flexstyle|spee
                      r"alisador|alisadora|cachos|cabelo|cabelos|hair|styler|babyliss|escova secadora)\b")
 
 
-_PALAVRAS_MARCA = {"shark", "ninja", "arno"}
+# VX Case: o que vende é acessório de celular, então tem regra própria
+_PELICULA = re.compile(r"\b(pelicula|peliculas|vidro temperado|hidrogel|protetor de tela|protetor de camera|lente de camera)\b")
+_CAPA = re.compile(r"\b(capa|capas|capinha|case|cases|bumper)\b")
+_CAPA_FEMININA = re.compile(r"\b(rosa|pink|lilas|floral|flor|flores|glitter|brilho|perola|perolas|coracao|coracoes|"
+                            r"borboleta|borboletas|nude|candy|fofa|fofo|lavanda|cerejeira|strass|cristal|alca|cordao|"
+                            r"pulseira|chaveiro)\b")
+_SEM_GRACA = re.compile(r"\b(cabo|cabos|adaptador|adaptadores)\b")
+
+_PALAVRAS_MARCA = {"shark", "ninja", "arno", "vx", "case"}
 
 
 def _tipo(nome, plataforma):
@@ -143,9 +152,19 @@ def plataforma_da_linha(l):
     return None   # anunciante que o robô ainda não conhece (falta linha em src/marcas.py)
 
 
-def categoria_do_produto(nome, categoria_feed=""):
-    """'cabelo' (Ana) ou 'lar' (Garimpo VIP). Devolve None se for acessório/reposição."""
+def categoria_do_produto(nome, categoria_feed="", plataforma=None):
+    """'cabelo' (Ana) ou 'lar' (Garimpo VIP). Devolve None se for acessório/reposição.
+    VX Case: 'moda' (capinha feminina, Ana), 'eletronicos' (fone, carregador, caixa de som: Garimpo) ou None."""
     t = _sem_acento(f"{nome} {categoria_feed}")
+    if MARCAS.get(plataforma, {}).get("acessorios_celular"):
+        n = re.sub(r"\bvx\s?case\b", " ", _sem_acento(nome))   # o nome da marca tem "case"
+        if _PELICULA.search(n):
+            return None                                   # película é commodity
+        if _CAPA.search(n):
+            return "moda" if _CAPA_FEMININA.search(n) else None   # capa comum não é achado
+        if _SEM_GRACA.search(n):
+            return None
+        return "eletronicos"
     if _REPOSICAO.search(re.sub(r"\bcafeteira (de )?filtro\b", "cafeteira", _sem_acento(nome))):   # "Cafeteira Filtro" é aparelho
         return None
     return "cabelo" if _CABELO.search(t) else "lar"
@@ -161,7 +180,7 @@ def normalizar(l):
     desconto = round((1 - preco / antigo) * 100) if antigo > preco > 0 else 0
     imagem = l.get("large_image") or l.get("merchant_image_url") or l.get("aw_image_url") or ""
     pid = l.get("aw_product_id") or l.get("merchant_product_id") or ""
-    cat = categoria_do_produto(nome, l.get("merchant_category") or l.get("category_name") or "")
+    cat = categoria_do_produto(nome, l.get("merchant_category") or l.get("category_name") or "", plat)
     o = {
         "id": f"{m['prefixo']}{pid}",
         "nome": nome,
@@ -171,8 +190,8 @@ def normalizar(l):
         "preco_fmt": f"{preco:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."),
         "preco_de": round(antigo, 2) if antigo > preco else None,
         "desconto": desconto,
-        "comissao": round(preco * config.AWIN_COMISSAO_PCT / 100, 2),
-        "comissao_pct": config.AWIN_COMISSAO_PCT,
+        "comissao": round(preco * comissao_pct(plat) / 100, 2),
+        "comissao_pct": comissao_pct(plat),
         "vendas": 0,                     # o feed não traz vendas nem nota: a arte mostra "loja oficial"
         "nota": 0.0,
         "loja": m["loja"],
@@ -299,7 +318,7 @@ def _conferir_site(o):
     o["preco_fmt"] = f"{preco:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
     o["preco_de"] = round(de, 2) if de > preco else None
     o["desconto"] = round((1 - preco / de) * 100) if de > preco > 0 else 0
-    o["comissao"] = round(preco * config.AWIN_COMISSAO_PCT / 100, 2)
+    o["comissao"] = round(preco * comissao_pct(o["plataforma"]) / 100, 2)
     from .precos import ajustar_de
     ajustar_de(o)
     return "mudou" if abs(preco - antigo) >= 0.01 else "ok"
