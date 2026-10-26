@@ -49,6 +49,7 @@ jobs:
         run: |
           mkdir -p site/manuais
           cp manuais/*.png site/manuais/
+          cp manuais/*.mp4 site/manuais/ 2>/dev/null || true   # posts animados (Reels)
 
       - uses: actions/configure-pages@v5
 

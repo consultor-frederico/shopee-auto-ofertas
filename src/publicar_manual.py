@@ -2,6 +2,7 @@
 
 Uso: python -m src.publicar_manual <nome>      (ex.: ze1, ana2)
 Trava: o post só sai na conta do perfil indicado no posts.json, e o token tem que ser dessa conta.
+Se existir manuais/<nome>.mp4, o post sai como Reels (vídeo); senão, como foto (<nome>.png).
 Trava anti-duplicata: cada post sai uma vez só (registro em data/manuais_publicados.json).
 """
 import json
@@ -54,10 +55,14 @@ def rodar(nome, destino="instagram"):
     base = (os.getenv("PAGES_URL") or "").rstrip("/")
     if not base:
         raise RuntimeError("PAGES_URL ausente: o deploy do GitHub Pages não rodou.")
-    url = f"{base}/manuais/{nome}.png"
+    video = (RAIZ / "manuais" / f"{nome}.mp4").exists()
+    url = f"{base}/manuais/{nome}.{'mp4' if video else 'png'}"
     postar._esperar_url(url)
     ig_id = instagram.conferir_conta()["user_id"]
-    cont = instagram.criar_container(ig_id, p["legenda"], imagem_url=url)
+    if video:
+        cont = instagram.criar_container(ig_id, p["legenda"], video_url=url)
+    else:
+        cont = instagram.criar_container(ig_id, p["legenda"], imagem_url=url)
     instagram.aguardar_container(cont)
     media_id = instagram.publicar(ig_id, cont)
     registro[nome] = {"media_id": media_id, "perfil": p["perfil"],
