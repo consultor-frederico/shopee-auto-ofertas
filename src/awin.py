@@ -134,7 +134,7 @@ _CAPA_FEMININA = re.compile(r"\b(rosa|pink|lilas|floral|flor|flores|glitter|bril
                             r"borboleta|borboletas|nude|candy|fofa|fofo|lavanda|cerejeira|strass|cristal|alca|cordao|"
                             r"pulseira|chaveiro)\b")
 _SEM_GRACA = re.compile(r"\b(cabo|cabos|adaptador|adaptadores|cleaning|clean|limpeza|paninho|caneta|porta cartao|hug|"
-                        r"pasta|planner preta)\b")
+                        r"pasta|planner preta|tampa|refil)\b")
 # modelo do aparelho no nome: a mesma capa para iPhone 15, 15 Plus, 15 Pro... vira um produto só
 _APARELHO = re.compile(r"\b(para )?(iphone|galaxy|ipad|moto|redmi|xiaomi)"
                        r"( (\d+\w*|[sag]\d+\w*|note|pro|max|plus|ultra|fe|mini|air|xr|xs|se|edge|g\d+\w*))*\b")
