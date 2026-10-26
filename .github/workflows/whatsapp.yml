@@ -6,6 +6,13 @@ on:
       oferta:
         description: 'Reenviar uma oferta específica (número da fila)'
         required: false
+      marca:
+        description: 'Mandar as melhores de uma marca da Awin (ex.: vxcase, arno, sharkninja)'
+        required: false
+      quantidade:
+        description: 'Quantas ofertas da marca'
+        required: false
+        default: '2'
       teste:
         description: 'Teste: envia 1 oferta sem a análise do canal'
         type: boolean
@@ -39,6 +46,8 @@ jobs:
           TELEGRAM_CHAT_PRIVADO: ${{ secrets.TELEGRAM_CHAT_PRIVADO }}
           WHATSAPP_TESTE: ${{ inputs.teste && '1' || '0' }}
           WHATSAPP_OFERTA: ${{ inputs.oferta }}
+          WHATSAPP_MARCA: ${{ inputs.marca }}
+          WHATSAPP_QTD: ${{ inputs.quantidade }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
           SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}

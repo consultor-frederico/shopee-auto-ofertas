@@ -152,6 +152,36 @@ def enviar(o, arte):
                       files={"photo": f})
 
 
+def da_marca(fila, plat, qtd):
+    """Pega no feed da Awin as `qtd` melhores ofertas de uma marca (mais desconto, depois mais comissão)
+    que ainda não foram para o WhatsApp, e põe na fila só para o kit (não entram no Instagram)."""
+    from . import awin, legenda
+    if plat not in marcas.MARCAS:
+        print(f"::warning::Marca '{plat}' não cadastrada em src/marcas.py.")
+        return []
+    if not awin.configurado():
+        print("::warning::Falta o segredo AWIN_FEED_URL.")
+        return []
+    ja_foi = {k for k, o in fila["ofertas"].items() if o.get("whatsapp")}
+    todas = [o for o in awin.produtos() if o["plataforma"] == plat and o["id"] not in ja_foi]
+    todas.sort(key=lambda o: (o["desconto"], o["comissao"]), reverse=True)
+    escolhidas = []
+    for o in todas:
+        if len(escolhidas) >= qtd:
+            break
+        if any(curadoria.parecido(o["nome"], e["nome"]) for e in escolhidas):
+            continue
+        o = dict(o, uau=config.SHARK_UAU, nivel="ouro", origem_busca="whatsapp_manual",
+                 pontos=config.SHARK_PONTOS, so_telegram=False)
+        o.update({k: v for k, v in legenda.gerar(o).items() if k in ("titulo", "legenda")})
+        o["status"] = "descartado"   # só o kit do WhatsApp: fica fora da fila do Instagram
+        o["criado_em"] = agora().strftime(FMT)
+        fila["ofertas"][o["id"]] = o
+        escolhidas.append(o)
+    print(f"🏬 {marcas.MARCAS[plat]['nome']}: {len(todas)} disponíveis, {len(escolhidas)} escolhidas para o WhatsApp.")
+    return escolhidas
+
+
 def rodar():
     if not os.getenv("TELEGRAM_BOT_TOKEN", "").strip():
         print("⏸️  Bot do Telegram não configurado — kit do WhatsApp em espera.")
@@ -162,6 +192,22 @@ def rodar():
         return
     fila = carregar_fila()
     forcada = (os.getenv("WHATSAPP_OFERTA") or "").strip()
+    marca = (os.getenv("WHATSAPP_MARCA") or "").strip().lower().replace(" ", "")
+    if marca:   # pedido manual: as N melhores de uma marca da Awin (ex.: vxcase)
+        pasta = Path(tempfile.mkdtemp())
+        for o in da_marca(fila, marca, int(os.getenv("WHATSAPP_QTD") or "2")):
+            if precos.conferir(o) in ("sumiu", "subiu"):
+                o["whatsapp"] = "descartado"
+                continue
+            arte = pasta / f"{o['id']}.jpg"
+            imagem.gerar(o, arte, foto=imagem._baixar_foto(o["imagem"]))
+            enviar(o, arte)
+            o["whatsapp"] = "ok"
+            o["whatsapp_em"] = agora().strftime(FMT)
+            print(f"📲 {o['titulo']}  R$ {o['preco_fmt']}  (-{o['desconto']}%)")
+            time.sleep(2)
+        salvar_fila(fila)
+        return
     if forcada:   # reenvio manual de uma oferta específica, no formato atual
         o = fila["ofertas"].get(forcada)
         if not o:
