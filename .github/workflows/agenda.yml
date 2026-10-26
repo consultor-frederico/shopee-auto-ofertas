@@ -61,8 +61,6 @@ jobs:
             "2026-10-26 10:15") MANUAL="ana2:ana" ;;      # reagendado: falhou 25/10
             "2026-10-27 10:00") MANUAL="ze3:garimpo" ;;
             "2026-10-27 10:15") MANUAL="ana3:ana" ;;
-            "2026-10-28 10:00") MANUAL="ze4:garimpo" ;;   # além da Shopee: AliExpress, Shark Ninja, Arno e VX Case
-            "2026-10-28 10:15") MANUAL="ana4:ana" ;;
           esac
           # Status do robô todo dia às 08:00 (Brasília), mandado no seu Telegram privado
           if [ "$HQ" = "08:00" ]; then WFS="$WFS revisao.yml"; fi
