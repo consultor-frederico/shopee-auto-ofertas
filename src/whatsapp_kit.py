@@ -165,6 +165,10 @@ def da_marca(fila, plat, qtd):
     ja_foi = {k for k, o in fila["ofertas"].items() if o.get("whatsapp")}
     todas = [o for o in awin.produtos() if o["plataforma"] == plat and o["id"] not in ja_foi]
     todas.sort(key=lambda o: (o["desconto"], o["comissao"]), reverse=True)
+    if qtd <= 0:   # só lista no log, para escolher (não manda nada)
+        for o in todas[:80]:
+            print(f"🔎 {o['id']}  R$ {o['preco_fmt']:>9}  -{o['desconto']}%  {o['categoria']:<10} {o['nome'][:90]}")
+        return []
     escolhidas = []
     for o in todas:
         if len(escolhidas) >= qtd:
