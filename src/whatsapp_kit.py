@@ -152,7 +152,7 @@ def enviar(o, arte):
                       files={"photo": f})
 
 
-def da_marca(fila, plat, qtd):
+def da_marca(fila, plat, qtd, ids=()):
     """Pega no feed da Awin as `qtd` melhores ofertas de uma marca (mais desconto, depois mais comissão)
     que ainda não foram para o WhatsApp, e põe na fila só para o kit (não entram no Instagram)."""
     from . import awin, legenda
@@ -165,6 +165,9 @@ def da_marca(fila, plat, qtd):
     ja_foi = {k for k, o in fila["ofertas"].items() if o.get("whatsapp")}
     todas = [o for o in awin.produtos() if o["plataforma"] == plat and o["id"] not in ja_foi]
     todas.sort(key=lambda o: (o["desconto"], o["comissao"]), reverse=True)
+    if ids:   # escolha manual pelo número do produto
+        todas = [o for o in todas if o["id"] in ids]
+        qtd = len(ids)
     if qtd <= 0:   # só lista no log, para escolher (não manda nada)
         capas = [o for o in todas if "capa" in o["nome"].lower() or "capinha" in o["nome"].lower()]
         com_desc = sum(1 for o in todas if o["desconto"] > 0)
@@ -202,7 +205,8 @@ def rodar():
     marca = (os.getenv("WHATSAPP_MARCA") or "").strip().lower().replace(" ", "")
     if marca:   # pedido manual: as N melhores de uma marca da Awin (ex.: vxcase)
         pasta = Path(tempfile.mkdtemp())
-        for o in da_marca(fila, marca, int(os.getenv("WHATSAPP_QTD") or "2")):
+        ids = [i for i in forcada.replace(",", " ").split() if i]   # com marca, "oferta" aceita números do feed
+        for o in da_marca(fila, marca, int(os.getenv("WHATSAPP_QTD") or "2"), ids):
             if precos.conferir(o) in ("sumiu", "subiu"):
                 o["whatsapp"] = "descartado"
                 continue

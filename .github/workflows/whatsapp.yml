@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       oferta:
-        description: 'Reenviar uma oferta específica (número da fila)'
+        description: 'Reenviar uma oferta específica (número da fila; com marca, números do feed separados por vírgula)'
         required: false
       marca:
         description: 'Mandar as melhores de uma marca da Awin (ex.: vxcase, arno, sharkninja)'
