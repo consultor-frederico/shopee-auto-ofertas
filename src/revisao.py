@@ -143,10 +143,7 @@ def montar():
         ok_parte, linha = checar_instagram(arroba, segredo)
         tudo_ok &= ok_parte
         linhas.append(linha)
-    from . import concorrentes
-    comparados = concorrentes.linhas()
-    if comparados:
-        linhas += ["", "👀 <b>Perfis parecidos</b> (referência):"] + [html.escape(l) for l in comparados]
+    # "Perfis parecidos" saiu do status em 27/10/2026 a pedido do Fred.
     for ok_parte, linha in (checar_fila(),):
         tudo_ok &= ok_parte
         linhas.append(linha)
