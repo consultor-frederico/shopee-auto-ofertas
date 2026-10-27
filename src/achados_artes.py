@@ -8,7 +8,7 @@ Ana         — slide de produto: 0 = arco · 1 = polaroid (lavanda) · 2 = cír
 """
 from PIL import Image, ImageDraw, ImageFilter, ImageOps
 
-from . import config, imagem, marcas
+from . import config, imagem, lojas_arte, marcas
 
 L, A = 1080, 1350
 NOMES_LOJA = {"shopee": "SHOPEE", "aliexpress": "ALIEXPRESS", **{p: m["nome"].upper() for p, m in marcas.MARCAS.items()}}
@@ -37,6 +37,11 @@ def _info(o):
 
 def _loja(o):
     return NOMES_LOJA.get(o.get("plataforma") or "shopee", "SHOPEE")
+
+
+def _loja_nome(o):
+    """Nome da loja como se escreve: Shopee, AliExpress, Shark Ninja..."""
+    return marcas.nome(o) if marcas.eh_marca(o) else {"ALIEXPRESS": "AliExpress"}.get(_loja(o), _loja(o).title())
 
 
 def _degrade(topo, base):
@@ -79,12 +84,13 @@ def produto_garimpo(v, oferta, foto, pos, destino):
     elif v == 2:
         img = _ouro(oferta, foto, pos)
     else:   # 0: o cartão do feed com o selo do número
-        imagem.gerar(oferta, destino, foto=foto)
+        imagem.gerar(oferta, destino, foto=foto, moldura=False)
         img = Image.open(destino).convert("RGB")
         d = ImageDraw.Draw(img)
         _selo_numero(d, 74, 74, 56, imagem.DOURADO, imagem.ESCURO, imagem._fonte(76, "Black"), pos, imagem.ESCURO)
         d.rectangle([0, A - 118, L, A], fill=imagem.ESCURO)
         _barra_quero(d, pos, A - 84)
+    img = lojas_arte.moldura_oficial(img, oferta)   # marca oficial da Awin: moldura da marca
     img.save(destino, "JPEG", quality=90, optimize=True)
 
 
@@ -105,13 +111,12 @@ def _mina(o, foto, pos):
     d.ellipse((50, 40, 190, 180), fill=top.AM)
     d.text((120, 112), str(pos), font=f(96), fill=borda, anchor="mm")
     d.text((220, 58), "ACHADO DO ZÉ", font=f(32), fill=top.AM)
-    d.text((220, 98), f"oferta {_loja(o).title()}", font=f(52), fill=top.BR)
+    d.text((220, 98), f"oferta {_loja_nome(o)}", font=f(52), fill=top.BR)
     d.rounded_rectangle((60, 220, L - 60, 900), 36, fill=top.CARD)
     fo = foto.copy()
     fo.thumbnail((L - 180, 620), Image.LANCZOS)
     im.paste(fo, ((L - fo.width) // 2, 250 + (620 - fo.height) // 2))
-    if o.get("internacional"):   # 🌎 vem de fora: selo no pé do cartão
-        imagem.selo_internacional(d, 90, 900 - 30 - 58, 0.9, top.CARD, top.VERMELHO)
+    imagem.selo_loja(d, o, 90, 900 - 30 - 58, escala=0.9)   # selo da loja (com 🌎 internacional) no pé do cartão
     if o.get("desconto"):
         t = f"-{o['desconto']}%"
         ft = f(36)
@@ -143,14 +148,8 @@ def _ouro(o, foto, pos):
     fo = ImageOps.contain(foto, (620, 620), Image.LANCZOS)
     im.paste(fo, (540 - fo.width // 2, 570 - fo.height // 2))
     _selo_numero(d, 100, 100, 62, imagem.ESCURO, imagem.BRANCO, imagem._fonte(78, "Black"), pos, (238, 200, 98))
-    loja = _loja(o)
-    fl = imagem._fonte(34, "ExtraBold")
-    w = d.textlength(loja, font=fl)
-    d.rounded_rectangle((L - 70 - w - 56, 58, L - 70, 128), 35, fill=imagem.ESCURO)
-    d.text((L - 70 - w - 28, 93), loja, font=fl, fill=imagem.BRANCO, anchor="lm")
-    if o.get("internacional"):   # 🌎 vem de fora: logo abaixo do selo da loja
-        wi = imagem.largura_internacional(d, 0.9)
-        imagem.selo_internacional(d, L - 70 - wi, 140, 0.9, imagem.BRANCO, imagem.ESCURO)
+    rascunho = ImageDraw.Draw(Image.new("RGB", (8, 8)))   # selo da loja (com 🌎 internacional) no canto
+    imagem.selo_loja(d, o, L - 70 - imagem.selo_loja(rascunho, o, 0, 0), 62)
     if o.get("desconto"):
         cx, cy, r = 880, 920, 92
         d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=(205, 48, 36), outline=imagem.BRANCO, width=6)
@@ -176,12 +175,13 @@ def produto_ana(v, oferta, foto, pos, destino):
     elif v == 2:
         img = _circulo(oferta, foto, pos)
     else:   # 0: o arco do feed com o selo do número
-        imagem.gerar(oferta, destino, foto=foto)
+        imagem.gerar(oferta, destino, foto=foto, moldura=False)
         img = Image.open(destino).convert("RGB")
         d = ImageDraw.Draw(img)
         cx, cy, r = L // 2, 66, 56
         d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=la.ROSA_ESCURA, outline=la.BRANCO, width=6)
         d.text((cx, cy + 2), str(pos), font=la.serif(78), fill=la.BRANCO, anchor="mm")
+    img = lojas_arte.moldura_oficial(img, oferta)   # marca oficial da Awin: moldura da marca
     img.save(destino, "JPEG", quality=90, optimize=True)
 
 
@@ -202,8 +202,7 @@ def _polaroid(o, foto, pos):
     d.rectangle((46, 46, lp - 46, 46 + 728), fill=(250, 247, 249))
     fo = ImageOps.contain(foto, (700, 700), Image.LANCZOS)
     pol.paste(fo, (lp // 2 - fo.width // 2, 46 + 364 - fo.height // 2))
-    if o.get("internacional"):   # 🌎 vem de fora: "na AliExpress · internacional" no pé da foto
-        la.selo_loja(d, o, 66, 46 + 728 - 70)
+    la.selo_loja(d, o, 66, 46 + 728 - 70)   # "na Shopee", "na AliExpress · internacional"... no pé da foto
     ft = la.serif(46)
     y = 806
     for ln in la.quebrar(d, o["titulo"], ft, lp - 100, max_linhas=2):
@@ -240,9 +239,8 @@ def _circulo(o, foto, pos):
     if o.get("desconto"):
         la.adesivo(img, 872, 240, f"-{o['desconto']}%", "OFF", r=92, angulo=10)
     d = ImageDraw.Draw(img)
-    if o.get("internacional"):   # 🌎 vem de fora: no canto de cima, fora do círculo
-        w = la.selo_loja(ImageDraw.Draw(Image.new("RGB", (8, 8))), o, 0, 0)
-        la.selo_loja(d, o, L - 40 - w, 40)
+    w = la.selo_loja(ImageDraw.Draw(Image.new("RGB", (8, 8))), o, 0, 0)   # selo da loja no canto, fora do círculo
+    la.selo_loja(d, o, L - 40 - w, 40)
     ft = la.serif(56)
     y = 945
     for ln in la.quebrar(d, o["titulo"], ft, L - 150, max_linhas=2):

@@ -95,23 +95,33 @@ def loja_oficial(oferta):
 
 
 def selo_loja(d, oferta, x, y, escala=1.0):
-    """Selo "OFERTA <LOJA>" em pílula, com canto superior esquerdo em (x, y); devolve a largura.
+    """Selo da loja em pílula, com canto superior esquerdo em (x, y); devolve a largura.
+    Cada loja tem o seu ícone (src/lojas_arte.py): sacola na Shopee, globo na AliExpress, verificado dourado na
+    marca oficial (que também ganha contorno dourado e "LOJA OFICIAL" no lugar de "OFERTA").
     Produto internacional ganha o "🌎 INTERNACIONAL" branco dentro da mesma pílula."""
-    info = LOJAS.get(plataforma(oferta), {"nome": plataforma(oferta).upper(), "cor": "#24150A"})
+    from . import lojas_arte
+    nome, cor = lojas_arte.nome_e_cor(oferta)
+    oficial = lojas_arte.oficial(oferta)
     f1, f2 = _fonte(int(26 * escala), "SemiBold"), _fonte(int(34 * escala), "Black")
-    t1, t2 = "OFERTA ", info["nome"]
+    t1, t2 = ("LOJA OFICIAL " if oficial else "OFERTA "), nome
     w = d.textlength(t1, font=f1) + d.textlength(t2, font=f2)
     px, h = int(26 * escala), int(64 * escala)
+    ri = int(15 * escala)                      # raio do ícone da loja
+    wi = 2 * ri + int(12 * escala)
     pi = int(8 * escala)                       # folga do "INTERNACIONAL" dentro da pílula
     e3 = escala * (h - 2 * pi) / 64
     extra = largura_internacional(d, e3) + int(14 * escala) + pi - px if oferta.get("internacional") else 0
-    d.rounded_rectangle([x, y, x + w + 2 * px + extra, y + h], h // 2, fill=info["cor"])
-    d.text((x + px, y + (h - 26 * escala) / 2 - 3 * escala), t1, font=f1, fill="#FFFFFF")
-    d.text((x + px + d.textlength(t1, font=f1), y + (h - 34 * escala) / 2 - 5 * escala), t2,
+    d.rounded_rectangle([x, y, x + wi + w + 2 * px + extra, y + h], h // 2, fill=cor,
+                        outline=lojas_arte.DOURADO if oficial else None, width=max(3, int(4 * escala)))
+    lojas_arte.icone(d, oferta, x + px + ri, y + h / 2, ri, "#FFFFFF")
+    xt = x + px + wi
+    d.text((xt, y + (h - 26 * escala) / 2 - 3 * escala), t1, font=f1,
+           fill=lojas_arte.DOURADO if oficial else "#FFFFFF")
+    d.text((xt + d.textlength(t1, font=f1), y + (h - 34 * escala) / 2 - 5 * escala), t2,
            font=f2, fill="#FFFFFF")
     if extra:
-        selo_internacional(d, x + w + px + int(14 * escala), y + pi, e3, info["cor"], "#FFFFFF")
-    return w + 2 * px + extra
+        selo_internacional(d, xt + w + int(14 * escala), y + pi, e3, cor, "#FFFFFF")
+    return wi + w + 2 * px + extra
 
 
 def largura_internacional(d, escala=1.0):
@@ -186,7 +196,8 @@ def _brl(v):
     return f"{v:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
 
-def gerar(oferta: dict, destino, foto: Image.Image = None):
+def gerar(oferta: dict, destino, foto: Image.Image = None, moldura=True):
+    """Arte do post. `moldura=False` deixa sem a moldura de marca oficial (quem chama põe depois, por cima de tudo)."""
     if config.PERFIL == "ana":   # a Ana tem visual próprio (src/layout_ana.py)
         from . import layout_ana
         if foto is None:
@@ -194,7 +205,7 @@ def gerar(oferta: dict, destino, foto: Image.Image = None):
                 foto = _baixar_foto(oferta["imagem"])
             except Exception as e:
                 print(f"⚠️  Não baixei a foto ({e}); usando arte sem foto.")
-        return layout_ana.gerar_foto(oferta, destino, foto)
+        return layout_ana.gerar_foto(oferta, destino, foto, moldura=moldura)
     img = Image.new("RGB", (L, A), FUNDO)
     d = ImageDraw.Draw(img)
 
@@ -285,5 +296,8 @@ def gerar(oferta: dict, destino, foto: Image.Image = None):
         d.text((x, A - 76), t, font=f_cta, fill=cor)
         x += d.textlength(t, font=f_cta)
 
+    if moldura:   # marca oficial da Awin: arte dentro da moldura da marca (src/lojas_arte.py)
+        from . import lojas_arte
+        img = lojas_arte.moldura_oficial(img, oferta)
     img.save(destino, "JPEG", quality=90, optimize=True)
     return destino
