@@ -39,7 +39,8 @@ POSTS_POR_DIA = int(os.getenv("RADAR_POSTS", "25"))       # campeões que a IA t
 POSTS_POR_PAGINA = int(os.getenv("RADAR_POSTS_PAGINA", "4"))  # nenhuma página domina o radar
 TERMOS_POR_CATEGORIA = 2                                  # por rodada: o radar fica variado
 POSTS_COM_FOTO = int(os.getenv("RADAR_POSTS_FOTO", "12"))  # posts por dia que a IA de visão olha
-FOTOS_POR_POST = 5                                         # limite da Groq por pedido
+FOTOS_POR_POST = 4                                         # menos fotos = menos tokens por minuto
+VISAO_MAX_SEGUNDOS = 360                                   # a visão não segura o garimpo mais que 6 min
 MODELOS_VISAO = [m.strip() for m in os.getenv(
     "RADAR_MODELOS_VISAO",
     "meta-llama/llama-4-scout-17b-16e-instruct,meta-llama/llama-4-maverick-17b-128e-instruct").split(",") if m.strip()]
@@ -276,7 +277,7 @@ def ver_fotos(p):
 
 
 GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta"
-_gemini = {"modelos": None}
+_gemini = {"modelos": None, "inicio": None}
 
 
 def _modelos_gemini(chave):
@@ -306,21 +307,24 @@ def _ver_gemini(texto, fotos):
     partes = [{"text": texto}] + [{"inline_data": {"mime_type": "image/jpeg", "data": f.split(",", 1)[1]}}
                                    for f in fotos]
     modelos = _modelos_gemini(chave)
+    _gemini["inicio"] = _gemini["inicio"] or time.time()
     while modelos:
+        if time.time() - _gemini["inicio"] > VISAO_MAX_SEGUNDOS:
+            return []   # o Gemini está lento hoje: segue só com as legendas
         modelo = modelos[0]
         try:
             r = requests.post(f"{GEMINI_URL}/models/{modelo}:generateContent", params={"key": chave},
-                              timeout=90, json={"contents": [{"parts": partes}],
+                              timeout=45, json={"contents": [{"parts": partes}],
                                                 "generationConfig": {"temperature": 0.3,
                                                                      "responseMimeType": "application/json"}})
-            espera = re.search(r'"retryDelay": "(\d+)', r.text) if r.status_code == 429 else None
-            if espera and "PerMinute" in r.text and int(espera.group(1)) <= 60 and not _gemini.get(modelo):
+            if r.status_code == 429 and "PerMinute" in r.text and not _gemini.get(modelo):
                 _gemini[modelo] = True   # limite por minuto: espera uma vez e tenta de novo
-                time.sleep(int(espera.group(1)) + 2)
+                espera = re.search(r'"retryDelay": "(\d+)', r.text)
+                time.sleep(min(int(espera.group(1)) if espera else 60, 60) + 2)
                 continue
-            if r.status_code in (400, 403, 404, 429):
+            if r.status_code in (400, 403, 404, 429, 500, 503):
                 cota = re.findall(r'"quotaId": "([^"]+)"', r.text)[:1]
-                print(f"   ⚠️  visão Gemini {modelo}: HTTP {r.status_code} {cota or r.text[:100]} → próximo modelo")
+                print(f"   ⚠️  visão Gemini {modelo}: HTTP {r.status_code} {cota or r.text[:80]} → próximo modelo")
                 modelos.pop(0)   # não insiste nesse nos próximos posts
                 continue
             if r.status_code != 200:
@@ -333,6 +337,9 @@ def _ver_gemini(texto, fotos):
             bruto = r.json()["candidates"][0]["content"]["parts"][0]["text"]
             itens = json.loads(re.search(r"\{.*\}", bruto, re.S).group(0)).get("itens") or []
             return [x for x in (_limpar_item(it) for it in itens if isinstance(it, dict)) if x]
+        except requests.exceptions.Timeout:
+            print(f"   ⚠️  visão Gemini {modelo}: demorou demais → próximo modelo")
+            modelos.pop(0)
         except Exception as e:
             print(f"   ⚠️  visão Gemini {modelo}: {str(e)[:150]}")
             return []
