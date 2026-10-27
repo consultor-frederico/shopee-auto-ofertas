@@ -100,6 +100,9 @@ PALAVRAS_POR_GARIMPO = int(os.getenv("PALAVRAS_POR_GARIMPO", "24"))   # total de
 # e parte vem da memória (termos que já trouxeram Ouro/Achado). O resto são as palavras fixas do nicho.
 PALAVRAS_IA_POR_GARIMPO = int(os.getenv("PALAVRAS_IA_POR_GARIMPO", "10"))
 PALAVRAS_MEMORIA_POR_GARIMPO = int(os.getenv("PALAVRAS_MEMORIA_POR_GARIMPO", "4"))
+# Radar de virais (src/radar_virais.py): termos tirados dos posts que bombaram em outras páginas
+# de achadinhos entram primeiro. Com 24 buscas por rodada, sobram ~4 para as palavras fixas.
+PALAVRAS_VIRAIS_POR_GARIMPO = int(os.getenv("PALAVRAS_VIRAIS_POR_GARIMPO", "6"))
 # Páginas da Shopee por busca (página, ordem): 1 relevância, 2 mais vendidos, 5 maior comissão.
 # As páginas fundas dos mais vendidos e a ordem "relevância" mostram o que fica escondido do topo.
 # "ams" = só ofertas em que o vendedor paga comissão extra (20–40%): barato e diferente passa no filtro.

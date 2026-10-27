@@ -124,7 +124,7 @@ def termos_da_memoria(n, mem):
 
 
 def escolher_palavras(mem):
-    """Lista de (categoria, termo, origem) para a rodada. origem: ia | memoria | fixa."""
+    """Lista de (categoria, termo, origem) para a rodada. origem: viral | ia | memoria | fixa."""
     total = config.PALAVRAS_POR_GARIMPO
     escolhidas, vistos = [], set()
 
@@ -134,6 +134,9 @@ def escolher_palavras(mem):
             vistos.add(t)
             escolhidas.append((cat, termo, origem))
 
+    from . import radar_virais
+    for cat, termo in radar_virais.termos_para_rodada(config.PALAVRAS_VIRAIS_POR_GARIMPO):
+        add(cat, termo, "viral")
     for cat, termo in termos_da_memoria(config.PALAVRAS_MEMORIA_POR_GARIMPO, mem):
         add(cat, termo, "memoria")
     ia = termos_da_ia(config.PALAVRAS_IA_POR_GARIMPO, mem)
@@ -150,12 +153,13 @@ def escolher_palavras(mem):
         for cat in random.sample(list(fixas), len(fixas)):
             if fixas[cat]:
                 add(cat, fixas[cat].pop(), "fixa")
-    origens = {o: sum(1 for *_, x in escolhidas if x == o) for o in ("ia", "memoria", "fixa")}
-    print(f"🧭 Buscas da rodada: {origens['ia']} novas da IA, {origens['memoria']} da memória, "
-          f"{origens['fixa']} fixas")
+    origens = {o: sum(1 for *_, x in escolhidas if x == o) for o in ("viral", "ia", "memoria", "fixa")}
+    print(f"🧭 Buscas da rodada: {origens['viral']} dos virais, {origens['ia']} novas da IA, "
+          f"{origens['memoria']} da memória, {origens['fixa']} fixas")
+    icone = {"viral": "📡", "memoria": "🧠", "ia": "✨"}
     for cat, termo, origem in escolhidas:
         if origem != "fixa":
-            print(f"   {'🧠' if origem == 'memoria' else '✨'} {cat}: {termo}")
+            print(f"   {icone[origem]} {cat}: {termo}")
     return escolhidas
 
 

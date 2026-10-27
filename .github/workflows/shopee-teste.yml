@@ -24,15 +24,23 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: pip install requests
+      - run: pip install -r requirements.txt
       - name: Testar API da Shopee
         env:
           SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
           SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
           TERMOS: ${{ inputs.termos }}
           PAGINAS: ${{ inputs.paginas }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_ACCESS_TOKEN_ANA: ${{ secrets.IG_ACCESS_TOKEN_ANA }}
         run: |
           mkdir -p data/relatorios
+          if [ "$TERMOS" = "radar" ] || [ "$TERMOS" = "radar ana" ]; then   # teste do radar de virais (não grava)
+            [ "$TERMOS" = "radar ana" ] && export PERFIL=ana
+            python -u -m src.radar_virais 2>&1 | tee data/relatorios/teste_radar.txt
+            exit 0
+          fi
           python -u -m src.teste_shopee 2>&1 | tee data/relatorios/teste_shopee.txt
       - name: Salvar relatório
         run: |
