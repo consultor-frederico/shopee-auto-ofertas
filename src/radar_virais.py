@@ -276,41 +276,67 @@ def ver_fotos(p):
 
 
 GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta"
-_gemini = {"modelo": None}
+_gemini = {"modelos": None}
+
+
+def _modelos_gemini(chave):
+    """O modelo pedido (GEMINI_MODELO), ou os "flash" que a chave enxerga, do mais novo ao mais velho.
+    Modelo novo às vezes não tem cota no plano gratuito (HTTP 429), então os outros ficam de reserva."""
+    if _gemini["modelos"] is None:
+        pedido = os.getenv("GEMINI_MODELO", "").strip()
+        nomes = []
+        try:
+            nomes = [m["name"].split("/")[-1] for m in requests.get(
+                f"{GEMINI_URL}/models", params={"key": chave}, timeout=30).json().get("models", [])
+                if "generateContent" in (m.get("supportedGenerationMethods") or [])]
+        except Exception:
+            pass
+        ruins = ("exp", "preview", "image", "tts", "live", "audio", "embedding", "thinking")
+        flash = sorted((n for n in nomes if "flash" in n and not any(r in n for r in ruins)), reverse=True)
+        # o flash normal antes do lite da mesma geração
+        flash.sort(key=lambda n: "lite" in n)
+        reserva = [n for n in ("gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-2.0-flash") if n not in flash]
+        _gemini["modelos"] = ([pedido] if pedido else []) + flash + reserva
+    return _gemini["modelos"]
 
 
 def _ver_gemini(texto, fotos):
     """Visão pelo Gemini (segredo GEMINI_API_KEY, plano gratuito do Google AI Studio)."""
     chave = os.getenv("GEMINI_API_KEY").strip()
-    if _gemini["modelo"] is None:   # o modelo pedido, ou o "flash" mais novo que a chave enxerga
-        _gemini["modelo"] = os.getenv("GEMINI_MODELO", "").strip()
-        if not _gemini["modelo"]:
-            try:
-                nomes = [m["name"].split("/")[-1] for m in requests.get(
-                    f"{GEMINI_URL}/models", params={"key": chave}, timeout=30).json().get("models", [])
-                    if "generateContent" in (m.get("supportedGenerationMethods") or [])]
-                flash = sorted((n for n in nomes if "flash" in n and "lite" not in n and "exp" not in n
-                                and "preview" not in n and "image" not in n and "tts" not in n), reverse=True)
-                _gemini["modelo"] = (flash or nomes or ["gemini-2.5-flash"])[0]
-            except Exception:
-                _gemini["modelo"] = "gemini-2.5-flash"
-            print(f"   👁️  visão pelo Gemini: {_gemini['modelo']}")
     partes = [{"text": texto}] + [{"inline_data": {"mime_type": "image/jpeg", "data": f.split(",", 1)[1]}}
                                    for f in fotos]
-    try:
-        r = requests.post(f"{GEMINI_URL}/models/{_gemini['modelo']}:generateContent", params={"key": chave},
-                          timeout=90, json={"contents": [{"parts": partes}],
-                                            "generationConfig": {"temperature": 0.3,
-                                                                 "responseMimeType": "application/json"}})
-        if r.status_code != 200:
-            print(f"   ⚠️  visão Gemini: HTTP {r.status_code} {r.text[:150]}")
+    modelos = _modelos_gemini(chave)
+    while modelos:
+        modelo = modelos[0]
+        try:
+            r = requests.post(f"{GEMINI_URL}/models/{modelo}:generateContent", params={"key": chave},
+                              timeout=90, json={"contents": [{"parts": partes}],
+                                                "generationConfig": {"temperature": 0.3,
+                                                                     "responseMimeType": "application/json"}})
+            espera = re.search(r'"retryDelay": "(\d+)', r.text) if r.status_code == 429 else None
+            if espera and "PerMinute" in r.text and int(espera.group(1)) <= 60 and not _gemini.get(modelo):
+                _gemini[modelo] = True   # limite por minuto: espera uma vez e tenta de novo
+                time.sleep(int(espera.group(1)) + 2)
+                continue
+            if r.status_code in (400, 403, 404, 429):
+                cota = re.findall(r'"quotaId": "([^"]+)"', r.text)[:1]
+                print(f"   ⚠️  visão Gemini {modelo}: HTTP {r.status_code} {cota or r.text[:100]} → próximo modelo")
+                modelos.pop(0)   # não insiste nesse nos próximos posts
+                continue
+            if r.status_code != 200:
+                print(f"   ⚠️  visão Gemini {modelo}: HTTP {r.status_code} {r.text[:150]}")
+                return []
+            _gemini.pop(modelo, None)
+            if not _gemini.get("avisado"):
+                _gemini["avisado"] = True
+                print(f"   👁️  visão pelo Gemini: {modelo}")
+            bruto = r.json()["candidates"][0]["content"]["parts"][0]["text"]
+            itens = json.loads(re.search(r"\{.*\}", bruto, re.S).group(0)).get("itens") or []
+            return [x for x in (_limpar_item(it) for it in itens if isinstance(it, dict)) if x]
+        except Exception as e:
+            print(f"   ⚠️  visão Gemini {modelo}: {str(e)[:150]}")
             return []
-        bruto = r.json()["candidates"][0]["content"]["parts"][0]["text"]
-        itens = json.loads(re.search(r"\{.*\}", bruto, re.S).group(0)).get("itens") or []
-        return [x for x in (_limpar_item(it) for it in itens if isinstance(it, dict)) if x]
-    except Exception as e:
-        print(f"   ⚠️  visão Gemini: {str(e)[:150]}")
-        return []
+    return []
 
 
 def atualizar(dados, gravar=True):
