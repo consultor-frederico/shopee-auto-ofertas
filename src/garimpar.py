@@ -323,6 +323,9 @@ def coletar_candidatos(fila, buscar=shopee.buscar_ofertas, escolhidas=None, mem=
 
 def selecionar(candidatos, n, ja_na_fila=None, lojas_na_fila=None):
     """Pega os melhores, equilibrando as categorias e sem lotar a fila do mesmo tipo de produto."""
+    fora = [o for o in candidatos if not variedade.diferenciado(o) and o.get("nivel") in ("ouro", "achado")]
+    for o in fora:
+        print(f"   ↪️  {o['nivel']} fora da fila (uau {variedade.uau(o):.0f} abaixo de {config.UAU_MINIMO_POSTAR}): {o['nome'][:60]}")
     candidatos = [o for o in candidatos if variedade.diferenciado(o)]   # só achado de verdade
     fams = dict(ja_na_fila or {})
     lojas = dict(lojas_na_fila or {})
@@ -340,10 +343,15 @@ def selecionar(candidatos, n, ja_na_fila=None, lojas_na_fila=None):
                 o = restos[cat].pop(0)
                 t = tipo_produto(o["nome"])
                 f = variedade.familia(o)
-                if (o["palavra"] in palavras or t in tipos or f in fams_rodada
-                        or fams.get(f, 0) >= config.MAX_PENDENTES_POR_FAMILIA
-                        or (o.get("loja") and lojas.get(o["loja"], 0) >= config.MAX_POR_LOJA_NA_FILA)
-                        or any(curadoria.parecido(o["nome"], e["nome"], 0.35) for e in escolhidos)):
+                motivo = ("mesma palavra" if o["palavra"] in palavras else
+                          f"mesmo tipo ({t})" if t in tipos else
+                          f"mesma família ({f})" if f in fams_rodada else
+                          f"família {f} já tem {fams[f]} na fila" if fams.get(f, 0) >= config.MAX_PENDENTES_POR_FAMILIA else
+                          f"loja {o.get('loja')} cheia na fila" if o.get("loja") and lojas.get(o["loja"], 0) >= config.MAX_POR_LOJA_NA_FILA else
+                          "parecido com outro da rodada" if any(curadoria.parecido(o["nome"], e["nome"], 0.35) for e in escolhidos) else "")
+                if motivo:
+                    if o.get("nivel") in ("ouro", "achado"):
+                        print(f"   ↪️  {o['nivel']} fora da fila ({motivo}): {o['nome'][:60]}")
                     continue
                 fams[f] = fams.get(f, 0) + 1
                 fams_rodada.add(f)
