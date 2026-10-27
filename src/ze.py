@@ -32,7 +32,7 @@ PASTA_INICIOS = PASTA / "inicios"
 ARQ = config.PASTA_PERFIL / "ze.json"              # cada conta com o seu rodízio
 ARQ_PROX = config.PASTA_PERFIL / "proximo_ze.json"
 PASTA_SITE = config.RAIZ / "site"
-# dias da semana do post do Zé (0 = segunda ... 6 = domingo); padrão segunda, quarta, sexta e domingo
+# dias da semana do post do Zé (0 = segunda ... 6 = domingo); padrão todo dia (desde 27/10/2026)
 # Ana: 3 posts próprios por semana, terça, quinta e sábado (ANA_DIAS; 0 = segunda)
 _DIAS = os.getenv("ANA_DIAS", "1,3,5") if ANA else os.getenv("ZE_DIAS", "0,1,2,3,4,5,6")   # Ana: terça, quinta e sábado
 DIAS_SEMANA = {int(d) for d in _DIAS.split(",") if d.strip().isdigit()}
@@ -373,7 +373,14 @@ def preparar():
         from . import busca_reels
         busca_reels.gravar_faixa(video, pasta / nome)   # já põe a música
     else:
-        shutil.copy(video, pasta / nome)
+        from . import ze_textos
+        try:   # frase do roteiro gravada na tela (assets/ze/textos.json): quase todo mundo assiste sem som
+            com_texto = not ANA and ze_textos.gravar(video, pasta / nome)
+        except Exception as e:
+            print(f"::warning::Texto na tela não entrou ({e}); o vídeo sai sem ele.")
+            com_texto = False
+        if not com_texto:
+            shutil.copy(video, pasta / nome)
     com_trilha = "comtrilha" in video.name   # *_comtrilha.mp4 já tem trilha própria: não põe música
     # Ana: todo vídeo sem _comtrilha recebe música. Zé: só os marcados _semtrilha (os antigos já têm música gravada).
     precisa_musica = (not com_trilha) and (ANA or "semtrilha" in video.name)
