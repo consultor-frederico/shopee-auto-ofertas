@@ -6,6 +6,9 @@ on:
       termos:
         description: "Busca livre (termos separados por vírgula). Vazio = teste completo"
         default: ""
+      paginas:
+        description: "Busca livre: quantas páginas de 50 por termo"
+        default: "1"
 
 concurrency:
   group: grava-repositorio
@@ -27,6 +30,7 @@ jobs:
           SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
           SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
           TERMOS: ${{ inputs.termos }}
+          PAGINAS: ${{ inputs.paginas }}
         run: |
           mkdir -p data/relatorios
           python -u -m src.teste_shopee 2>&1 | tee data/relatorios/teste_shopee.txt
