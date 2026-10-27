@@ -154,6 +154,28 @@ if __name__ == "__main__":   # teste: python -m src.aliexpress "fone bluetooth"
     if not configurado():
         print("⏸️  Segredos da AliExpress ainda não cadastrados.")
         sys.exit(0)
+    if os.getenv("LIVRE"):   # busca livre: vários termos (vírgula), sem filtro de entrega
+        for t in [t.strip() for t in palavra.split(",") if t.strip()]:
+            try:
+                dados = chamar(METODO_BUSCA, keywords=t, page_no=1, page_size=50, sort="LAST_VOLUME_DESC",
+                               target_currency="BRL", target_language="PT", ship_to_country="BR",
+                               tracking_id=_env("ALIEXPRESS_TRACKING_ID"),
+                               fields=("product_id,product_title,target_sale_price,evaluate_rate,lastest_volume,"
+                                       "commission_rate,promotion_link,shop_name,ship_to_days"))
+                ps = _produtos(dados, METODO_BUSCA)
+            except RuntimeError as e:
+                print(f"🔎 {t}: {e}")
+                continue
+            print(f"🔎 {t}: {len(ps)} produtos")
+            filtro = [f.strip().lower() for f in os.getenv("FILTRO", "").split(",") if f.strip()]
+            for p in ps:
+                titulo = p.get("product_title") or ""
+                if filtro and not any(f in titulo.lower() for f in filtro):
+                    continue
+                print(f"ITEM {p.get('product_id')} | R$ {p.get('target_sale_price')} | {p.get('lastest_volume')} vend. | "
+                      f"{p.get('evaluate_rate')} | comissão {p.get('commission_rate')} | entrega {p.get('ship_to_days')}d | "
+                      f"{titulo[:110]} | {p.get('promotion_link')}")
+        sys.exit(0)
     try:
         produtos = buscar_produtos(palavra, limite=20)
         em_alta = buscar_produtos(palavra, limite=20, metodo=METODO_EM_ALTA)
