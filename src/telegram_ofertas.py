@@ -10,7 +10,7 @@ import time
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from . import config, imagem, marcas, precos, telegram, variedade
+from . import aliexpress, config, imagem, marcas, precos, telegram, variedade
 from .garimpar import BRT, FMT, agora, carregar_fila, salvar_fila
 
 POR_EXECUCAO = int(os.getenv("TELEGRAM_POR_EXECUCAO", "2"))
@@ -26,6 +26,11 @@ def candidatas(fila):
     hoje = agora().strftime("%Y-%m-%d")
     cheias = {p for p, n in marcas.hoje_por_marca(fila, "telegram_em", hoje).items() if n >= config.SHARK_POR_DIA_TELEGRAM}
     ofs = [o for o in ofs if o.get("plataforma") not in cheias]   # cada marca no máximo X por dia: não domina o canal
+    vagas_ae = aliexpress.vagas_hoje(fila, "telegram_em", config.ALIEXPRESS_POR_DIA_TELEGRAM, hoje)
+
+    def ae_cheio(o, escolhidas):   # 🌎 internacional: no máximo 2 por dia no canal
+        return o.get("plataforma") == "aliexpress" and sum(e.get("plataforma") == "aliexpress" for e in escolhidas) >= vagas_ae
+
     ofs.sort(key=lambda o: o.get("pontos", 0), reverse=True)
     # variedade: tipo de produto que já foi para o canal nas últimas horas fica para depois
     ofs = variedade.ordenar(ofs, variedade.familias_recentes(fila, "telegram_em",
@@ -37,6 +42,8 @@ def candidatas(fila):
             break
         if marcas.eh_marca(o) and any(marcas.eh_marca(e) for e in escolhidas):
             continue   # no máximo 1 de marca oficial por rodada
+        if ae_cheio(o, escolhidas):
+            continue
         if o["categoria"] not in cats and variedade.familia(o) not in fams:
             escolhidas.append(o)
             cats.add(o["categoria"])
@@ -45,6 +52,8 @@ def candidatas(fila):
         if len(escolhidas) >= POR_EXECUCAO:
             break
         if marcas.eh_marca(o) and any(marcas.eh_marca(e) for e in escolhidas):
+            continue
+        if ae_cheio(o, escolhidas):
             continue
         if o not in escolhidas and variedade.familia(o) not in fams:
             escolhidas.append(o)

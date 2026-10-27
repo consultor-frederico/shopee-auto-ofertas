@@ -68,6 +68,9 @@ NIVEIS = {
     "ouro": {"vendas": 500, "comissao_rs": 6.0, "comissao_pct": 8.0, "uau": 7},
     "prata": {"vendas": 500, "comissao_rs": 5.0, "comissao_pct": 8.0, "uau": 6},
 }
+# 🌎 AliExpress (produto internacional): no máximo isso por dia em cada canal (religado 27/10/2026, plano do Fred)
+ALIEXPRESS_POR_DIA_INSTAGRAM = int(os.getenv("ALIEXPRESS_POR_DIA_INSTAGRAM", "2"))
+ALIEXPRESS_POR_DIA_TELEGRAM = int(os.getenv("ALIEXPRESS_POR_DIA_TELEGRAM", "2"))
 COMISSAO_PCT_ALIEXPRESS = 7.0  # AliExpress paga 7% padrão; o corte em R$ (5 prata / 6 ouro) segue igual
 # --- Marcas oficiais pela Awin (src/awin.py, lista em src/marcas.py): Shark Ninja BR e Arno BR, sem teto de preço ---
 # Segredo AWIN_FEED_URL = URL do feed com todas as marcas (Awin → Ferramentas → Crie um Feed). Ligue com AWIN_ATIVO=1.

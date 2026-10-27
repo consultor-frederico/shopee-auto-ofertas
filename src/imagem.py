@@ -95,17 +95,50 @@ def loja_oficial(oferta):
 
 
 def selo_loja(d, oferta, x, y, escala=1.0):
-    """Selo "OFERTA <LOJA>" em pílula, com canto superior esquerdo em (x, y)."""
+    """Selo "OFERTA <LOJA>" em pílula, com canto superior esquerdo em (x, y); devolve a largura.
+    Produto internacional ganha o "🌎 INTERNACIONAL" branco dentro da mesma pílula."""
     info = LOJAS.get(plataforma(oferta), {"nome": plataforma(oferta).upper(), "cor": "#24150A"})
     f1, f2 = _fonte(int(26 * escala), "SemiBold"), _fonte(int(34 * escala), "Black")
     t1, t2 = "OFERTA ", info["nome"]
     w = d.textlength(t1, font=f1) + d.textlength(t2, font=f2)
     px, h = int(26 * escala), int(64 * escala)
-    d.rounded_rectangle([x, y, x + w + 2 * px, y + h], h // 2, fill=info["cor"])
+    pi = int(8 * escala)                       # folga do "INTERNACIONAL" dentro da pílula
+    e3 = escala * (h - 2 * pi) / 64
+    extra = largura_internacional(d, e3) + int(14 * escala) + pi - px if oferta.get("internacional") else 0
+    d.rounded_rectangle([x, y, x + w + 2 * px + extra, y + h], h // 2, fill=info["cor"])
     d.text((x + px, y + (h - 26 * escala) / 2 - 3 * escala), t1, font=f1, fill="#FFFFFF")
     d.text((x + px + d.textlength(t1, font=f1), y + (h - 34 * escala) / 2 - 5 * escala), t2,
            font=f2, fill="#FFFFFF")
-    return w + 2 * px
+    if extra:
+        selo_internacional(d, x + w + px + int(14 * escala), y + pi, e3, info["cor"], "#FFFFFF")
+    return w + 2 * px + extra
+
+
+def largura_internacional(d, escala=1.0):
+    return int(18 * escala) * 2 + int(15 * escala) * 2 + int(10 * escala) + d.textlength(
+        "INTERNACIONAL", font=_fonte(int(26 * escala), "Black"))
+
+
+def selo_internacional(d, x, y, escala, cor, fundo):
+    """Pílula "🌎 INTERNACIONAL" (globo desenhado), canto superior esquerdo em (x, y); devolve a largura."""
+    h, g, px = int(64 * escala), int(15 * escala), int(18 * escala)
+    w = largura_internacional(d, escala)
+    d.rounded_rectangle([x, y, x + w, y + h], h // 2, fill=fundo)
+    globo(d, x + px + g, y + h / 2, g, cor)
+    d.text((x + px + 2 * g + int(10 * escala), y + h / 2), "INTERNACIONAL",
+           font=_fonte(int(26 * escala), "Black"), fill=cor, anchor="lm")
+    return w
+
+
+def globo(d, cx, cy, r, cor):
+    """Globinho (círculo com meridiano e paralelos) para o selo de produto internacional."""
+    lw = max(2, int(r * 0.16))
+    d.ellipse([cx - r, cy - r, cx + r, cy + r], outline=cor, width=lw)
+    d.ellipse([cx - r * 0.42, cy - r, cx + r * 0.42, cy + r], outline=cor, width=lw)
+    d.line([(cx - r, cy), (cx + r, cy)], fill=cor, width=lw)
+    for k in (-0.5, 0.5):
+        meia = r * (1 - k * k) ** 0.5
+        d.line([(cx - meia, cy + k * r), (cx + meia, cy + k * r)], fill=cor, width=max(1, lw - 1))
 
 
 ACHADO_COR = "#0E7C86"        # azul-turquesa "diamante": não existe em nenhum outro selo da página

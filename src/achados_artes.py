@@ -110,6 +110,8 @@ def _mina(o, foto, pos):
     fo = foto.copy()
     fo.thumbnail((L - 180, 620), Image.LANCZOS)
     im.paste(fo, ((L - fo.width) // 2, 250 + (620 - fo.height) // 2))
+    if o.get("internacional"):   # 🌎 vem de fora: selo no pé do cartão
+        imagem.selo_internacional(d, 90, 900 - 30 - 58, 0.9, top.CARD, top.VERMELHO)
     if o.get("desconto"):
         t = f"-{o['desconto']}%"
         ft = f(36)
@@ -146,6 +148,9 @@ def _ouro(o, foto, pos):
     w = d.textlength(loja, font=fl)
     d.rounded_rectangle((L - 70 - w - 56, 58, L - 70, 128), 35, fill=imagem.ESCURO)
     d.text((L - 70 - w - 28, 93), loja, font=fl, fill=imagem.BRANCO, anchor="lm")
+    if o.get("internacional"):   # 🌎 vem de fora: logo abaixo do selo da loja
+        wi = imagem.largura_internacional(d, 0.9)
+        imagem.selo_internacional(d, L - 70 - wi, 140, 0.9, imagem.BRANCO, imagem.ESCURO)
     if o.get("desconto"):
         cx, cy, r = 880, 920, 92
         d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=(205, 48, 36), outline=imagem.BRANCO, width=6)
@@ -197,6 +202,8 @@ def _polaroid(o, foto, pos):
     d.rectangle((46, 46, lp - 46, 46 + 728), fill=(250, 247, 249))
     fo = ImageOps.contain(foto, (700, 700), Image.LANCZOS)
     pol.paste(fo, (lp // 2 - fo.width // 2, 46 + 364 - fo.height // 2))
+    if o.get("internacional"):   # 🌎 vem de fora: "na AliExpress · internacional" no pé da foto
+        la.selo_loja(d, o, 66, 46 + 728 - 70)
     ft = la.serif(46)
     y = 806
     for ln in la.quebrar(d, o["titulo"], ft, lp - 100, max_linhas=2):
@@ -233,6 +240,9 @@ def _circulo(o, foto, pos):
     if o.get("desconto"):
         la.adesivo(img, 872, 240, f"-{o['desconto']}%", "OFF", r=92, angulo=10)
     d = ImageDraw.Draw(img)
+    if o.get("internacional"):   # 🌎 vem de fora: no canto de cima, fora do círculo
+        w = la.selo_loja(ImageDraw.Draw(Image.new("RGB", (8, 8))), o, 0, 0)
+        la.selo_loja(d, o, L - 40 - w, 40)
     ft = la.serif(56)
     y = 945
     for ln in la.quebrar(d, o["titulo"], ft, L - 150, max_linhas=2):

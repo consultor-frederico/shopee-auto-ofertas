@@ -134,11 +134,12 @@ def adesivo(img, cx, cy, texto1, texto2, r=118, angulo=-12, escala=1.0):
 def selo_loja(d, oferta, x, y):
     nome, cor = LOJAS.get(oferta.get("plataforma") or "shopee", ("Loja", TEXTO))
     f = sans(28, "Bold")
-    t = f"na {nome}"
+    t = f"na {nome}" + (" · internacional" if oferta.get("internacional") else "")   # 🌎 vem de fora
     w = d.textlength(t, font=f)
     d.rounded_rectangle([x, y, x + w + 56, y + 50], 25, fill=BRANCO, outline=cor, width=3)
     d.ellipse([x + 16, y + 18, x + 30, y + 32], fill=cor)
     d.text((x + 40, y + 9), t, font=f, fill=cor)
+    return w + 56
 
 
 def quebrar(d, texto, fonte, largura, max_linhas=2):

@@ -22,7 +22,7 @@ from datetime import timedelta
 
 from PIL import Image, ImageDraw
 
-from . import achados_artes as artes, config, imagem, instagram, marcas
+from . import achados_artes as artes, aliexpress, config, imagem, instagram, marcas
 from .garimpar import FMT, agora, carregar_fila, salvar_fila
 
 ANA = config.PERFIL == "ana"
@@ -50,11 +50,14 @@ def escolher(fila, conferir=True):
     lista = [o for o in postar.candidatos_ordenados(fila) if not o.get("video_manual") and not o.get("pedido")]
     itens, familias, categorias, ids = [], set(), set(), set()
     shark = False
+    vagas_ae = aliexpress.vagas_hoje(fila, "postado_em", config.ALIEXPRESS_POR_DIA_INSTAGRAM, agora().strftime("%Y-%m-%d"))
 
     def tentar(o, so_categoria_nova):
-        nonlocal shark
+        nonlocal shark, vagas_ae
         fam = variedade.familia(o)
         if o["id"] in ids or fam in familias or (marcas.eh_marca(o) and shark):
+            return
+        if o.get("plataforma") == "aliexpress" and vagas_ae <= 0:   # 🌎 internacional: no máximo 2 por dia
             return
         if so_categoria_nova and o.get("categoria") in categorias:
             return
@@ -77,6 +80,7 @@ def escolher(fila, conferir=True):
         familias.add(fam)
         categorias.add(o.get("categoria"))
         shark = shark or marcas.eh_marca(o)
+        vagas_ae -= o.get("plataforma") == "aliexpress"
         print(f"🛍️  {len(itens)}. {o['titulo'][:60]} — R$ {o['preco_fmt']} ({o.get('categoria')})")
 
     for so_categoria_nova in (True, False):
