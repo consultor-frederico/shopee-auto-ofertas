@@ -151,7 +151,7 @@ def resumo(s, anterior):
 
 def rodar():
     historico = _historico()
-    blocos = []
+    blocos, medidos = [], []
     for arroba, segredo in CONTAS:
         token = os.getenv(segredo, "").strip()
         if not token:
@@ -165,7 +165,19 @@ def rodar():
         anteriores = [h for h in historico if h["conta"] == arroba]
         blocos.append(resumo(s, anteriores[-1] if anteriores else None))
         historico.append(s)
+        medidos.append(s)
     texto = "📊 <b>Medição do Instagram</b>\n\n" + "\n\n".join(blocos)
+    if POSTS_MEDIDOS > 10:   # medição longa: no log, todos os posts e a média de alcance por formato
+        for s in medidos:
+            print(f"\n{s['conta']}: {len(s['ultimos_posts'])} posts")
+            por_tipo = {}
+            for p in s["ultimos_posts"]:
+                print(f"  {p['data']} {p['tipo']:<14} alcance {p['alcance']} • salvos {p['salvos']} • "
+                      f"compart. {p['compartilhamentos']} • coment. {p['comentarios']}  {p['inicio']}")
+                if p["alcance"] is not None:
+                    por_tipo.setdefault(p["tipo"], []).append(p["alcance"])
+            for tipo, v in por_tipo.items():
+                print(f"  ➜ {tipo}: {len(v)} posts, alcance médio {sum(v) / len(v):.0f}, maior {max(v)}")
     print(texto.replace("<b>", "").replace("</b>", "").replace("<i>", "").replace("</i>", ""))
     try:
         ARQ_HISTORICO.parent.mkdir(parents=True, exist_ok=True)

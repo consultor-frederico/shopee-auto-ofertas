@@ -4,6 +4,10 @@ name: 25 - Medição do Instagram (só leitura)
 # no seu Telegram privado. Não posta nada.
 on:
   workflow_dispatch:
+    inputs:
+      posts:
+        description: 'Quantos posts medir (acima de 10, o log mostra todos e a média por formato)'
+        default: '10'
 
 permissions:
   contents: read
@@ -28,4 +32,5 @@ jobs:
           IG_ACCESS_TOKEN_ANA: ${{ secrets.IG_ACCESS_TOKEN_ANA }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_PRIVADO: ${{ secrets.TELEGRAM_CHAT_PRIVADO }}
+          METRICAS_POSTS: ${{ inputs.posts || '10' }}
         run: python -m src.metricas
