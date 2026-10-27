@@ -19,6 +19,8 @@ METODO_BUSCA = "aliexpress.affiliate.product.query"
 METODO_EM_ALTA = "aliexpress.affiliate.hotproduct.query"   # produtos em alta (lista separada)
 # Ligado (22/10/2026, pedido do Fred): produto internacional entra, sempre com aviso na legenda e
 # na resposta (ver precos.aviso e busca_ze.mensagem). A API não diz de onde o produto sai.
+# Desde 27/10/2026: selo "INTERNACIONAL" na arte e no máximo 2 por dia em cada canal
+# (config.ALIEXPRESS_POR_DIA_INSTAGRAM / _TELEGRAM).
 ATIVO = True
 DIAS_ENTREGA_MAX = 7          # "já está no Brasil": entrega rápida para o Brasil
 AVALIACAO_MIN_PCT = 95.0      # vendedor confiável: ≥ 95% de avaliações positivas
@@ -137,6 +139,14 @@ def normalizar(p, categoria, palavra):
         "link_afiliado": p.get("promotion_link") or "",
         "internacional": True,   # a API não diz de onde sai: sempre com aviso de internacional
     }
+
+
+def vagas_hoje(fila, campo, maximo, hoje):
+    """Quantas ofertas da AliExpress ainda cabem no dia `hoje` ("AAAA-MM-DD") no canal do `campo`
+    ("postado_em" = Instagram, "telegram_em" = Telegram)."""
+    ja = sum(1 for o in fila["ofertas"].values()
+             if o.get("plataforma") == "aliexpress" and str(o.get(campo) or "").startswith(hoje))
+    return max(0, maximo - ja)
 
 
 def recusa_extra(o):
