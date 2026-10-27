@@ -2,14 +2,16 @@
 
 Uma vez por dia (por perfil), o robô:
   1. lê os posts recentes das páginas da lista data/radar_perfis.json pela API do Instagram
-     (business_discovery: só contas profissionais públicas);
+     (business_discovery: só contas profissionais públicas). Essa leitura só existe no login do
+     Facebook: usa o token da Página (FB_PAGE_ID/FB_PAGE_TOKEN) e o Instagram ligado a ela, que só
+     lê (serve para os dois perfis);
   2. ordena pelo engajamento (curtidas + 5x comentários: comentário costuma ser "QUERO");
   3. a IA lê a legenda de cada post campeão e traduz o produto em termos de busca genéricos,
      do jeito que o vendedor escreve na Shopee (sem marca, personagem ou celebridade);
   4. guarda os termos em <pasta do perfil>/radar.json. Cada rodada do garimpo gasta alguns
      (config.PALAVRAS_VIRAIS_POR_GARIMPO), antes das buscas da IA e das fixas.
 
-Post já lido não volta. Sem token do Instagram ou sem IA, o radar só pula (o garimpo segue igual).
+Post já lido não volta. Sem token da Página ou sem IA, o radar só pula (o garimpo segue igual).
 
 Teste: python -m src.radar_virais   (lê as páginas e mostra os termos, sem gravar nada)
 """
@@ -19,7 +21,9 @@ import re
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from . import config, legenda, metricas
+import requests
+
+from . import config, legenda
 
 BRT = timezone(timedelta(hours=-3))
 ARQ_PERFIS = config.PASTA_DADOS / "radar_perfis.json"
@@ -82,20 +86,34 @@ def salvar(dados):
     ARQ_RADAR.write_text(json.dumps(dados, ensure_ascii=False, indent=1), encoding="utf-8")
 
 
+API = "https://graph.facebook.com/v23.0"
+
+
 def _token():
-    nome = "IG_ACCESS_TOKEN_ANA" if config.PERFIL == "ana" else "IG_ACCESS_TOKEN"
-    return (os.getenv(nome) or "").strip()
+    return (os.getenv("FB_PAGE_TOKEN") or "").strip() if (os.getenv("FB_PAGE_ID") or "").strip() else ""
+
+
+def _get(token, caminho, campos):
+    r = requests.get(f"{API}/{caminho}", params={"fields": campos, "access_token": token}, timeout=60)
+    corpo = r.json() if r.content else {}
+    if r.status_code >= 400 or "error" in corpo:
+        raise RuntimeError(f"HTTP {r.status_code}: {str((corpo.get('error') or {}).get('message', '?'))[:160]}")
+    return corpo
 
 
 def posts_em_alta(token):
     """Posts recentes de cada página da lista, do mais engajado para o menos."""
     corte = datetime.now(timezone.utc) - timedelta(days=DIAS_RECENTES)
+    ig = (_get(token, os.getenv("FB_PAGE_ID").strip(), "instagram_business_account")
+          .get("instagram_business_account") or {}).get("id")
+    if not ig:
+        raise RuntimeError("a Página do Facebook não tem Instagram profissional ligado")
     saida = []
     for usuario in perfis():
         campo = ("business_discovery.username(%s){username,followers_count,"
                  "media.limit(40){caption,like_count,comments_count,timestamp,permalink,media_type}}" % usuario)
         try:
-            d = metricas._get(token, "me", {"fields": campo})["business_discovery"]
+            d = _get(token, ig, campo)["business_discovery"]
         except Exception as e:
             print(f"   📡 @{usuario}: sem dado ({str(e)[:120]})")
             continue
@@ -206,6 +224,6 @@ if __name__ == "__main__":
     d = {"vistos": {}, "termos": []}
     print(f"Perfil {config.PERFIL}: páginas {perfis()}")
     if not _token():
-        print("⏸️  Sem token do Instagram neste ambiente.")
+        print("⏸️  Sem FB_PAGE_ID/FB_PAGE_TOKEN neste ambiente.")
     else:
         print(f"Termos novos: {atualizar(d, gravar=False)}")

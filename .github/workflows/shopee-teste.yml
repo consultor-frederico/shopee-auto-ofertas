@@ -32,8 +32,8 @@ jobs:
           TERMOS: ${{ inputs.termos }}
           PAGINAS: ${{ inputs.paginas }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
-          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
-          IG_ACCESS_TOKEN_ANA: ${{ secrets.IG_ACCESS_TOKEN_ANA }}
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          FB_PAGE_TOKEN: ${{ secrets.FB_PAGE_TOKEN }}
         run: |
           mkdir -p data/relatorios
           if [ "$TERMOS" = "radar" ] || [ "$TERMOS" = "radar ana" ]; then   # teste do radar de virais (não grava)
