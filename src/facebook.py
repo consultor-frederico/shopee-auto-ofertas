@@ -118,6 +118,14 @@ if __name__ == "__main__":   # teste: python -m src.facebook
             me = _req("GET", "me", params={"fields": "id,name"})
             print(f"::notice::Token pertence a: {me.get('name')} ({me.get('id')}) — "
                   f"{'token de PÁGINA ✔' if me.get('id') == _env('FB_PAGE_ID') else 'ATENÇÃO: não é token da página'}")
+            try:   # o webhook só avisa comentário novo da página se o app estiver inscrito no campo "feed"
+                apps = _req("GET", f"{_env('FB_PAGE_ID')}/subscribed_apps").get("data", [])
+                for a in apps:
+                    print(f"::notice::Webhook da página: app {a.get('name')} → campos {', '.join(a.get('subscribed_fields') or [])}")
+                if not any("feed" in (a.get("subscribed_fields") or []) for a in apps):
+                    print("::warning::Página sem inscrição no campo feed: comentário no Facebook só é respondido na rodada de 15 min.")
+            except ErroFacebook as e:
+                print(f"::warning::Não consegui ler as inscrições do webhook da página: {e}")
         except Exception as e:
             print(f"::error::{e}")
             raise SystemExit(1)
