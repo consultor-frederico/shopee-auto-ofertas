@@ -154,6 +154,18 @@ if __name__ == "__main__":   # teste: python -m src.aliexpress "fone bluetooth"
     if not configurado():
         print("⏸️  Segredos da AliExpress ainda não cadastrados.")
         sys.exit(0)
+    if os.getenv("LIVRE"):   # busca livre: vários termos (vírgula), sem filtro de entrega
+        for t in [t.strip() for t in palavra.split(",") if t.strip()]:
+            dados = chamar(METODO_BUSCA, keywords=t, page_no=1, page_size=50, sort="LAST_VOLUME_DESC",
+                           target_currency="BRL", target_language="PT", ship_to_country="BR",
+                           tracking_id=_env("ALIEXPRESS_TRACKING_ID"),
+                           fields=("product_id,product_title,target_sale_price,evaluate_rate,lastest_volume,"
+                                   "commission_rate,promotion_link,shop_name,ship_to_days"))
+            ps = _produtos(dados, METODO_BUSCA)
+            print(f"🔎 {t}: {len(ps)} produtos")
+            for p in ps:
+                print("ITEM " + json.dumps(p, ensure_ascii=False))
+        sys.exit(0)
     try:
         produtos = buscar_produtos(palavra, limite=20)
         em_alta = buscar_produtos(palavra, limite=20, metodo=METODO_EM_ALTA)

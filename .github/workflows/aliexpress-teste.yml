@@ -6,6 +6,10 @@ on:
       palavra:
         description: 'Palavra-chave para testar'
         default: 'fone bluetooth'
+      livre:
+        description: 'Busca livre (vários termos por vírgula, sem filtro de entrega)'
+        type: boolean
+        default: false
 
 jobs:
   testar:
@@ -21,4 +25,5 @@ jobs:
           ALIEXPRESS_APP_KEY: ${{ secrets.ALIEXPRESS_APP_KEY }}
           ALIEXPRESS_APP_SECRET: ${{ secrets.ALIEXPRESS_APP_SECRET }}
           ALIEXPRESS_TRACKING_ID: ${{ secrets.ALIEXPRESS_TRACKING_ID }}
+          LIVRE: ${{ inputs.livre && '1' || '' }}
         run: python -m src.aliexpress "${{ inputs.palavra }}"
