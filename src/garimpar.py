@@ -325,6 +325,12 @@ def coletar_candidatos(fila, buscar=shopee.buscar_ofertas, escolhidas=None, mem=
     return list(candidatos.values())
 
 
+def _limite_familia(f):
+    """Família nomeada em variedade.FAMILIAS (interruptor, umidificador, smartwatch…) é o mesmo produto
+    para quem vê: só 1 esperando na fila. Família genérica (1ª palavra do nome) aceita config.MAX_PENDENTES_POR_FAMILIA."""
+    return 1 if f in variedade.FAMILIAS else config.MAX_PENDENTES_POR_FAMILIA
+
+
 def selecionar(candidatos, n, ja_na_fila=None, lojas_na_fila=None):
     """Pega os melhores, equilibrando as categorias e sem lotar a fila do mesmo tipo de produto."""
     fora = [o for o in candidatos if not variedade.diferenciado(o) and o.get("nivel") in ("ouro", "achado")]
@@ -350,7 +356,7 @@ def selecionar(candidatos, n, ja_na_fila=None, lojas_na_fila=None):
                 motivo = ("mesma palavra" if o["palavra"] in palavras else
                           f"mesmo tipo ({t})" if t in tipos else
                           f"mesma família ({f})" if f in fams_rodada else
-                          f"família {f} já tem {fams[f]} na fila" if fams.get(f, 0) >= config.MAX_PENDENTES_POR_FAMILIA else
+                          f"família {f} já tem {fams[f]} na fila" if fams.get(f, 0) >= _limite_familia(f) else
                           f"loja {o.get('loja')} cheia na fila" if o.get("loja") and lojas.get(o["loja"], 0) >= config.MAX_POR_LOJA_NA_FILA else
                           "parecido com outro da rodada" if any(curadoria.parecido(o["nome"], e["nome"], 0.35) for e in escolhidos) else "")
                 if motivo:

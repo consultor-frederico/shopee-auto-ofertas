@@ -123,13 +123,20 @@ def posts_em_alta(token):
         raise RuntimeError("a Página do Facebook não tem Instagram profissional ligado")
     saida = []
     for usuario in perfis():
-        campo = ("business_discovery.username(%s){username,followers_count,"
-                 "media.limit(40){caption,like_count,comments_count,timestamp,permalink,media_type,"
-                 "media_url,thumbnail_url,children{media_type,media_url,thumbnail_url}}}" % usuario)
-        try:
-            d = _get(token, ig, campo)["business_discovery"]
-        except Exception as e:
-            print(f"   📡 @{usuario}: sem dado ({str(e)[:120]})")
+        d = None
+        for limite in (25, 12, 6):   # página grande com carrossel: a API pede "menos dados" (HTTP 500)
+            campo = ("business_discovery.username(%s){username,followers_count,"
+                     "media.limit(%d){caption,like_count,comments_count,timestamp,permalink,media_type,"
+                     "media_url,thumbnail_url,children{media_type,media_url,thumbnail_url}}}" % (usuario, limite))
+            try:
+                d = _get(token, ig, campo)["business_discovery"]
+                break
+            except Exception as e:
+                erro = str(e)
+                if "reduce the amount" not in erro:
+                    break
+        if d is None:
+            print(f"   📡 @{usuario}: sem dado ({erro[:120]})")
             continue
         midias = (d.get("media") or {}).get("data") or []
         n = 0
@@ -213,6 +220,24 @@ def _limpar_item(it):
         if cat in config.NICHO and termos else None
 
 
+_visao = {"modelos": None}
+
+
+def _modelos_visao(headers):
+    """Os da config e, se a Groq não tiver nenhum, os modelos de visão que a conta enxerga agora."""
+    if _visao["modelos"] is not None:
+        return _visao["modelos"]
+    try:
+        ids = [m["id"] for m in requests.get(f"{config.GROQ_URL}/models", headers=headers, timeout=30).json()["data"]]
+    except Exception:
+        ids = []
+    pistas = ("vision", "llama-4", "scout", "maverick", "-vl", "vl-", "gemma-3", "pixtral", "llava")
+    achados = [m for m in ids if any(p in m.lower() for p in pistas)]
+    _visao["modelos"] = [m for m in MODELOS_VISAO if m in ids] + [m for m in achados if m not in MODELOS_VISAO]
+    print(f"   👁️  modelos de visão na Groq: {_visao['modelos'] or 'nenhum'}")
+    return _visao["modelos"]
+
+
 def ver_fotos(p):
     """Produtos que a IA de visão enxerga nas fotos do post: [{produto, categoria, termos}]."""
     fotos = [b for b in (_foto_b64(u) for u in p.get("imagens", [])[:FOTOS_POR_POST]) if b]
@@ -223,7 +248,7 @@ def ver_fotos(p):
                                 categorias=", ".join(config.NICHO))
     conteudo = [{"type": "text", "text": texto}] + [{"type": "image_url", "image_url": {"url": f}} for f in fotos]
     headers = {"Authorization": f"Bearer {config.GROQ_API_KEY}", "Content-Type": "application/json"}
-    for modelo in MODELOS_VISAO:
+    for modelo in list(_modelos_visao(headers)):
         try:
             r = requests.post(f"{config.GROQ_URL}/chat/completions", headers=headers, timeout=90, json={
                 "model": modelo, "temperature": 0.3, "response_format": {"type": "json_object"},
@@ -235,6 +260,8 @@ def ver_fotos(p):
                     "messages": [{"role": "user", "content": conteudo}]})
             if r.status_code != 200:
                 print(f"   ⚠️  visão {modelo}: HTTP {r.status_code} {r.text[:120]}")
+                if r.status_code in (400, 404):
+                    _visao["modelos"].remove(modelo)   # não insiste nesse nos próximos posts
                 continue
             bruto = r.json()["choices"][0]["message"]["content"]
             itens = json.loads(re.search(r"\{.*\}", bruto, re.S).group(0)).get("itens") or []
