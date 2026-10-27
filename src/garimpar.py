@@ -63,6 +63,7 @@ def normalizar(no, categoria, palavra):
         "link_afiliado": no.get("offerLink") or "",
         "preco_max": _num(no.get("priceMax")) or None,
         "internacional": shopee.eh_internacional(no.get("productLink")) is True,
+        "pagina_busca": no.get("_pagina"),
     })
 
 
@@ -185,6 +186,9 @@ def _buscar_paginas(buscar, alvo, paginas):
             falhou += 1
             print(f"❌ Busca '{alvo}' (pág. {pagina}, ordem {ordem}{', ams' if ams else ''}): {e}")
             continue
+        if ordem == 2 and not ams:   # mais vendidos: guarda a página, para medir se descer mais fundo rende
+            for no in r:
+                no.setdefault("_pagina", pagina)
         nos += r
         if len(r) < 50:
             esgotou.add(chave)
@@ -429,6 +433,10 @@ def curar(fila, candidatos, max_ia=None, max_achado=30):
         if o["nivel"] in ("ouro", "achado"):
             orig[o.get("origem_busca", "?")] = orig.get(o.get("origem_busca", "?"), 0) + 1
     print(f"🧭 Ouro/Achado por origem da busca: {orig}")
+    fundo = [o for o in aprovados if o["nivel"] in ("ouro", "achado") and o.get("pagina_busca")]
+    if fundo:   # teste de profundidade (27/10/2026): as páginas 9-12 dos mais vendidos rendem achado?
+        raso = sum(1 for o in fundo if o["pagina_busca"] <= 8)
+        print(f"📏 Ouro/Achado por página dos mais vendidos: 1-8 = {raso} | 9+ = {len(fundo) - raso}")
     print(f"🏅 Ouro: {cont['ouro']} | 💎 Achado escondido: {cont['achado']} | 🥈 Prata: {cont['prata']} | "
           f"descartados pela curadoria: {cont['descartado']}")
     return aprovados

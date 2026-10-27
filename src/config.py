@@ -110,7 +110,7 @@ PALAVRAS_VIRAIS_POR_GARIMPO = int(os.getenv("PALAVRAS_VIRAIS_POR_GARIMPO", "6"))
 # As páginas fundas dos mais vendidos e a ordem "relevância" mostram o que fica escondido do topo.
 # "ams" = só ofertas em que o vendedor paga comissão extra (20–40%): barato e diferente passa no filtro.
 # A busca para sozinha quando a Shopee entrega página incompleta (acabaram os resultados).
-PROFUNDIDADE = int(os.getenv("PROFUNDIDADE", "8"))   # até que página dos "mais vendidos" o robô desce
+PROFUNDIDADE = int(os.getenv("PROFUNDIDADE", "12"))   # até que página dos "mais vendidos" o robô desce (8 até 27/10/2026; teste de 1 semana com 12)
 
 
 def _pags(ate, ordem, *extra, de=1):
@@ -125,7 +125,7 @@ PAGINAS_LOJA = int(os.getenv("PAGINAS_LOJA", "4"))
 CATEGORIAS_POR_GARIMPO = int(os.getenv("CATEGORIAS_POR_GARIMPO", "6"))
 PAGINAS_CATEGORIA = _pags(PROFUNDIDADE + 2, 2, de=2) + _pags(2, 1) + _pags(3, 2, "ams")
 # Quantos produtos a IA avalia por rodada (o resto nem chega a ser julgado)
-IA_MAX_POR_GARIMPO = int(os.getenv("IA_MAX_POR_GARIMPO", "300"))
+IA_MAX_POR_GARIMPO = int(os.getenv("IA_MAX_POR_GARIMPO", "400"))   # 300 até 27/10/2026: subiu junto com a profundidade
 # Variedade de lojas: no máximo isso de ofertas da mesma loja esperando na fila
 MAX_POR_LOJA_NA_FILA = int(os.getenv("MAX_POR_LOJA_NA_FILA", "5"))
 DIAS_SEM_REPETIR = 30          # Instagram: não repete o mesmo produto dentro desse prazo

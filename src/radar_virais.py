@@ -7,7 +7,9 @@ Uma vez por dia (por perfil), o robô:
      lê (serve para os dois perfis);
   2. ordena pelo engajamento (curtidas + 5x comentários: comentário costuma ser "QUERO");
   3. a IA lê a legenda de cada post campeão e traduz o produto em termos de busca genéricos,
-     do jeito que o vendedor escreve na Shopee (sem marca, personagem ou celebridade);
+     do jeito que o vendedor escreve na Shopee (sem marca, personagem ou celebridade). Quando a
+     legenda não diz o produto (carrossel "Digita CASA que mando os links"), uma IA de visão olha
+     as fotos dos slides e acha cada produto (um carrossel pode render vários);
   4. guarda os termos em <pasta do perfil>/radar.json. Cada rodada do garimpo gasta alguns
      (config.PALAVRAS_VIRAIS_POR_GARIMPO), antes das buscas da IA e das fixas.
 
@@ -18,8 +20,12 @@ Teste: python -m src.radar_virais   (lê as páginas e mostra os termos, sem gra
 import json
 import os
 import re
+import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+
+import base64
+import io
 
 import requests
 
@@ -32,6 +38,11 @@ DIAS_RECENTES = int(os.getenv("RADAR_DIAS", "10"))        # só posts desses úl
 POSTS_POR_DIA = int(os.getenv("RADAR_POSTS", "25"))       # campeões que a IA traduz por dia
 POSTS_POR_PAGINA = int(os.getenv("RADAR_POSTS_PAGINA", "4"))  # nenhuma página domina o radar
 TERMOS_POR_CATEGORIA = 2                                  # por rodada: o radar fica variado
+POSTS_COM_FOTO = int(os.getenv("RADAR_POSTS_FOTO", "12"))  # posts por dia que a IA de visão olha
+FOTOS_POR_POST = 5                                         # limite da Groq por pedido
+MODELOS_VISAO = [m.strip() for m in os.getenv(
+    "RADAR_MODELOS_VISAO",
+    "meta-llama/llama-4-scout-17b-16e-instruct,meta-llama/llama-4-maverick-17b-128e-instruct").split(",") if m.strip()]
 PESO_COMENTARIO = 5
 
 PROMPT = """Você ajuda a página de achadinhos {marca} (público: {publico}).
@@ -113,7 +124,8 @@ def posts_em_alta(token):
     saida = []
     for usuario in perfis():
         campo = ("business_discovery.username(%s){username,followers_count,"
-                 "media.limit(40){caption,like_count,comments_count,timestamp,permalink,media_type}}" % usuario)
+                 "media.limit(40){caption,like_count,comments_count,timestamp,permalink,media_type,"
+                 "media_url,thumbnail_url,children{media_type,media_url,thumbnail_url}}}" % usuario)
         try:
             d = _get(token, ig, campo)["business_discovery"]
         except Exception as e:
@@ -126,9 +138,12 @@ def posts_em_alta(token):
             if quando < corte or not (m.get("caption") or "").strip():
                 continue
             curtidas, coments = int(m.get("like_count") or 0), int(m.get("comments_count") or 0)
+            filhos = ((m.get("children") or {}).get("data") or [m])
+            imagens = [f.get("thumbnail_url") or f.get("media_url") for f in filhos
+                       if f.get("thumbnail_url") or (f.get("media_url") and f.get("media_type") != "VIDEO")]
             saida.append({"perfil": d.get("username", usuario), "permalink": m.get("permalink"),
                           "legenda": m["caption"].strip(), "curtidas": curtidas, "comentarios": coments,
-                          "nota": curtidas + PESO_COMENTARIO * coments})
+                          "nota": curtidas + PESO_COMENTARIO * coments, "imagens": imagens})
             n += 1
         print(f"   📡 @{d.get('username', usuario)}: {d.get('followers_count', '?')} seguidores, "
               f"{n} posts nos últimos {DIAS_RECENTES} dias")
@@ -163,6 +178,72 @@ def traduzir(posts):
     return saida
 
 
+PROMPT_FOTOS = """Estas imagens são os slides de um post que BOMBOU numa página de achadinhos do
+Instagram (legenda: "{legenda}"). Ajude a página {marca} (público: {publico}).
+
+Identifique cada PRODUTO FÍSICO diferente que aparece (ignore slides só com texto, capa e chamada).
+Para cada um, crie 2 ou 3 termos de busca para a Shopee: 2 a 4 palavras, como o VENDEDOR escreve no
+título; genéricos, NUNCA marca, personagem, celebridade, time ou franquia.
+Categoria: uma de {categorias}, ou "fora" se não combina com o público ou é item de fumo/droga/arma/adulto.
+
+Responda APENAS com JSON: {{"itens": [{{"produto": "...", "categoria": "...", "termos": ["...", "..."]}}]}}"""
+
+
+def _foto_b64(url):
+    """Baixa a imagem e reduz para 640px (menos tokens). None se falhar."""
+    try:
+        from PIL import Image
+        r = requests.get(url, timeout=30)
+        r.raise_for_status()
+        img = Image.open(io.BytesIO(r.content)).convert("RGB")
+        img.thumbnail((640, 640))
+        buf = io.BytesIO()
+        img.save(buf, "JPEG", quality=80)
+        return "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode()
+    except Exception:
+        return None
+
+
+def _limpar_item(it):
+    cat = it.get("categoria")
+    termos = [_limpo(t) for t in it.get("termos") or []]
+    termos = [t for t in termos if 2 <= len(t.split()) <= 4 and 5 <= len(t) <= 40
+              and not any(p in t for p in config.PALAVRAS_PROIBIDAS)]
+    return {"produto": it.get("produto", ""), "categoria": cat, "termos": termos} \
+        if cat in config.NICHO and termos else None
+
+
+def ver_fotos(p):
+    """Produtos que a IA de visão enxerga nas fotos do post: [{produto, categoria, termos}]."""
+    fotos = [b for b in (_foto_b64(u) for u in p.get("imagens", [])[:FOTOS_POR_POST]) if b]
+    if not fotos or not config.GROQ_API_KEY:
+        return []
+    texto = PROMPT_FOTOS.format(legenda=re.sub(r"\s+", " ", p["legenda"])[:200].replace('"', "'"),
+                                marca=config.NOME_MARCA, publico=config.PUBLICO,
+                                categorias=", ".join(config.NICHO))
+    conteudo = [{"type": "text", "text": texto}] + [{"type": "image_url", "image_url": {"url": f}} for f in fotos]
+    headers = {"Authorization": f"Bearer {config.GROQ_API_KEY}", "Content-Type": "application/json"}
+    for modelo in MODELOS_VISAO:
+        try:
+            r = requests.post(f"{config.GROQ_URL}/chat/completions", headers=headers, timeout=90, json={
+                "model": modelo, "temperature": 0.3, "response_format": {"type": "json_object"},
+                "messages": [{"role": "user", "content": conteudo}]})
+            if r.status_code == 429:
+                time.sleep(min(float(r.headers.get("retry-after", 10) or 10), 30))
+                r = requests.post(f"{config.GROQ_URL}/chat/completions", headers=headers, timeout=90, json={
+                    "model": modelo, "temperature": 0.3, "response_format": {"type": "json_object"},
+                    "messages": [{"role": "user", "content": conteudo}]})
+            if r.status_code != 200:
+                print(f"   ⚠️  visão {modelo}: HTTP {r.status_code} {r.text[:120]}")
+                continue
+            bruto = r.json()["choices"][0]["message"]["content"]
+            itens = json.loads(re.search(r"\{.*\}", bruto, re.S).group(0)).get("itens") or []
+            return [x for x in (_limpar_item(it) for it in itens if isinstance(it, dict)) if x]
+        except Exception as e:
+            print(f"   ⚠️  visão {modelo}: {str(e)[:120]}")
+    return []
+
+
 def atualizar(dados, gravar=True):
     """Lê as páginas (uma vez por dia) e acrescenta os termos novos. Devolve quantos entraram."""
     token = _token()
@@ -182,21 +263,35 @@ def atualizar(dados, gravar=True):
     traducoes = traduzir(novos)
     ja = {_limpo(t["termo"]) for t in dados["termos"]}
     n = 0
+    olhados = 0
     for p, tr in zip(novos, traducoes):
         dados["vistos"][p["permalink"]] = hoje
-        if not tr:
+        achados = [tr] if tr else []
+        if not achados and p.get("imagens") and olhados < POSTS_COM_FOTO:
+            olhados += 1
+            achados = ver_fotos(p)
+            if achados:
+                print(f"   👁️  fotos de @{p['perfil']} ({len(p['imagens'])} slides): {len(achados)} produtos")
+        if not achados:
             print(f"   ⏭️  pulado: {p['legenda'][:70]!r}")
             continue
-        print(f"   🔥 {p['curtidas']} curtidas / {p['comentarios']} coments (@{p['perfil']}): "
-              f"{tr['produto']} → {', '.join(tr['termos'])}")
-        for termo in tr["termos"]:
-            if termo not in ja:
-                ja.add(termo)
-                dados["termos"].append({"termo": termo, "cat": tr["categoria"], "produto": tr["produto"],
-                                        "nota": p["nota"], "perfil": p["perfil"],
-                                        "permalink": p["permalink"], "dia": hoje})
-                n += 1
+        for tr in achados:
+            print(f"   🔥 {p['curtidas']} curtidas / {p['comentarios']} coments (@{p['perfil']}): "
+                  f"{tr['produto']} → {', '.join(tr['termos'])}")
+            n += _guardar(dados, ja, tr, p, hoje)
     dados["dia"] = hoje
+    return n
+
+
+def _guardar(dados, ja, tr, p, hoje):
+    n = 0
+    for termo in tr["termos"]:
+        if termo not in ja:
+            ja.add(termo)
+            dados["termos"].append({"termo": termo, "cat": tr["categoria"], "produto": tr["produto"],
+                                    "nota": p["nota"], "perfil": p["perfil"],
+                                    "permalink": p["permalink"], "dia": hoje})
+            n += 1
     return n
 
 
