@@ -241,11 +241,15 @@ def _modelos_visao(headers):
 def ver_fotos(p):
     """Produtos que a IA de visão enxerga nas fotos do post: [{produto, categoria, termos}]."""
     fotos = [b for b in (_foto_b64(u) for u in p.get("imagens", [])[:FOTOS_POR_POST]) if b]
-    if not fotos or not config.GROQ_API_KEY:
+    if not fotos:
         return []
     texto = PROMPT_FOTOS.format(legenda=re.sub(r"\s+", " ", p["legenda"])[:200].replace('"', "'"),
                                 marca=config.NOME_MARCA, publico=config.PUBLICO,
                                 categorias=", ".join(config.NICHO))
+    if (os.getenv("GEMINI_API_KEY") or "").strip():
+        return _ver_gemini(texto, fotos)
+    if not config.GROQ_API_KEY:
+        return []
     conteudo = [{"type": "text", "text": texto}] + [{"type": "image_url", "image_url": {"url": f}} for f in fotos]
     headers = {"Authorization": f"Bearer {config.GROQ_API_KEY}", "Content-Type": "application/json"}
     for modelo in list(_modelos_visao(headers)):
@@ -269,6 +273,44 @@ def ver_fotos(p):
         except Exception as e:
             print(f"   ⚠️  visão {modelo}: {str(e)[:120]}")
     return []
+
+
+GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta"
+_gemini = {"modelo": None}
+
+
+def _ver_gemini(texto, fotos):
+    """Visão pelo Gemini (segredo GEMINI_API_KEY, plano gratuito do Google AI Studio)."""
+    chave = os.getenv("GEMINI_API_KEY").strip()
+    if _gemini["modelo"] is None:   # o modelo pedido, ou o "flash" mais novo que a chave enxerga
+        _gemini["modelo"] = os.getenv("GEMINI_MODELO", "").strip()
+        if not _gemini["modelo"]:
+            try:
+                nomes = [m["name"].split("/")[-1] for m in requests.get(
+                    f"{GEMINI_URL}/models", params={"key": chave}, timeout=30).json().get("models", [])
+                    if "generateContent" in (m.get("supportedGenerationMethods") or [])]
+                flash = sorted((n for n in nomes if "flash" in n and "lite" not in n and "exp" not in n
+                                and "preview" not in n and "image" not in n and "tts" not in n), reverse=True)
+                _gemini["modelo"] = (flash or nomes or ["gemini-2.5-flash"])[0]
+            except Exception:
+                _gemini["modelo"] = "gemini-2.5-flash"
+            print(f"   👁️  visão pelo Gemini: {_gemini['modelo']}")
+    partes = [{"text": texto}] + [{"inline_data": {"mime_type": "image/jpeg", "data": f.split(",", 1)[1]}}
+                                   for f in fotos]
+    try:
+        r = requests.post(f"{GEMINI_URL}/models/{_gemini['modelo']}:generateContent", params={"key": chave},
+                          timeout=90, json={"contents": [{"parts": partes}],
+                                            "generationConfig": {"temperature": 0.3,
+                                                                 "responseMimeType": "application/json"}})
+        if r.status_code != 200:
+            print(f"   ⚠️  visão Gemini: HTTP {r.status_code} {r.text[:150]}")
+            return []
+        bruto = r.json()["candidates"][0]["content"]["parts"][0]["text"]
+        itens = json.loads(re.search(r"\{.*\}", bruto, re.S).group(0)).get("itens") or []
+        return [x for x in (_limpar_item(it) for it in itens if isinstance(it, dict)) if x]
+    except Exception as e:
+        print(f"   ⚠️  visão Gemini: {str(e)[:150]}")
+        return []
 
 
 def atualizar(dados, gravar=True):
