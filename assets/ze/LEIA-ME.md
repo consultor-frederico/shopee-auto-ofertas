@@ -23,7 +23,7 @@ Desligar: `MUSICA_REELS=0`; volume: `VOLUME_MUSICA` (padrão 0.6).
 | finais/fim_garimpo_vip.mp4 | lupa brilhando e joinha — "Esse é garimpo VIP!" |
 | finais/fim_carrinho.mp4 | close sorrindo ao lado do carrinho de achados |
 
-## 2. Post do Zé às segundas, quartas, sextas e domingos (`ze_*.mp4`)
+## 2. Post do Zé todo dia (`ze_*.mp4`)
 O workflow "9 - Post do Zé Garimpo" (todo dia às 13:30, só posta às segundas, quartas, sextas e domingos; mude com `ZE_DIAS`) publica um
 destes como Reels no Instagram, story, Facebook e YouTube Shorts. Vídeo que nunca saiu vai primeiro;
 depois volta o que está há mais tempo sem sair. O post é apagado com 15 dias, junto das ofertas.
@@ -51,6 +51,15 @@ Vídeo novo sem trilha própria: nomeie `ze_nome_semtrilha.mp4` e o robô põe a
 | ze_chapeu.mp4 | tira o chapéu entre brilhos dourados | Forró da Alegria (2) |
 | ze_balanca.mp4 | pesa moedas na balança e morde uma | Batida de Início |
 | ze_caixa_magica.mp4 | abre uma caixa mágica e saem produtos voando | Toys Are Us |
+| ze_balao-de-preco_semtrilha.mp4 | estoura o balão do preço que incha antes da Black Friday | (robô põe) |
+| ze_salario_semtrilha.mp4 | salário dia 5 vs dia 6: as moedas voam da bateia | (robô põe) |
+| ze_olhadinha_semtrilha.mp4 | "só vou dar uma olhadinha" e sai cheio de caixas | (robô põe) |
+| ze_rastreio_semtrilha.mp4 | espera a encomenda de binóculo até a caixa cair na cabeça | (robô põe) |
+| ze_escondido_semtrilha.mp4 | esconde a encomenda atrás das pedras | (robô põe) |
+| ze_lista-de-desejos_semtrilha.mp4 | a lista de desejos rola morro abaixo | (robô põe) |
+| ze_carrinho-esquecido_semtrilha.mp4 | desenterra um carrinho de compras esquecido | (robô põe) |
+
+Vídeo novo sai primeiro como Reels do Zé, na ordem de `ordem.txt`; só depois de estrear ele pode abrir carrossel.
 
 ## 3. Quadro "Você pediu, o Zé achou!" (`src/pedidos.py`)
 Todo post do Zé convida: "comenta o produto que você procura". O responder lê esses comentários,

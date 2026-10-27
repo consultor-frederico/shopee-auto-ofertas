@@ -316,8 +316,17 @@ def video_da_vez(dados):
         return None
     novos = [v for v in lista if v.name not in ultimo_uso]
     if novos:
-        return novos[0]
+        ordem = _ordem()   # assets/ze/ordem.txt: os que você quer na frente, um por linha
+        return min(novos, key=lambda v: (ordem.index(v.name) if v.name in ordem else len(ordem), v.name))
     return min(lista, key=lambda v: ultimo_uso[v.name])
+
+
+def _ordem():
+    arq = PASTA / "ordem.txt"
+    try:
+        return [l.strip() for l in arq.read_text(encoding="utf-8").splitlines() if l.strip() and not l.startswith("#")]
+    except OSError:
+        return []
 
 
 def dias_desde_ultimo(dados):

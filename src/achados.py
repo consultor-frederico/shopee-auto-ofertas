@@ -116,6 +116,9 @@ def escolher_video():
     """Vídeo do Zé (ou da Ana) da vez: primeiro os que nunca abriram um carrossel, depois o mais antigo."""
     from . import ze
     lista = [v for v in ze.videos() if "busca" not in v.name]
+    # vídeo novo estreia como Reels próprio (ze.py); só depois pode abrir carrossel
+    ja_estrearam = {p["video"] for p in ze._carregar().get("posts", [])}
+    lista = [v for v in lista if v.name in ja_estrearam] or lista
     if not lista:
         raise RuntimeError(f"sem vídeos {ze.PREFIXO}*.mp4 em {ze.PASTA}")
     usados = _carregar_estado()["videos"]
