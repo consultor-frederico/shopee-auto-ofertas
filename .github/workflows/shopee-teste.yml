@@ -2,6 +2,10 @@ name: 14 - Testar recursos da Shopee
 
 on:
   workflow_dispatch:
+    inputs:
+      termos:
+        description: "Busca livre (termos separados por vírgula). Vazio = teste completo"
+        default: ""
 
 concurrency:
   group: grava-repositorio
@@ -14,8 +18,6 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: main
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -24,6 +26,7 @@ jobs:
         env:
           SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
           SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
+          TERMOS: ${{ inputs.termos }}
         run: |
           mkdir -p data/relatorios
           python -u -m src.teste_shopee 2>&1 | tee data/relatorios/teste_shopee.txt

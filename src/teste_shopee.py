@@ -25,6 +25,26 @@ def tentar(nome, query):
     return nos
 
 
+def busca_livre(termos):
+    """Lista crua da API para cada termo (relevância e mais vendidos), com comissão e link de afiliado."""
+    vistos = {}
+    for t in termos:
+        for ordem in (1, 2):
+            try:
+                nos = shopee.buscar_ofertas(t, limite=50, ordem=ordem)
+            except Exception as e:
+                print(f"❌ {t} (ordem {ordem}): {e}"[:300])
+                continue
+            print(f"\n🔎 {t} (ordem {ordem}): {len(nos)} itens")
+            for n in nos:
+                vistos.setdefault(n.get("itemId"), n)
+    print(f"\n=== {len(vistos)} produtos únicos")
+    for n in sorted(vistos.values(), key=lambda n: -int(n.get("sales") or 0)):
+        print(json.dumps({k: n.get(k) for k in ("itemId", "productName", "priceMin", "priceMax", "priceDiscountRate",
+                                                 "commission", "commissionRate", "sales", "ratingStar", "shopName",
+                                                 "offerLink", "productLink")}, ensure_ascii=False))
+
+
 def main():
     nos = tentar("Busca comum (controle)",
                  f'query{{productOfferV2(keyword:"porta tempero",sortType:2,page:1,limit:10){{nodes{{{BASE}}}}}}}')
@@ -51,4 +71,6 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    import os
+    termos = [t.strip() for t in os.environ.get("TERMOS", "").split(",") if t.strip()]
+    busca_livre(termos) if termos else main()
