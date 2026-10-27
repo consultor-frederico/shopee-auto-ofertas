@@ -21,7 +21,7 @@ import subprocess
 
 from PIL import Image, ImageDraw, ImageOps
 
-from . import config, marcas
+from . import config, lojas_arte, marcas
 from .imagem import (FUNDO, SOMBRA, BRANCO, CINZA, DOURADO, DOURADO_CLARO, ESCURO, LARANJA,
                      _baixar_foto, _brl, _estrela, _fonte, eh_achado,
                      moldura_achado, selo_achado, selo_loja)
@@ -321,7 +321,7 @@ def gerar(oferta: dict, destino, foto: Image.Image = None, estilo: str = None):
            "-c:a", "aac", "-b:a", "128k", str(destino)]
     proc = subprocess.Popen(cmd, stdin=subprocess.PIPE)
     for i in range(int(DURACAO * FPS)):
-        proc.stdin.write(_quadro(i / FPS, base, foto, oferta, e).tobytes())
+        proc.stdin.write(lojas_arte.moldura_oficial(_quadro(i / FPS, base, foto, oferta, e), oferta).tobytes())
     proc.stdin.close()
     if proc.wait() != 0:
         raise RuntimeError("ffmpeg falhou ao gerar o Reels.")

@@ -132,14 +132,19 @@ def adesivo(img, cx, cy, texto1, texto2, r=118, angulo=-12, escala=1.0):
 
 
 def selo_loja(d, oferta, x, y):
+    """Selo "na <loja>" com o ícone da loja (src/lojas_arte.py). Marca oficial: pílula cheia na cor da marca,
+    contorno dourado e "loja oficial <marca>"."""
+    from . import lojas_arte
     nome, cor = LOJAS.get(oferta.get("plataforma") or "shopee", ("Loja", TEXTO))
+    oficial = lojas_arte.oficial(oferta)
     f = sans(28, "Bold")
-    t = f"na {nome}" + (" · internacional" if oferta.get("internacional") else "")   # 🌎 vem de fora
+    t = (f"loja oficial {nome}" if oficial else f"na {nome}") + (" · internacional" if oferta.get("internacional") else "")   # 🌎 vem de fora
     w = d.textlength(t, font=f)
-    d.rounded_rectangle([x, y, x + w + 56, y + 50], 25, fill=BRANCO, outline=cor, width=3)
-    d.ellipse([x + 16, y + 18, x + 30, y + 32], fill=cor)
-    d.text((x + 40, y + 9), t, font=f, fill=cor)
-    return w + 56
+    d.rounded_rectangle([x, y, x + w + 64, y + 50], 25, fill=cor if oficial else BRANCO,
+                        outline=lojas_arte.DOURADO if oficial else cor, width=3)
+    lojas_arte.icone(d, oferta, x + 26, y + 25, 12, cor)
+    d.text((x + 48, y + 9), t, font=f, fill=BRANCO if oficial else cor)
+    return w + 64
 
 
 def quebrar(d, texto, fonte, largura, max_linhas=2):
@@ -210,7 +215,7 @@ def botao_cta(img, cy, largura_total, escala=1.0):
 
 
 # ---------------------------------------------------------------- foto (1080x1350)
-def gerar_foto(oferta, destino, foto=None):
+def gerar_foto(oferta, destino, foto=None, moldura=True):
     L, A = 1080, 1350
     img = degrade(L, A)
     x = 60
@@ -232,6 +237,9 @@ def gerar_foto(oferta, destino, foto=None):
         adesivo(img, caixa[2] - 10, caixa[1] + 170, f"-{oferta['desconto']}%", "OFF")
     bloco_texto(img, oferta, 845, L)
     botao_cta(img, A - 72, L)
+    if moldura:   # marca oficial da Awin: arte dentro da moldura da marca
+        from . import lojas_arte
+        img = lojas_arte.moldura_oficial(img, oferta)
     img.save(destino, "JPEG", quality=90, optimize=True)
     return destino
 
@@ -258,6 +266,7 @@ def gerar_reels(oferta, destino, foto=None, duracao=8.0, fps=30):
     if not ffmpeg:
         import imageio_ffmpeg
         ffmpeg = imageio_ffmpeg.get_ffmpeg_exe()
+    from . import lojas_arte
     base = degrade(L, A)
     av = avatar(210)
     if av:
@@ -291,7 +300,7 @@ def gerar_reels(oferta, destino, foto=None, duracao=8.0, fps=30):
         if t >= 2.4:
             pulso = 1 + 0.04 * math.sin((t - 2.4) * 2 * math.pi * 1.1)
             botao_cta(img, A - 150, L, escala=pulso)
-        return img
+        return lojas_arte.moldura_oficial(img, oferta)   # marca oficial da Awin: moldura da marca
 
     cmd = [ffmpeg, "-y", "-loglevel", "error",
            "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{L}x{A}", "-r", str(fps), "-i", "-",
