@@ -6,10 +6,11 @@
   na cor da marca, com a faixa "LOJA OFICIAL <MARCA>" no topo e o selo dourado de verificado. Destaca do resto do
   feed e vale para post, slide do carrossel, Reels, story (feito da arte do post) e Telegram.
 
-Só o nome da marca, em texto: nenhum logo das marcas é usado (as regras dos programas na Awin pedem o material
-oficial para logo, e assim não há risco de usar errado).
+Logo das marcas: só o oficial, o do perfil de cada marca na Awin (assets/marcas/), sem mudar cor nem proporção, numa
+plaquinha com o fundo original dele. Os termos dos programas (lidos em 27/10/2026) só proíbem anúncio pago em buscador
+com o nome da marca. Marca sem logo cadastrado sai com o nome escrito.
 """
-from PIL import Image, ImageDraw, ImageFont, ImageOps
+from PIL import Image, ImageDraw, ImageFont
 
 from . import config, marcas
 
@@ -92,15 +93,38 @@ def moldura_oficial(img, oferta):
     t1 = "loja oficial" if ana else "LOJA OFICIAL"
     t2 = info["nome"] if ana else info["nome"].upper()
     gap = int(L * 0.02)
-    total = 2 * rs + gap + d.textlength(t1, font=f1) + gap + d.textlength(t2, font=f2)
+    logo = _logo(info, int(topo * 0.5))
+    if logo:   # plaquinha com o fundo original do logo
+        pad = int(topo * 0.13)
+        w2 = logo.width + 2 * pad
+    else:
+        w2 = d.textlength(t2, font=f2)
+    total = 2 * rs + gap + d.textlength(t1, font=f1) + gap + w2
     x = (L - total) / 2
     cy = topo / 2 + int(L * 0.004)
     verificado(d, x + rs, cy, rs, DOURADO, cor)
     x += 2 * rs + gap
     d.text((x, cy), t1, font=f1, fill=DOURADO, anchor="lm")
     x += d.textlength(t1, font=f1) + gap
-    d.text((x, cy), t2, font=f2, fill=BRANCO, anchor="lm")
+    if logo:
+        hp = logo.height + 2 * pad
+        y0p = int(cy - hp / 2)
+        d.rounded_rectangle([x, y0p, x + w2, y0p + hp], hp // 4, fill=info.get("logo_fundo", BRANCO),
+                            outline=DOURADO, width=max(2, fino - 1))
+        novo.paste(logo, (int(x + pad), y0p + pad))
+    else:
+        d.text((x, cy), t2, font=f2, fill=BRANCO, anchor="lm")
     return novo
+
+
+def _logo(info, altura):
+    """Logo oficial da marca (assets/marcas/<arquivo>) na altura pedida, ou None."""
+    arq = info.get("logo")
+    caminho = config.RAIZ / "assets" / "marcas" / arq if arq else None
+    if not caminho or not caminho.exists():
+        return None
+    img = Image.open(caminho).convert("RGB")
+    return img.resize((max(1, round(img.width * altura / img.height)), altura), Image.LANCZOS)
 
 
 # ------------------------------------------------------------------ selo em pílula (Garimpo)
