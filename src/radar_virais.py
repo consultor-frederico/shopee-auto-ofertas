@@ -29,7 +29,9 @@ BRT = timezone(timedelta(hours=-3))
 ARQ_PERFIS = config.PASTA_DADOS / "radar_perfis.json"
 ARQ_RADAR = config.PASTA_PERFIL / "radar.json"
 DIAS_RECENTES = int(os.getenv("RADAR_DIAS", "10"))        # só posts desses últimos dias
-POSTS_POR_DIA = int(os.getenv("RADAR_POSTS", "15"))       # campeões que a IA traduz por dia
+POSTS_POR_DIA = int(os.getenv("RADAR_POSTS", "25"))       # campeões que a IA traduz por dia
+POSTS_POR_PAGINA = int(os.getenv("RADAR_POSTS_PAGINA", "4"))  # nenhuma página domina o radar
+TERMOS_POR_CATEGORIA = 2                                  # por rodada: o radar fica variado
 PESO_COMENTARIO = 5
 
 PROMPT = """Você ajuda a página de achadinhos {marca} (público: {publico}).
@@ -170,7 +172,13 @@ def atualizar(dados, gravar=True):
     if gravar and dados.get("dia") == hoje:
         return 0
     print("📡 Radar de virais: lendo as páginas de achadinhos")
-    novos = [p for p in posts_em_alta(token) if p["permalink"] not in dados["vistos"]][:POSTS_POR_DIA]
+    novos, por_pagina = [], {}
+    for p in posts_em_alta(token):
+        if p["permalink"] in dados["vistos"] or por_pagina.get(p["perfil"], 0) >= POSTS_POR_PAGINA:
+            continue
+        por_pagina[p["perfil"]] = por_pagina.get(p["perfil"], 0) + 1
+        novos.append(p)
+    novos = novos[:POSTS_POR_DIA]
     traducoes = traduzir(novos)
     ja = {_limpo(t["termo"]) for t in dados["termos"]}
     n = 0
@@ -204,12 +212,22 @@ def termos_para_rodada(n):
             print(f"📡 Radar: {novos} termos novos dos virais")
         livres = sorted((t for t in dados["termos"] if not t.get("usado") and t.get("cat") in config.NICHO),
                         key=lambda t: -t.get("nota", 0))
-        escolha, produtos = [], set()
-        for t in livres:   # um termo por produto por rodada: variedade
-            if t["produto"] in produtos:
+        from . import variedade
+        hoje = _hoje()
+        # variedade: cada produto viral é buscado 1 vez por dia (não volta com outro termo na rodada
+        # seguinte), cada família (ex.: "umidificador") também, e no máximo 2 termos por categoria
+        produtos = {t["produto"] for t in dados["termos"] if t.get("usado") == hoje}
+        familias = {variedade.familia(p) for p in produtos}
+        escolha, por_cat = [], {}
+        for t in livres:
+            fam = variedade.familia(t["produto"])
+            if (t["produto"] in produtos or fam in familias
+                    or por_cat.get(t["cat"], 0) >= TERMOS_POR_CATEGORIA):
                 continue
             produtos.add(t["produto"])
-            t["usado"] = _hoje()
+            familias.add(fam)
+            por_cat[t["cat"]] = por_cat.get(t["cat"], 0) + 1
+            t["usado"] = hoje
             escolha.append((t["cat"], t["termo"]))
             if len(escolha) >= n:
                 break
