@@ -156,12 +156,16 @@ if __name__ == "__main__":   # teste: python -m src.aliexpress "fone bluetooth"
         sys.exit(0)
     if os.getenv("LIVRE"):   # busca livre: vários termos (vírgula), sem filtro de entrega
         for t in [t.strip() for t in palavra.split(",") if t.strip()]:
-            dados = chamar(METODO_BUSCA, keywords=t, page_no=1, page_size=50, sort="LAST_VOLUME_DESC",
-                           target_currency="BRL", target_language="PT", ship_to_country="BR",
-                           tracking_id=_env("ALIEXPRESS_TRACKING_ID"),
-                           fields=("product_id,product_title,target_sale_price,evaluate_rate,lastest_volume,"
-                                   "commission_rate,promotion_link,shop_name,ship_to_days"))
-            ps = _produtos(dados, METODO_BUSCA)
+            try:
+                dados = chamar(METODO_BUSCA, keywords=t, page_no=1, page_size=50, sort="LAST_VOLUME_DESC",
+                               target_currency="BRL", target_language="PT", ship_to_country="BR",
+                               tracking_id=_env("ALIEXPRESS_TRACKING_ID"),
+                               fields=("product_id,product_title,target_sale_price,evaluate_rate,lastest_volume,"
+                                       "commission_rate,promotion_link,shop_name,ship_to_days"))
+                ps = _produtos(dados, METODO_BUSCA)
+            except RuntimeError as e:
+                print(f"🔎 {t}: {e}")
+                continue
             print(f"🔎 {t}: {len(ps)} produtos")
             for p in ps:
                 print("ITEM " + json.dumps(p, ensure_ascii=False))
