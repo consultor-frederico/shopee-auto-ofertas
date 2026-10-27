@@ -186,6 +186,56 @@ def gerar_story(clipe, destino):
     os.remove(png)
 
 
+SEG_SLIDE = 2.6   # segundos de cada produto no Short
+
+
+def gerar_short(pasta, arquivos, destino):
+    """Short 9:16 do YouTube (só Garimpo VIP): o vídeo de abertura e depois cada slide do carrossel, sobre um
+    fundo desfocado da própria imagem. O áudio do Zé fica no começo e uma música entra nos produtos."""
+    from . import ze
+    abertura, slides = pasta / arquivos[0], [pasta / a for a in arquivos[1:]]
+    d0 = ze._duracao(abertura)
+    resto = SEG_SLIDE * len(slides)
+    ent = ["-i", str(abertura)]
+    for sl in slides:
+        ent += ["-loop", "1", "-t", f"{SEG_SLIDE}", "-framerate", "30", "-i", str(sl)]
+    vert = ("split[f{i}][g{i}];[g{i}]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,"
+            "boxblur=30:2,eq=brightness=-0.12[bg{i}];[f{i}]scale=1080:-2[fr{i}];"
+            "[bg{i}][fr{i}]overlay=(W-w)/2:(H-h)/2,setsar=1,fps=30,format=yuv420p[v{i}];")
+    filtro = "".join(f"[{i}:v]" + vert.format(i=i) for i in range(len(slides) + 1))
+    filtro += "".join(f"[v{i}]" for i in range(len(slides) + 1)) + f"concat=n={len(slides) + 1}:v=1:a=0[v];"
+    filtro += f"[0:a]aresample=44100,aformat=channel_layouts=stereo,atrim=0:{d0:.2f},apad=whole_dur={d0:.2f}[a0];"
+    musicas = ze.escolher_musicas({"id": f"short-{destino.name}"}, resto) if ze.MUSICA_LIGADA else []
+    if musicas:
+        ent += ["-i", str(musicas[0])]
+        filtro += (f"[{len(slides) + 1}:a]aresample=44100,aformat=channel_layouts=stereo,atrim=0:{resto:.2f},"
+                   f"apad=whole_dur={resto:.2f},volume={ze.VOLUME_MUSICA},afade=t=in:d=0.5,"
+                   f"afade=t=out:st={max(0, resto - 1):.2f}:d=1[a1];")
+    else:
+        filtro += f"anullsrc=r=44100:cl=stereo,atrim=0:{resto:.2f}[a1];"
+    filtro += "[a0][a1]concat=n=2:v=0:a=1[a]"
+    subprocess.run([ze._ffmpeg(), "-y", "-loglevel", "error", *ent, "-filter_complex", filtro,
+                    "-map", "[v]", "-map", "[a]", "-c:v", "libx264", "-preset", "medium", "-crf", "21",
+                    "-profile:v", "high", "-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart", str(destino)],
+                   check=True)
+
+
+def titulo_short(itens):
+    maior = max(float(str(it.get("preco_fmt", "0")).replace(".", "").replace(",", ".") or 0) for it in itens)
+    return f"{len(itens)} achados do Zé até R$ {maior:.0f} 🤠⛏️ #shorts".replace(".", ",")
+
+
+def descricao_short(itens, legenda_ig):
+    lista = "\n".join(f"{NUM[i]} {_curto(it.get('titulo') or it['nome'])} — R$ {it['preco_fmt']}"
+                      for i, it in enumerate(itens))
+    tags = " ".join(t for t in legenda_ig.split() if t.startswith("#"))
+    return (f"O Zé garimpou {len(itens)} achados com nota alta e muita venda:\n\n{lista}\n\n"
+            f"🔗 Os links estão no Instagram @{config.ARROBA}: comenta QUERO + o número no carrossel que o Zé "
+            f"manda no direct. Ofertas o dia todo no Telegram: t.me/garimpovipofertas\n\n"
+            "Preços conferidos na hora do post, podem mudar na loja. Links de afiliado: você paga o mesmo.\n\n"
+            f"{tags} #shorts #achadinhos")
+
+
 # ---------------------------------------------------------------- legenda
 def legenda(itens):
     from .ze import HASHTAGS, HASHTAGS_ANA, dias_para_black_friday
@@ -233,6 +283,14 @@ def gerar(itens, pasta):
     nome = f"achados-{marca}-{len(itens) + 2}.jpg"
     slide_final(len(itens), v).save(pasta / nome, quality=92)
     arqs.append(nome)
+    short = None
+    if not ANA and os.getenv("ACHADOS_SHORT", "1") != "0":
+        try:
+            short = f"achados-{marca}-short.mp4"
+            gerar_short(pasta, arqs, pasta / short)
+        except Exception as e:
+            print(f"::warning::Short do YouTube não saiu ({e}); o carrossel sai mesmo assim.")
+            short = None
     story = None
     try:
         story = f"achados-{marca}-story.mp4"
@@ -240,7 +298,7 @@ def gerar(itens, pasta):
     except Exception as e:
         print(f"::warning::Story do carrossel não saiu ({e}); o carrossel sai mesmo assim.")
         story = None
-    return {"arquivos": arqs, "clipe": clipe, "story": story,
+    return {"arquivos": arqs, "clipe": clipe, "story": story, "short": short,
             "itens": [{k: it["oferta"].get(k) for k in ("id", "nome", "titulo", "preco_fmt", "link_afiliado", "plataforma")}
                       for it in itens]}
 
@@ -302,6 +360,11 @@ def publicar():
             o.update({"status": "postado", "formato": "achados", "postado_em": agora_s,
                       "postado_ts": time.time(), "achados_post": media_id, "permalink": permalink})
     salvar_fila(fila)
+    if not ANA:
+        extras = espelhar(info, urls[1:], base)
+        if extras:
+            dados["posts"][media_id].update(extras)
+            ARQ_TOP.write_text(json.dumps(dados, ensure_ascii=False, indent=2), encoding="utf-8")
     estado = _carregar_estado()
     estado["videos"][info["clipe"]] = agora_s
     estado["n"] = int(estado.get("n", 0)) + 1
@@ -318,6 +381,34 @@ def publicar():
             print("📲 Story avisando do carrossel publicado.")
         except Exception as e:
             print(f"::warning::Story do carrossel falhou: {e}")
+
+
+def espelhar(info, urls_fotos, base):
+    """Garimpo VIP: o mesmo carrossel vai para a Página do Facebook (post com as fotos) e para o YouTube Shorts.
+    Falha aqui não derruba o post do Instagram, que já saiu."""
+    from . import facebook, youtube
+    from .postar import legenda_facebook
+    extras = {}
+    if facebook.configurado() and os.getenv("ACHADOS_FACEBOOK", "1") != "0":
+        try:
+            extras["fb_post"] = facebook.postar_album(urls_fotos, legenda_facebook(info["legenda"]))
+            print(f"📘 Carrossel na página do Facebook: {facebook.permalink(extras['fb_post']) or extras['fb_post']}")
+        except Exception as e:
+            print(f"::warning::Facebook falhou: {e}")
+    else:
+        print("⏸️  Facebook não configurado (FB_PAGE_ID / FB_PAGE_TOKEN) — carrossel só no Instagram.")
+    arq = PASTA_SITE / "midia" / "achados" / (info.get("short") or "")
+    if info.get("short") and arq.exists() and youtube.configurado():
+        try:
+            extras["yt_video"] = youtube.enviar_video(arq, titulo_short(info["itens"]),
+                                                      descricao_short(info["itens"], info["legenda"]),
+                                                      ["achadinhos", "shopee", "achados", "ofertas", "zé garimpo"])
+            print(f"▶️  Carrossel no YouTube Shorts: https://youtube.com/shorts/{extras['yt_video']}")
+        except Exception as e:
+            print(f"::warning::YouTube falhou: {e}")
+    elif not youtube.configurado():
+        print("⏸️  YouTube não configurado (YT_CLIENT_ID / YT_CLIENT_SECRET / YT_REFRESH_TOKEN).")
+    return extras
 
 
 def previa():

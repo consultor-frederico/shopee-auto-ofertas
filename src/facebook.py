@@ -52,6 +52,16 @@ def postar_video(url_video, legenda):
     return r.get("id")
 
 
+def postar_album(urls_imagens, legenda):
+    """Post com várias fotos (o carrossel de achados): sobe cada foto sem publicar e junta tudo num post só."""
+    fotos = [_req("POST", f"{_env('FB_PAGE_ID')}/photos", data={"url": u, "published": "false"})["id"]
+             for u in urls_imagens]
+    dados = {"message": legenda}
+    for i, f in enumerate(fotos):
+        dados[f"attached_media[{i}]"] = '{"media_fbid":"%s"}' % f
+    return _req("POST", f"{_env('FB_PAGE_ID')}/feed", data=dados).get("id")
+
+
 def permalink(post_id):
     try:
         return _req("GET", post_id, params={"fields": "permalink_url"}).get("permalink_url", "")

@@ -272,6 +272,10 @@ def responder(api=instagram):
             time.sleep(2)
     if config.PERFIL == "garimpo" and facebook.configurado():
         try:
+            enviados += responder_facebook_top(tops, respondidos)
+        except Exception as e:
+            print(f"::warning::Respostas do carrossel no Facebook falharam: {e}")
+        try:
             enviados += responder_facebook(posts, respondidos)
         except Exception as e:
             print(f"::warning::Respostas no Facebook falharam: {e}")
@@ -426,6 +430,66 @@ def responder_facebook(posts, respondidos):
                 except Exception as e:
                     reg["publica"] = f"erro: {str(e)[:300]}"
                 print(f"📘 Link enviado no Messenger para {nome} — {o['titulo']}")
+            except Exception as e:
+                reg["dm"] = f"erro: {str(e)[:200]}"
+                print(f"::warning::Messenger para {nome} falhou: {e}")
+            respondidos[cid] = reg
+            time.sleep(2)
+    return enviados
+
+
+def responder_facebook_top(tops, respondidos):
+    """Carrossel de achados espelhado na página: "QUERO 2" → link do 2º no Messenger; só "QUERO" → lista."""
+    pagina = (os.getenv("FB_PAGE_ID") or "").strip()
+    num = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
+    enviados = 0
+    for info in tops.values():
+        fb, itens = info.get("fb_post"), info.get("itens") or []
+        if not fb or not itens:
+            continue
+        try:
+            coms = facebook.comentarios(fb)
+        except Exception as e:
+            print(f"⚠️  Comentários do carrossel no Facebook {fb}: {e}")
+            continue
+        for c in coms:
+            cid = f"fb_{c['id']}"
+            autor = (c.get("from") or {}).get("id")
+            texto = c.get("message", "")
+            if cid in respondidos or autor == pagina:
+                continue
+            n = numero_pedido(texto, len(itens))
+            if not n and not so_pediu_link(texto):
+                continue
+            nome = (c.get("from") or {}).get("name", "")
+            reg = {"post": fb, "oferta": itens[n - 1]["id"] if n else "top", "usuario": nome, "autor": autor,
+                   "em": agora().strftime(FMT), "rede": "facebook", "top": n or "todos"}
+            try:
+                if n:
+                    it = itens[n - 1]
+                    titulo = it["nome"][:60]
+                    try:
+                        facebook.resposta_privada_botao(
+                            c["id"], DM_BOTAO.format(titulo=titulo, loja=NOME_LOJA.get(it.get("plataforma") or "shopee", "loja")),
+                            it["link_afiliado"], TITULO_BOTAO)
+                        reg["formato"] = "botao"
+                    except Exception as e:
+                        print(f"   (botão recusado no Facebook: {e}; enviando como texto)")
+                        facebook.resposta_privada(c["id"], DM.format(titulo=titulo, link=it["link_afiliado"]))
+                        reg["formato"] = "texto"
+                else:
+                    lista = "\n\n".join(f"{num[i]} {it['nome'][:50]} — R$ {it['preco_fmt']}\n{it['link_afiliado']}"
+                                         for i, it in enumerate(itens))
+                    facebook.resposta_privada(c["id"], DM_TOP_TODOS.format(titulo="carrossel de achados", lista=lista))
+                    reg["formato"] = "lista"
+                reg["dm"] = "ok"
+                enviados += 1
+                try:
+                    facebook.responder_comentario(c["id"], random.choice(PUBLICAS_FB))
+                    reg["publica"] = "ok"
+                except Exception as e:
+                    reg["publica"] = f"erro: {str(e)[:300]}"
+                print(f"📘 Carrossel: link {n or 'de todos'} enviado no Messenger para {nome}")
             except Exception as e:
                 reg["dm"] = f"erro: {str(e)[:200]}"
                 print(f"::warning::Messenger para {nome} falhou: {e}")
