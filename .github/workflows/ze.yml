@@ -1,6 +1,6 @@
 name: 9 - Post do Zé Garimpo (seg, qua, sex e dom)
 
-# A agenda toca todo dia às 13:30; o robô só posta às segundas, quartas, sextas e domingos (variável ZE_DIAS).
+# A agenda toca todo dia às 13:30; desde 27/10/2026 o Zé posta todo dia (variável ZE_DIAS).
 # Rodando à mão com "forçar", posta na hora.
 on:
   workflow_dispatch:
