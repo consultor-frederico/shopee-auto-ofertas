@@ -329,30 +329,30 @@ def selecionar(candidatos, n, ja_na_fila=None, lojas_na_fila=None):
     por_cat = {}
     for o in sorted(candidatos, key=lambda x: x["pontos"], reverse=True):
         por_cat.setdefault(o["categoria"], []).append(o)
-    escolhidos, palavras, tipos, por_palavra = [], set(), {}, {}
-    # 1ª passada: no máximo 1 oferta por palavra-chave e 1 de cada tipo (ex.: "smartwatch");
-    # 2ª passada completa o que faltar, ainda com no máximo 2 do mesmo tipo.
-    for unico, max_tipo in ((True, 1), (False, 2)):
-        restos = {c: list(v) for c, v in por_cat.items()}
-        while len(escolhidos) < n and any(restos.values()):
-            for cat in list(restos):
-                while restos[cat] and len(escolhidos) < n:
-                    o = restos[cat].pop(0)
-                    t = tipo_produto(o["nome"])
-                    f = variedade.familia(o)
-                    if (o in escolhidos or (unico and o["palavra"] in palavras) or tipos.get(t, 0) >= max_tipo
-                            or por_palavra.get(o["palavra"], 0) >= 2
-                            or fams.get(f, 0) >= config.MAX_PENDENTES_POR_FAMILIA
-                            or (o.get("loja") and lojas.get(o["loja"], 0) >= config.MAX_POR_LOJA_NA_FILA)):
-                        continue
-                    fams[f] = fams.get(f, 0) + 1
-                    if o.get("loja"):
-                        lojas[o["loja"]] = lojas.get(o["loja"], 0) + 1
-                    escolhidos.append(o)
-                    palavras.add(o["palavra"])
-                    por_palavra[o["palavra"]] = por_palavra.get(o["palavra"], 0) + 1
-                    tipos[t] = tipos.get(t, 0) + 1
-                    break
+    escolhidos, palavras, tipos, fams_rodada = [], set(), set(), set()
+    # Repetição é inaceitável: na mesma rodada, no máximo 1 oferta por palavra-chave, por tipo
+    # (ex.: "interruptor") e por família — e a família não pode lotar a fila (config.MAX_PENDENTES_POR_FAMILIA).
+    # (Antes uma 2ª passada aceitava 2 do mesmo tipo e entraram dois interruptores iguais em 27/10/2026.)
+    restos = {c: list(v) for c, v in por_cat.items()}
+    while len(escolhidos) < n and any(restos.values()):
+        for cat in list(restos):
+            while restos[cat] and len(escolhidos) < n:
+                o = restos[cat].pop(0)
+                t = tipo_produto(o["nome"])
+                f = variedade.familia(o)
+                if (o["palavra"] in palavras or t in tipos or f in fams_rodada
+                        or fams.get(f, 0) >= config.MAX_PENDENTES_POR_FAMILIA
+                        or (o.get("loja") and lojas.get(o["loja"], 0) >= config.MAX_POR_LOJA_NA_FILA)
+                        or any(curadoria.parecido(o["nome"], e["nome"], 0.35) for e in escolhidos)):
+                    continue
+                fams[f] = fams.get(f, 0) + 1
+                fams_rodada.add(f)
+                if o.get("loja"):
+                    lojas[o["loja"]] = lojas.get(o["loja"], 0) + 1
+                escolhidos.append(o)
+                palavras.add(o["palavra"])
+                tipos.add(t)
+                break
     return escolhidos
 
 

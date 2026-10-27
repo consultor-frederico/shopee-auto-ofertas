@@ -17,6 +17,8 @@ from . import config, curadoria, marcas
 FAMILIAS = {
     "bomba de ar": ["compressor", "inflador", "calibrador", "bomba de ar", "encher pneu", "bomba pneu"],
     "boneca reborn": ["reborn"],
+    "interruptor inteligente": ["interruptor"],   # 27/10/2026: entraram dois iguais (um com a marca na frente)
+    "umidificador": ["umidificador", "difusor de aroma", "difusor de ar", "aromatizador eletrico"],
     "smartwatch": ["smartwatch", "smart watch", "relogio inteligente", "smartband", "pulseira inteligente"],
     "camera de seguranca": ["camera ip", "camera de seguranca", "camera seguranca", "camera wifi",
                              "camera externa", "camera lampada", "camera ptz", "camera 4g"],
