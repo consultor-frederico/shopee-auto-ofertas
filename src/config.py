@@ -90,7 +90,7 @@ SIMILARIDADE_MAX = 0.55        # nomes mais parecidos que isso contam como o mes
 # Palavras que barram o produto (fora do nicho ou arriscadas para anunciar)
 PALAVRAS_PROIBIDAS = [
     "réplica", "replica", "vape", "cigarro", "arma", "faca tática", "sex", "erótic",
-    "lingerie", "remédio", "emagrecedor", "suplemento",
+    "lingerie", "remédio", "emagrecedor", "suplemento", "bob marley", "maconha",
 ]
 
 # --- Ritmo ---
