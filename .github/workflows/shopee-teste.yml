@@ -39,6 +39,7 @@ jobs:
           mkdir -p data/relatorios
           if [ "$TERMOS" = "radar" ] || [ "$TERMOS" = "radar ana" ]; then   # teste do radar de virais (não grava)
             [ "$TERMOS" = "radar ana" ] && export PERFIL=ana
+            export RADAR_LISTAR_FOTOS=1
             python -u -m src.radar_virais 2>&1 | tee data/relatorios/teste_radar.txt
             exit 0
           fi

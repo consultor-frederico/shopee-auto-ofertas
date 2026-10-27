@@ -242,6 +242,9 @@ def _modelos_visao(headers):
 def ver_fotos(p):
     """Produtos que a IA de visão enxerga nas fotos do post: [{produto, categoria, termos}]."""
     fotos = [b for b in (_foto_b64(u) for u in p.get("imagens", [])[:FOTOS_POR_POST]) if b]
+    if os.getenv("RADAR_LISTAR_FOTOS"):   # teste: mostra quais fotos a IA olhou
+        for u in p.get("imagens", [])[:FOTOS_POR_POST]:
+            print(f"   🖼️  {u}")
     if not fotos:
         return []
     texto = PROMPT_FOTOS.format(legenda=re.sub(r"\s+", " ", p["legenda"])[:200].replace('"', "'"),
