@@ -406,6 +406,8 @@ def curar(fila, candidatos, max_ia=None, max_achado=30):
     for o in unicos:
         o["uau"] = notas.get(o["id"], config.UAU_SEM_IA)
         o["uau"] = variedade.uau(o)   # produto de vitrine (smartwatch, bomba de ar…) tem teto
+        if o.get("origem_busca") == "viral" and 5 <= o["uau"] < 10:
+            o["uau"] += 1   # veio de um post que bombou em outra página: procura já comprovada
         o["nivel"] = nivel(o)
         if not o["nivel"]:
             cont["descartado"] += 1
