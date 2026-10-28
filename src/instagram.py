@@ -138,6 +138,11 @@ def resposta_privada_botao(ig_id, comment_id, texto, url, titulo_botao):
             "buttons": [{"type": "web_url", "url": url, "title": titulo_botao}]}}}})
 
 
+def comentar(media_id, texto):
+    """Comentário da própria conta num post (devolve o id do comentário)."""
+    return _req("POST", f"{media_id}/comments", params={"message": texto}).get("id")
+
+
 def responder_comentario(comment_id, texto):
     return _req("POST", f"{comment_id}/replies", params={"message": texto})
 

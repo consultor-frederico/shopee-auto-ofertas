@@ -456,8 +456,48 @@ def publicar():
     _salvar(dados)
 
 
+# ------------------------------------------------------------------ 1º comentário do Zé
+ARQ_COMENTARIOS = PASTA / "comentarios.json"
+COMENTARIOS_PADRAO = [
+    "Qual achado você quer que o Zé garimpe essa semana? Comenta aqui 👇🤠",
+    "Comenta aqui o que você tá procurando que o Zé sai garimpando ⛏️👇",
+    "Marca aquele amigo que precisava ver isso 😂👇",
+]
+
+
+def texto_comentario(video, n):
+    try:
+        por_video = json.loads(ARQ_COMENTARIOS.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        por_video = {}
+    return por_video.get(video) or COMENTARIOS_PADRAO[n % len(COMENTARIOS_PADRAO)]
+
+
+def comentar():
+    """Primeiro comentário do Zé no último Reels dele (puxa a conversa). Só uma vez por post; erro não derruba nada."""
+    from . import instagram
+    if ANA or not instagram.tem_token():
+        return
+    dados = _carregar()
+    posts = dados.get("posts") or []
+    if not posts:
+        return
+    reg = posts[-1]
+    if reg.get("comentario") or not reg.get("id_post"):
+        print("💬 O último Reels do Zé já tem o comentário dele.")
+        return
+    texto = texto_comentario(reg["video"], len(posts))
+    try:
+        reg["comentario"] = instagram.comentar(reg["id_post"], texto) or "ok"
+        print(f"💬 Zé comentou no próprio Reels: {texto}")
+    except Exception as e:
+        reg["comentario_erro"] = str(e)[:300]
+        print(f"::warning::Comentário do Zé não saiu: {e}")
+    _salvar(dados)
+
+
 if __name__ == "__main__":
-    acao = {"preparar": preparar, "publicar": publicar}.get(sys.argv[1] if len(sys.argv) > 1 else "")
+    acao = {"preparar": preparar, "publicar": publicar, "comentar": comentar}.get(sys.argv[1] if len(sys.argv) > 1 else "")
     if not acao:
         print("Uso: python -m src.ze preparar|publicar")
         sys.exit(2)

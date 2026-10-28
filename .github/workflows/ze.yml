@@ -76,6 +76,13 @@ jobs:
           YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
           YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
         run: python -m src.ze publicar
+      - name: Primeiro comentário do Zé no último Reels (se ainda não tiver)
+        if: always() && steps.prep.outcome == 'success'
+        continue-on-error: true
+        env:
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_ACCESS_TOKEN_ANA: ${{ secrets.IG_ACCESS_TOKEN_ANA }}
+        run: python -m src.ze comentar
       - name: Salvar registro
         if: always() && steps.prep.outcome == 'success'
         run: |
