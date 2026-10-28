@@ -1,4 +1,5 @@
-"""Post de chamada no Instagram para o canal do Telegram (terças e sextas).
+"""Post de chamada no Instagram (terças e sextas): para o canal do Telegram ou para a vitrine da bio
+(garimpovipbr.github.io), alternando entre os dois (CHAMADA_ALVO=telegram|pagina fixa um deles).
 
   python -m src.chamada preparar   → gera a arte em site/ (vai para o GitHub Pages)
   python -m src.chamada publicar   → publica no Instagram
@@ -38,6 +39,23 @@ LEGENDAS = [
     "👉 Entre pelo link da bio.",
 ]
 
+# Chamada para a vitrine da bio: sem número de achados (a página mostra só os mais recentes) e sem promessa de preço.
+TITULOS_PAGINA = [
+    ("ACHADOS DE HOJE", "NUM LINK SÓ"),
+    ("PERDEU UM ACHADO?", "TÁ NA VITRINE"),
+    ("VÁRIAS LOJAS", "NUM LUGAR SÓ"),
+]
+LEGENDAS_PAGINA = [
+    "🔗 Todos os achados de hoje num lugar só: a vitrine do Garimpo VIP junta o que o Zé garimpou, "
+    "com foto e link direto pra loja. Sem precisar comentar nada. ⛏️\n\n"
+    "👉 Toque no link da bio: garimpovipbr.github.io",
+    "🛍️ Perdeu algum achado do Zé no meio do feed? Tá tudo na vitrine do Garimpo VIP, "
+    "atualizada todo dia.\n\n👉 Entre pelo link da bio.",
+    "🤠 Shopee e outras lojas num lugar só! Na vitrine do Garimpo VIP ficam os achados mais recentes do Zé, "
+    "com o link pronto pra tocar.\n\n👉 Link na bio: garimpovipbr.github.io",
+]
+FOTO_ZE = config.RAIZ / "assets" / "ze" / "ze_joinha_foto.jpg"
+
 HASHTAGS = "#cupomshopee #achadinhos #achadinhosshopee #cupomdedesconto #garimpovip"
 
 
@@ -58,7 +76,8 @@ def ofertas_na_semana(fila):
     return n
 
 
-def gerar_arte(destino, variante, n_semana):
+def gerar_arte(destino, variante, n_semana, alvo="telegram"):
+    pagina = alvo == "pagina"
     img = Image.new("RGB", (L, A), "#EEEDE9")
     d = ImageDraw.Draw(img)
     try:
@@ -72,31 +91,48 @@ def gerar_arte(destino, variante, n_semana):
     d.rounded_rectangle([x0, y0, x1, y1], 40, fill=ESCURO)
     for cx in (x0, x1):
         d.ellipse([cx - 45, (y0 + y1) // 2 - 45, cx + 45, (y0 + y1) // 2 + 45], fill="#EEEDE9")
+    corte = x1 - (270 if pagina else 170)   # linha pontilhada do bilhete (na vitrine, o Zé fica à direita)
     for yy in range(y0 + 40, y1 - 30, 34):
-        d.line([x1 - 170, yy, x1 - 170, yy + 16], fill=DOURADO, width=4)
-    t1, t2 = TITULOS[variante % len(TITULOS)]
-    largura = (x1 - 170) - x0 - 110
+        d.line([corte, yy, corte, yy + 16], fill=DOURADO, width=4)
+    t1, t2 = (TITULOS_PAGINA if pagina else TITULOS)[variante % len(TITULOS)]
+    largura = corte - x0 - 110
 
     def caber(txt, tam, peso):
         while tam > 30 and d.textlength(txt, font=_fonte(tam, peso)) > largura:
             tam -= 2
         return _fonte(tam, peso)
     f1, f2 = caber(t1, 64, "Black"), caber(t2, 52, "ExtraBold")
-    cx = (x0 + x1 - 170) / 2
+    cx = (x0 + corte) / 2
     d.text((cx - d.textlength(t1, font=f1) / 2, y0 + 160), t1, font=f1, fill=BRANCO)
     d.text((cx - d.textlength(t2, font=f2) / 2, y0 + 250), t2, font=f2, fill=DOURADO_CLARO)
     fp = _fonte(38, "SemiBold")
-    sub = f"+{n_semana} achadinhos esta semana" if n_semana >= 20 else "achadinhos o dia todo"
+    if pagina:
+        sub = "atualizada todo dia"
+    else:
+        sub = f"+{n_semana} achadinhos esta semana" if n_semana >= 20 else "achadinhos o dia todo"
     d.text((cx - d.textlength(sub, font=fp) / 2, y0 + 350), sub, font=fp, fill="#CFC6B8")
-    f3 = _fonte(92, "Black")
-    d.text((x1 - 105 - d.textlength("%", font=f3) / 2, (y0 + y1) / 2 - 60), "%", font=f3, fill=DOURADO)
+    if pagina and FOTO_ZE.exists():   # o Zé num medalhão redondo, com borda dourada
+        r = 92
+        zx, zy = x1 - 155, (y0 + y1) // 2   # longe do recorte redondo da borda do bilhete
+        foto = Image.open(FOTO_ZE).convert("RGB")
+        foto = foto.crop((0, int(foto.height * 0.04), foto.width, int(foto.height * 0.04) + foto.width))
+        foto = foto.resize((2 * r, 2 * r), Image.LANCZOS)
+        mask = Image.new("L", (2 * r, 2 * r), 0)
+        ImageDraw.Draw(mask).ellipse([0, 0, 2 * r, 2 * r], fill=255)
+        d.ellipse([zx - r - 7, zy - r - 7, zx + r + 7, zy + r + 7], fill=DOURADO)
+        img.paste(foto, (zx - r, zy - r), mask)
+    else:
+        f3 = _fonte(92, "Black")
+        d.text((x1 - 105 - d.textlength("%", font=f3) / 2, (y0 + y1) / 2 - 60), "%", font=f3, fill=DOURADO)
     # rodapé
     f4, f5 = _fonte(50, "ExtraBold"), _fonte(40, "SemiBold")
     t = "ENTRE PELO LINK DA BIO"
     d.text(((L - d.textlength(t, font=f4)) / 2, 990), t, font=f4, fill=ESCURO)
-    d.text(((L - d.textlength(CANAL, font=f5)) / 2, 1065), CANAL, font=f5, fill=CINZA)
+    link = config.PAGINA_BIO if pagina else CANAL
+    d.text(((L - d.textlength(link, font=f5)) / 2, 1065), link, font=f5, fill=CINZA)
     d.rectangle([0, A - 130, L, A], fill=ESCURO)
-    partes = [("CANAL ", BRANCO), ("GARIMPO VIP", DOURADO_CLARO), (" NO TELEGRAM", BRANCO)]
+    partes = ([("VITRINE ", BRANCO), ("GARIMPO VIP", DOURADO_CLARO), (": ACHADOS DO DIA", BRANCO)] if pagina
+              else [("CANAL ", BRANCO), ("GARIMPO VIP", DOURADO_CLARO), (" NO TELEGRAM", BRANCO)])
     f6 = _fonte(44, "ExtraBold")
     x = (L - sum(d.textlength(p, font=f6) for p, _ in partes)) / 2
     for p, cor in partes:
@@ -104,6 +140,14 @@ def gerar_arte(destino, variante, n_semana):
         x += d.textlength(p, font=f6)
     img.save(destino, "JPEG", quality=90)
     return destino
+
+
+def alvo_da_vez(variante):
+    """Alterna Telegram e vitrine da bio a cada chamada; CHAMADA_ALVO=telegram|pagina fixa um deles."""
+    fixo = (os.getenv("CHAMADA_ALVO") or "").strip().lower()
+    if fixo in ("telegram", "pagina"):
+        return fixo
+    return "pagina" if variante % 2 == 0 and config.PAGINA_BIO else "telegram"
 
 
 def preparar():
@@ -119,10 +163,12 @@ def preparar():
     for fixo in (config.RAIZ / "assets" / "paginas").glob("*.html"):   # página inicial e privacidade
         (PASTA_SITE / fixo.name).write_text(fixo.read_text(encoding="utf-8"), encoding="utf-8")
     nome = f"chamada-{int(time.time())}.jpg"
-    gerar_arte(pasta / nome, variante, ofertas_na_semana(fila))
-    legenda = LEGENDAS[variante % len(LEGENDAS)] + "\n\n" + HASHTAGS
+    alvo = alvo_da_vez(variante)
+    gerar_arte(pasta / nome, variante, ofertas_na_semana(fila), alvo)
+    legendas = LEGENDAS_PAGINA if alvo == "pagina" else LEGENDAS
+    legenda = legendas[(variante // 2) % len(legendas)] + "\n\n" + HASHTAGS
     ARQ_PROX.write_text(json.dumps({"arquivo": f"midia/{nome}", "legenda": legenda}), encoding="utf-8")
-    print(f"🎬 Chamada preparada (variante {variante % len(TITULOS)}).")
+    print(f"🎬 Chamada preparada ({alvo}, variante {variante % len(TITULOS)}).")
     _saida("tem_post", "true")
 
 
