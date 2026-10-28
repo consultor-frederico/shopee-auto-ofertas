@@ -235,7 +235,8 @@ def descricao_short(itens, legenda_ig):
     tags = " ".join(t for t in legenda_ig.split() if t.startswith("#"))
     return (f"O Zé garimpou {len(itens)} achados com nota alta e muita venda:\n\n{lista}\n\n"
             f"👇 Comenta QUERO + o número aqui que o Zé te responde. Ou comenta no carrossel do Instagram "
-            f"@{config.ARROBA} que o Zé manda o link no direct. Ofertas o dia todo no Telegram: t.me/garimpovipofertas\n\n"
+            f"{config.ARROBA} que o Zé manda o link no direct. Ofertas o dia todo no Telegram: t.me/garimpovipofertas\n"
+            f"Todos os achados de hoje: https://{config.PAGINA_BIO}\n\n"
             "Preços conferidos na hora do post, podem mudar na loja. Links de afiliado: você paga o mesmo.\n\n"
             f"{tags} #shorts #achadinhos")
 
@@ -261,6 +262,8 @@ def legenda(itens):
     if 0 < dias <= 45:
         linhas.append(f"⏳ Faltam {dias} dias pra Black Friday! " + ("Me segue pra ver tudo primeiro 💚" if ANA
                                                                     else "Segue o Zé pra ver tudo primeiro!"))
+    if config.LEMBRETE_BIO:
+        linhas.append(config.LEMBRETE_BIO)
     linhas += ["", "Preços conferidos na hora do post — podem mudar na loja. Links de afiliado: você paga o mesmo.",
                "", HASHTAGS_ANA if ANA else HASHTAGS]
     return "\n".join(linhas)

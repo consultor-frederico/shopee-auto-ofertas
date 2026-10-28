@@ -56,8 +56,9 @@ def descricao(oferta):
     corpo = "\n".join(linhas)
     return _limpo(
         f"{corpo}\n\n🔗 O link deste achado está no nosso canal do Telegram: {TELEGRAM}\n"
-        f"(link clicável no perfil do canal)\n\n"
-        f"Instagram: @{config.ARROBA}\n"
+        f"(link clicável no perfil do canal)\n"
+        + (f"🛍️ Todos os achados de hoje: https://{config.PAGINA_BIO}\n" if config.PAGINA_BIO else "") + "\n"
+        f"Instagram: {config.ARROBA}\n"
         f"Link de afiliado: você paga o mesmo e ajuda o {config.NOME_MARCA}.\n\n{tags} #shorts #achadinhos")[:4900]
 
 

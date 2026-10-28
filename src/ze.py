@@ -401,7 +401,7 @@ def preparar():
     elif ANA:
         leg = _legenda_propria(n) + "\n\n" + PEDIDO_ANA + "\n\n" + HASHTAGS_ANA
     else:
-        leg = _legenda_propria(n) + "\n\n" + PEDIDO + "\n\n" + HASHTAGS
+        leg = _legenda_propria(n) + "\n\n" + PEDIDO + ("\n" + config.LEMBRETE_BIO if config.LEMBRETE_BIO else "") + "\n\n" + HASHTAGS
     ARQ_PROX.write_text(json.dumps({"arquivo": f"midia/{nome}", "video": video.name, "legenda": leg},
                                    ensure_ascii=False), encoding="utf-8")
     print(f"🎬 Post {'da Ana' if ANA else 'do Zé'} preparado: {video.name}")

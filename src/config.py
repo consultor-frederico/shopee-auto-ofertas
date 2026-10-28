@@ -218,6 +218,9 @@ if PERFIL not in PERFIS:
 _P = PERFIS[PERFIL]
 NICHO = _P["nicho"]
 MARCA, NOME_MARCA, ARROBA, HASHTAG_MARCA = _P["marca"], _P["nome"], _P["arroba"], _P["hashtag"]
+# Página da bio do Garimpo VIP (vitrine com os achados do dia). A Ana não usa: as contas não podem parecer ligadas.
+PAGINA_BIO = "garimpovipbr.github.io" if PERFIL == "garimpo" else ""
+LEMBRETE_BIO = f"🔗 Todos os achados de hoje num lugar só: {PAGINA_BIO} (link na bio)" if PAGINA_BIO else ""
 LOGO = _P["logo"]
 CORES = _P["cores"]
 TOM, PUBLICO = _P["tom"], _P["publico"]
