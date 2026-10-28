@@ -29,7 +29,10 @@ jobs:
           WFS="responder.yml"                                        # sempre: respostas EU QUERO
           case "$HQ" in 06:45|11:45|17:45) WFS="$WFS garimpo.yml" ;; esac
           # 27/10/2026: carrossel de achados só 1 por dia (alcançava ~5 contas cada; o Reels do Zé alcança ~130).
-          case "$HQ" in 18:45) WFS="$WFS achados.yml" ;; esac
+          # 28/10/2026: quarta e sábado o carrossel das 18:45 vira Kit do Zé (carrossel temático, src/kits.py), ok do Fred
+          if [ "$HQ" = "18:45" ]; then
+            if [ "$DOW" = "3" ] || [ "$DOW" = "6" ]; then WFS="$WFS kits.yml"; else WFS="$WFS achados.yml"; fi
+          fi
           # postar.yml agora só entrega "Você pediu, o Zé achou" e vídeos manuais (não faz nada se não houver)
           case "$HQ" in 10:45|15:45|20:45) WFS="$WFS postar.yml" ;; esac
           if [ "$Q" = "15" ] && [ $((10#$H)) -ge 8 ] && [ $((10#$H)) -le 22 ]; then WFS="$WFS telegram-ofertas.yml"; fi
