@@ -367,7 +367,7 @@ def responder_top(api, minha, tops, respondidos):
                 else:   # só "QUERO": uma resposta privada por comentário → manda a lista com os 5 links
                     lista = "\n\n".join(f"{num[i]} {it['nome'][:50]} — R$ {it['preco_fmt']}\n{it['link_afiliado']}"
                                          for i, it in enumerate(itens))
-                    titulo = ("Top 5 da semana" if info.get("tipo") == "semana" else "Top 5 do mês"
+                    titulo = info.get("titulo") or ("Top 5 da semana" if info.get("tipo") == "semana" else "Top 5 do mês"
                               if info.get("tipo") == "mes" else "carrossel de achados")
                     api.resposta_privada(minha["user_id"], cid, DM_TOP_TODOS.format(titulo=titulo, lista=lista))
                     reg["formato"] = "lista"
