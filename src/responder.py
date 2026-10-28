@@ -507,11 +507,15 @@ RESPOSTA_YT = ("Oi, {nome}! 😊 Aqui está o link do {titulo} 👉 {link}\n"
 def responder_youtube(respondidos):
     from .garimpar import carregar_fila
     por_video = {o["yt_video"]: o for o in carregar_fila()["ofertas"].values() if o.get("yt_video")}
-    if not por_video:
+    carrosseis = {v["yt_video"]: v for v in posts_top().values() if v.get("yt_video") and v.get("itens")}
+    if not por_video and not carrosseis:
         return 0
     enviados = 0
     for c in youtube.comentarios_recentes():
         cid = f"yt_{c['id']}"
+        if c["video"] in carrosseis and cid not in respondidos and c["autor_canal"] != youtube.CANAL_ID:
+            enviados += responder_youtube_carrossel(c, carrosseis[c["video"]], respondidos)
+            continue
         o = por_video.get(c["video"])
         if (not o or cid in respondidos or c["autor_canal"] == youtube.CANAL_ID
                 or not pediu_link(c["texto"]) or not o.get("link_afiliado")):
@@ -530,6 +534,43 @@ def responder_youtube(respondidos):
             print(f"::warning::Resposta no YouTube para {c['autor']} falhou: {e}")
         respondidos[cid] = reg
     return enviados
+
+
+RESPOSTA_YT_LISTA = ("Oi, {nome}! 😊 Os links dos achados deste vídeo:\n{lista}\n"
+                     "Corre que preço de oferta muda rápido! Mais achados no Telegram: t.me/garimpovipofertas\n"
+                     f"(links de afiliado: você paga o mesmo e ajuda o {config.NOME_MARCA})")
+
+
+def responder_youtube_carrossel(c, info, respondidos):
+    """Short do carrossel de achados: "QUERO 2" → link do 2º; só "QUERO" → todos os links, na resposta do comentário."""
+    itens = info["itens"]
+    n = numero_pedido(c["texto"], len(itens))
+    if not n and not so_pediu_link(c["texto"]):
+        return 0
+    nome = (c["autor"] or "").lstrip("@").split()[0] if c["autor"] else "tudo bem"
+    if n:
+        it = itens[n - 1]
+        texto = RESPOSTA_YT.format(nome=nome, titulo=_curto(it.get("titulo") or it["nome"]), link=it["link_afiliado"])
+    else:
+        lista = "\n".join(f"{i}) {_curto(it.get('titulo') or it['nome'])} — R$ {it['preco_fmt']}: {it['link_afiliado']}"
+                          for i, it in enumerate(itens, 1))
+        texto = RESPOSTA_YT_LISTA.format(nome=nome, lista=lista)
+    reg = {"post": c["video"], "oferta": itens[n - 1]["id"] if n else "top", "usuario": c["autor"],
+           "autor": c["autor_canal"], "em": agora().strftime(FMT), "rede": "youtube", "top": n or "todos"}
+    try:
+        youtube.responder_comentario(c["id"], texto)
+        reg["dm"] = "ok"
+        print(f"▶️  Carrossel: link {n or 'de todos'} respondido no YouTube para {c['autor']}")
+    except Exception as e:
+        reg["dm"] = f"erro: {str(e)[:200]}"
+        print(f"::warning::Resposta no YouTube para {c['autor']} falhou: {e}")
+    respondidos[f"yt_{c['id']}"] = reg
+    return 1 if reg["dm"] == "ok" else 0
+
+
+def _curto(nome, n=50):
+    nome = " ".join(str(nome).split())
+    return nome if len(nome) <= n else nome[:n].rsplit(" ", 1)[0] + "…"
 
 
 if __name__ == "__main__":
