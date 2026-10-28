@@ -89,6 +89,10 @@ def rodar():
     if mudou:
         salvar_fila(fila)
     _salvar_estado(est)
+    try:   # confirma as lidas no Telegram (some da fila; senão o Worker, que só espia, tocaria de novo)
+        telegram._api("getUpdates", data={"offset": est["ultimo_update"] + 1, "limit": 1, "timeout": 0})
+    except Exception as e:
+        print(f"⚠️  Não consegui confirmar as mensagens lidas no Telegram: {e}")
 
 
 if __name__ == "__main__":

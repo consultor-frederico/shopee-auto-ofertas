@@ -7,10 +7,13 @@
 //                     FB_APP_SECRET (chave secreta do app do Facebook "Garimpo Vip": Configurações do app → Básico;
 //                                    a Página do Facebook assina os avisos com ela, não com a do Instagram)
 //                     YT_API_KEY    (chave de API do Google, projeto garimpo-vip — só leitura)
+//                     TELEGRAM_BOT_TOKEN (token do bot do Telegram, o mesmo do GitHub — só para ler se há mensagem nova)
 //
 // YouTube não avisa quando alguém comenta. Por isso o Worker também tem um "despertador"
 // (Cron Trigger a cada 2 minutos): olha os comentários novos do canal e, se alguém pediu o link,
 // toca a mesma rotina de respostas.
+// No mesmo despertador olha o Telegram privado: se você respondeu um alerta de direct (ou aprovou
+// uma oferta), toca na hora o workflow 22, que manda a sua resposta no direct da pessoa.
 const VERIFY_TOKEN = "garimpovip-verifica";   // o mesmo texto vai no campo "Verificar token" da Meta
 const REPO = "consultor-frederico/shopee-auto-ofertas";
 const WORKFLOW = "responder.yml";
@@ -28,8 +31,8 @@ async function assinaturaValida(corpo, cabecalho, segredo) {
   return dif === 0;
 }
 
-async function tocarResponder(env) {
-  const r = await fetch(`https://api.github.com/repos/${REPO}/actions/workflows/${WORKFLOW}/dispatches`, {
+async function tocarResponder(env, workflow = WORKFLOW) {
+  const r = await fetch(`https://api.github.com/repos/${REPO}/actions/workflows/${workflow}/dispatches`, {
     method: "POST",
     headers: {
       "Authorization": `Bearer ${env.GITHUB_TOKEN}`,
@@ -40,7 +43,20 @@ async function tocarResponder(env) {
     },
     body: JSON.stringify({ ref: "main" }),
   });
-  console.log("GitHub respondeu", r.status);
+  console.log("GitHub respondeu", workflow, r.status);
+}
+
+// Só espia (sem "offset", não apaga nada): quem consome as mensagens é o workflow 22.
+// Enquanto ele não roda, a mensagem continua na fila e o despertador toca de novo 2 min depois.
+async function conferirTelegram(env) {
+  if (!env.TELEGRAM_BOT_TOKEN) return;
+  const r = await fetch(`https://api.telegram.org/bot${env.TELEGRAM_BOT_TOKEN}/getUpdates?limit=100&timeout=0`);
+  if (!r.ok) { console.log("Telegram respondeu", r.status); return; }
+  const pendentes = (await r.json()).result || [];
+  if (pendentes.some(u => u.message || u.callback_query)) {
+    console.log(`Telegram: ${pendentes.length} mensagem(ns) nova(s) — tocando o workflow 22`);
+    await tocarResponder(env, "aprovacao.yml");
+  }
 }
 
 const CANAL_YT = "UCVgPSlZGC3iydugIP81hl9Q";   // Garimpo VIP (@garimpoVIP4)
@@ -69,7 +85,7 @@ async function conferirYoutube(env) {
 
 export default {
   async scheduled(event, env, ctx) {
-    ctx.waitUntil(conferirYoutube(env));
+    ctx.waitUntil(Promise.all([conferirYoutube(env), conferirTelegram(env)]));
   },
 
   async fetch(request, env, ctx) {
