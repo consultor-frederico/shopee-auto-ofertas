@@ -37,6 +37,14 @@ jobs:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: |
           mkdir -p data/relatorios
+          if [ "$TERMOS" = "radar fotos" ]; then   # folhas com as fotos do último teste do radar
+            python -u -m src.radar_folhas
+            git config user.name "GarimpoBot"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git checkout --orphan radar-fotos && git rm -rqf --cached . && git add radar_fotos
+            git commit -qm "🖼️ Fotos do teste do radar" && git push -f origin radar-fotos
+            exit 0
+          fi
           if [ "$TERMOS" = "radar" ] || [ "$TERMOS" = "radar ana" ]; then   # teste do radar de virais (não grava)
             [ "$TERMOS" = "radar ana" ] && export PERFIL=ana
             export RADAR_LISTAR_FOTOS=1
@@ -45,6 +53,7 @@ jobs:
           fi
           python -u -m src.teste_shopee 2>&1 | tee data/relatorios/teste_shopee.txt
       - name: Salvar relatório
+        if: inputs.termos != 'radar fotos'
         run: |
           git config user.name "GarimpoBot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
