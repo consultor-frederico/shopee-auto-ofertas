@@ -310,20 +310,23 @@ if ANA:
                "Dica: comentando QUERO no post, o link chega sozinho no direct 😉")
 
 
-def _avisar_fred(reg):
+def _avisar_fred(reg, quando):
     """Mensagem do direct que o robô não respondeu → alerta no Telegram privado do Fred."""
     import os
-    from . import telegram
+    import requests   # direto na API (o src.telegram puxa o Pillow, que o workflow 3 não instala)
     chat = os.getenv("TELEGRAM_CHAT_PRIVADO", "").strip()
-    if not (chat and os.getenv("TELEGRAM_BOT_TOKEN", "").strip()):
+    token = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
+    if not (chat and token):
         return
-    from datetime import datetime
-    ate = (datetime.strptime(reg["em"], _fmt()) + timedelta(hours=24)).strftime("%d/%m %H:%M")
+    ate = (quando + timedelta(hours=24)).strftime("%d/%m %H:%M")
     quem = f"@{reg['usuario']}" if reg.get("usuario") else "alguém"
     texto = (f"📩 Direct do {config.ARROBA} sem resposta do robô\n\n"
              f"{quem}: \"{(reg.get('texto') or '')[:300]}\"\n\nResponda você até {ate} (depois o Instagram fecha a conversa).")
     try:
-        telegram._api("sendMessage", data={"chat_id": chat, "text": texto, "disable_web_page_preview": "true"})
+        r = requests.post(f"https://api.telegram.org/bot{token}/sendMessage", timeout=30,
+                          data={"chat_id": chat, "text": texto, "disable_web_page_preview": "true"})
+        if not r.json().get("ok"):
+            raise RuntimeError(r.text[:200])
     except Exception as e:
         print(f"⚠️  Alerta do direct no Telegram falhou: {e}")
 
@@ -522,10 +525,10 @@ def rodar_dms(api, minha):
                 except Exception as e:
                     reg["status"] = f"erro: {str(e)[:200]}"
                     print(f"::warning::Direct: não consegui perguntar qual achado: {e}")
-                    _avisar_fred(reg)
+                    _avisar_fred(reg, quando)
             else:
                 reg["status"] = "ignorado"
-                _avisar_fred(reg)
+                _avisar_fred(reg, quando)
             feitos_ids[ultima["id"]] = reg
             continue
         try:
@@ -548,7 +551,7 @@ def rodar_dms(api, minha):
         except Exception as e:
             reg["status"] = f"erro: {str(e)[:200]}"
             print(f"::warning::Busca do Zé no direct: não consegui responder: {e}")
-            _avisar_fred(reg)
+            _avisar_fred(reg, quando)
         feitos_ids[ultima["id"]] = reg
     limite = (agora - timedelta(days=30)).strftime(_fmt())
     d["dms"] = {k: v for k, v in feitos_ids.items() if v.get("em", "") >= limite}
