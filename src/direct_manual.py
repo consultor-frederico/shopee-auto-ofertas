@@ -32,8 +32,14 @@ def rodar():
         for p in (c.get("participants") or {}).get("data") or []:
             if str(p.get("id")) != ig_id:
                 pessoas.append((p.get("username") or "", str(p.get("id")), c.get("updated_time", "")))
-    print("Conversas recentes:", ", ".join(f"@{u} ({t[:16]})" for u, _, t in pessoas[:50]))
-    achados = [p for p in pessoas if para and para in _norm(p[0])]
+    nomes = {}
+    for _, pid, _ in pessoas[:30]:   # nome de exibição ("Tiago Souza"), além do @
+        try:
+            nomes[pid] = _req(token, "GET", pid, params={"fields": "name"}).get("name") or ""
+        except Exception:
+            nomes[pid] = ""
+    print("Conversas recentes:", ", ".join(f"@{u} [{nomes.get(i, '')}] ({t[:16]})" for u, i, t in pessoas[:50]))
+    achados = [p for p in pessoas if para and (para in _norm(p[0]) or para in _norm(nomes.get(p[1])))]
     if len(achados) != 1:
         sys.exit(f"::error::Achei {len(achados)} conversa(s) com '{para}': "
                  + (", ".join("@" + u for u, _, _ in achados) or "nenhuma") + ". Nada foi enviado.")
