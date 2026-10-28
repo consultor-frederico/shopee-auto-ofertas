@@ -43,44 +43,44 @@ KIT_COMISSAO_RS = float(os.getenv("KIT_COMISSAO_RS", "2"))
 # meses = em que meses o tema pode sair (vazio = o ano todo). Os de festa têm prioridade no mês deles.
 TEMAS = {
     "banheiro": {"titulo": "BANHEIRO ORGANIZADO", "teto": 80, "meses": [],
-                 "gancho": "Seu banheiro organizado com 5 achados até R$ {teto}",
-                 "termos": ["organizador de banheiro", "dispenser sabonete", "porta escova de dente",
+                 "gancho": "Seu banheiro organizado com {n} achados até R$ {teto}",
+                 "termos": ["organizador pia banheiro", "dispenser sabonete", "porta escova de dente",
                             "prateleira canto box", "tapete antiderrapante banheiro", "toalheiro adesivo"],
                  "hashtags": "#banheiroorganizado #organizacaodecasa #achadinhosdecasa"},
     "cozinha": {"titulo": "COZINHA PRÁTICA", "teto": 80, "meses": [],
-                "gancho": "Cozinha prática: 5 achados até R$ {teto} que facilitam o dia a dia",
+                "gancho": "Cozinha prática: {n} achados até R$ {teto} que facilitam o dia a dia",
                 "termos": ["organizador de geladeira", "fatiador de legumes", "porta tempero giratório",
                            "escorredor de louça dobrável", "mini processador elétrico", "pote hermético"],
                 "hashtags": "#cozinhapratica #utensiliosdecozinha #achadinhosdecasa"},
     "amigo-secreto": {"titulo": "AMIGO SECRETO ATÉ R$ 50", "teto": 50, "meses": [11, 12],
-                      "gancho": "Amigo secreto até R$ 50: 5 presentes que ninguém vai querer trocar",
+                      "gancho": "Amigo secreto até R$ 50: {n} presentes que ninguém vai querer trocar",
                       "termos": ["caneca térmica", "luminária criativa", "umidificador de ar", "garrafa térmica",
                                  "massageador de pescoço", "caixa de som bluetooth"],
                       "hashtags": "#amigosecreto #presentecriativo #ideiasdepresente"},
     "natal": {"titulo": "PRESENTES DE NATAL", "teto": 120, "meses": [11, 12],
-              "gancho": "Presentes de Natal até R$ {teto}: 5 ideias pra riscar da lista",
+              "gancho": "Presentes de Natal até R$ {teto}: {n} ideias pra riscar da lista",
               "termos": ["projetor de galáxia", "massageador elétrico", "fone bluetooth", "kit ferramentas",
                          "luminária de lua", "mini câmera instantânea"],
               "hashtags": "#presentedenatal #natal #ideiasdepresente"},
     "festa": {"titulo": "FESTA DE FIM DE ANO", "teto": 80, "meses": [11, 12],
-              "gancho": "Festa de fim de ano: 5 achados até R$ {teto} pra deixar tudo pronto",
+              "gancho": "Festa de fim de ano: {n} achados até R$ {teto} pra deixar tudo pronto",
               "termos": ["cortina de led", "pisca pisca led", "taça acrílico", "balde de gelo",
                          "toalha de mesa natal", "enfeite de natal"],
               "hashtags": "#festadefimdeano #decoracaodenatal #ceiadenatal"},
     "pet": {"titulo": "KIT DO PET", "teto": 80, "meses": [],
-            "gancho": "Kit do pet: 5 achados até R$ {teto} pro seu bichinho",
+            "gancho": "Kit do pet: {n} achados até R$ {teto} pro seu bichinho",
             "termos": ["fonte bebedouro gato", "removedor de pelos", "comedouro elevado",
                        "brinquedo interativo gato", "cama pet", "escova para cachorro"],
             "hashtags": "#petlovers #cachorro #gato"},
     "carro": {"titulo": "CARRO EM ORDEM", "teto": 80, "meses": [],
-              "gancho": "Carro em ordem: 5 achados até R$ {teto} pra quem vive no trânsito",
+              "gancho": "Carro em ordem: {n} achados até R$ {teto} pra quem vive no trânsito",
               "termos": ["organizador banco carro", "aspirador automotivo", "suporte celular carro",
                          "lixeira para carro", "kit limpeza automotiva", "carregador veicular"],
               "hashtags": "#acessoriosautomotivos #carro #dicasdecarro"},
     "home-office": {"titulo": "HOME OFFICE", "teto": 100, "meses": [],
-                    "gancho": "Home office: 5 achados até R$ {teto} pra trabalhar melhor em casa",
+                    "gancho": "Home office: {n} achados até R$ {teto} pra trabalhar melhor em casa",
                     "termos": ["suporte para notebook", "luminária de mesa led", "organizador de mesa",
-                               "mouse pad grande", "apoio para os pés", "suporte monitor"],
+                               "mouse pad grande", "apoio para os pés", "suporte de monitor"],
                     "hashtags": "#homeoffice #escritorioemcasa #setup"},
 }
 
@@ -133,7 +133,7 @@ def _pontos(o):
     return min(o["vendas"], 10000) / 1000 + (o["nota"] - 4.7) * 20 + o["comissao_pct"] / 2 + min(o["comissao"], 20) / 2
 
 
-def melhor_do_termo(termo, teto, fila, ja):
+def melhor_do_termo(termo, teto, fila, ja, tema_titulo=""):
     """O melhor produto que é mesmo o buscado. `ja` = itens já no kit (para não repetir produto nem família)."""
     from . import busca_ze, shopee, variedade
     nos = []
@@ -154,10 +154,45 @@ def melhor_do_termo(termo, teto, fila, ja):
                 and not any(busca_ze._mesmo_produto(o, x) for x in ja)):
             bons.append(o)
     bons = sorted(bons, key=_pontos, reverse=True)[:12]
-    conferidos = busca_ze._filtro_ia(termo, bons)
+    conferidos = _filtro_ia(tema_titulo, termo, bons)
     if conferidos is not None:
         bons = conferidos
     return bons[0] if bons else None
+
+
+PROMPT_IA = """Estou montando um post "{tema}" com achados da Shopee. Para o item "{termo}", encontrei
+os produtos abaixo (número: nome). Quais SÃO de fato um(a) "{termo}" e combinam com o tema "{tema}"?
+Não conta acessório, peça, refil, nem produto de outro tipo que só cita a palavra (ex.: buscando "organizador de
+banheiro", sapateira ou organizador de armário NÃO servem).
+Para cada um que servir, escreva um título curto em português, de 2 a 5 palavras, sem marca, sem medidas e sem
+palavras de anúncio (ex.: "Dispenser de sabonete automático").
+Responda só com JSON {{"ok": [{{"n": número, "titulo": "..."}}]}}, do mais adequado para o menos.
+
+{lista}"""
+
+
+def _filtro_ia(tema, termo, ofs):
+    """A IA confere se cada produto é o item buscado e combina com o tema, e dá um título curto. None = IA fora."""
+    if not config.GROQ_API_KEY or not ofs:
+        return None
+    from .legenda import _chamar_groq
+    lista = "\n".join(f"{i}: {o['nome'][:110]}" for i, o in enumerate(ofs))
+    try:
+        bruto = _chamar_groq(PROMPT_IA.format(tema=tema.title(), termo=termo, lista=lista))
+        ok = json.loads(re.search(r"\{.*\}", bruto, re.S).group(0)).get("ok", [])
+        saida = []
+        for x in ok:
+            n = x.get("n") if isinstance(x, dict) else x
+            if str(n).isdigit() and int(n) < len(ofs):
+                o = ofs[int(n)]
+                t = str(x.get("titulo", "")).strip() if isinstance(x, dict) else ""
+                if 3 <= len(t) <= 42:
+                    o["titulo_ia"] = t[:1].upper() + t[1:]
+                saida.append(o)
+        return saida
+    except Exception as e:
+        print(f"⚠️  IA não conferiu '{termo}' ({e}); fico só com as regras.")
+        return None
 
 
 def _titulo(nome, n=42):
@@ -166,6 +201,9 @@ def _titulo(nome, n=42):
     t = " ".join(t.replace("|", " ").replace("/", " / ").split()).strip(" -–,.+")
     if len(t) > n:
         t = t[:n].rsplit(" ", 1)[0].rstrip(" -–,.+/")
+    soltas = {"para", "pra", "de", "do", "da", "dos", "das", "com", "sem", "e", "a", "o", "em", "no", "na", "prova", "anti"}
+    while " " in t and t.rsplit(" ", 1)[1].lower() in soltas:
+        t = t.rsplit(" ", 1)[0]
     return t[:1].upper() + t[1:]
 
 
@@ -176,11 +214,11 @@ def escolher(tema, conferir_foto=True):
     for termo in cfg["termos"]:
         if len(itens) >= QTD:
             break
-        o = melhor_do_termo(termo, cfg["teto"], fila, [it["oferta"] for it in itens])
+        o = melhor_do_termo(termo, cfg["teto"], fila, [it["oferta"] for it in itens], cfg["titulo"])
         if not o:
             print(f"   '{termo}': nada que passe nas regras.")
             continue
-        o["titulo"] = _titulo(o["nome"])
+        o["titulo"] = o.pop("titulo_ia", None) or _titulo(o["nome"])
         try:
             foto = imagem._baixar_foto(o["imagem"]) if conferir_foto else None
         except Exception as e:
@@ -249,7 +287,7 @@ def legenda(tema, itens):
     from .ze import dias_para_black_friday
     cfg = TEMAS[tema]
     maior = int(round(max(it["oferta"]["preco"] for it in itens) + 0.49))
-    linhas = [f"🧺 {cfg['gancho'].format(teto=maior)}", ""]
+    linhas = [f"🧺 {cfg['gancho'].format(teto=maior, n=len(itens))}", ""]
     for i, it in enumerate(itens):
         o = it["oferta"]
         linhas.append(f"{NUM[i]} {o['titulo']} — R$ {o['preco_fmt']}")
