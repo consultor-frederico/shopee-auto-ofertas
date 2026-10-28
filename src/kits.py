@@ -219,6 +219,10 @@ def escolher(tema, conferir_foto=True):
             print(f"   '{termo}': nada que passe nas regras.")
             continue
         o["titulo"] = o.pop("titulo_ia", None) or _titulo(o["nome"])
+        cabeca = " ".join(o["titulo"].lower().split()[:2])
+        if any(" ".join(it["oferta"]["titulo"].lower().split()[:2]) == cabeca for it in itens):
+            print(f"   '{termo}': {o['titulo']} repete um item do kit; pulando.")
+            continue
         try:
             foto = imagem._baixar_foto(o["imagem"]) if conferir_foto else None
         except Exception as e:
