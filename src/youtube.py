@@ -67,9 +67,28 @@ def enviar_short(caminho_mp4, oferta):
                         ["achadinhos", "shopee", "achados", "ofertas", oferta.get("categoria", "")])
 
 
+def _conferir_canal(tok):
+    """Trava de segurança: o token tem de ser do canal Garimpo VIP. Se o Fred autorizar o Playground com a conta
+    pessoal, o robô postaria e responderia com o nome dele — aí não faz nada."""
+    if "ok" in _canal_cache:
+        return
+    r = requests.get("https://www.googleapis.com/youtube/v3/channels", params={"part": "snippet", "mine": "true"},
+                     headers={"Authorization": f"Bearer {tok}"}, timeout=30)
+    itens = r.json().get("items", []) if r.status_code == 200 else []
+    canal = itens[0] if itens else {}
+    if canal.get("id") != CANAL_ID:
+        raise RuntimeError(f"o YT_REFRESH_TOKEN é do canal '{(canal.get('snippet') or {}).get('title', '?')}', "
+                           f"não do Garimpo VIP — gere o token de novo escolhendo o canal Garimpo VIP")
+    _canal_cache["ok"] = True
+
+
+_canal_cache = {}
+
+
 def enviar_video(caminho_mp4, titulo_yt, descricao_yt, tags):
     """Sobe qualquer vídeo vertical como Short público e devolve o id."""
     tok = _token()
+    _conferir_canal(tok)
     meta = {"snippet": {"title": _limpo(titulo_yt)[:100], "description": _limpo(descricao_yt)[:4900],
                         "categoryId": CATEGORIA_YT, "defaultLanguage": "pt-BR",
                         "tags": [t for t in tags if t]},
@@ -118,6 +137,7 @@ def comentarios_recentes(limite=50):
 
 
 def responder_comentario(comment_id, texto):
+    _conferir_canal(_token_cache())
     r = requests.post("https://www.googleapis.com/youtube/v3/comments", params={"part": "snippet"}, timeout=30,
                       headers={"Authorization": f"Bearer {_token_cache()}", "Content-Type": "application/json"},
                       data=json.dumps({"snippet": {"parentId": comment_id, "textOriginal": texto}}))
@@ -215,6 +235,9 @@ if __name__ == "__main__":   # teste: python -m src.youtube  |  envio de teste: 
             print(f"::error::Acesso ok, mas nenhum canal encontrado: {r.text[:300]}")
             raise SystemExit(1)
         c = canais[0]
+        if c["id"] != CANAL_ID:
+            print(f"::error::O token é do canal '{c['snippet']['title']}', não do Garimpo VIP. Gere o YT_REFRESH_TOKEN "
+                  "de novo e, na tela do Google, escolha o canal Garimpo VIP (não a sua conta pessoal).")
         print(f"::notice::Canal: {c['snippet']['title']} — inscritos: "
               f"{c['statistics'].get('subscriberCount')} — vídeos: {c['statistics'].get('videoCount')}")
         try:
