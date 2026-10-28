@@ -3,6 +3,8 @@
 Fluxo: extrai o código do produto do link → consulta a API da Shopee (com os seus segredos) →
 guarda a oferta na fila como pendente → manda o link de afiliado e o número "ok <id>" para o
 seu Telegram PRIVADO. Nada é publicado aqui; a postagem depende do seu "ok".
+Link que não é de produto (página de campanha, sorteio, cupom): só gera o link de afiliado
+marcado por canal (Telegram e story) e manda no Telegram privado, sem entrar na fila.
 
 Uso: LINK="https://shopee..." python -m src.link_manual
 Segredos: SHOPEE_APP_ID, SHOPEE_APP_SECRET, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_PRIVADO.
@@ -11,7 +13,7 @@ import os
 import sys
 import tempfile
 
-from . import config, garimpar, imagem, shopee, telegram, video_manual, whatsapp_kit
+from . import config, garimpar, imagem, shopee, telegram, vendas, video_manual, whatsapp_kit
 from .garimpar import agora, carregar_fila, salvar_fila
 
 
@@ -37,6 +39,25 @@ def _mandar_oferta(chat, o):
                                        "reply_markup": teclado})
 
 
+def _link_de_pagina(chat, link):
+    """Página da Shopee que não é produto: um link de afiliado por canal, sem entrar na fila."""
+    canais = {"Telegram": ["garimpo", "telegram", "campanha"], "Story": ["garimpo", "story", "campanha"]}
+    linhas = []
+    for nome, subs in canais.items():
+        try:
+            curto = vendas.link_curto(link, subs)
+        except Exception as e:
+            print(f"::warning::{nome}: {e}")
+            curto = ""
+        linhas.append(f"{nome}: {curto or 'não gerou'}")
+    if not any(l.startswith(("Telegram: http", "Story: http")) for l in linhas):
+        _responder(chat, f"❓ A API da Shopee não gerou link de afiliado para esta página: {link}")
+        print("::error::Nenhum link gerado.")
+        sys.exit(1)
+    _responder(chat, "🔗 Link de afiliado da página\n" + link + "\n\n" + "\n".join(linhas))
+    print("✅ " + " | ".join(linhas))
+
+
 def rodar():
     link = (os.getenv("LINK") or "").strip()
     chat = os.getenv("TELEGRAM_CHAT_PRIVADO", "").strip()
@@ -48,7 +69,7 @@ def rodar():
         sys.exit(1)
     item_id = video_manual.extrair_item_id(link)
     if not item_id:
-        _responder(chat, f"❓ Não consegui ler o produto deste link: {link}")
+        _link_de_pagina(chat, link)
         return
     nos = shopee.buscar_por_item(item_id)
     if not nos or not nos[0].get("offerLink"):
