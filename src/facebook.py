@@ -123,7 +123,9 @@ if __name__ == "__main__":   # teste: python -m src.facebook
                 for a in apps:
                     print(f"::notice::Webhook da página: app {a.get('name')} → campos {', '.join(a.get('subscribed_fields') or [])}")
                 if not any("feed" in (a.get("subscribed_fields") or []) for a in apps):
-                    print("::warning::Página sem inscrição no campo feed: comentário no Facebook só é respondido na rodada de 15 min.")
+                    # inscreve o app do robô: comentário novo na página passa a tocar o webhook na hora
+                    _req("POST", f"{_env('FB_PAGE_ID')}/subscribed_apps", data={"subscribed_fields": "feed"})
+                    print("::notice::Página inscrita no campo feed do webhook (antes: só a rodada de 15 min).")
             except ErroFacebook as e:
                 print(f"::warning::Não consegui ler as inscrições do webhook da página: {e}")
         except Exception as e:
