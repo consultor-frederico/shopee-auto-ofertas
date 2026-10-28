@@ -1,0 +1,38 @@
+name: 24 - Mandar direct (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      perfil:
+        description: 'Conta (garimpo ou ana)'
+        default: 'garimpo'
+      para:
+        description: '@ ou parte do nome da pessoa (precisa ter conversa recente)'
+        required: true
+      texto:
+        description: 'Mensagem (vazio = só procura, não manda)'
+        required: false
+
+jobs:
+  mandar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Instalar dependências
+        run: pip install requests
+
+      - name: Mandar no direct
+        env:
+          PERFIL: ${{ inputs.perfil }}
+          PARA: ${{ inputs.para }}
+          TEXTO: ${{ inputs.texto }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_ACCESS_TOKEN_ANA: ${{ secrets.IG_ACCESS_TOKEN_ANA }}
+        run: python -m src.direct_manual
