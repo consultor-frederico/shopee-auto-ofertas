@@ -78,7 +78,15 @@ def candidatos_ordenados(fila):
         base = [o for o in resto if o.get("nivel") != "achado" and variedade.familia(o) not in fams] or base
     base = [o for o in base if o["categoria"] not in recentes] + [o for o in base if o["categoria"] in recentes]
     # variedade: tipo de produto que saiu nas últimas HORAS_ENTRE_FAMILIA horas vai para o fim
-    return manuais + preferidos + variedade.ordenar(base, fams)
+    base = variedade.ordenar(base, fams)
+    # 📡 veio do radar (bombando em outra página agora): passa na frente, até VIRAIS_NA_FRENTE_POR_DIA por dia
+    virais_hoje = sum(1 for o in fila["ofertas"].values() if o.get("origem_busca") == "viral"
+                      and str(o.get("postado_em") or "").startswith(hoje))
+    if virais_hoje < config.VIRAIS_NA_FRENTE_POR_DIA:
+        frente = [o for o in base if o.get("origem_busca") == "viral"
+                  and o["categoria"] not in recentes and variedade.familia(o) not in fams]
+        base = frente + [o for o in base if o not in frente]
+    return manuais + preferidos + base
 
 
 def formato_da_vez(fila):
