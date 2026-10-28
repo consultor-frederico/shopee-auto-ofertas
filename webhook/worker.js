@@ -4,6 +4,8 @@
 //
 // Segredos do Worker: GITHUB_TOKEN (token com Actions: Read and write no repositório)
 //                     IG_APP_SECRET (chave secreta do app do Instagram, painel da Meta)
+//                     FB_APP_SECRET (chave secreta do app do Facebook "Garimpo Vip": Configurações do app → Básico;
+//                                    a Página do Facebook assina os avisos com ela, não com a do Instagram)
 //                     YT_API_KEY    (chave de API do Google, projeto garimpo-vip — só leitura)
 //
 // YouTube não avisa quando alguém comenta. Por isso o Worker também tem um "despertador"
@@ -85,7 +87,9 @@ export default {
     if (request.method !== "POST") return new Response("ok");
 
     const corpo = await request.text();
-    if (!(await assinaturaValida(corpo, request.headers.get("x-hub-signature-256"), env.IG_APP_SECRET))) {
+    const assinatura = request.headers.get("x-hub-signature-256");
+    if (!(await assinaturaValida(corpo, assinatura, env.IG_APP_SECRET))
+        && !(await assinaturaValida(corpo, assinatura, env.FB_APP_SECRET))) {
       console.log("assinatura inválida — ignorado");
       return new Response("assinatura inválida", { status: 401 });
     }
