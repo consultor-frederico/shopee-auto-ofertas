@@ -157,6 +157,39 @@ def enviar_oferta_da_fila(oferta_id=""):
     print(f"::notice::Short publicado: https://youtube.com/shorts/{vid} — {oferta.get('titulo')}")
 
 
+def diagnostico_respostas(limite=5):
+    """Mostra a situação (publicada, em revisão, spam...) das últimas respostas do robô no YouTube."""
+    arq = config.RAIZ / "data" / "respondidos.json"
+    if not arq.exists():
+        return
+    regs = [(k[3:], v) for k, v in json.loads(arq.read_text(encoding="utf-8")).items()
+            if k.startswith("yt_") and v.get("dm") == "ok"]
+    for cid, v in sorted(regs, key=lambda x: x[1].get("em", ""))[-limite:]:
+        try:
+            r = requests.get("https://www.googleapis.com/youtube/v3/comments", timeout=30,
+                             headers={"Authorization": f"Bearer {_token_cache()}"},
+                             params={"part": "snippet", "parentId": cid, "maxResults": 20, "textFormat": "plainText"})
+            itens = r.json().get("items", []) if r.status_code == 200 else []
+            if r.status_code != 200:
+                print(f"::warning::Resposta de {cid}: HTTP {r.status_code} {r.text[:200]}")
+            if not itens:
+                print(f"::warning::Comentário {cid} ({v.get('em')}): nenhuma resposta visível pela API.")
+            for it in itens:
+                sn = it["snippet"]
+                print(f"::notice::{v.get('em')} {cid}: status={sn.get('moderationStatus', 'published')} "
+                      f"autor={sn.get('authorDisplayName')} texto={sn.get('textOriginal', '')[:80]!r}")
+        except Exception as e:
+            print(f"::warning::Diagnóstico de {cid} falhou: {e}")
+        try:   # o próprio comentário de quem pediu
+            r = requests.get("https://www.googleapis.com/youtube/v3/comments", timeout=30,
+                             headers={"Authorization": f"Bearer {_token_cache()}"},
+                             params={"part": "snippet", "id": cid, "textFormat": "plainText"})
+            for it in r.json().get("items", []):
+                print(f"::notice::   pedido {cid}: status={it['snippet'].get('moderationStatus', 'published')}")
+        except Exception:
+            pass
+
+
 if __name__ == "__main__":   # teste: python -m src.youtube  |  envio de teste: python -m src.youtube enviar [id]
     import sys
     if len(sys.argv) > 1 and sys.argv[1] == "enviar":
@@ -187,6 +220,7 @@ if __name__ == "__main__":   # teste: python -m src.youtube  |  envio de teste: 
         try:
             n = len(comentarios_recentes(5))
             print(f"::notice::Comentários: acesso ok ({n} recentes lidos).")
+            diagnostico_respostas()
         except Exception as e:
             print(f"::error::Sem permissão para comentários. Gere o YT_REFRESH_TOKEN de novo marcando também "
                   f"o escopo youtube.force-ssl. Detalhe: {e}")
