@@ -12,7 +12,7 @@ import os
 import re
 import sys
 
-from . import config, telegram
+from . import config, direct_telegram, telegram
 from .garimpar import agora, carregar_fila, salvar_fila
 
 ARQ_ESTADO = config.PASTA_PERFIL / "aprovacao.json"   # último update lido, para não repetir comandos
@@ -64,6 +64,12 @@ def rodar():
             msg = u.get("message") or {}
             # só o seu chat privado manda comando; qualquer outro é ignorado
             if str((msg.get("chat") or {}).get("id")) != chat:
+                continue
+            alvo = direct_telegram.do_alerta((msg.get("reply_to_message") or {}).get("text"))
+            if alvo and (msg.get("text") or "").strip():   # resposta a um alerta de direct → vai pro Instagram
+                ok, aviso = direct_telegram.encaminhar(*alvo, msg["text"].strip())
+                _responder(chat, aviso)
+                print(f"📩 Direct pelo Telegram ({alvo[0]}): {'ok' if ok else aviso}")
                 continue
             m = RE_OK.match(msg.get("text") or "")
             if not m:

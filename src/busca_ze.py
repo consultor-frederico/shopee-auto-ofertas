@@ -314,6 +314,7 @@ def _avisar_fred(reg, quando):
     """Mensagem do direct que o robô não respondeu → alerta no Telegram privado do Fred."""
     import os
     import requests   # direto na API (o src.telegram puxa o Pillow, que o workflow 3 não instala)
+    from . import direct_telegram
     chat = os.getenv("TELEGRAM_CHAT_PRIVADO", "").strip()
     token = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
     if not (chat and token):
@@ -321,7 +322,9 @@ def _avisar_fred(reg, quando):
     ate = (quando + timedelta(hours=24)).strftime("%d/%m %H:%M")
     quem = f"@{reg['usuario']}" if reg.get("usuario") else "alguém"
     texto = (f"📩 Direct do {config.ARROBA} sem resposta do robô\n\n"
-             f"{quem}: \"{(reg.get('texto') or '')[:300]}\"\n\nResponda você até {ate} (depois o Instagram fecha a conversa).")
+             f"{quem}: \"{(reg.get('texto') or '')[:300]}\"\n\nResponda até {ate} (depois o Instagram fecha a conversa).\n"
+             "Para responder por aqui: segure esta mensagem → Responder → escreva. Eu mando no direct.\n\n"
+             + direct_telegram.ref(config.PERFIL, reg["autor"]))
     try:
         r = requests.post(f"https://api.telegram.org/bot{token}/sendMessage", timeout=30,
                           data={"chat_id": chat, "text": texto, "disable_web_page_preview": "true"})
