@@ -26,7 +26,7 @@ jobs:
           H=$(date +%H); M=$(date +%M); DOW=$(date +%u)   # DOW: 1=seg ... 7=dom
           Q=$(( (10#$M / 15) * 15 )); HQ=$(printf '%02d:%02d' $((10#$H)) $Q)
           echo "⏰ Agora: $(date +'%d/%m %H:%M') → quarto de hora $HQ (dia $DOW)"
-          WFS="responder.yml"                                        # sempre: respostas EU QUERO
+          WFS="responder.yml aprovacao.yml"                          # sempre: respostas EU QUERO + respostas de direct pelo Telegram (28/10/2026)
           case "$HQ" in 06:45|11:45|17:45) WFS="$WFS garimpo.yml" ;; esac
           # 27/10/2026: carrossel de achados só 1 por dia (alcançava ~5 contas cada; o Reels do Zé alcança ~130).
           # 28/10/2026: quarta e sábado o carrossel das 18:45 vira Kit do Zé (carrossel temático, src/kits.py), ok do Fred
