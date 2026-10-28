@@ -22,7 +22,7 @@ from datetime import timedelta
 
 from PIL import Image, ImageDraw
 
-from . import achados_artes as artes, aliexpress, config, imagem, instagram, marcas
+from . import achados_artes as artes, aliexpress, config, imagem, instagram, marcas, vitrine
 from .garimpar import FMT, agora, carregar_fila, salvar_fila
 
 ANA = config.PERFIL == "ana"
@@ -366,6 +366,7 @@ def publicar():
             o.update({"status": "postado", "formato": "achados", "postado_em": agora_s,
                       "postado_ts": time.time(), "achados_post": media_id, "permalink": permalink})
     salvar_fila(fila)
+    vitrine.gerar()
     if not ANA:
         extras = espelhar(info, urls[1:], base)
         if extras:

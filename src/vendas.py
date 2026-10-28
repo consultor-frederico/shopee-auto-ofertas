@@ -19,7 +19,6 @@ from datetime import datetime, timedelta, timezone
 from . import config, shopee
 
 BRT = timezone(timedelta(hours=-3))
-ARQ_CACHE = config.RAIZ / "data" / "links_canal.json"
 LIGADO = os.getenv("LINKS_POR_CANAL", "1") != "0"
 
 # subId do canal → nome que aparece no status
@@ -35,27 +34,20 @@ CANAIS = {
     "bio": "Página da bio",
 }
 
-_cache = None
+_cache = {}       # só na memória da rodada: um arquivo dividido entre workflows daria conflito no git
+_lojas = None
 
 
-def _carregar():
-    global _cache
-    if _cache is None:
+def _loja_da_fila(item_id):
+    """Itens de carrossel/Top 5 guardam só o id: a loja vem da fila."""
+    global _lojas
+    if _lojas is None:
         try:
-            _cache = json.loads(ARQ_CACHE.read_text(encoding="utf-8"))
+            _lojas = {k: v.get("loja_id") for k, v in
+                      json.loads(config.ARQ_FILA.read_text(encoding="utf-8"))["ofertas"].items()}
         except Exception:
-            _cache = {}
-    return _cache
-
-
-def _salvar():
-    if _cache is None:
-        return
-    # guarda só os últimos 60 dias para o arquivo não crescer sem parar
-    corte = (datetime.now(BRT) - timedelta(days=60)).strftime("%Y-%m-%d")
-    limpo = {k: v for k, v in _cache.items() if v.get("em", "9999") >= corte}
-    ARQ_CACHE.parent.mkdir(parents=True, exist_ok=True)
-    ARQ_CACHE.write_text(json.dumps(limpo, ensure_ascii=False, indent=1), encoding="utf-8")
+            _lojas = {}
+    return _lojas.get(str(item_id))
 
 
 def _sub(txt):
@@ -70,8 +62,10 @@ def link_curto(url_produto, sub_ids):
 
 
 def _url_produto(o):
-    if o.get("loja_id") and o.get("id", "").isdigit():
-        return f"https://shopee.com.br/product/{int(o['loja_id'])}/{int(o['id'])}"
+    item = str(o.get("id") or "")
+    loja = o.get("loja_id") or (_loja_da_fila(item) if item.isdigit() else None)
+    if loja and item.isdigit():
+        return f"https://shopee.com.br/product/{int(loja)}/{int(item)}"
     return ""
 
 
@@ -84,10 +78,9 @@ def do_canal(o, canal):
     url = _url_produto(o)
     if not url:
         return base
-    chave = f"{o['id']}|{config.PERFIL}|{canal}"
-    cache = _carregar()
-    if chave in cache:
-        return cache[chave]["link"]
+    chave = (url, config.PERFIL, canal)
+    if chave in _cache:
+        return _cache[chave]
     try:
         link = link_curto(url, [config.PERFIL, canal])
     except Exception as e:
@@ -95,8 +88,7 @@ def do_canal(o, canal):
         return base
     if not link.startswith("https://"):
         return base
-    cache[chave] = {"link": link, "em": datetime.now(BRT).strftime("%Y-%m-%d")}
-    _salvar()
+    _cache[chave] = link
     return link
 
 
@@ -201,6 +193,15 @@ def main():
         print(f"Link de teste marcado: {link_curto(_url_produto(o), [config.PERFIL, 'teste'])}")
     except Exception as e:
         print(f"❌ link por canal: {str(e)[:500]}")
+    try:   # um item de carrossel (sem loja guardada) e para onde o link marcado leva
+        import requests
+        fila = json.loads(config.ARQ_FILA.read_text(encoding="utf-8"))["ofertas"]
+        o = next(o for o in fila.values() if o.get("status") == "postado" and o.get("plataforma", "shopee") == "shopee")
+        link = do_canal({"id": o["id"], "link_afiliado": o["link_afiliado"], "plataforma": "shopee"}, "teste")
+        r = requests.get(link, timeout=30, allow_redirects=True, headers={"User-Agent": "Mozilla/5.0"})
+        print(f"\n{o['titulo']}: {link} → HTTP {r.status_code} {r.url[:200]}")
+    except Exception as e:
+        print(f"❌ do_canal: {str(e)[:300]}")
     try:
         print("\n" + linha_status())
     except Exception as e:

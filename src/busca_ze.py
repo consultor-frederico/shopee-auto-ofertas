@@ -15,7 +15,7 @@ do próprio produto do Reels continuam com o responder (link da oferta no direct
 import json
 from datetime import timedelta
 
-from . import config
+from . import config, vendas
 
 ANA = config.PERFIL == "ana"   # 💚 Busca da Ana: mesma ferramenta, com o jeito dela e #BuscaDaAna
 ARQ = config.PASTA_PERFIL / "busca_ze.json"
@@ -276,7 +276,7 @@ def enviar_dm(api, ig_id, cid, t, ofs, destinatario=None):
     numa conversa que a pessoa abriu, direto para ela (destinatario = id da pessoa)."""
     para = {"id": destinatario} if destinatario else {"comment_id": cid}
     texto = mensagem(t, ofs)
-    botoes = [{"type": "web_url", "url": o["link_afiliado"], "title": f"🛒 Ver achado {i}"}
+    botoes = [{"type": "web_url", "url": vendas.do_canal(o, "zebusca"), "title": f"🛒 Ver achado {i}"}
               for i, o in enumerate(ofs, 1)]
     try:
         return api._req("POST", f"{ig_id}/messages", json={
@@ -285,7 +285,7 @@ def enviar_dm(api, ig_id, cid, t, ofs, destinatario=None):
                 "template_type": "button", "text": texto[:640], "buttons": botoes}}}})
     except Exception as e:   # plano B: texto com os links
         print(f"⚠️  Botões recusados ({e}); mandando os links no texto.")
-        links = "\n".join(f"{i}️⃣ {o['link_afiliado']}" for i, o in enumerate(ofs, 1))
+        links = "\n".join(f"{i}️⃣ {vendas.do_canal(o, 'zebusca')}" for i, o in enumerate(ofs, 1))
         return api._req("POST", f"{ig_id}/messages", json={"recipient": para, "message": {
             "text": f"{texto.split('Toque no botão')[0].strip()}\n\n{links}\n\n"
                     + (AVISO_ANA if ANA else f"(links de afiliado: você paga o mesmo e ajuda o {config.NOME_MARCA})")}})
@@ -390,7 +390,7 @@ def responder_atalho(api, ig_id, autor, cod, d):
             linhas.append(f"{i}️⃣ {_curto(o.get('titulo') or o.get('nome', ''))} — R$ {o['preco_fmt']}")
         linhas += ["", f"Tem muito mais no Telegram: {TELEGRAM}",
                    (AVISO_ANA if ANA else f"(links de afiliado: você paga o mesmo e ajuda o {config.NOME_MARCA})")]
-        botoes = [{"type": "web_url", "url": o["link_afiliado"], "title": f"🛒 Ver achado {i}"}
+        botoes = [{"type": "web_url", "url": vendas.do_canal(o, "zebusca"), "title": f"🛒 Ver achado {i}"}
                   for i, o in enumerate(ofs, 1)]
         return enviar({"attachment": {"type": "template", "payload": {
             "template_type": "button", "text": "\n".join(linhas)[:640], "buttons": botoes}}})

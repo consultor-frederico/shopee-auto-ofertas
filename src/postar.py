@@ -15,7 +15,7 @@ from datetime import datetime, timedelta
 
 import requests
 
-from . import aliexpress, carrossel, config, facebook, marcas, precos, imagem, instagram, legenda, reels, story, telegram, video_manual, youtube, ze, variedade
+from . import aliexpress, carrossel, config, facebook, marcas, precos, imagem, instagram, legenda, reels, story, telegram, video_manual, youtube, ze, variedade, vitrine
 from .garimpar import BRT, FMT, agora, carregar_fila, salvar_fila
 
 PASTA_SITE = config.RAIZ / "site"
@@ -268,6 +268,7 @@ def publicar():
                    "postado_em": agora().strftime(FMT), "postado_ts": time.time(), "permalink": instagram.permalink(media_id)})
     salvar_fila(fila)
     ARQ_PROXIMO.unlink(missing_ok=True)
+    vitrine.gerar()
     print(f"✅ Publicado ({prox['formato']}): {oferta['titulo']} → {oferta['permalink'] or media_id}")
     if oferta.get("pedido"):
         from . import pedidos

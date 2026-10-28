@@ -12,7 +12,7 @@ import unicodedata
 import zlib
 from datetime import datetime, timedelta, timezone
 
-from . import config, facebook, instagram, marcas, youtube
+from . import config, facebook, instagram, marcas, vendas, youtube
 from .garimpar import BRT, FMT, agora, carregar_fila
 
 ARQ_RESPONDIDOS = config.PASTA_PERFIL / "respondidos.json"
@@ -247,12 +247,12 @@ def responder(api=instagram):
             try:
                 try:
                     api.resposta_privada_botao(minha["user_id"], cid, DM_BOTAO.format(titulo=o["titulo"], loja=NOME_LOJA.get(o.get("plataforma") or "shopee", "loja")),
-                                               o["link_afiliado"], TITULO_BOTAO)
+                                               vendas.do_canal(o, "igdm"), TITULO_BOTAO)
                     reg["formato"] = "botao"
                 except Exception as e:
                     print(f"   (botão recusado: {e}; enviando como texto)")
                     api.resposta_privada(minha["user_id"], cid,
-                                         DM.format(titulo=o["titulo"], link=o["link_afiliado"]))
+                                         DM.format(titulo=o["titulo"], link=vendas.do_canal(o, "igdm")))
                     reg["formato"] = "texto"
                 reg["dm"] = "ok"
                 enviados += 1
@@ -358,14 +358,14 @@ def responder_top(api, minha, tops, respondidos):
                     try:
                         api.resposta_privada_botao(minha["user_id"], cid,
                                                    DM_BOTAO.format(titulo=titulo, loja=NOME_LOJA.get(it.get("plataforma") or "shopee", "loja")),
-                                                   it["link_afiliado"], TITULO_BOTAO)
+                                                   vendas.do_canal(it, "igtop"), TITULO_BOTAO)
                         reg["formato"] = "botao"
                     except Exception as e:
                         print(f"   (botão recusado: {e}; enviando como texto)")
-                        api.resposta_privada(minha["user_id"], cid, DM.format(titulo=titulo, link=it["link_afiliado"]))
+                        api.resposta_privada(minha["user_id"], cid, DM.format(titulo=titulo, link=vendas.do_canal(it, "igtop")))
                         reg["formato"] = "texto"
                 else:   # só "QUERO": uma resposta privada por comentário → manda a lista com os 5 links
-                    lista = "\n\n".join(f"{num[i]} {it['nome'][:50]} — R$ {it['preco_fmt']}\n{it['link_afiliado']}"
+                    lista = "\n\n".join(f"{num[i]} {it['nome'][:50]} — R$ {it['preco_fmt']}\n{vendas.do_canal(it, 'igtop')}"
                                          for i, it in enumerate(itens))
                     titulo = info.get("titulo") or ("Top 5 da semana" if info.get("tipo") == "semana" else "Top 5 do mês"
                               if info.get("tipo") == "mes" else "carrossel de achados")
@@ -416,11 +416,11 @@ def responder_facebook(posts, respondidos):
             try:
                 try:
                     facebook.resposta_privada_botao(c["id"], DM_BOTAO.format(titulo=o["titulo"], loja=loja),
-                                                    o["link_afiliado"], TITULO_BOTAO)
+                                                    vendas.do_canal(o, "fbdm"), TITULO_BOTAO)
                     reg["formato"] = "botao"
                 except Exception as e:
                     print(f"   (botão recusado no Facebook: {e}; enviando como texto)")
-                    facebook.resposta_privada(c["id"], DM.format(titulo=o["titulo"], link=o["link_afiliado"]))
+                    facebook.resposta_privada(c["id"], DM.format(titulo=o["titulo"], link=vendas.do_canal(o, "fbdm")))
                     reg["formato"] = "texto"
                 reg["dm"] = "ok"
                 enviados += 1
@@ -471,14 +471,14 @@ def responder_facebook_top(tops, respondidos):
                     try:
                         facebook.resposta_privada_botao(
                             c["id"], DM_BOTAO.format(titulo=titulo, loja=NOME_LOJA.get(it.get("plataforma") or "shopee", "loja")),
-                            it["link_afiliado"], TITULO_BOTAO)
+                            vendas.do_canal(it, "fbdm"), TITULO_BOTAO)
                         reg["formato"] = "botao"
                     except Exception as e:
                         print(f"   (botão recusado no Facebook: {e}; enviando como texto)")
-                        facebook.resposta_privada(c["id"], DM.format(titulo=titulo, link=it["link_afiliado"]))
+                        facebook.resposta_privada(c["id"], DM.format(titulo=titulo, link=vendas.do_canal(it, "fbdm")))
                         reg["formato"] = "texto"
                 else:
-                    lista = "\n\n".join(f"{num[i]} {it['nome'][:50]} — R$ {it['preco_fmt']}\n{it['link_afiliado']}"
+                    lista = "\n\n".join(f"{num[i]} {it['nome'][:50]} — R$ {it['preco_fmt']}\n{vendas.do_canal(it, 'fbdm')}"
                                          for i, it in enumerate(itens))
                     facebook.resposta_privada(c["id"], DM_TOP_TODOS.format(titulo="carrossel de achados", lista=lista))
                     reg["formato"] = "lista"
@@ -525,7 +525,7 @@ def responder_youtube(respondidos):
         nome = (c["autor"] or "").lstrip("@").split()[0] if c["autor"] else "tudo bem"
         try:
             youtube.responder_comentario(c["id"], RESPOSTA_YT.format(nome=nome, titulo=o.get("titulo", "produto"),
-                                                                   link=o["link_afiliado"]))
+                                                                   link=vendas.do_canal(o, "yt")))
             reg["dm"] = "ok"
             enviados += 1
             print(f"▶️  Link respondido no YouTube para {c['autor']} — {o.get('titulo')}")

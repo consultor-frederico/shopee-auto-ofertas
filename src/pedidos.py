@@ -14,7 +14,7 @@ import re
 import unicodedata
 from datetime import datetime, timedelta
 
-from . import config
+from . import config, vendas
 
 ARQ = config.PASTA_PERFIL / "pedidos.json"
 DIAS_JANELA = 7
@@ -246,7 +246,8 @@ def atender(fila):
                     reg["status"] = "nao_achou"
                 continue
             reg.update({"status": "achado_privado", "achado": {"titulo": o["nome"][:80],
-                        "preco_fmt": o["preco_fmt"], "link_afiliado": o["link_afiliado"]}})
+                        "preco_fmt": o["preco_fmt"], "link_afiliado": o["link_afiliado"],
+                        "id": o.get("id"), "loja_id": o.get("loja_id"), "plataforma": o.get("plataforma")}})
             entrou += 1
             print(f"🔒 Pedido sensível de @{reg['usuario']} achado (só no direct).")
             continue
@@ -294,7 +295,7 @@ def entregar(oferta, ig_id):
              f"por R$ {oferta['preco_fmt']}! Já está no feed do Garimpo VIP. Toque no botão para ver na Shopee 👇\n"
              f"(link de afiliado: você paga o mesmo e ajuda o {config.NOME_MARCA})")
     try:
-        instagram.resposta_privada_botao(ig_id, p["comentario"], texto, oferta["link_afiliado"], "🛒 Ver o achado")
+        instagram.resposta_privada_botao(ig_id, p["comentario"], texto, vendas.do_canal(oferta, "zebusca"), "🛒 Ver o achado")
         reg["status"] = "entregue"
         print(f"📩 Achado entregue no direct de @{p['usuario']}.")
     except Exception as e:
@@ -323,7 +324,7 @@ def entregar_privados(ig_id):
                  f"por R$ {a['preco_fmt']}! Toque no botão para ver na Shopee 👇\n"
                  f"(link de afiliado: você paga o mesmo e ajuda o {config.NOME_MARCA})")
         try:
-            instagram.resposta_privada_botao(ig_id, cid, texto, a["link_afiliado"], "🛒 Ver o achado")
+            instagram.resposta_privada_botao(ig_id, cid, texto, vendas.do_canal(a, "zebusca"), "🛒 Ver o achado")
             reg["status"] = "entregue"
             feitos += 1
             print(f"📩 Pedido sensível entregue no direct de @{reg['usuario']}.")

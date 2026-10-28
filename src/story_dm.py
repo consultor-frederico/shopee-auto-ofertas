@@ -5,7 +5,7 @@ Vale para todas as contas (Garimpo VIP e Ana). Roda dentro do responder, antes d
 import json
 from datetime import datetime, timedelta
 
-from . import config
+from . import config, vendas
 from .garimpar import BRT, FMT, agora, carregar_fila
 
 ARQ = config.PASTA_PERFIL / "story_dms.json"
@@ -80,12 +80,12 @@ def responder_stories(api, minha):
                     "recipient": {"id": autor},
                     "message": {"attachment": {"type": "template", "payload": {
                         "template_type": "button", "text": DM_BOTAO.format(titulo=o["titulo"], loja=loja)[:640],
-                        "buttons": [{"type": "web_url", "url": o["link_afiliado"], "title": TITULO_BOTAO}]}}}})
+                        "buttons": [{"type": "web_url", "url": vendas.do_canal(o, "igstory"), "title": TITULO_BOTAO}]}}}})
             except Exception as e:
                 print(f"   (botão recusado: {e}; enviando como texto)")
                 api._req("POST", f"{ig_id}/messages", json={
                     "recipient": {"id": autor},
-                    "message": {"text": DM.format(titulo=o["titulo"], link=o["link_afiliado"])}})
+                    "message": {"text": DM.format(titulo=o["titulo"], link=vendas.do_canal(o, "igstory"))}})
             enviados += 1
             print(f"📲 Story: link enviado no direct — {o['titulo']}")
         except Exception as e:

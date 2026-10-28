@@ -9,7 +9,7 @@ import sys
 
 import requests
 
-from . import marcas
+from . import marcas, vendas
 from .imagem import plataforma
 from .precos import aviso, tem_variacoes
 
@@ -66,7 +66,7 @@ def enviar_oferta(oferta, arquivo, formato):
     """Envia a arte (foto) ou o Reels (vídeo) com botão para a oferta."""
     loja = NOME_LOJA.get(plataforma(oferta), "loja")
     teclado = '{"inline_keyboard":[[{"text":"🛒 Ver oferta na %s","url":"%s"}]]}' % (
-        loja, oferta["link_afiliado"].replace('"', ""))
+        loja, vendas.do_canal(oferta, "tg").replace('"', ""))
     dados = {"chat_id": os.getenv("TELEGRAM_CHAT_ID").strip(), "caption": legenda(oferta),
              "parse_mode": "HTML", "reply_markup": teclado}
     with open(arquivo, "rb") as f:

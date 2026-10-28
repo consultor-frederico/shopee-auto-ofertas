@@ -16,7 +16,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from urllib.parse import quote
 
-from . import config, curadoria, imagem, marcas, precos, telegram
+from . import config, curadoria, imagem, marcas, precos, telegram, vendas
 from .garimpar import BRT, FMT, agora, carregar_fila, salvar_fila
 from .imagem import plataforma
 from .precos import tem_variacoes
@@ -113,7 +113,7 @@ def texto_whatsapp(o):
         partes += gancho + [""]
     prova = f"🏬 {marcas.texto_oficial(o)}" if marcas.eh_marca(o) else f"⭐ {nota} • {vendas}+ vendidos"
     partes += [preco, prova, "",
-               f"🛒 Compre na {loja}:", o["link_afiliado"], "",
+               f"🛒 Compre na {loja}:", vendas.do_canal(o, "zap"), "",
                f"_{precos.aviso(o)}_",
                "_Link de afiliado: você paga o mesmo e ajuda o Garimpo VIP 💛_"]
     return "\n".join(partes)

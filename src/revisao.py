@@ -7,6 +7,7 @@ O que confere:
   2. Se o código compila (todos os arquivos de src/).
   3. Instagram @garimpovip4: token válido, seguidores e quando saiu o último post.
   4. Fila: quantas ofertas estão esperando.
+  5. Vendas da Shopee: pedidos e comissão de ontem e dos últimos 7 dias, por canal.
 
 Teste: python -m src.revisao  (sem TELEGRAM_CHAT_PRIVADO, só mostra o resumo no log)
 """
@@ -143,6 +144,11 @@ def montar():
         ok_parte, linha = checar_instagram(arroba, segredo)
         tudo_ok &= ok_parte
         linhas.append(linha)
+    try:
+        from . import vendas
+        linhas.append(vendas.linha_status())
+    except Exception as e:   # só informa: não muda o "tudo certo"
+        linhas.append(f"💰 Vendas: não consegui ler o relatório da Shopee ({html.escape(str(e))[:150]})")
     # "Perfis parecidos" saiu do status em 27/10/2026 a pedido do Fred.
     for ok_parte, linha in (checar_fila(),):
         tudo_ok &= ok_parte
