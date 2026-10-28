@@ -108,6 +108,14 @@ def checar_instagram(arroba, segredo):
     ultimo = datetime.strptime(midias[0]["timestamp"], "%Y-%m-%dT%H:%M:%S%z").astimezone(BRT)
     horas = (datetime.now(BRT) - ultimo).total_seconds() / 3600
     linha = f"{texto}; último post {ultimo:%d/%m %H:%M}"
+    try:   # toques no link da bio (página garimpovipbr.github.io no Garimpo VIP)
+        hoje = datetime.now(BRT).replace(hour=0, minute=0, second=0, microsecond=0)
+        ontem = metricas.toques_link(token, hoje - timedelta(days=1), hoje)
+        semana = metricas.toques_link(token, hoje - timedelta(days=7), hoje)
+        linha += f"\n   🔗 toques no link da bio: ontem {ontem}, 7 dias {semana}"
+    except Exception as e:
+        print(f"::warning::Toques no link de {arroba}: {e}")
+        linha += "\n   🔗 toques no link da bio: sem dado"
     if horas > 24:
         return False, f"⚠️ {linha} — mais de 24h sem postar"
     return True, f"✅ {linha}"

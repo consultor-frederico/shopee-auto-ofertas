@@ -72,6 +72,13 @@ def insights_conta(token, agora):
     return resultado, erros
 
 
+def toques_link(token, inicio, fim):
+    """Toques nos links da bio (profile_links_taps) entre dois datetimes."""
+    corpo = _get(token, "me/insights", {"metric": "profile_links_taps", "period": "day", "metric_type": "total_value",
+                                         "since": int(inicio.timestamp()), "until": int(fim.timestamp())})
+    return sum(((d.get("total_value") or {}).get("value") or 0) for d in corpo.get("data") or [])
+
+
 def insights_post(token, media_id):
     """Métricas de um post. Se a lista completa falhar, tenta só as básicas."""
     for lista in (METRICAS_POST, ["reach", "saved"]):
