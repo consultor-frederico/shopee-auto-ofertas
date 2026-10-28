@@ -257,7 +257,7 @@ def _circulo(o, foto, pos):
 
 
 # ================================================================== slides finais
-def final_garimpo(v, n, n_variante):
+def final_garimpo(v, n, n_variante, youtube=False):
     from . import top
     tipo = "semana" if v % N_FINAL_GARIMPO == 0 else "mes"   # laranja (saída da mina) ou azul (noite)
     tm = top.TEMAS[tipo]
@@ -268,7 +268,8 @@ def final_garimpo(v, n, n_variante):
     d = ImageDraw.Draw(im)
     es = tm["borda"]
     top._ctext(d, 830, FINAIS_GARIMPO[n_variante % 3], top._f(66), top.AM, 5, es)
-    for i, ln in enumerate([f"Comenta  QUERO + o número (1 a {n})", "que o Zé te manda o link no direct"]):
+    fim = "que o Zé te responde aqui" if youtube else "que o Zé te manda o link no direct"
+    for i, ln in enumerate([f"Comenta  QUERO + o número (1 a {n})", fim]):
         top._ctext(d, 935 + i * 60, ln, top._f(42), top.BR, 3, es)
     t = f"Segue o @{config.ARROBA.lstrip('@')} pra não perder o próximo"
     f = top._f(30)

@@ -234,8 +234,8 @@ def descricao_short(itens, legenda_ig):
                       for i, it in enumerate(itens))
     tags = " ".join(t for t in legenda_ig.split() if t.startswith("#"))
     return (f"O Zé garimpou {len(itens)} achados com nota alta e muita venda:\n\n{lista}\n\n"
-            f"🔗 Os links estão no Instagram @{config.ARROBA}: comenta QUERO + o número no carrossel que o Zé "
-            f"manda no direct. Ofertas o dia todo no Telegram: t.me/garimpovipofertas\n\n"
+            f"👇 Comenta QUERO + o número aqui que o Zé te responde. Ou comenta no carrossel do Instagram "
+            f"@{config.ARROBA} que o Zé manda o link no direct. Ofertas o dia todo no Telegram: t.me/garimpovipofertas\n\n"
             "Preços conferidos na hora do post, podem mudar na loja. Links de afiliado: você paga o mesmo.\n\n"
             f"{tags} #shorts #achadinhos")
 
@@ -291,7 +291,9 @@ def gerar(itens, pasta):
     if not ANA and os.getenv("ACHADOS_SHORT", "1") != "0":
         try:
             short = f"achados-{marca}-short.mp4"
-            gerar_short(pasta, arqs, pasta / short)
+            fim_yt = f"achados-{marca}-final-yt.jpg"   # no YouTube não tem direct: o slide final muda
+            artes.final_garimpo(v, len(itens), v, youtube=True).save(pasta / fim_yt, quality=92)
+            gerar_short(pasta, arqs[:-1] + [fim_yt], pasta / short)
         except Exception as e:
             print(f"::warning::Short do YouTube não saiu ({e}); o carrossel sai mesmo assim.")
             short = None

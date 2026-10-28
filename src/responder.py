@@ -536,6 +536,12 @@ def responder_youtube(respondidos):
     return enviados
 
 
+RESPOSTA_YT_SEM_LINK = ("Oi, {nome}! 😊 O {n}º é o {titulo}. O link tá no Instagram @{arroba}: comenta QUERO {n} "
+                        "no carrossel de achados que o Zé te manda no direct na hora! 🤠 "
+                        "Ofertas o dia todo no nosso Telegram (link no perfil do canal).")
+RESPOSTA_YT_SEM_LINK_TODOS = ("Oi, {nome}! 😊 Os links tão no Instagram @{arroba}: comenta QUERO no carrossel de achados "
+                              "que o Zé te manda todos no direct na hora! 🤠 "
+                              "Ofertas o dia todo no nosso Telegram (link no perfil do canal).")
 RESPOSTA_YT_LISTA = ("Oi, {nome}! 😊 Os links dos achados deste vídeo:\n{lista}\n"
                      "Corre que preço de oferta muda rápido! Mais achados no Telegram: t.me/garimpovipofertas\n"
                      f"(links de afiliado: você paga o mesmo e ajuda o {config.NOME_MARCA})")
@@ -548,13 +554,13 @@ def responder_youtube_carrossel(c, info, respondidos):
     if not n and not so_pediu_link(c["texto"]):
         return 0
     nome = (c["autor"] or "").lstrip("@").split()[0] if c["autor"] else "tudo bem"
+    # sem link: o YouTube esconde resposta automática com link (vai para "possível spam")
     if n:
         it = itens[n - 1]
-        texto = RESPOSTA_YT.format(nome=nome, titulo=_curto(it.get("titulo") or it["nome"]), link=it["link_afiliado"])
+        texto = RESPOSTA_YT_SEM_LINK.format(nome=nome, titulo=_curto(it.get("titulo") or it["nome"]), n=n,
+                                            arroba=config.ARROBA.lstrip("@"))
     else:
-        lista = "\n".join(f"{i}) {_curto(it.get('titulo') or it['nome'])} — R$ {it['preco_fmt']}: {it['link_afiliado']}"
-                          for i, it in enumerate(itens, 1))
-        texto = RESPOSTA_YT_LISTA.format(nome=nome, lista=lista)
+        texto = RESPOSTA_YT_SEM_LINK_TODOS.format(nome=nome, arroba=config.ARROBA.lstrip("@"))
     reg = {"post": c["video"], "oferta": itens[n - 1]["id"] if n else "top", "usuario": c["autor"],
            "autor": c["autor_canal"], "em": agora().strftime(FMT), "rede": "youtube", "top": n or "todos"}
     try:
