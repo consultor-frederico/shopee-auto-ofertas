@@ -1,5 +1,5 @@
-"""Post de chamada no Instagram (terças e sextas): para o canal do Telegram ou para a vitrine da bio
-(garimpovipbr.github.io), alternando entre os dois (CHAMADA_ALVO=telegram|pagina fixa um deles).
+"""Post de chamada no Instagram (terças e sextas) para a vitrine da bio (garimpovipbr.github.io), com as lojas.
+A chamada antiga do canal do Telegram volta com CHAMADA_ALVO=telegram.
 
   python -m src.chamada preparar   → gera a arte em site/ (vai para o GitHub Pages)
   python -m src.chamada publicar   → publica no Instagram
@@ -40,22 +40,21 @@ LEGENDAS = [
 ]
 
 # Chamada para a vitrine da bio: sem número de achados (a página mostra só os mais recentes) e sem promessa de preço.
-TITULOS_PAGINA = [
-    ("ACHADOS DE HOJE", "NUM LINK SÓ"),
-    ("PERDEU UM ACHADO?", "TÁ NA VITRINE"),
-    ("VÁRIAS LOJAS", "NUM LUGAR SÓ"),
-]
+TITULOS_PAGINA = [("VÁRIAS LOJAS", "NUM LUGAR SÓ")]
+# lojas que o robô garimpa hoje (Shopee, AliExpress e as marcas da Awin em src/marcas.py)
+LOJAS = ["SHOPEE", "ALIEXPRESS", "ARNO", "SHARK NINJA", "VX CASE"]
 LEGENDAS_PAGINA = [
-    "🔗 Todos os achados de hoje num lugar só: a vitrine do Garimpo VIP junta o que o Zé garimpou, "
-    "com foto e link direto pra loja. Sem precisar comentar nada. ⛏️\n\n"
+    "🤠 Shopee, AliExpress, Arno, Shark Ninja e VX Case num lugar só! Na vitrine do Garimpo VIP ficam os "
+    "achados mais recentes do Zé, com foto e o link pronto pra tocar. ⛏️\n\n"
     "👉 Toque no link da bio: garimpovipbr.github.io",
-    "🛍️ Perdeu algum achado do Zé no meio do feed? Tá tudo na vitrine do Garimpo VIP, "
-    "atualizada todo dia.\n\n👉 Entre pelo link da bio.",
-    "🤠 Shopee e outras lojas num lugar só! Na vitrine do Garimpo VIP ficam os achados mais recentes do Zé, "
-    "com o link pronto pra tocar.\n\n👉 Link na bio: garimpovipbr.github.io",
+    "🛍️ Perdeu algum achado do Zé no meio do feed? Tá tudo na vitrine do Garimpo VIP, de várias lojas, "
+    "atualizada todo dia. E de lá você entra no nosso canal do Telegram também.\n\n👉 Entre pelo link da bio.",
+    "🔗 Um link só pra tudo que o Zé garimpa: Shopee, AliExpress e as marcas parceiras, sem precisar "
+    "comentar nada.\n\n👉 Link na bio: garimpovipbr.github.io",
 ]
 FOTO_ZE = config.RAIZ / "assets" / "ze" / "ze_joinha_foto.jpg"
 
+HASHTAGS_PAGINA = "#achadinhos #achadinhosshopee #aliexpress #ofertasdodia #garimpovip"
 HASHTAGS = "#cupomshopee #achadinhos #achadinhosshopee #cupomdedesconto #garimpovip"
 
 
@@ -87,7 +86,7 @@ def gerar_arte(destino, variante, n_semana, alvo="telegram"):
     except Exception:
         pass
     # bilhete (cupom) estilizado
-    x0, y0, x1, y1 = 90, 350, L - 90, 900
+    x0, y0, x1, y1 = (90, 330, L - 90, 800) if pagina else (90, 350, L - 90, 900)
     d.rounded_rectangle([x0, y0, x1, y1], 40, fill=ESCURO)
     for cx in (x0, x1):
         d.ellipse([cx - 45, (y0 + y1) // 2 - 45, cx + 45, (y0 + y1) // 2 + 45], fill="#EEEDE9")
@@ -103,14 +102,29 @@ def gerar_arte(destino, variante, n_semana, alvo="telegram"):
         return _fonte(tam, peso)
     f1, f2 = caber(t1, 64, "Black"), caber(t2, 52, "ExtraBold")
     cx = (x0 + corte) / 2
-    d.text((cx - d.textlength(t1, font=f1) / 2, y0 + 160), t1, font=f1, fill=BRANCO)
-    d.text((cx - d.textlength(t2, font=f2) / 2, y0 + 250), t2, font=f2, fill=DOURADO_CLARO)
+    dy = -50 if pagina else 0
+    d.text((cx - d.textlength(t1, font=f1) / 2, y0 + 160 + dy), t1, font=f1, fill=BRANCO)
+    d.text((cx - d.textlength(t2, font=f2) / 2, y0 + 250 + dy), t2, font=f2, fill=DOURADO_CLARO)
     fp = _fonte(38, "SemiBold")
     if pagina:
         sub = "atualizada todo dia"
     else:
         sub = f"+{n_semana} achadinhos esta semana" if n_semana >= 20 else "achadinhos o dia todo"
-    d.text((cx - d.textlength(sub, font=fp) / 2, y0 + 350), sub, font=fp, fill="#CFC6B8")
+    d.text((cx - d.textlength(sub, font=fp) / 2, y0 + 350 + dy), sub, font=fp, fill="#CFC6B8")
+    y_rodape = 990
+    if pagina:   # as lojas em etiquetas, em duas linhas abaixo do bilhete
+        fl = _fonte(34, "ExtraBold")
+        linhas = [LOJAS[:3], LOJAS[3:]]
+        yy = y1 + 40
+        for linha in linhas:
+            larg = [d.textlength(t, font=fl) + 56 for t in linha]
+            x = (L - sum(larg) - 18 * (len(linha) - 1)) / 2
+            for t, w in zip(linha, larg):
+                d.rounded_rectangle([x, yy, x + w, yy + 64], 32, outline=DOURADO, width=4, fill="#F7F3EA")
+                d.text((x + 28, yy + 12), t, font=fl, fill=ESCURO)
+                x += w + 18
+            yy += 82
+        y_rodape = yy + 20
     if pagina and FOTO_ZE.exists():   # o Zé num medalhão redondo, com borda dourada
         r = 92
         zx, zy = x1 - 155, (y0 + y1) // 2   # longe do recorte redondo da borda do bilhete
@@ -127,9 +141,9 @@ def gerar_arte(destino, variante, n_semana, alvo="telegram"):
     # rodapé
     f4, f5 = _fonte(50, "ExtraBold"), _fonte(40, "SemiBold")
     t = "ENTRE PELO LINK DA BIO"
-    d.text(((L - d.textlength(t, font=f4)) / 2, 990), t, font=f4, fill=ESCURO)
+    d.text(((L - d.textlength(t, font=f4)) / 2, y_rodape), t, font=f4, fill=ESCURO)
     link = config.PAGINA_BIO if pagina else CANAL
-    d.text(((L - d.textlength(link, font=f5)) / 2, 1065), link, font=f5, fill=CINZA)
+    d.text(((L - d.textlength(link, font=f5)) / 2, y_rodape + 72), link, font=f5, fill=CINZA)
     d.rectangle([0, A - 130, L, A], fill=ESCURO)
     partes = ([("VITRINE ", BRANCO), ("GARIMPO VIP", DOURADO_CLARO), (": ACHADOS DO DIA", BRANCO)] if pagina
               else [("CANAL ", BRANCO), ("GARIMPO VIP", DOURADO_CLARO), (" NO TELEGRAM", BRANCO)])
@@ -143,11 +157,10 @@ def gerar_arte(destino, variante, n_semana, alvo="telegram"):
 
 
 def alvo_da_vez(variante):
-    """Alterna Telegram e vitrine da bio a cada chamada; CHAMADA_ALVO=telegram|pagina fixa um deles."""
-    fixo = (os.getenv("CHAMADA_ALVO") or "").strip().lower()
-    if fixo in ("telegram", "pagina"):
-        return fixo
-    return "pagina" if variante % 2 == 0 and config.PAGINA_BIO else "telegram"
+    """Desde 28/10/2026 só a chamada da vitrine (o Telegram já está dentro da página). CHAMADA_ALVO=telegram volta."""
+    if (os.getenv("CHAMADA_ALVO") or "").strip().lower() == "telegram" or not config.PAGINA_BIO:
+        return "telegram"
+    return "pagina"
 
 
 def preparar():
@@ -166,7 +179,7 @@ def preparar():
     alvo = alvo_da_vez(variante)
     gerar_arte(pasta / nome, variante, ofertas_na_semana(fila), alvo)
     legendas = LEGENDAS_PAGINA if alvo == "pagina" else LEGENDAS
-    legenda = legendas[(variante // 2) % len(legendas)] + "\n\n" + HASHTAGS
+    legenda = legendas[variante % len(legendas)] + "\n\n" + (HASHTAGS_PAGINA if alvo == "pagina" else HASHTAGS)
     ARQ_PROX.write_text(json.dumps({"arquivo": f"midia/{nome}", "legenda": legenda}), encoding="utf-8")
     print(f"🎬 Chamada preparada ({alvo}, variante {variante % len(TITULOS)}).")
     _saida("tem_post", "true")
