@@ -23,6 +23,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      actions: write
       pages: write
       id-token: write
     environment:
@@ -59,6 +60,12 @@ jobs:
           SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         run: python -m src.kits preparar $TEMA
+
+      - name: Sem kit hoje → carrossel normal no lugar
+        if: ${{ !inputs.so_previa && steps.prep.outputs.tem_post != 'true' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X POST "repos/${{ github.repository }}/actions/workflows/achados.yml/dispatches" -f ref=main
 
       - name: Enviar mídia ao GitHub Pages
         if: steps.prep.outputs.tem_post == 'true'

@@ -45,42 +45,50 @@ TEMAS = {
     "banheiro": {"titulo": "BANHEIRO ORGANIZADO", "teto": 80, "meses": [],
                  "gancho": "Seu banheiro organizado com {n} achados até R$ {teto}",
                  "termos": ["organizador pia banheiro", "dispenser sabonete", "porta escova de dente",
-                            "prateleira canto box", "tapete antiderrapante banheiro", "toalheiro adesivo"],
+                            "prateleira canto box", "tapete antiderrapante banheiro", "toalheiro adesivo",
+                            "cesto de roupa", "porta shampoo parede", "lixeira banheiro"],
                  "hashtags": "#banheiroorganizado #organizacaodecasa #achadinhosdecasa"},
     "cozinha": {"titulo": "COZINHA PRÁTICA", "teto": 80, "meses": [],
                 "gancho": "Cozinha prática: {n} achados até R$ {teto} que facilitam o dia a dia",
                 "termos": ["organizador de geladeira", "fatiador de legumes", "porta tempero giratório",
-                           "escorredor de louça dobrável", "mini processador elétrico", "pote hermético"],
+                           "escorredor de louça dobrável", "mini processador elétrico", "pote hermético",
+                           "dispenser de detergente", "suporte papel toalha"],
                 "hashtags": "#cozinhapratica #utensiliosdecozinha #achadinhosdecasa"},
     "amigo-secreto": {"titulo": "AMIGO SECRETO ATÉ R$ 50", "teto": 50, "meses": [11, 12],
                       "gancho": "Amigo secreto até R$ 50: {n} presentes que ninguém vai querer trocar",
                       "termos": ["caneca térmica", "luminária criativa", "umidificador de ar", "garrafa térmica",
-                                 "massageador de pescoço", "caixa de som bluetooth"],
+                                 "massageador de pescoço", "caixa de som bluetooth",
+                                 "kit vinho", "copo térmico"],
                       "hashtags": "#amigosecreto #presentecriativo #ideiasdepresente"},
     "natal": {"titulo": "PRESENTES DE NATAL", "teto": 120, "meses": [11, 12],
               "gancho": "Presentes de Natal até R$ {teto}: {n} ideias pra riscar da lista",
               "termos": ["projetor de galáxia", "massageador elétrico", "fone bluetooth", "kit ferramentas",
-                         "luminária de lua", "mini câmera instantânea"],
+                         "luminária de lua", "mini câmera instantânea",
+                         "relógio digital despertador", "kit churrasco"],
               "hashtags": "#presentedenatal #natal #ideiasdepresente"},
     "festa": {"titulo": "FESTA DE FIM DE ANO", "teto": 80, "meses": [11, 12],
               "gancho": "Festa de fim de ano: {n} achados até R$ {teto} pra deixar tudo pronto",
               "termos": ["cortina de led", "pisca pisca led", "taça acrílico", "balde de gelo",
-                         "toalha de mesa natal", "enfeite de natal"],
+                         "toalha de mesa natal", "enfeite de natal",
+                         "luminária de natal", "porta guardanapo"],
               "hashtags": "#festadefimdeano #decoracaodenatal #ceiadenatal"},
     "pet": {"titulo": "KIT DO PET", "teto": 80, "meses": [],
             "gancho": "Kit do pet: {n} achados até R$ {teto} pro seu bichinho",
             "termos": ["fonte bebedouro gato", "removedor de pelos", "comedouro elevado",
-                       "brinquedo interativo gato", "cama pet", "escova para cachorro"],
+                       "brinquedo interativo gato", "cama pet", "escova para cachorro",
+                       "arranhador gato", "guia retrátil"],
             "hashtags": "#petlovers #cachorro #gato"},
     "carro": {"titulo": "CARRO EM ORDEM", "teto": 80, "meses": [],
               "gancho": "Carro em ordem: {n} achados até R$ {teto} pra quem vive no trânsito",
               "termos": ["organizador banco carro", "aspirador automotivo", "suporte celular carro",
-                         "lixeira para carro", "kit limpeza automotiva", "carregador veicular"],
+                         "lixeira para carro", "kit limpeza automotiva", "carregador veicular",
+                         "organizador porta malas", "protetor solar parabrisa"],
               "hashtags": "#acessoriosautomotivos #carro #dicasdecarro"},
     "home-office": {"titulo": "HOME OFFICE", "teto": 100, "meses": [],
                     "gancho": "Home office: {n} achados até R$ {teto} pra trabalhar melhor em casa",
                     "termos": ["suporte para notebook", "luminária de mesa led", "organizador de mesa",
-                               "mouse pad grande", "apoio para os pés", "suporte de monitor"],
+                               "mouse pad grande", "apoio para os pés", "suporte de monitor",
+                               "organizador de cabos", "luminária usb"],
                     "hashtags": "#homeoffice #escritorioemcasa #setup"},
 }
 
@@ -137,11 +145,14 @@ def melhor_do_termo(termo, teto, fila, ja, tema_titulo=""):
     """O melhor produto que é mesmo o buscado. `ja` = itens já no kit (para não repetir produto nem família)."""
     from . import busca_ze, shopee, variedade
     nos = []
-    for pagina, ordem in ((1, 1), (1, 2)):
-        try:
-            nos += shopee.buscar_ofertas(termo, pagina, 50, ordem)
-        except Exception as e:
-            print(f"⚠️  Shopee '{termo}' (ordem {ordem}): {e}")
+    for pagina, ordem in ((1, 1), (2, 1), (1, 2)):
+        for tentativa in (1, 2):   # a Shopee às vezes devolve "System Error" e responde na segunda
+            try:
+                nos += shopee.buscar_ofertas(termo, pagina, 50, ordem)
+                break
+            except Exception as e:
+                print(f"⚠️  Shopee '{termo}' (página {pagina}, ordem {ordem}, tentativa {tentativa}): {e}")
+                time.sleep(3)
     vistos, bons = set(), []
     familias = {variedade.familia(x) for x in ja}
     for n in nos:
@@ -335,11 +346,19 @@ def preparar(tema=None):
     if not instagram.tem_token():
         print("⏸️  Token do Instagram ausente — kit em espera.")
         return
-    tema = tema if tema in TEMAS else tema_da_vez()
-    print(f"🧺 Kit da vez: {TEMAS[tema]['titulo']}")
-    itens = escolher(tema)
-    if len(itens) < MINIMO:
-        print(f"⚠️  Só {len(itens)} produtos bons para o kit {tema} — não vale postar.")
+    # se o tema da vez não fechar o kit, tenta os próximos (até 3 temas)
+    primeiro = tema if tema in TEMAS else tema_da_vez()
+    usados = _carregar_estado()["temas"]
+    outros = sorted((t for t in TEMAS if t != primeiro and (not TEMAS[t]["meses"] or agora().month in TEMAS[t]["meses"])),
+                    key=lambda t: usados.get(t, ""))
+    for tema in [primeiro] + outros[:2]:
+        print(f"🧺 Kit da vez: {TEMAS[tema]['titulo']}")
+        itens = escolher(tema)
+        if len(itens) >= MINIMO:
+            break
+        print(f"⚠️  Só {len(itens)} produtos bons para o kit {tema} — tentando outro tema.")
+    else:
+        print("⚠️  Nenhum kit fechou hoje — sai o carrossel normal no lugar.")
         return
     pasta = PASTA_SITE / "midia" / "kits"
     (PASTA_SITE / ".nojekyll").parent.mkdir(parents=True, exist_ok=True)
