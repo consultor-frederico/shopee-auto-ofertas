@@ -45,6 +45,10 @@ jobs:
             git commit -qm "🖼️ Fotos do teste do radar" && git push -f origin radar-fotos
             exit 0
           fi
+          if [ "$TERMOS" = "vendas" ]; then   # relatório de pedidos e link marcado por canal (não grava)
+            python -u -m src.vendas
+            exit 0
+          fi
           if [ "$TERMOS" = "radar" ] || [ "$TERMOS" = "radar ana" ]; then   # teste do radar de virais (não grava)
             [ "$TERMOS" = "radar ana" ] && export PERFIL=ana
             export RADAR_LISTAR_FOTOS=1
@@ -53,7 +57,7 @@ jobs:
           fi
           python -u -m src.teste_shopee 2>&1 | tee data/relatorios/teste_shopee.txt
       - name: Salvar relatório
-        if: inputs.termos != 'radar fotos'
+        if: inputs.termos != 'radar fotos' && inputs.termos != 'vendas'
         run: |
           git config user.name "GarimpoBot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
