@@ -300,6 +300,32 @@ DM_NADA = ("Oi! 🤠 Aqui é o Zé Garimpo. Cavei \"{t}\" na Shopee, mas não ac
 if ANA:
     DM_NADA = ("Oi! 💚 Aqui é a Ana. Procurei \"{t}\" na Shopee, mas não achei nada bom o bastante 😕 "
                "Me manda com outras palavras (ex.: \"bolsa transversal\", \"escova secadora\") que eu tento de novo!")
+# "quero" solto no direct (sem dizer qual achado): pergunta qual; a resposta vira busca ("Bora garimpar")
+DM_QUAL = ("Oi! 🤠 Aqui é o Zé Garimpo. Bora garimpar! ⛏️\n\nQual achado você quer? Me manda o nome do produto "
+           "(ex.: \"câmera wi-fi\", \"kit lavabo\") que eu te mando o link aqui.\n\n"
+           "Dica: comentando QUERO no post, o link chega sozinho no direct 😉")
+if ANA:
+    DM_QUAL = ("Oi, amiga! 💚 Bora garimpar? Qual achado você quer? Me manda o nome do produto "
+               "(ex.: \"bolsa transversal\", \"escova secadora\") que eu te mando o link aqui.\n\n"
+               "Dica: comentando QUERO no post, o link chega sozinho no direct 😉")
+
+
+def _avisar_fred(reg):
+    """Mensagem do direct que o robô não respondeu → alerta no Telegram privado do Fred."""
+    import os
+    from . import telegram
+    chat = os.getenv("TELEGRAM_CHAT_PRIVADO", "").strip()
+    if not (chat and os.getenv("TELEGRAM_BOT_TOKEN", "").strip()):
+        return
+    from datetime import datetime
+    ate = (datetime.strptime(reg["em"], _fmt()) + timedelta(hours=24)).strftime("%d/%m %H:%M")
+    quem = f"@{reg['usuario']}" if reg.get("usuario") else "alguém"
+    texto = (f"📩 Direct do {config.ARROBA} sem resposta do robô\n\n"
+             f"{quem}: \"{(reg.get('texto') or '')[:300]}\"\n\nResponda você até {ate} (depois o Instagram fecha a conversa).")
+    try:
+        telegram._api("sendMessage", data={"chat_id": chat, "text": texto, "disable_web_page_preview": "true"})
+    except Exception as e:
+        print(f"⚠️  Alerta do direct no Telegram falhou: {e}")
 
 
 def _quando(txt):
@@ -483,7 +509,23 @@ def rodar_dms(api, minha):
         reg = {"autor": autor, "usuario": (ultima.get("from") or {}).get("username", ""), "texto": texto,
                "termo": t, "em": agora.strftime(_fmt())}
         if not t:
-            reg["status"] = "ignorado"
+            from .responder import pediu_link
+            if pediu_link(texto) and not acabou_de_perguntar:   # "quero" solto: pergunta qual achado
+                try:
+                    r = api._req("POST", f"{ig_id}/messages", json={"recipient": {"id": autor},
+                                                                    "message": {"text": DM_QUAL}})
+                    if (r or {}).get("message_id"):
+                        enviados_robo.add(r["message_id"])
+                    reg["status"] = "perguntou_qual"
+                    feitos += 1
+                    print("📩 Direct: \"quero\" solto → perguntei qual achado.")
+                except Exception as e:
+                    reg["status"] = f"erro: {str(e)[:200]}"
+                    print(f"::warning::Direct: não consegui perguntar qual achado: {e}")
+                    _avisar_fred(reg)
+            else:
+                reg["status"] = "ignorado"
+                _avisar_fred(reg)
             feitos_ids[ultima["id"]] = reg
             continue
         try:
@@ -506,6 +548,7 @@ def rodar_dms(api, minha):
         except Exception as e:
             reg["status"] = f"erro: {str(e)[:200]}"
             print(f"::warning::Busca do Zé no direct: não consegui responder: {e}")
+            _avisar_fred(reg)
         feitos_ids[ultima["id"]] = reg
     limite = (agora - timedelta(days=30)).strftime(_fmt())
     d["dms"] = {k: v for k, v in feitos_ids.items() if v.get("em", "") >= limite}
