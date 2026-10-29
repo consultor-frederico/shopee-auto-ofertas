@@ -4,7 +4,8 @@
 <title>Garimpo VIP · WhatsApp</title>
 <!-- Kit do Canal do WhatsApp: um toque compartilha a arte com o texto já na legenda.
      ?id=<oferta>: arte e texto em data/zap/<id>.jpg|.txt (o workflow 17 grava).
-     ?d=<nome>: vídeo de divulgação em assets/divulgacao/<nome>.mp4|.txt (workflow 27). -->
+     ?d=<nome>: vídeo de divulgação em assets/divulgacao/<nome>.mp4|.txt (workflow 27);
+     &m=<video>: usa assets/divulgacao/<video>.mp4 com o texto de <nome>. -->
 <style>
 body{font-family:system-ui,sans-serif;max-width:520px;margin:0 auto;padding:16px;background:#F3EFE8;color:#24150A;line-height:1.5}
 img,video{width:100%;border-radius:12px;display:block}
@@ -28,6 +29,8 @@ const raiz = "https://raw.githubusercontent.com/consultor-frederico/shopee-auto-
 const ehVideo = qs.has("d");
 const id = (ehVideo ? qs.get("d") : qs.get("id")) || "";
 const base = raiz + (ehVideo ? "assets/divulgacao/" : "data/zap/") + id;
+const midiaId = ehVideo && /^[\w-]+$/.test(qs.get("m") || "") ? qs.get("m") : id;
+const baseMidia = raiz + (ehVideo ? "assets/divulgacao/" : "data/zap/") + midiaId;
 const ext = ehVideo ? ".mp4" : ".jpg", tipo = ehVideo ? "video/mp4" : "image/jpeg";
 const $ = s => document.getElementById(s);
 let texto = "", foto = null;
@@ -35,7 +38,7 @@ let texto = "", foto = null;
 async function carregar(tentativa) {
   if (!/^[\w-]+$/.test(id)) { $("aviso").textContent = "Link sem oferta."; return; }
   try {
-    const [t, f] = await Promise.all([fetch(base + ".txt", {cache: "no-store"}), fetch(base + ext, {cache: "no-store"})]);
+    const [t, f] = await Promise.all([fetch(base + ".txt", {cache: "no-store"}), fetch(baseMidia + ext, {cache: "no-store"})]);
     if (!t.ok || !f.ok) throw new Error("ainda não publicado");
     texto = await t.text();
     foto = new File([await f.blob()], "garimpo-" + id + ext, {type: tipo});
