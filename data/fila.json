@@ -2213,7 +2213,14 @@
       "status": "pendente",
       "criado_em": "2026-10-29 11:55:00",
       "postado_em": "",
-      "id_post": ""
+      "id_post": "",
+      "whatsapp_analise": {
+        "status": "APROVADO",
+        "justificativa": "Blocos magnéticos permitem construções criativas e pouco comuns, estimulando aprendizado e oferecendo efeito surpresa ao montar diferentes formas.",
+        "diferencial": "Peças magnéticas que se conectam sem encaixe tradicional"
+      },
+      "preco_conferido_em": "29/10 às 12:01",
+      "whatsapp_tentativas": 1
     },
     "23099042657": {
       "id": "23099042657",
@@ -5717,7 +5724,13 @@
       "status": "pendente",
       "criado_em": "2026-10-29 11:55:31",
       "postado_em": "",
-      "id_post": ""
+      "id_post": "",
+      "whatsapp_analise": {
+        "status": "REPROVADO",
+        "justificativa": "Seladora de sacos plásticos é um produto comum e já amplamente disponível; não apresenta inovação ou efeito surpresa significativo.",
+        "diferencial": ""
+      },
+      "whatsapp": "reprovado"
     },
     "58251285246": {
       "id": "58251285246",
@@ -9851,7 +9864,13 @@
       "status": "pendente",
       "criado_em": "2026-10-29 11:55:26",
       "postado_em": "",
-      "id_post": ""
+      "id_post": "",
+      "whatsapp_analise": {
+        "status": "REPROVADO",
+        "justificativa": "Descascador elétrico de frutas é um utensílio já encontrado em diversas lojas, sem diferencial claro ou originalidade.",
+        "diferencial": ""
+      },
+      "whatsapp": "reprovado"
     },
     "57117755914": {
       "id": "57117755914",
@@ -12068,7 +12087,13 @@
       "status": "pendente",
       "criado_em": "2026-10-29 11:55:06",
       "postado_em": "",
-      "id_post": ""
+      "id_post": "",
+      "whatsapp_analise": {
+        "status": "REPROVADO",
+        "justificativa": "Cama túnel para gatos é um item padrão no mercado pet, sem inovação notável ou efeito surpresa.",
+        "diferencial": ""
+      },
+      "whatsapp": "reprovado"
     },
     "22799202807": {
       "id": "22799202807",
@@ -21958,12 +21983,13 @@
       "postado_em": "",
       "id_post": "",
       "whatsapp_analise": {
-        "status": "APROVADO",
-        "justificativa": "Combina dois brinquedos interativos diferentes (caranguejo que se move e girafa que dança ao som) em um único kit, oferecendo surpresa e diversão incomuns para crianças.",
-        "diferencial": "Brinquedo duplo interativo com movimentos e música integrados"
+        "status": "REPROVADO",
+        "justificativa": "Brinquedos de caranguejo e girafa são versões típicas de brinquedos sensoriais já comuns no mercado, sem diferenciação evidente.",
+        "diferencial": ""
       },
       "preco_conferido_em": "29/10 às 09:01",
-      "whatsapp_tentativas": 1
+      "whatsapp_tentativas": 1,
+      "whatsapp": "reprovado"
     },
     "ar40352632361": {
       "id": "ar40352632361",
@@ -22119,7 +22145,13 @@
       "status": "pendente",
       "criado_em": "2026-10-29 11:54:43",
       "postado_em": "",
-      "id_post": ""
+      "id_post": "",
+      "whatsapp_analise": {
+        "status": "REPROVADO",
+        "justificativa": "Espelho com LED e botão touch é um item bastante difundido; não traz inovação suficiente para se destacar.",
+        "diferencial": ""
+      },
+      "whatsapp": "reprovado"
     },
     "22694816619": {
       "id": "22694816619",
@@ -22157,7 +22189,12 @@
       "status": "pendente",
       "criado_em": "2026-10-29 11:54:51",
       "postado_em": "",
-      "id_post": ""
+      "id_post": "",
+      "whatsapp_analise": {
+        "status": "APROVADO",
+        "justificativa": "Tripé com auto‑rastreamento AI 360° e integração MagSafe traz tecnologia avançada pouco encontrada em acessórios convencionais, gerando curiosidade.",
+        "diferencial": "Auto‑rastreamento AI e compatibilidade MagSafe"
+      }
     },
     "ar40352632373": {
       "id": "ar40352632373",
