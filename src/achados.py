@@ -1,5 +1,5 @@
-"""🛍️ Carrossel de Achados — vários produtos num post só, sempre abrindo com um vídeo do Zé (Garimpo VIP)
-ou da Ana (Ana Novo Achados).
+"""🛍️ Carrossel de Achados — vários produtos num post só, abrindo com um vídeo do Zé (Garimpo VIP) ou da Ana
+(Ana Novo Achados). No Garimpo, o carrossel da tarde abre com a capa de produto (ver capa_de_produto).
 
 Slides (1080x1350): 1) vídeo deles com o título por cima → 2) a 5) produtos numerados (a mesma arte do
 feed de cada conta, com o número) → último) chamada para comentar e seguir.
@@ -275,15 +275,34 @@ def _curto(nome, n=55):
 
 
 # ---------------------------------------------------------------- preparar / publicar
+def capa_de_produto():
+    """Garimpo VIP (30/10/2026, ok do Fred): o carrossel da manhã abre com o vídeo do Zé e o da tarde com a capa de
+    produto (Zé pequeno embaixo). ACHADOS_CAPA=produto ou ACHADOS_CAPA=ze força um dos dois."""
+    if ANA:
+        return False
+    forcada = (os.getenv("ACHADOS_CAPA") or "").strip().lower()
+    if forcada in ("produto", "ze"):
+        return forcada == "produto"
+    return agora().hour >= 15
+
+
 def gerar(itens, pasta):
     v = variante()
     pasta.mkdir(parents=True, exist_ok=True)
     marca = int(time.time())
     arqs = []
     nome = f"achados-{marca}-1.mp4"
-    clipe = gerar_video_abertura(pasta / nome, v)
+    clipe = gerar_video_abertura(pasta / nome, v)   # com capa de produto, o vídeo fica só para o Short
+    capa = capa_de_produto()
+    if capa:
+        video, nome = nome, f"achados-{marca}-capa.jpg"
+        artes.capa_produto(itens[0]["oferta"], itens[0]["foto"], len(itens) - 1, ("aponta", "joia")[v % 2],
+                           pasta / nome)
+        print("🖼️  Carrossel abre com a capa de produto (Zé pequeno embaixo).")
     arqs.append(nome)
     for i, it in enumerate(itens, 2):
+        if capa and i == 2:   # o produto 1 já está na capa
+            continue
         nome = f"achados-{marca}-{i}.jpg"
         slide_produto(it["oferta"], it["foto"], i - 1, pasta / nome, v)
         arqs.append(nome)
@@ -296,7 +315,7 @@ def gerar(itens, pasta):
             short = f"achados-{marca}-short.mp4"
             fim_yt = f"achados-{marca}-final-yt.jpg"   # no YouTube não tem direct: o slide final muda
             artes.final_garimpo(v, len(itens), v, youtube=True).save(pasta / fim_yt, quality=92)
-            gerar_short(pasta, arqs[:-1] + [fim_yt], pasta / short)
+            gerar_short(pasta, ([video] if capa else []) + arqs[:-1] + [fim_yt], pasta / short)
         except Exception as e:
             print(f"::warning::Short do YouTube não saiu ({e}); o carrossel sai mesmo assim.")
             short = None
@@ -371,7 +390,7 @@ def publicar():
     salvar_fila(fila)
     vitrine.gerar()
     if not ANA:
-        extras = espelhar(info, urls[1:], base)
+        extras = espelhar(info, [u for u in urls if not u.endswith(".mp4")], base)
         if extras:
             dados["posts"][media_id].update(extras)
             ARQ_TOP.write_text(json.dumps(dados, ensure_ascii=False, indent=2), encoding="utf-8")

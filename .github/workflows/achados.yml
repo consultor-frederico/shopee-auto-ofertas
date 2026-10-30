@@ -15,6 +15,11 @@ on:
         description: 'Só gerar a prévia (não posta; os slides ficam em data/relatorios/achados)'
         type: boolean
         default: false
+      capa:
+        description: 'Abertura do carrossel do Garimpo (auto = manhã vídeo do Zé, tarde capa de produto)'
+        type: choice
+        options: [auto, produto, ze]
+        default: auto
 
 concurrency:
   group: grava-repositorio
@@ -31,6 +36,7 @@ jobs:
       name: github-pages
     env:
       PERFIL: ${{ inputs.perfil || 'garimpo' }}
+      ACHADOS_CAPA: ${{ inputs.capa || 'auto' }}
     steps:
       - uses: actions/checkout@v4
         with:
