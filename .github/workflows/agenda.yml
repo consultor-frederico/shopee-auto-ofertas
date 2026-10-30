@@ -26,7 +26,7 @@ jobs:
           H=$(date +%H); M=$(date +%M); DOW=$(date +%u)   # DOW: 1=seg ... 7=dom
           Q=$(( (10#$M / 15) * 15 )); HQ=$(printf '%02d:%02d' $((10#$H)) $Q)
           echo "⏰ Agora: $(date +'%d/%m %H:%M') → quarto de hora $HQ (dia $DOW)"
-          WFS="responder.yml aprovacao.yml"                          # sempre: respostas EU QUERO + respostas de direct pelo Telegram (28/10/2026)
+          WFS="responder.yml"                                        # sempre: respostas EU QUERO (aprovacao.yml entra lá embaixo, nos quartos de hora livres)
           case "$HQ" in 06:45|11:45|17:45) WFS="$WFS garimpo.yml" ;; esac
           # 27/10/2026: carrossel de achados só 1 por dia (alcançava ~5 contas cada; o Reels do Zé alcança ~130).
           # 28/10/2026: quarta e sábado o carrossel das 18:45 vira Kit do Zé (carrossel temático, src/kits.py), ok do Fred
@@ -70,11 +70,17 @@ jobs:
           for M in $MANUAL; do
             gh api -X POST "repos/$REPO/actions/workflows/publicar-manual.yml/dispatches" -f ref=main -f "inputs[nome]=${M%%:*}" -f "inputs[perfil]=${M##*:}" || echo "::warning::falhou post ${M%%:*}"
           done
+          [ "$ANA_LIGADA" = "1" ] || ANA=""
+          # Aprovações/direct pelo Telegram (28/10/2026) só nos quartos de hora livres: elas dividem a fila
+          # "grava-repositorio" com posts e Telegram, e o GitHub só guarda 1 rotina esperando nessa fila —
+          # com 3 juntas, a do meio era cancelada (30/10/2026: 5 rodadas de Ofertas no Telegram perdidas por dia).
+          LIVRE=1
+          for WF in $WFS $ANA; do case "$WF" in responder.yml|revisao.yml) ;; *) LIVRE=0 ;; esac; done
+          if [ "$LIVRE" = "1" ]; then WFS="$WFS aprovacao.yml"; fi
           for WF in $WFS; do
             echo "▶️  $WF"
             gh api -X POST "repos/$REPO/actions/workflows/$WF/dispatches" -f ref=main || echo "::warning::falhou $WF"
           done
-          [ "$ANA_LIGADA" = "1" ] || ANA=""
           for WF in $ANA; do
             echo "▶️  $WF (ana)"
             gh api -X POST "repos/$REPO/actions/workflows/$WF/dispatches" -f ref=main -f "inputs[perfil]=ana" || echo "::warning::falhou $WF (ana)"
