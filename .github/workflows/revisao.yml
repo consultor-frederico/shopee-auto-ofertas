@@ -1,13 +1,13 @@
 name: 22 - Revisão semanal (sexta 17h)
 
 # Disparado pelo relógio (agenda.yml) toda sexta às 17h. Confere rodadas da semana, código,
-# Instagram e fila, e manda o resumo no Telegram privado do Fred.
+# seguidores, Instagram e fila, e manda o resumo no Telegram privado do Fred.
 on:
   workflow_dispatch:
 
 permissions:
   actions: read
-  contents: read
+  contents: write   # salva data/seguidores.json (histórico dos seguidores)
 
 jobs:
   revisar:
@@ -34,4 +34,24 @@ jobs:
           TELEGRAM_CHAT_PRIVADO: ${{ secrets.TELEGRAM_CHAT_PRIVADO }}
           SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
           SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          FB_PAGE_TOKEN: ${{ secrets.FB_PAGE_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
+          YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
+          YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
         run: python -m src.revisao
+
+      - name: Salvar histórico de seguidores
+        if: always()
+        run: |
+          git config user.name "GarimpoBot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/seguidores.json 2>/dev/null || exit 0
+          git diff --cached --quiet && exit 0
+          git commit -m "👥 Seguidores $(TZ=America/Sao_Paulo date +'%d/%m/%Y %H:%M')"
+          for i in 1 2 3 4 5; do
+            git pull --rebase && git push && break
+            [ $i = 5 ] && exit 1
+            sleep $((i * 5))
+          done
