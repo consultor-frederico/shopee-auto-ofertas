@@ -30,6 +30,9 @@ jobs:
           case "$HQ" in 06:45|11:45|17:45) WFS="$WFS garimpo.yml" ;; esac
           # 27/10/2026: carrossel de achados só 1 por dia (alcançava ~5 contas cada; o Reels do Zé alcança ~130).
           # 28/10/2026: quarta e sábado o carrossel das 18:45 vira Kit do Zé (carrossel temático, src/kits.py), ok do Fred
+          # 30/10/2026: volta o carrossel das 07:45 (abre com o vídeo do Zé); o das 18:45 abre com a capa de produto
+          # e o Zé pequeno embaixo (src/achados.py capa_de_produto), ok do Fred
+          if [ "$HQ" = "07:45" ]; then WFS="$WFS achados.yml"; fi
           if [ "$HQ" = "18:45" ]; then
             if [ "$DOW" = "3" ] || [ "$DOW" = "6" ]; then WFS="$WFS kits.yml"; else WFS="$WFS achados.yml"; fi
           fi

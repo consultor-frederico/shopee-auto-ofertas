@@ -94,6 +94,58 @@ def produto_garimpo(v, oferta, foto, pos, destino):
     img.save(destino, "JPEG", quality=90, optimize=True)
 
 
+# ================================================================== capa com produto (Garimpo VIP)
+ZE_CAPA = {"aponta": config.RAIZ / "assets" / "ze" / "capa" / "ze_aponta.png",
+           "joia": config.RAIZ / "assets" / "ze" / "capa" / "ze_joia.png"}
+
+
+def capa_produto(oferta, foto, n_mais, pose, destino):
+    """Capa do carrossel no lugar do vídeo de abertura (30/10/2026, sugestão do Gemini aprovada pelo Fred): o 1º
+    produto grande num cartão branco, selo da loja e "+3 ACHADOS" no topo, faixa com nome/nota/preço e o Zé
+    pequeno (recortado do ze_joinha.mp4) no canto de baixo. Vale como o slide do produto 1 ("QUERO 1")."""
+    img = Image.new("RGB", (L, A), imagem.FUNDO)
+    d = ImageDraw.Draw(img)
+    cx0, cy0, cx1, cy1 = 44, 44, L - 44, 1000
+    d.rounded_rectangle([cx0 + 6, cy0 + 10, cx1 + 6, cy1 + 10], 44, fill=imagem.SOMBRA)
+    d.rounded_rectangle([cx0, cy0, cx1, cy1], 44, fill=imagem.BRANCO)
+    if foto is not None:
+        f = ImageOps.contain(foto.convert("RGB"), (cx1 - cx0 - 60, cy1 - cy0 - 140), Image.LANCZOS)
+        img.paste(f, (cx0 + (cx1 - cx0 - f.width) // 2, cy0 + 120 + (cy1 - cy0 - 150 - f.height) // 2))
+    _selo_numero(d, cx0 + 66, cy0 + 62, 44, imagem.DOURADO, imagem.ESCURO, imagem._fonte(60, "Black"), 1,
+                 imagem.ESCURO)
+    fim_selo = cx0 + 126 + imagem.selo_loja(d, oferta, cx0 + 126, cy0 + 30)
+    t = f"+{n_mais} ACHADOS  ›"
+    f_a = imagem._fonte(30, "ExtraBold")
+    w = d.textlength(t, font=f_a)
+    if fim_selo + 20 < cx1 - w - 70:   # selo comprido (INTERNACIONAL) não deixa espaço: fica sem o "+3"
+        d.rounded_rectangle([cx1 - w - 70, cy0 + 30, cx1 - 30, cy0 + 94], 32, fill=imagem.DOURADO)
+        d.text((cx1 - w - 50, cy0 + 45), t, font=f_a, fill=imagem.BRANCO)
+    # faixa de baixo: nome, nota/vendas (ou "Loja oficial X") e preço; o texto para antes do Zé
+    d.rectangle([0, 1040, L, A], fill=imagem.ESCURO)
+    x0, y = 60, 1062
+    f_tit = imagem._fonte(50, "ExtraBold")
+    for ln in imagem._quebrar(d, oferta["titulo"], f_tit, 640, max_linhas=2):
+        d.text((x0, y), ln, font=f_tit, fill=imagem.BRANCO)
+        y += 58
+    y += 6
+    f_info = imagem._fonte(32, "SemiBold")
+    if marcas.eh_marca(oferta):
+        d.text((x0, y), marcas.texto_oficial(oferta), font=f_info, fill=imagem.DOURADO_CLARO)
+    else:
+        imagem._estrela(d, x0 + 18, y + 21, 20, imagem.DOURADO_CLARO)
+        d.text((x0 + 46, y), _info(oferta).removeprefix("nota "), font=f_info, fill=imagem.DOURADO_CLARO)
+    d.text((x0, y + 50), _brl_linha(oferta), font=imagem._fonte(64, "Black"), fill=imagem.BRANCO)
+    ze = Image.open(ZE_CAPA[pose]).convert("RGBA")
+    alt = 340
+    ze = ze.resize((int(ze.width * alt / ze.height), alt), Image.LANCZOS)
+    zx, zy = L - ze.width - 40, A - alt
+    sombra = ze.getchannel("A").point(lambda v: int(v * 0.45)).filter(ImageFilter.GaussianBlur(10))
+    img.paste(Image.new("RGB", ze.size, (0, 0, 0)), (zx + 8, zy + 6), sombra)
+    img.paste(ze, (zx, zy), ze)
+    img = lojas_arte.moldura_oficial(img, oferta)   # marca oficial da Awin: moldura da marca
+    img.save(destino, "JPEG", quality=90, optimize=True)
+
+
 def _selo_numero(d, cx, cy, r, fundo, contorno, fonte, pos, cor):
     d.ellipse((cx - r, cy - r, cx + r, cy + r), fill=fundo, outline=contorno, width=6)
     d.text((cx, cy + 2), str(pos), font=fonte, fill=cor, anchor="mm")
