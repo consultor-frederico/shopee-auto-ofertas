@@ -5,9 +5,10 @@ O que confere:
   1. Workflows de produção dos últimos 7 dias: quantas rodadas, quantas falharam e se algum
      parou de rodar.
   2. Se o código compila (todos os arquivos de src/).
-  3. Instagram @garimpovip4: token válido, seguidores e quando saiu o último post.
-  4. Fila: quantas ofertas estão esperando.
-  5. Vendas da Shopee: pedidos e comissão de ontem e dos últimos 7 dias, por canal.
+  3. Seguidores de cada canal e quanto cresceu/caiu (src/seguidores.py, histórico em data/seguidores.json).
+  4. Instagram @garimpovip4 e @ananovoachados: token válido, posts e quando saiu o último post.
+  5. Fila: quantas ofertas estão esperando.
+  6. Vendas da Shopee: pedidos e comissão de ontem e dos últimos 7 dias, por canal.
 
 Teste: python -m src.revisao  (sem TELEGRAM_CHAT_PRIVADO, só mostra o resumo no log)
 """
@@ -97,12 +98,11 @@ def checar_instagram(arroba, segredo):
     if not token:
         return False, f"⏸️ {arroba}: segredo {segredo} não configurado"
     try:
-        c = metricas._get(token, "me", {"fields": "username,followers_count,media_count"})
+        c = metricas._get(token, "me", {"fields": "username,media_count"})
         midias = metricas._get(token, "me/media", {"fields": "timestamp", "limit": 1}).get("data") or []
     except Exception as e:
         return False, f"❌ {arroba} com problema: {html.escape(str(e))[:300]}"
-    texto = (f"@{c.get('username')}: {c.get('followers_count', '?')} seguidores, "
-             f"{c.get('media_count', '?')} posts")
+    texto = f"@{c.get('username')}: {c.get('media_count', '?')} posts"   # seguidores ficam no bloco 👥
     if not midias:
         return False, f"⚠️ {texto} — nenhum post encontrado"
     ultimo = datetime.strptime(midias[0]["timestamp"], "%Y-%m-%dT%H:%M:%S%z").astimezone(BRT)
@@ -148,6 +148,11 @@ def montar():
     bom, erro = checar_codigo()
     tudo_ok &= bool(bom)
     linhas.append("✅ Código compila sem erros" if bom else f"❌ Código com erro:\n<code>{html.escape(erro)}</code>")
+    try:   # só informa: não muda o "tudo certo"
+        from . import seguidores
+        linhas += [""] + seguidores.linhas_status() + [""]
+    except Exception as e:
+        linhas.append(f"👥 Seguidores: não consegui medir ({html.escape(str(e))[:150]})")
     for arroba, segredo in metricas.CONTAS:
         ok_parte, linha = checar_instagram(arroba, segredo)
         tudo_ok &= ok_parte
