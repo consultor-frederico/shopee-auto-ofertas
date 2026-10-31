@@ -379,7 +379,7 @@ def preparar(tema=None):
     pasta = PASTA_SITE / "midia" / "kits"
     (PASTA_SITE / ".nojekyll").parent.mkdir(parents=True, exist_ok=True)
     (PASTA_SITE / ".nojekyll").write_text("")
-    for fixo in (config.RAIZ / "assets" / "paginas").glob("*.html"):
+    for fixo in (config.RAIZ / "assets" / "paginas").glob("*.[ht][tx][mt]*"):
         (PASTA_SITE / fixo.name).write_text(fixo.read_text(encoding="utf-8"), encoding="utf-8")
     info = gerar(tema, itens, pasta)
     ARQ_PROXIMO.write_text(json.dumps(info, ensure_ascii=False), encoding="utf-8")

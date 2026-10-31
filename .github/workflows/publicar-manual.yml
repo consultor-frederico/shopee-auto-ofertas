@@ -50,7 +50,7 @@ jobs:
           mkdir -p site/manuais
           cp manuais/*.png site/manuais/
           cp manuais/*.mp4 site/manuais/ 2>/dev/null || true   # posts animados (Reels)
-          cp assets/paginas/*.html site/   # páginas fixas (links, privacidade, botão do WhatsApp): sem isso o deploy apaga e dá 404
+          cp assets/paginas/*.html assets/paginas/*.txt site/ 2>/dev/null; cp assets/paginas/*.html site/   # páginas fixas (links, privacidade, botão do WhatsApp): sem isso o deploy apaga e dá 404
 
       - uses: actions/configure-pages@v5
 

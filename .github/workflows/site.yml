@@ -24,7 +24,7 @@ jobs:
           ref: main
       - name: Montar site
         run: |
-          mkdir -p site && cp assets/paginas/*.html site/ && touch site/.nojekyll
+          mkdir -p site && cp assets/paginas/*.html assets/paginas/*.txt site/ 2>/dev/null; cp assets/paginas/*.html site/ && touch site/.nojekyll
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site

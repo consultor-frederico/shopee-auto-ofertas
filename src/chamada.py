@@ -174,7 +174,7 @@ def preparar():
     pasta = PASTA_SITE / "midia"
     pasta.mkdir(parents=True, exist_ok=True)
     (PASTA_SITE / ".nojekyll").write_text("")
-    for fixo in (config.RAIZ / "assets" / "paginas").glob("*.html"):   # página inicial e privacidade
+    for fixo in (config.RAIZ / "assets" / "paginas").glob("*.[ht][tx][mt]*"):   # página inicial e privacidade
         (PASTA_SITE / fixo.name).write_text(fixo.read_text(encoding="utf-8"), encoding="utf-8")
     nome = f"chamada-{int(time.time())}.jpg"
     alvo = alvo_da_vez(variante)

@@ -365,7 +365,7 @@ def preparar():
     pasta = PASTA_SITE / "midia"
     pasta.mkdir(parents=True, exist_ok=True)
     (PASTA_SITE / ".nojekyll").write_text("")
-    for fixo in (config.RAIZ / "assets" / "paginas").glob("*.html"):
+    for fixo in (config.RAIZ / "assets" / "paginas").glob("*.[ht][tx][mt]*"):
         (PASTA_SITE / fixo.name).write_text(fixo.read_text(encoding="utf-8"), encoding="utf-8")
     nome = f"{PREFIXO[:-1]}-{int(time.time())}.mp4"
     busca = ANA and "busca" in video.name   # chamada da Busca da Ana: faixa por cima + legenda #BuscaDaAna

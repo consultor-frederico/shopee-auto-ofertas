@@ -347,7 +347,7 @@ def preparar(tipo="auto"):
     pasta = PASTA_SITE / "midia" / "top"
     (PASTA_SITE / ".nojekyll").parent.mkdir(parents=True, exist_ok=True)
     (PASTA_SITE / ".nojekyll").write_text("")
-    for fixo in (config.RAIZ / "assets" / "paginas").glob("*.html"):
+    for fixo in (config.RAIZ / "assets" / "paginas").glob("*.[ht][tx][mt]*"):
         (PASTA_SITE / fixo.name).write_text(fixo.read_text(encoding="utf-8"), encoding="utf-8")
     info = gerar(tipo, pasta)
     if not info:
