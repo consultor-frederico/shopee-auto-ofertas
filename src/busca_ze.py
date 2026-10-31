@@ -266,9 +266,25 @@ def mensagem(t, ofs):
         nota = f"{o['nota']:.1f}".replace(".", ",")
         intl = " 🌎 internacional" if o.get("internacional") else ""
         linhas.append(f"{i}️⃣ {_curto(o['nome'])} — R$ {o['preco_fmt']} (⭐ {nota}, {vendas}+ vendidos){intl}")
+    if config.PAGINA_BIO:
+        linhas += ["", f"🔗 Os outros achados de hoje: {config.PAGINA_BIO}"]
     linhas += ["", "Toque no botão do que gostou 👇",
                (AVISO_ANA if ANA else f"(links de afiliado: você paga o mesmo e ajuda o {config.NOME_MARCA})")]
     return "\n".join(linhas)
+
+
+def _cartao(i, o):
+    """Um achado em cartão (template genérico): foto, nome, preço/nota/vendas e os botões."""
+    link = vendas.do_canal(o, "zebusca")
+    vendas_txt = f"{o['vendas']:,}".replace(",", ".")
+    nota = f"{o['nota']:.1f}".replace(".", ",")
+    intl = " • internacional" if o.get("internacional") else ""
+    botoes = [{"type": "web_url", "url": link, "title": f"🛒 Ver achado {i}"}]
+    if config.PAGINA_BIO:
+        botoes.append({"type": "web_url", "url": f"https://{config.PAGINA_BIO}", "title": "🔗 Achados de hoje"})
+    return {"title": f"{i}. {_curto(o['nome'], 70)}",
+            "subtitle": f"R$ {o['preco_fmt']} • ⭐ {nota} • {vendas_txt}+ vendidos{intl} • link de afiliado"[:80],
+            "image_url": o["imagem"], "default_action": {"type": "web_url", "url": link}, "buttons": botoes}
 
 
 def enviar_dm(api, ig_id, cid, t, ofs, destinatario=None):
@@ -276,6 +292,13 @@ def enviar_dm(api, ig_id, cid, t, ofs, destinatario=None):
     numa conversa que a pessoa abriu, direto para ela (destinatario = id da pessoa)."""
     para = {"id": destinatario} if destinatario else {"comment_id": cid}
     texto = mensagem(t, ofs)
+    try:   # 31/10/2026 (Fred): cartões com foto, lado a lado, cada um com o botão do achado e o da vitrine da bio
+        return api._req("POST", f"{ig_id}/messages", json={
+            "recipient": para,
+            "message": {"attachment": {"type": "template", "payload": {
+                "template_type": "generic", "elements": [_cartao(i, o) for i, o in enumerate(ofs, 1)]}}}})
+    except Exception as e:   # uma tentativa recusada não gasta a resposta privada
+        print(f"⚠️  Cartões recusados ({e}); mandando com botões.")
     botoes = [{"type": "web_url", "url": vendas.do_canal(o, "zebusca"), "title": f"🛒 Ver achado {i}"}
               for i, o in enumerate(ofs, 1)]
     try:
