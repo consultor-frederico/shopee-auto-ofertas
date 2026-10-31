@@ -225,6 +225,7 @@ NICHO = _P["nicho"]
 MARCA, NOME_MARCA, ARROBA, HASHTAG_MARCA = _P["marca"], _P["nome"], _P["arroba"], _P["hashtag"]
 # Página da bio do Garimpo VIP (vitrine com os achados do dia). A Ana não usa: as contas não podem parecer ligadas.
 PAGINA_BIO = "garimpovipbr.github.io" if PERFIL == "garimpo" else ""
+ARROBA_TIKTOK = "@vipgarimpo4" if PERFIL == "garimpo" else ""   # conta criada em 31/10/2026 (tiktok.com/@vipgarimpo4)
 LEMBRETE_BIO = f"🔗 Todos os achados de hoje num lugar só: {PAGINA_BIO} (link na bio)" if PAGINA_BIO else ""
 LOGO = _P["logo"]
 CORES = _P["cores"]

@@ -77,7 +77,8 @@ def enviar(arquivos, texto):
         abertos = [open(a, "rb") for a in arquivos[:10]]
         try:
             midia = [{"type": "photo", "media": f"attach://f{i}"} for i in range(len(abertos))]
-            midia[0]["caption"] = "🎵 Kit do TikTok (Modo Foto): salva as fotos, posta e escolhe uma música em alta."
+            midia[0]["caption"] = (f"🎵 Kit do TikTok {config.ARROBA_TIKTOK} (Modo Foto): salva as fotos, posta "
+                                    "e escolhe uma música em alta.")
             telegram._api("sendMediaGroup", data={"chat_id": chat, "media": json.dumps(midia)},
                           files={f"f{i}": f for i, f in enumerate(abertos)})
         finally:

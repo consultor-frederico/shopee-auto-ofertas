@@ -365,8 +365,8 @@ def final_garimpo(v, n, n_variante, youtube=False, frase=None, tiktok=False):
     for i, (ln, cor) in enumerate(extras):
         f = _ajustar(d, ln, top._f, 36, L - 100, minimo=28)
         top._ctext(d, 1068 + i * 46, ln, f, cor, 3, es)
-    t = ("Segue o Zé pra não perder o próximo" if tiktok
-         else f"Segue o @{config.ARROBA.lstrip('@')} pra não perder o próximo")
+    arroba = (config.ARROBA_TIKTOK or "o Zé") if tiktok else config.ARROBA
+    t = f"Segue {'o ' if arroba.startswith('@') else ''}{arroba} pra não perder o próximo"
     f = top._f(30)
     w = d.textlength(t, font=f)
     d.rounded_rectangle(((L - w) / 2 - 30, A - 130, (L + w) / 2 + 30, A - 62), 34, fill=top.AM)
