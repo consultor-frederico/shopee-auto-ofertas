@@ -25,7 +25,7 @@ from urllib.parse import quote, unquote
 import requests
 
 API = "https://open.tiktokapis.com/v2"
-REDIRECT = "https://consultor-frederico.github.io/shopee-auto-ofertas/tiktok.html"
+REDIRECT = "https://garimpovipbr.github.io/tiktok.html"   # página pública sem o nome do Fred
 ESCOPOS = "user.info.basic,video.publish,video.upload"
 ARQ_NOVO_TOKEN = Path(os.getenv("RUNNER_TEMP", "/tmp")) / "tiktok_refresh.txt"
 
