@@ -103,7 +103,7 @@ def texto_whatsapp(o):
             preco += f" (-{o['desconto']}%)"
     nota = (f"{o['avaliacao_pct']:.0f}% avaliações positivas" if o.get("avaliacao_pct")
             else f"nota {o.get('nota', 0):.1f}".replace(".", ","))
-    vendas = f"{o.get('vendas', 0):,}".replace(",", ".")
+    vendidos = f"{o.get('vendas', 0):,}".replace(",", ".")   # não chamar de "vendas": apaga o módulo vendas
     loja = telegram.NOME_LOJA.get(plataforma(o), plataforma(o).title())
     partes = []
     if o.get("nivel") == "achado":
@@ -111,7 +111,7 @@ def texto_whatsapp(o):
     partes += [f"🔥 *{o['titulo'].replace('*', '')}*", ""]
     if gancho:
         partes += gancho + [""]
-    prova = f"🏬 {marcas.texto_oficial(o)}" if marcas.eh_marca(o) else f"⭐ {nota} • {vendas}+ vendidos"
+    prova = f"🏬 {marcas.texto_oficial(o)}" if marcas.eh_marca(o) else f"⭐ {nota} • {vendidos}+ vendidos"
     partes += [preco, prova, "",
                f"🛒 Compre na {loja}:", vendas.do_canal(o, "zap"), "",
                f"_{precos.aviso(o)}_",
