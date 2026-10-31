@@ -14,7 +14,10 @@ from . import config, marcas
 LIGADO = os.getenv("TIKTOK_KIT", "1") != "0"
 TAGS_CATEGORIA = {"lar": "#casaorganizada #utilidadesdomesticas", "pet": "#pet #achadinhospet",
                   "eletronicos": "#tecnologia #gadgets", "brinquedos": "#brinquedos #presentecrianca",
-                  "automotivo": "#carro #acessoriosautomotivos", "masculino": "#presentemasculino #homem"}
+                  "automotivo": "#carro #acessoriosautomotivos", "masculino": "#presentemasculino #homem",
+                  "beleza": "#beleza #maquiagem", "cabelo": "#cabelo #cuidadoscomcabelo",
+                  "moda": "#moda #lookdodia", "autocuidado": "#autocuidado #selfcare",
+                  "casa_fofa": "#decoracao #quartoaesthetic"}
 NOME_LOJA = {"shopee": "Shopee", "aliexpress": "AliExpress", **{p: m["nome"] for p, m in marcas.MARCAS.items()}}
 
 

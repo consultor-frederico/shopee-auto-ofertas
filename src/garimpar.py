@@ -195,9 +195,31 @@ def _buscar_paginas(buscar, alvo, paginas):
     return nos, falhou == len(paginas)
 
 
+_IDS_ANA = None
+
+
+def ids_da_ana():
+    """Produtos que a Ana postou ou tem na fila (30 dias): o Garimpo não repete, para as contas não parecerem
+    ligadas (31/10/2026, o Garimpo passou a buscar também o nicho da Ana). Lido 1x por rodada."""
+    global _IDS_ANA
+    if _IDS_ANA is None:
+        _IDS_ANA = set()
+        arq = config.PASTA_DADOS / "ana" / "fila.json"
+        if config.PERFIL == "garimpo" and arq.exists():
+            try:
+                ofertas = json.loads(arq.read_text(encoding="utf-8")).get("ofertas", {})
+                _IDS_ANA = {i for i, r in ofertas.items() if r.get("criado_em") and _dias(r) < config.DIAS_SEM_REPETIR}
+            except (OSError, ValueError, KeyError):
+                pass
+    return _IDS_ANA
+
+
 def _filtrar(fila, ofertas, origem, candidatos, recusas):
     for o in ofertas:
         if o["id"] in candidatos or ja_usado(fila, o["id"]):
+            continue
+        if o["id"] in ids_da_ana():
+            recusas["já está na Ana"] = recusas.get("já está na Ana", 0) + 1
             continue
         m = motivo_recusa(o) or (aliexpress.recusa_extra(o) if o["plataforma"] == "aliexpress" else None)
         if m:

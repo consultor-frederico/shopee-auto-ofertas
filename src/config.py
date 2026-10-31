@@ -174,10 +174,15 @@ NICHO_ANA = {
     ],
 }
 
+# 31/10/2026 (Fred): com a Ana em stand-by, o Garimpo também busca as palavras do nicho da Ana
+# (beleza, cabelo, moda, autocuidado, casa fofa). Desliga com GARIMPO_COM_ANA=0.
+GARIMPO_COM_ANA = os.getenv("GARIMPO_COM_ANA", "1") != "0"
+NICHO_GARIMPO_TOTAL = {**NICHO_GARIMPO, **(NICHO_ANA if GARIMPO_COM_ANA else {})}
+
 # --- Perfis (contas do Instagram). Escolha com a variável PERFIL (padrão: garimpo) ---
 PERFIS = {
     "garimpo": {
-        "nicho": NICHO_GARIMPO,
+        "nicho": NICHO_GARIMPO_TOTAL,
         "marca": "GARIMPO VIP",
         "nome": "Garimpo VIP",
         "arroba": "@garimpovip4",

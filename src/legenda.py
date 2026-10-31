@@ -174,6 +174,11 @@ COMPARTILHA = {
     "lar": "📲 Manda pra quem tá montando a casa 🏠",
     "eletronicos": "📲 Manda pra aquele amigo viciado em tecnologia",
     "masculino": "📲 Manda pro pai, parceiro ou amigo que ia curtir",
+    "beleza": "📲 Manda pra amiga que ama uma make 💄",
+    "cabelo": "📲 Manda pra quem vive cuidando do cabelo",
+    "moda": "📲 Manda pra quem ia usar isso amanhã mesmo",
+    "autocuidado": "📲 Manda pra quem tá precisando de um mimo",
+    "casa_fofa": "📲 Manda pra quem tá decorando o quarto",
 }
 COMPARTILHA_GERAL = ["📲 Manda pra quem precisa ver isso!", "🔖 Salva pra não perder esse preço",
                      "📲 Envia pra quem ia amar isso", "🔖 Salva aqui e manda pra quem vai gostar"]

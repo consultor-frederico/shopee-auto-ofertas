@@ -317,7 +317,10 @@ def _circulo(o, foto, pos):
 # não segue. Cita um dos produtos (o número muda a cada carrossel) e quem ia gostar dele, pela categoria.
 QUEM_CATEGORIA = {"pet": "que tem pet em casa", "automotivo": "que vive dentro do carro",
                   "brinquedos": "que tem criança em casa", "lar": "que tá montando a casa",
-                  "eletronicos": "viciado em tecnologia", "masculino": "que ia curtir esse presente"}
+                  "eletronicos": "viciado em tecnologia", "masculino": "que ia curtir esse presente",
+                  "beleza": "que ama uma make", "cabelo": "que vive cuidando do cabelo",
+                  "moda": "que ia usar isso amanhã mesmo", "autocuidado": "que tá precisando de um mimo",
+                  "casa_fofa": "que tá decorando o quarto"}
 
 
 def frase_compartilhar(ofertas, v):
