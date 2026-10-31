@@ -66,24 +66,33 @@ def checar_workflows():
             if len(lote) < 100 or antigas:
                 break
             pagina += 1
-        d = {"total": len(runs), "falhas": 0, "ultima_falha": None}
+        d = {"total": len(runs), "falhas": 0, "ultima_falha": None, "ultimo_ok": None}
         for r in runs:
             if r.get("conclusion") in ("failure", "timed_out", "startup_failure"):
                 d["falhas"] += 1
                 d["ultima_falha"] = max(d["ultima_falha"] or "", r["created_at"])
+            elif r.get("conclusion") == "success":
+                d["ultimo_ok"] = max(d["ultimo_ok"] or "", r["created_at"])
         por_wf[arq] = d
-    problemas, ok = [], 0
+    # Falha seguida de rodada com sucesso = já resolvida: aparece como ✅ com nota e não
+    # deixa o status em "tem coisa para olhar" (pedido do Fred em 31/10/2026).
+    problemas, resolvidas, ok = [], [], 0
     for arq, nome in PRODUCAO.items():
         d = por_wf[arq]
         if d["total"] == 0:
             problemas.append(f"⛔ <b>{nome}</b>: não rodou nenhuma vez na semana")
         elif d["falhas"]:
             quando = datetime.fromisoformat(d["ultima_falha"].replace("Z", "+00:00")).astimezone(BRT)
-            problemas.append(f"❌ <b>{nome}</b>: {d['falhas']} falha(s) em {d['total']} rodadas "
-                             f"(última {quando:%d/%m %H:%M})")
+            if d["ultimo_ok"] and d["ultimo_ok"] > d["ultima_falha"]:
+                ok += 1
+                resolvidas.append(f"✅ {nome}: {d['falhas']} falha antiga já resolvida "
+                                  f"({quando:%d/%m %H:%M}); rodou certo depois")
+            else:
+                problemas.append(f"❌ <b>{nome}</b>: {d['falhas']} falha(s) em {d['total']} rodadas "
+                                 f"(última {quando:%d/%m %H:%M}, ainda sem rodada certa depois)")
         else:
             ok += 1
-    return problemas, ok, sum(d["total"] for d in por_wf.values())
+    return problemas, resolvidas, ok, sum(d["total"] for d in por_wf.values())
 
 
 def checar_codigo():
@@ -136,12 +145,14 @@ def montar():
     linhas = [f"🩺 <b>Status do robô (Garimpo VIP e Ana)</b> — {datetime.now(BRT):%d/%m/%Y %H:%M}", ""]
     tudo_ok = True
     try:
-        problemas, ok, total = checar_workflows()
+        problemas, resolvidas, ok, total = checar_workflows()
         if problemas:
             tudo_ok = False
-            linhas += ["<b>Robô (GitHub):</b>"] + problemas + [f"✅ outras {ok} rotinas sem falhas ({total} rodadas na semana)"]
+            linhas += ["<b>Robô (GitHub):</b>"] + problemas + resolvidas + [
+                f"✅ outras {ok - len(resolvidas)} rotinas sem falhas ({total} rodadas na semana)"]
         else:
-            linhas.append(f"✅ Robô: todas as {ok} rotinas rodaram sem falhas ({total} rodadas na semana)")
+            linhas.append(f"✅ Robô: todas as {ok} rotinas funcionando ({total} rodadas na semana)")
+            linhas += resolvidas
     except Exception as e:
         tudo_ok = False
         linhas.append(f"❌ Não consegui ler as rodadas do GitHub: {html.escape(str(e))[:200]}")
