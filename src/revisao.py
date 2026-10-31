@@ -39,7 +39,7 @@ PRODUCAO = {
     "busca.yml": "Reels da Busca do Zé",
     "ze.yml": "Post do Zé Garimpo",
     # "limpeza.yml" desligada em 12/10/2026 (posts antigos ficam no ar)
-    "chamada.yml": "Chamada do Telegram",
+    "chamada.yml": "Chamada da vitrine (bio)",
     "token.yml": "Renovar token",
 }
 
