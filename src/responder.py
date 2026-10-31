@@ -98,22 +98,24 @@ def _publica(usuario=""):
     return texto
 
 
-# Espera "humana": o robô não responde no mesmo segundo. Cada comentário espera de 1 a ESPERA_MAX_MIN minutos
+# Espera "humana": o robô não responde no mesmo segundo. Cada comentário espera de 20 a ESPERA_MAX_S segundos
 # (tempo fixo por comentário, calculado pelo id). A mesma rodada aguarda esse tempo e responde em seguida,
-# sem deixar para a rodada de 15 min. RESPOSTA_ESPERA_MAX_MIN=0 desliga.
-ESPERA_MAX_MIN = max(0, int(os.getenv("RESPOSTA_ESPERA_MAX_MIN", "6") or 0))
+# sem deixar para a rodada de 15 min. RESPOSTA_ESPERA_MAX_S=0 desliga. Era de 1 a 6 min até 30/10/2026: o Fred
+# achou demorado.
+ESPERA_MIN_S = 20
+ESPERA_MAX_S = max(0, int(os.getenv("RESPOSTA_ESPERA_MAX_S", "60") or 0))
 PENDENTES = []   # segundos que faltam para cada comentário segurado nesta rodada
 
 
 def esperando(comentario):
     """True se o comentário ainda é novo demais para o robô responder."""
-    if not ESPERA_MAX_MIN:
+    if not ESPERA_MAX_S:
         return False
     try:
         quando = datetime.strptime((comentario.get("timestamp") or "")[:19], "%Y-%m-%dT%H:%M:%S")
     except ValueError:
         return False
-    espera = 60 + (zlib.crc32(str(comentario.get("id", "")).encode()) % ESPERA_MAX_MIN) * 60   # em segundos
+    espera = ESPERA_MIN_S + zlib.crc32(str(comentario.get("id", "")).encode()) % max(1, ESPERA_MAX_S - ESPERA_MIN_S + 1)
     falta = espera - (datetime.now(timezone.utc).replace(tzinfo=None) - quando).total_seconds()
     if falta > 0:
         PENDENTES.append(falta)
@@ -610,9 +612,9 @@ if __name__ == "__main__":
         for _ in range(2):
             if not PENDENTES:
                 break
-            falta = min(max(PENDENTES), ESPERA_MAX_MIN * 60) + 5
+            falta = min(max(PENDENTES), ESPERA_MAX_S) + 5
             PENDENTES.clear()
-            print(f"⏳ Comentário novo: respondendo em {falta / 60:.1f} min (espera humana).")
+            print(f"⏳ Comentário novo: respondendo em {falta:.0f} s (espera humana).")
             time.sleep(falta)
             responder()
     except Exception as e:
