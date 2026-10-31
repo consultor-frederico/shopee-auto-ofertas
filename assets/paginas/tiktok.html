@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Garimpo VIP – conexão com o TikTok</title>
+<style>body{font-family:system-ui,sans-serif;max-width:560px;margin:40px auto;padding:0 16px;background:#F3EFE8;color:#24150A;line-height:1.6;text-align:center}
+code{display:block;word-break:break-all;background:#fff;border:2px solid #A07E30;border-radius:12px;padding:16px;margin:16px 0;font-size:16px}
+button{padding:14px 24px;border:0;border-radius:12px;background:#24150A;color:#fff;font-size:18px;font-weight:700}</style></head>
+<body>
+<h1>Conexão com o TikTok</h1>
+<p id="msg">Copie o código abaixo e cole no workflow "25 - Conectar TikTok" (ele vale poucos minutos).</p>
+<code id="codigo">…</code>
+<button onclick="navigator.clipboard.writeText(document.getElementById('codigo').textContent);this.textContent='Copiado ✅'">Copiar código</button>
+<script>
+var q=new URLSearchParams(location.search), c=q.get('code'), e=q.get('error');
+document.getElementById('codigo').textContent=c||('Sem código. '+(e?('Erro: '+e+' '+(q.get('error_description')||'')):''));
+</script>
+</body></html>

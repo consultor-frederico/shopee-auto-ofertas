@@ -8,6 +8,7 @@ Desligar: TIKTOK_KIT=0. Precisa de TELEGRAM_BOT_TOKEN e TELEGRAM_CHAT_PRIVADO.
 """
 import json
 import os
+from pathlib import Path
 
 from . import config, marcas
 
@@ -64,10 +65,33 @@ def legenda(ofertas, tema=None):
     return "\n".join(linhas)
 
 
+def _postar_api(arquivos, texto):
+    """Se os segredos do TikTok estão cadastrados (src/tiktok.py), manda as fotos pela API antes do kit.
+    Devolve o aviso que vai no álbum do Telegram ('' se a API está desligada)."""
+    from . import tiktok
+    base = (os.getenv("PAGES_URL") or "").rstrip("/")
+    if not (tiktok.ligado() and base):
+        return ""
+    site = config.RAIZ / "site"
+    try:
+        urls = [f"{base}/{Path(a).resolve().relative_to(site.resolve()).as_posix()}" for a in arquivos]
+        titulo = texto.split("\n", 1)[0]
+        _, situacao = tiktok.postar_fotos(urls, titulo, texto)
+        print(f"🎵 TikTok pela API ({tiktok.modo()}): {situacao}")
+        if tiktok.modo() == "rascunho":
+            return ("🎵 TikTok: as fotos já estão na caixa de entrada do app (notificação). Abre, escolhe a música "
+                    "em alta, cola a legenda daqui de baixo e posta.")
+        return "🎵 TikTok: já postado pela API (privado até a auditoria). As fotos e a legenda seguem aqui."
+    except Exception as e:   # nunca derruba o post do Instagram; o kit manual vai do mesmo jeito
+        print(f"::warning::TikTok pela API não foi: {e}")
+        return f"⚠️ A API do TikTok falhou ({str(e)[:150]}). Posta pelo kit: salva as fotos e escolhe a música."
+
+
 def enviar(arquivos, texto):
     """Fotos (até 10) num álbum e, logo depois, a legenda numa mensagem separada (fácil de copiar)."""
     if not ligado() or not arquivos:
         return
+    aviso = _postar_api(arquivos, texto)
     from . import telegram, whatsapp_kit
     chat = whatsapp_kit.chat_privado()
     if not (chat and os.getenv("TELEGRAM_BOT_TOKEN", "").strip()):
@@ -77,8 +101,8 @@ def enviar(arquivos, texto):
         abertos = [open(a, "rb") for a in arquivos[:10]]
         try:
             midia = [{"type": "photo", "media": f"attach://f{i}"} for i in range(len(abertos))]
-            midia[0]["caption"] = (f"🎵 Kit do TikTok {config.ARROBA_TIKTOK} (Modo Foto): salva as fotos, posta "
-                                    "e escolhe uma música em alta.")
+            midia[0]["caption"] = aviso or (f"🎵 Kit do TikTok {config.ARROBA_TIKTOK} (Modo Foto): salva as fotos, "
+                                             "posta e escolhe uma música em alta.")
             telegram._api("sendMediaGroup", data={"chat_id": chat, "media": json.dumps(midia)},
                           files={f"f{i}": f for i, f in enumerate(abertos)})
         finally:

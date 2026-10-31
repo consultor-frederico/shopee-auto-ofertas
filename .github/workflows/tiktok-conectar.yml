@@ -1,0 +1,43 @@
+name: 25 - Conectar TikTok
+
+# 1ª vez: rode SEM código → o log mostra o link de autorização (abra logado na @vipgarimpo4).
+# 2ª vez: cole o código que a página mostrou → o refresh token vai sozinho para o segredo TIKTOK_REFRESH_TOKEN.
+# Sem código e já conectado: confere o token e mostra a conta (deve ser @vipgarimpo4).
+
+on:
+  workflow_dispatch:
+    inputs:
+      codigo:
+        description: 'Código que a página do TikTok mostrou (deixe vazio na 1ª vez)'
+        required: false
+
+jobs:
+  conectar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install requests
+      - name: Conectar
+        env:
+          TIKTOK_CLIENT_KEY: ${{ secrets.TIKTOK_CLIENT_KEY }}
+          TIKTOK_CLIENT_SECRET: ${{ secrets.TIKTOK_CLIENT_SECRET }}
+          TIKTOK_REFRESH_TOKEN: ${{ secrets.TIKTOK_REFRESH_TOKEN }}
+          TIKTOK_MODO: ${{ vars.TIKTOK_MODO || 'rascunho' }}
+          TIKTOK_CODIGO: ${{ inputs.codigo }}
+        run: |
+          if [ -z "$TIKTOK_CODIGO" ] && [ -n "$TIKTOK_REFRESH_TOKEN" ]; then
+            python -m src.tiktok status
+          else
+            python -m src.tiktok conectar
+          fi
+      - name: Salvar o refresh token
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          [ -f "$RUNNER_TEMP/tiktok_refresh.txt" ] || exit 0
+          [ -n "$GH_TOKEN" ] || { echo "::error::Falta o GH_PAT para salvar o segredo."; exit 1; }
+          gh secret set TIKTOK_REFRESH_TOKEN -R "${{ github.repository }}" < "$RUNNER_TEMP/tiktok_refresh.txt"
+          echo "✅ TIKTOK_REFRESH_TOKEN salvo. Rode o 25 de novo sem código para conferir a conta."

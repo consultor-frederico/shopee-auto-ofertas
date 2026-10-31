@@ -96,6 +96,11 @@ jobs:
           # kit do TikTok (slides + legenda) no Telegram privado do Fred (src/tiktok_kit.py)
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_PRIVADO: ${{ secrets.TELEGRAM_CHAT_PRIVADO }}
+          # TikTok pela API (src/tiktok.py): desligado até o Fred cadastrar os 3 segredos (workflow 25)
+          TIKTOK_CLIENT_KEY: ${{ secrets.TIKTOK_CLIENT_KEY }}
+          TIKTOK_CLIENT_SECRET: ${{ secrets.TIKTOK_CLIENT_SECRET }}
+          TIKTOK_REFRESH_TOKEN: ${{ secrets.TIKTOK_REFRESH_TOKEN }}
+          TIKTOK_MODO: ${{ vars.TIKTOK_MODO || 'rascunho' }}
           FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
           FB_PAGE_TOKEN: ${{ secrets.FB_PAGE_TOKEN }}
           YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
@@ -104,6 +109,14 @@ jobs:
           SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
           SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
         run: python -m src.achados publicar
+
+      - name: Guardar o token novo do TikTok
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          [ -f "$RUNNER_TEMP/tiktok_refresh.txt" ] && [ -n "$GH_TOKEN" ] || exit 0
+          gh secret set TIKTOK_REFRESH_TOKEN -R "${{ github.repository }}" < "$RUNNER_TEMP/tiktok_refresh.txt"
 
       - name: Salvar
         if: always() && !inputs.so_previa
