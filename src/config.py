@@ -87,7 +87,7 @@ SHARK_POR_DIA_TELEGRAM = int(os.getenv("SHARK_POR_DIA_TELEGRAM", "3"))
 NIVEL_ACHADO = {"vendas_min": 50, "nota": 4.8, "uau": 8, "comissao_rs": 3.0, "comissao_pct": 8.0}  # R$3 liberado pelo Fred em 09/10/2026
 ACHADOS_POR_DIA = int(os.getenv("ACHADOS_POR_DIA", "3"))   # 3 desde 27/10/2026 (Fred): abre espaço para as novidades do radar de virais
 NOTA_MINIMA = float(os.getenv("NOTA_MINIMA", "4.7"))
-PRECO_MAXIMO = float(os.getenv("PRECO_MAXIMO", "300"))
+PRECO_MAXIMO = float(os.getenv("PRECO_MAXIMO", "500"))   # 300 até 30/10/2026 (Fred subiu para 500; marcas da Awin não têm teto)
 UAU_SEM_IA = 6                 # nota padrão se a IA de curadoria estiver fora do ar
 SIMILARIDADE_MAX = 0.55        # nomes mais parecidos que isso contam como o mesmo produto
 # Palavras que barram o produto (fora do nicho ou arriscadas para anunciar)

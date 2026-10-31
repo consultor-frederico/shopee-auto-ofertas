@@ -28,7 +28,7 @@ Horários de Brasília. Todos também podem ser disparados em **Actions → Run 
 - Filtro em dois níveis (recalibrado em 09/10/2026 com 21.858 produtos):
   - 🏅 **Ouro** (Instagram): ≥ 500 vendas, comissão ≥ R$ 6 e ≥ 8%, "fator uau" da IA ≥ 7.
   - 🥈 **Prata** (Telegram): ≥ 500 vendas, comissão ≥ R$ 5 e ≥ 8%, "fator uau" ≥ 6.
-  - Sempre: nota ≥ 4,7, preço ≤ R$ 300, sem palavras proibidas.
+  - Sempre: nota ≥ 4,7, preço ≤ R$ 500 (Shopee e AliExpress; as marcas oficiais não têm teto), sem palavras proibidas.
 - Anti-repetição: descarta nomes muito parecidos ou mesma loja + mesmo preço; não repete no Instagram em 30 dias (Telegram: 14).
 - Sorteia 24 palavras-chave por garimpo, a mesma quantidade em cada categoria, e busca 2 páginas dos mais vendidos + a página de maior comissão de cada uma.
 - No máximo 2 produtos do mesmo tipo por garimpo (ex.: dois espelhos).

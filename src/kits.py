@@ -317,6 +317,17 @@ def legenda(tema, itens):
     return "\n".join(linhas)
 
 
+# linha de "manda pra alguém" no slide final, pelo tema (30/10/2026)
+COMPARTILHA = {"banheiro": "Conhece alguém arrumando o banheiro? Manda esse kit pra essa pessoa",
+               "cozinha": "Conhece alguém que vive na cozinha? Manda esse kit pra essa pessoa",
+               "amigo-secreto": "Manda esse kit no grupo do amigo secreto",
+               "natal": "Conhece alguém que ainda não comprou os presentes? Manda pra essa pessoa",
+               "festa": "Vai ter festa? Manda esse kit pra quem vai organizar",
+               "pet": "Conhece alguém que tem pet em casa? Manda esse kit pra essa pessoa",
+               "carro": "Conhece alguém que vive dentro do carro? Manda esse kit pra essa pessoa",
+               "home-office": "Conhece alguém que trabalha em casa? Manda esse kit pra essa pessoa"}
+
+
 def gerar(tema, itens, pasta):
     from .achados import slide_final, slide_produto
     pasta.mkdir(parents=True, exist_ok=True)
@@ -331,7 +342,7 @@ def gerar(tema, itens, pasta):
         slide_produto(it["oferta"], it["foto"], i, pasta / nome, v)
         arqs.append(nome)
     nome = f"kit-{tema}-{marca}-{len(itens) + 2}.jpg"
-    slide_final(len(itens), v).save(pasta / nome, quality=92)
+    slide_final(len(itens), v, COMPARTILHA.get(tema)).save(pasta / nome, quality=92)
     arqs.append(nome)
     return {"tema": tema, "titulo": TEMAS[tema]["titulo"], "arquivos": arqs, "legenda": legenda(tema, itens),
             "itens": [{k: it["oferta"].get(k) for k in ("id", "nome", "titulo", "preco_fmt", "preco", "link_afiliado",

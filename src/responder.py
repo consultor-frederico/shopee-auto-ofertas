@@ -320,11 +320,41 @@ def so_pediu_link(texto):
 
 DM_TOP_TODOS = ("Oi! 🤠 Aqui é o Zé Garimpo. Os links do {titulo}:\n\n{lista}\n\n"
                 "Corre que preço de oferta muda rápido! 🛒\n"
+                + (f"🔗 Os outros achados de hoje, sem precisar comentar: {config.PAGINA_BIO}\n" if config.PAGINA_BIO else "") +
                 f"(links de afiliado: você paga o mesmo e ajuda a página {config.NOME_MARCA})")
 if config.PERFIL == "ana":
     DM_TOP_TODOS = ("Oi! 💚 Aqui é a Ana. Os links do {titulo}:\n\n{lista}\n\n"
                     "Corre que esses somem rápido! ✨\n"
                     "(são links de afiliada: você paga o mesmo e me ajuda a continuar caçando achadinhos 💚)")
+
+
+CARTAO_SUB = "R$ {preco} no post ({loja}) • link de afiliado: você paga o mesmo"
+
+
+def _dm_item_top(api, minha, cid, it, n):
+    """Link do item N no direct. Só cabe 1 resposta privada por comentário, e uma tentativa recusada não conta:
+    primeiro o cartão com a foto do produto + botão da vitrine da bio (30/10/2026, ideia do Gemini), depois o
+    botão simples, por último o texto com o link. Devolve o formato que saiu."""
+    titulo = it["nome"][:60]
+    link = vendas.do_canal(it, "igtop")
+    loja = NOME_LOJA.get(it.get("plataforma") or "shopee", "loja")
+    if it.get("imagem"):   # posts antigos não guardaram a foto no registro
+        try:
+            botoes = [(TITULO_BOTAO, link)]
+            if config.PAGINA_BIO:
+                botoes.append(("🔗 Achados de hoje", f"https://{config.PAGINA_BIO}"))
+            api.resposta_privada_cartao(minha["user_id"], cid, f"{n}. {it.get('titulo') or titulo}",
+                                        CARTAO_SUB.format(preco=it.get("preco_fmt", ""), loja=loja), it["imagem"], botoes)
+            return "cartao"
+        except Exception as e:
+            print(f"   (cartão recusado: {e}; enviando com botão)")
+    try:
+        api.resposta_privada_botao(minha["user_id"], cid, DM_BOTAO.format(titulo=titulo, loja=loja), link, TITULO_BOTAO)
+        return "botao"
+    except Exception as e:
+        print(f"   (botão recusado: {e}; enviando como texto)")
+    api.resposta_privada(minha["user_id"], cid, DM.format(titulo=titulo, link=link))
+    return "texto"
 
 
 def responder_top(api, minha, tops, respondidos):
@@ -353,17 +383,7 @@ def responder_top(api, minha, tops, respondidos):
                    "autor": autor, "em": agora().strftime(FMT), "top": n or "todos"}
             try:
                 if n:
-                    it = itens[n - 1]
-                    titulo = it["nome"][:60]
-                    try:
-                        api.resposta_privada_botao(minha["user_id"], cid,
-                                                   DM_BOTAO.format(titulo=titulo, loja=NOME_LOJA.get(it.get("plataforma") or "shopee", "loja")),
-                                                   vendas.do_canal(it, "igtop"), TITULO_BOTAO)
-                        reg["formato"] = "botao"
-                    except Exception as e:
-                        print(f"   (botão recusado: {e}; enviando como texto)")
-                        api.resposta_privada(minha["user_id"], cid, DM.format(titulo=titulo, link=vendas.do_canal(it, "igtop")))
-                        reg["formato"] = "texto"
+                    reg["formato"] = _dm_item_top(api, minha, cid, itens[n - 1], n)
                 else:   # só "QUERO": uma resposta privada por comentário → manda a lista com os 5 links
                     lista = "\n\n".join(f"{num[i]} {it['nome'][:50]} — R$ {it['preco_fmt']}\n{vendas.do_canal(it, 'igtop')}"
                                          for i, it in enumerate(itens))

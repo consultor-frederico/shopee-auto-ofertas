@@ -138,6 +138,18 @@ def resposta_privada_botao(ig_id, comment_id, texto, url, titulo_botao):
             "buttons": [{"type": "web_url", "url": url, "title": titulo_botao}]}}}})
 
 
+def resposta_privada_cartao(ig_id, comment_id, titulo, subtitulo, imagem_url, botoes):
+    """Resposta privada em cartão (template genérico): foto do produto, nome, uma linha e até 3 botões
+    [(titulo, url), ...]. Só cabe 1 resposta privada por comentário, então quem chama tem o plano B pronto."""
+    return _req("POST", f"{ig_id}/messages", json={
+        "recipient": {"comment_id": comment_id},
+        "message": {"attachment": {"type": "template", "payload": {
+            "template_type": "generic", "elements": [{
+                "title": titulo[:80], "subtitle": subtitulo[:80], "image_url": imagem_url,
+                "default_action": {"type": "web_url", "url": botoes[0][1]},
+                "buttons": [{"type": "web_url", "url": u, "title": t[:20]} for t, u in botoes[:3]]}]}}}})
+
+
 def comentar(media_id, texto):
     """Comentário da própria conta num post (devolve o id do comentário)."""
     return _req("POST", f"{media_id}/comments", params={"message": texto}).get("id")
