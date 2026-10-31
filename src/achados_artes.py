@@ -68,9 +68,12 @@ def _ajustar(d, texto, fabrica, tam, largura, minimo=44):
     return fabrica(minimo)
 
 
-def _barra_quero(d, pos, y):
+def _barra_quero(d, pos, y, num=None):
+    """Faixa do QUERO N. No TikTok (num = número do achado) não tem direct: manda digitar o número na bio."""
     fc = imagem._fonte(46, "ExtraBold")
     partes = [("COMENTE ", imagem.BRANCO), (f"QUERO {pos}", imagem.DOURADO_CLARO), (" E RECEBA O LINK", imagem.BRANCO)]
+    if num:
+        partes = [("DIGITE ", imagem.BRANCO), (f"#{num}", imagem.DOURADO_CLARO), (" NO LINK DO PERFIL", imagem.BRANCO)]
     x = (L - sum(d.textlength(t, font=fc) for t, _ in partes)) / 2
     for t, cor in partes:
         d.text((x, y), t, font=fc, fill=cor)
@@ -78,18 +81,19 @@ def _barra_quero(d, pos, y):
 
 
 # ================================================================== GARIMPO VIP — produto
-def produto_garimpo(v, oferta, foto, pos, destino):
+def produto_garimpo(v, oferta, foto, pos, destino, tiktok=False):
+    num = oferta.get("num") if tiktok else None
     if v == 1:
-        img = _mina(oferta, foto, pos)
+        img = _mina(oferta, foto, pos, num)
     elif v == 2:
-        img = _ouro(oferta, foto, pos)
+        img = _ouro(oferta, foto, pos, num)
     else:   # 0: o cartão do feed com o selo do número
         imagem.gerar(oferta, destino, foto=foto, moldura=False)
         img = Image.open(destino).convert("RGB")
         d = ImageDraw.Draw(img)
         _selo_numero(d, 74, 74, 56, imagem.DOURADO, imagem.ESCURO, imagem._fonte(76, "Black"), pos, imagem.ESCURO)
         d.rectangle([0, A - 118, L, A], fill=imagem.ESCURO)
-        _barra_quero(d, pos, A - 84)
+        _barra_quero(d, pos, A - 84, num)
     img = lojas_arte.moldura_oficial(img, oferta)   # marca oficial da Awin: moldura da marca
     img.save(destino, "JPEG", quality=90, optimize=True)
 
@@ -151,7 +155,7 @@ def _selo_numero(d, cx, cy, r, fundo, contorno, fonte, pos, cor):
     d.text((cx, cy + 2), str(pos), font=fonte, fill=cor, anchor="mm")
 
 
-def _mina(o, foto, pos):
+def _mina(o, foto, pos, num=None):
     from . import top
     f = top._f
     im = Image.new("RGB", (L, A))
@@ -183,7 +187,7 @@ def _mina(o, foto, pos):
     top._ctext(d, y + 12, "a partir de" if variacoes else "por", f(30), top.BEGE)
     top._ctext(d, y + 44, _brl_linha(o), f(80), top.AM, 4, borda)
     top._ctext(d, y + 150, _info(o), f(32), top.BR)
-    t = f"Comenta  QUERO {pos}  que o Zé te manda o link"
+    t = f"Digite  #{num}  no link do perfil" if num else f"Comenta  QUERO {pos}  que o Zé te manda o link"
     ft = f(34)
     w = d.textlength(t, font=ft)
     d.rounded_rectangle(((L - w) / 2 - 30, A - 112, (L + w) / 2 + 30, A - 44), 34, fill=top.VERDE)
@@ -191,7 +195,7 @@ def _mina(o, foto, pos):
     return im
 
 
-def _ouro(o, foto, pos):
+def _ouro(o, foto, pos, num=None):
     im = Image.new("RGB", (L, A), (226, 178, 54))
     d = ImageDraw.Draw(im)
     d.ellipse((-260, -260, 640, 640), fill=(238, 200, 98))
@@ -215,7 +219,7 @@ def _ouro(o, foto, pos):
     _centro(d, y + 6, _brl_linha(o), imagem._fonte(104, "Black"), imagem.ESCURO)
     _centro(d, y + 128, _info(o), imagem._fonte(32, "SemiBold"), (92, 58, 12))
     d.rectangle([0, A - 118, L, A], fill=imagem.ESCURO)
-    _barra_quero(d, pos, A - 84)
+    _barra_quero(d, pos, A - 84, num)
     return im
 
 
@@ -332,7 +336,7 @@ def fim_de_mes(hoje=None):
     return dia >= 25 or dia <= 5
 
 
-def final_garimpo(v, n, n_variante, youtube=False, frase=None):
+def final_garimpo(v, n, n_variante, youtube=False, frase=None, tiktok=False):
     from . import top
     tipo = "semana" if v % N_FINAL_GARIMPO == 0 else "mes"   # laranja (saída da mina) ou azul (noite)
     tm = top.TEMAS[tipo]
@@ -344,18 +348,22 @@ def final_garimpo(v, n, n_variante, youtube=False, frase=None):
     es = tm["borda"]
     top._ctext(d, 830, FINAIS_GARIMPO[n_variante % 3], top._f(66), top.AM, 5, es)
     fim = "que o Zé te responde aqui" if youtube else "que o Zé te manda o link no direct"
-    for i, ln in enumerate([f"Comenta  QUERO + o número (1 a {n})", fim]):
+    linhas = [f"Comenta  QUERO + o número (1 a {n})", fim]
+    if tiktok:   # TikTok: sem direct e sem link no comentário → o número do achado na página da bio
+        linhas = ["Digite o número do achado (#)", "no link do perfil e abre na loja"]
+    for i, ln in enumerate(linhas):
         top._ctext(d, 935 + i * 60, ln, top._f(42), top.BR, 3, es)
     extras = []
     if frase:   # "Conhece alguém...? Manda..." quebra em duas linhas na interrogação
         pergunta, _, resto = frase.partition("? ")
         extras += [(pergunta + "?", top.AM), (resto, top.AM)] if resto else [(frase, top.AM)]
-    if not youtube and fim_de_mes():   # salvar é o 2º sinal mais forte; no YouTube não tem "salvar"
+    if not youtube and not tiktok and fim_de_mes():   # salvar é o 2º sinal mais forte; no YouTube não tem "salvar"
         extras.append(("Salva o post pra quando cair o pagamento", top.BR))
     for i, (ln, cor) in enumerate(extras):
         f = _ajustar(d, ln, top._f, 36, L - 100, minimo=28)
         top._ctext(d, 1068 + i * 46, ln, f, cor, 3, es)
-    t = f"Segue o @{config.ARROBA.lstrip('@')} pra não perder o próximo"
+    t = ("Segue o Zé pra não perder o próximo" if tiktok
+         else f"Segue o @{config.ARROBA.lstrip('@')} pra não perder o próximo")
     f = top._f(30)
     w = d.textlength(t, font=f)
     d.rounded_rectangle(((L - w) / 2 - 30, A - 130, (L + w) / 2 + 30, A - 62), 34, fill=top.AM)

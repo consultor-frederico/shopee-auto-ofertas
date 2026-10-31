@@ -22,7 +22,7 @@ from datetime import timedelta
 
 from PIL import Image, ImageDraw
 
-from . import achados_artes as artes, aliexpress, config, imagem, instagram, marcas, vitrine
+from . import achados_artes as artes, aliexpress, config, imagem, instagram, marcas, numeros, tiktok_kit, vitrine
 from .garimpar import FMT, agora, carregar_fila, salvar_fila
 
 ANA = config.PERFIL == "ana"
@@ -92,9 +92,36 @@ def escolher(fila, conferir=True):
 
 
 # ---------------------------------------------------------------- slides dos produtos
-def slide_produto(oferta, foto, pos, destino, v=0):
-    """Arte do produto no estilo `v` (0 = a do feed da conta; 1 e 2 = versões diferentes), com o número para "QUERO 2"."""
-    (artes.produto_ana if ANA else artes.produto_garimpo)(v % artes.N_PRODUTO, oferta, foto, pos, destino)
+def slide_produto(oferta, foto, pos, destino, v=0, tiktok=False):
+    """Arte do produto no estilo `v` (0 = a do feed da conta; 1 e 2 = versões diferentes), com o número para "QUERO 2".
+    tiktok=True (só Garimpo): a faixa manda digitar o número do achado no link do perfil."""
+    if ANA:
+        artes.produto_ana(v % artes.N_PRODUTO, oferta, foto, pos, destino)
+    else:
+        artes.produto_garimpo(v % artes.N_PRODUTO, oferta, foto, pos, destino, tiktok=tiktok)
+
+
+def slides_tiktok(itens, pasta, prefixo, v, capa_img=None):
+    """Versão TikTok (Modo Foto) do carrossel: capa, todos os produtos com "digite #142 no link do perfil" e o
+    slide final sem QUERO. Devolve os nomes dos arquivos em `pasta` (vazio se o kit do TikTok está desligado)."""
+    if not tiktok_kit.ligado():
+        return []
+    try:
+        if not capa_img:   # de manhã o Instagram abre com o vídeo do Zé; no TikTok a capa é sempre a de produto
+            capa_img = f"{prefixo}-tiktok-capa.jpg"
+            artes.capa_produto(itens[0]["oferta"], itens[0]["foto"], len(itens) - 1, "joia", pasta / capa_img)
+        arqs = [capa_img]
+        for i, it in enumerate(itens, 1):
+            nome = f"{prefixo}-tiktok-{i}.jpg"
+            slide_produto(it["oferta"], it["foto"], i, pasta / nome, v, tiktok=True)
+            arqs.append(nome)
+        nome = f"{prefixo}-tiktok-fim.jpg"
+        artes.final_garimpo(v, len(itens), v, tiktok=True).save(pasta / nome, quality=92)
+        arqs.append(nome)
+        return arqs
+    except Exception as e:
+        print(f"::warning::Slides do TikTok não saíram ({e}); o carrossel sai mesmo assim.")
+        return []
 
 
 # ---------------------------------------------------------------- slide final
@@ -231,12 +258,13 @@ def titulo_short(itens):
 
 def descricao_short(itens, legenda_ig):
     lista = "\n".join(f"{NUM[i]} {_curto(it.get('titulo') or it['nome'])} — R$ {it['preco_fmt']}"
+                      + (f" (achado #{it['num']})" if it.get("num") else "")
                       for i, it in enumerate(itens))
     tags = " ".join(t for t in legenda_ig.split() if t.startswith("#"))
     return (f"O Zé garimpou {len(itens)} achados com nota alta e muita venda:\n\n{lista}\n\n"
             f"👇 Comenta QUERO + o número aqui que o Zé te responde. Ou comenta no carrossel do Instagram "
             f"{config.ARROBA} que o Zé manda o link no direct. Ofertas o dia todo no Telegram: t.me/garimpovipofertas\n"
-            f"Todos os achados de hoje: https://{config.PAGINA_BIO}\n\n"
+            f"Todos os achados de hoje: https://{config.PAGINA_BIO} (digite o número do achado e abre direto na loja)\n\n"
             "Preços conferidos na hora do post, podem mudar na loja. Links de afiliado: você paga o mesmo.\n\n"
             f"{tags} #shorts #achadinhos")
 
@@ -248,7 +276,9 @@ def legenda(itens):
     if ANA:
         linhas = [f"💚 {n} achadinhos que eu separei pra você hoje!", ""]
     else:
-        linhas = [f"🤠 O Zé garimpou {n} achados pra você hoje! ⛏️", ""]
+        # 31/10/2026: a 1ª linha leva as palavras de busca (Instagram também busca por palavra-chave)
+        linhas = [tiktok_kit.linha_busca([it["oferta"] for it in itens]) + " 🤠⛏️",
+                  f"O Zé garimpou {n} achados pra você hoje!", ""]
     for i, it in enumerate(itens):
         o = it["oferta"]
         linhas.append(f"{NUM[i]} {_curto(o['titulo'])} — R$ {o['preco_fmt']}")
@@ -327,8 +357,10 @@ def gerar(itens, pasta):
     except Exception as e:
         print(f"::warning::Story do carrossel não saiu ({e}); o carrossel sai mesmo assim.")
         story = None
-    return {"arquivos": arqs, "clipe": clipe, "story": story, "short": short,
-            "itens": [{k: it["oferta"].get(k) for k in ("id", "nome", "titulo", "preco_fmt", "link_afiliado", "plataforma", "imagem")}
+    tiktok = slides_tiktok(itens, pasta, f"achados-{marca}", v, arqs[0] if capa else None)
+    return {"arquivos": arqs, "clipe": clipe, "story": story, "short": short, "tiktok": tiktok,
+            "legenda_tiktok": tiktok_kit.legenda([it["oferta"] for it in itens]) if tiktok else "",
+            "itens": [{k: it["oferta"].get(k) for k in ("id", "nome", "titulo", "preco_fmt", "link_afiliado", "plataforma", "imagem", "num")}
                       for it in itens]}
 
 
@@ -339,6 +371,9 @@ def preparar():
         return
     fila = carregar_fila()
     itens = escolher(fila)
+    if len(itens) >= MINIMO:
+        for it in itens:   # número fixo do achado (#142), para o TikTok/YouTube e a busca da página da bio
+            numeros.numerar(it["oferta"])
     salvar_fila(fila)   # guarda o que foi descartado na conferência de preço
     if len(itens) < MINIMO:
         print(f"⚠️  Só {len(itens)} produtos bons na fila — não vale postar carrossel tão curto.")
@@ -401,6 +436,8 @@ def publicar():
     ARQ_ESTADO.write_text(json.dumps(estado, ensure_ascii=False, indent=2), encoding="utf-8")
     ARQ_PROXIMO.unlink(missing_ok=True)
     print(f"✅ Carrossel de achados publicado ({config.ARROBA}): {permalink or media_id}")
+    if info.get("tiktok"):
+        tiktok_kit.enviar([PASTA_SITE / "midia" / "achados" / a for a in info["tiktok"]], info["legenda_tiktok"])
     if info.get("story"):
         try:
             surl = f"{base}/midia/achados/{info['story']}"

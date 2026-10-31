@@ -93,6 +93,9 @@ jobs:
           IG_ACCESS_TOKEN_ANA: ${{ secrets.IG_ACCESS_TOKEN_ANA }}
           PAGES_URL: ${{ steps.deploy.outputs.page_url || steps.deploy2.outputs.page_url }}
           # Garimpo VIP: o mesmo carrossel vai para a Página do Facebook e para o YouTube Shorts
+          # kit do TikTok (slides + legenda) no Telegram privado do Fred (src/tiktok_kit.py)
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_PRIVADO: ${{ secrets.TELEGRAM_CHAT_PRIVADO }}
           FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
           FB_PAGE_TOKEN: ${{ secrets.FB_PAGE_TOKEN }}
           YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
