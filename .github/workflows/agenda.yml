@@ -53,11 +53,13 @@ jobs:
           # Para pausar: troque ANA_LIGADA=1 por ANA_LIGADA=0.
           ANA_LIGADA=1
           ANA=""
-          case "$HQ" in 06:30|11:30|17:00) ANA="$ANA garimpo.yml" ;; esac
-          # 17/10/2026: carrossel de achados que abre com a Ana: 3 por dia (a Ana não tem mais post de oferta solta)
-          case "$HQ" in 09:15|14:30|19:15) ANA="$ANA achados.yml" ;; esac
+          # 31/10/2026: Ana em stand-by (decisão do Fred: concentrar no Garimpo). Só 1 carrossel por dia (19:15)
+          # e 1 busca de ofertas (17:00); post próprio da Ana (ze.yml) pausado.
+          # Para voltar ao normal: busca 06:30|11:30|17:00, carrossel 09:15|14:30|19:15 e descomentar o ze.yml.
+          case "$HQ" in 17:00) ANA="$ANA garimpo.yml" ;; esac
+          case "$HQ" in 19:15) ANA="$ANA achados.yml" ;; esac
           if [ "$HQ" = "08:45" ] && [ "$DOW" = "1" ]; then ANA="$ANA token.yml"; fi
-          if [ "$HQ" = "16:00" ]; then ANA="$ANA ze.yml"; fi        # post próprio da Ana: terças, quintas e sábados (ANA_DIAS)
+          # if [ "$HQ" = "16:00" ]; then ANA="$ANA ze.yml"; fi        # post próprio da Ana: terças, quintas e sábados (ANA_DIAS)
           # Posts de marca aprovados pelo Fred (manuais/posts.json), dia e horário combinados (Brasília)
           DATA=$(date +%F); MANUAL=""
           case "$DATA $HQ" in
