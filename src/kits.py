@@ -20,7 +20,7 @@ from datetime import timedelta
 
 from PIL import Image, ImageDraw, ImageOps
 
-from . import config, imagem, instagram
+from . import config, imagem, instagram, numeros, tiktok_kit
 from .garimpar import FMT, agora, carregar_fila, normalizar, salvar_fila
 
 ANA = config.PERFIL == "ana"
@@ -329,7 +329,9 @@ COMPARTILHA = {"banheiro": "Conhece alguém arrumando o banheiro? Manda esse kit
 
 
 def gerar(tema, itens, pasta):
-    from .achados import slide_final, slide_produto
+    from .achados import slide_final, slide_produto, slides_tiktok
+    for it in itens:   # número fixo do achado (#142): TikTok, YouTube e busca da página da bio
+        numeros.numerar(it["oferta"])
     pasta.mkdir(parents=True, exist_ok=True)
     marca = int(time.time())
     v = len(_carregar_estado()["temas"])
@@ -344,10 +346,13 @@ def gerar(tema, itens, pasta):
     nome = f"kit-{tema}-{marca}-{len(itens) + 2}.jpg"
     slide_final(len(itens), v, COMPARTILHA.get(tema)).save(pasta / nome, quality=92)
     arqs.append(nome)
+    tiktok = slides_tiktok(itens, pasta, f"kit-{tema}-{marca}", v, arqs[0])
     return {"tema": tema, "titulo": TEMAS[tema]["titulo"], "arquivos": arqs, "legenda": legenda(tema, itens),
+            "tiktok": tiktok, "legenda_tiktok": tiktok_kit.legenda([it["oferta"] for it in itens], TEMAS[tema]["titulo"])
+            if tiktok else "",
             "itens": [{k: it["oferta"].get(k) for k in ("id", "nome", "titulo", "preco_fmt", "preco", "link_afiliado",
                                                          "plataforma", "imagem", "nota", "vendas", "comissao",
-                                                         "comissao_pct", "loja", "categoria", "palavra")}
+                                                         "comissao_pct", "loja", "categoria", "palavra", "num")}
                       for it in itens]}
 
 
@@ -414,7 +419,12 @@ def publicar():
         reg = fila["ofertas"].setdefault(it["id"], dict(it, criado_em=agora_s))
         reg.update({"status": "postado", "formato": "kit", "postado_em": agora_s, "postado_ts": time.time(),
                     "achados_post": media_id, "permalink": permalink})
+        if it.get("num"):
+            reg["num"] = it["num"]
     salvar_fila(fila)
+    if not ANA:   # os achados do kit entram na página da bio (e na busca pelo número)
+        from . import vitrine
+        vitrine.gerar()
     if not ANA:
         extras = espelhar(dict(info, short=None), urls, base)
         if extras:
@@ -423,6 +433,8 @@ def publicar():
     estado = _carregar_estado()
     estado["temas"][info["tema"]] = agora_s
     ARQ_ESTADO.write_text(json.dumps(estado, ensure_ascii=False, indent=2), encoding="utf-8")
+    if info.get("tiktok"):
+        tiktok_kit.enviar([PASTA_SITE / "midia" / "kits" / x for x in info["tiktok"]], info["legenda_tiktok"])
     ARQ_PROXIMO.unlink(missing_ok=True)
     print(f"✅ Kit {info['tema']} publicado ({config.ARROBA}): {permalink or media_id}")
 
