@@ -98,8 +98,8 @@ def slide_produto(oferta, foto, pos, destino, v=0):
 
 
 # ---------------------------------------------------------------- slide final
-def slide_final(n, v):
-    return artes.final_ana(v, n) if ANA else artes.final_garimpo(v, n, v)
+def slide_final(n, v, frase=None):
+    return artes.final_ana(v, n) if ANA else artes.final_garimpo(v, n, v, frase=frase)
 
 
 # ---------------------------------------------------------------- vídeo de abertura
@@ -307,14 +307,15 @@ def gerar(itens, pasta):
         slide_produto(it["oferta"], it["foto"], i - 1, pasta / nome, v)
         arqs.append(nome)
     nome = f"achados-{marca}-{len(itens) + 2}.jpg"
-    slide_final(len(itens), v).save(pasta / nome, quality=92)
+    frase = artes.frase_compartilhar([it["oferta"] for it in itens], v)
+    slide_final(len(itens), v, frase).save(pasta / nome, quality=92)
     arqs.append(nome)
     short = None
     if not ANA and os.getenv("ACHADOS_SHORT", "1") != "0":
         try:
             short = f"achados-{marca}-short.mp4"
             fim_yt = f"achados-{marca}-final-yt.jpg"   # no YouTube não tem direct: o slide final muda
-            artes.final_garimpo(v, len(itens), v, youtube=True).save(pasta / fim_yt, quality=92)
+            artes.final_garimpo(v, len(itens), v, youtube=True, frase=frase).save(pasta / fim_yt, quality=92)
             gerar_short(pasta, ([video] if capa else []) + arqs[:-1] + [fim_yt], pasta / short)
         except Exception as e:
             print(f"::warning::Short do YouTube não saiu ({e}); o carrossel sai mesmo assim.")
@@ -327,7 +328,7 @@ def gerar(itens, pasta):
         print(f"::warning::Story do carrossel não saiu ({e}); o carrossel sai mesmo assim.")
         story = None
     return {"arquivos": arqs, "clipe": clipe, "story": story, "short": short,
-            "itens": [{k: it["oferta"].get(k) for k in ("id", "nome", "titulo", "preco_fmt", "link_afiliado", "plataforma")}
+            "itens": [{k: it["oferta"].get(k) for k in ("id", "nome", "titulo", "preco_fmt", "link_afiliado", "plataforma", "imagem")}
                       for it in itens]}
 
 

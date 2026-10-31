@@ -309,7 +309,30 @@ def _circulo(o, foto, pos):
 
 
 # ================================================================== slides finais
-def final_garimpo(v, n, n_variante, youtube=False):
+# Linha de "manda pra alguém" no slide final (30/10/2026, ideia do Gemini): DM é o sinal que mais leva o post a quem
+# não segue. Cita um dos produtos (o número muda a cada carrossel) e quem ia gostar dele, pela categoria.
+QUEM_CATEGORIA = {"pet": "que tem pet em casa", "automotivo": "que vive dentro do carro",
+                  "brinquedos": "que tem criança em casa", "lar": "que tá montando a casa",
+                  "eletronicos": "viciado em tecnologia", "masculino": "que ia curtir esse presente"}
+
+
+def frase_compartilhar(ofertas, v):
+    """'Conhece alguém que tem pet em casa? Manda o 3 pra essa pessoa' (ou a geral, sem categoria conhecida)."""
+    com_cat = [(i, o) for i, o in enumerate(ofertas, 1) if o.get("categoria") in QUEM_CATEGORIA]
+    if not com_cat:
+        return "Lembrou de alguém? Manda esse post pra essa pessoa"
+    i, o = com_cat[v % len(com_cat)]
+    return f"Conhece alguém {QUEM_CATEGORIA[o['categoria']]}? Manda o {i} pra essa pessoa"
+
+
+def fim_de_mes(hoje=None):
+    """Do dia 25 ao dia 5 (salário longe ou recém-caído): o slide final lembra de salvar o post."""
+    from .garimpar import agora
+    dia = (hoje or agora()).day
+    return dia >= 25 or dia <= 5
+
+
+def final_garimpo(v, n, n_variante, youtube=False, frase=None):
     from . import top
     tipo = "semana" if v % N_FINAL_GARIMPO == 0 else "mes"   # laranja (saída da mina) ou azul (noite)
     tm = top.TEMAS[tipo]
@@ -323,6 +346,15 @@ def final_garimpo(v, n, n_variante, youtube=False):
     fim = "que o Zé te responde aqui" if youtube else "que o Zé te manda o link no direct"
     for i, ln in enumerate([f"Comenta  QUERO + o número (1 a {n})", fim]):
         top._ctext(d, 935 + i * 60, ln, top._f(42), top.BR, 3, es)
+    extras = []
+    if frase:   # "Conhece alguém...? Manda..." quebra em duas linhas na interrogação
+        pergunta, _, resto = frase.partition("? ")
+        extras += [(pergunta + "?", top.AM), (resto, top.AM)] if resto else [(frase, top.AM)]
+    if not youtube and fim_de_mes():   # salvar é o 2º sinal mais forte; no YouTube não tem "salvar"
+        extras.append(("Salva o post pra quando cair o pagamento", top.BR))
+    for i, (ln, cor) in enumerate(extras):
+        f = _ajustar(d, ln, top._f, 36, L - 100, minimo=28)
+        top._ctext(d, 1068 + i * 46, ln, f, cor, 3, es)
     t = f"Segue o @{config.ARROBA.lstrip('@')} pra não perder o próximo"
     f = top._f(30)
     w = d.textlength(t, font=f)
