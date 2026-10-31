@@ -93,7 +93,8 @@ def gerar_arte(destino, variante, n_semana, alvo="telegram"):
     corte = x1 - (270 if pagina else 170)   # linha pontilhada do bilhete (na vitrine, o Zé fica à direita)
     for yy in range(y0 + 40, y1 - 30, 34):
         d.line([corte, yy, corte, yy + 16], fill=DOURADO, width=4)
-    t1, t2 = (TITULOS_PAGINA if pagina else TITULOS)[variante % len(TITULOS)]
+    titulos = TITULOS_PAGINA if pagina else TITULOS
+    t1, t2 = titulos[variante % len(titulos)]   # cada lista tem seu tamanho (a da vitrine tem 1 só)
     largura = corte - x0 - 110
 
     def caber(txt, tam, peso):
@@ -181,7 +182,7 @@ def preparar():
     legendas = LEGENDAS_PAGINA if alvo == "pagina" else LEGENDAS
     legenda = legendas[variante % len(legendas)] + "\n\n" + (HASHTAGS_PAGINA if alvo == "pagina" else HASHTAGS)
     ARQ_PROX.write_text(json.dumps({"arquivo": f"midia/{nome}", "legenda": legenda}), encoding="utf-8")
-    print(f"🎬 Chamada preparada ({alvo}, variante {variante % len(TITULOS)}).")
+    print(f"🎬 Chamada preparada ({alvo}, variante {variante % len(legendas)}).")
     _saida("tem_post", "true")
 
 
