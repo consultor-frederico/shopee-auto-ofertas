@@ -456,6 +456,11 @@ def publicar():
     if ANA:   # a Ana só tem Instagram (Facebook e YouTube são do Garimpo VIP)
         _salvar(dados)
         return
+    try:   # TikTok: o vídeo vai como rascunho para o app do Fred (src/tiktok_kit.py)
+        from . import tiktok_kit
+        tiktok_kit.enviar_video(url, prox["legenda"])
+    except Exception as e:
+        print(f"::warning::TikTok do Zé falhou: {e}")
     if facebook.configurado():
         try:
             reg["fb_post"] = facebook.postar_video(url, legenda_facebook(prox["legenda"]))

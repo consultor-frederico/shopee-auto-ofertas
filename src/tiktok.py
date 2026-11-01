@@ -85,7 +85,18 @@ def postar_fotos(urls, titulo, descricao):
     dados = _post("/post/publish/content/init/", tok, {
         "post_info": post_info, "post_mode": post_mode, "media_type": "PHOTO",
         "source_info": {"source": "PULL_FROM_URL", "photo_cover_index": 0, "photo_images": list(urls)[:35]}})
-    pid = dados.get("publish_id")
+    return _aguardar(tok, dados.get("publish_id"))
+
+
+def postar_video(url):
+    """Manda um vídeo (URL pública e verificada) para a caixa de entrada do app (rascunho). O TikTok não aceita
+    legenda nesse modo: ela vai no Telegram para colar. Devolve (publish_id, situação final)."""
+    tok = access_token()
+    dados = _post("/post/publish/inbox/video/init/", tok, {"source_info": {"source": "PULL_FROM_URL", "video_url": url}})
+    return _aguardar(tok, dados.get("publish_id"))
+
+
+def _aguardar(tok, pid):
     situacao = "?"
     for _ in range(20):   # o TikTok baixa as fotos e processa: até ~2 min
         time.sleep(6)

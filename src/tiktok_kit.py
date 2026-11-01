@@ -118,3 +118,38 @@ def enviar(arquivos, texto):
         print("🎵 Kit do TikTok enviado no Telegram privado.")
     except Exception as e:   # nunca derruba o post do Instagram
         print(f"::warning::Kit do TikTok não foi: {e}")
+
+
+def legenda_ze(texto):
+    """Legenda do Reels do Zé para o TikTok: só o 1º parágrafo (sem o 'comenta QUERO'), a vitrine e 5 hashtags."""
+    corpo = texto.split("\n\n")[0].replace("#", "").strip()
+    return (f"{corpo}\n\n👉 Os achados do Zé com link estão no perfil ({config.PAGINA_BIO}).\n\n"
+            "#zegarimpo #garimpovip #achadinhos #achadinhosshopee #achadosdashopee")
+
+
+def enviar_video(url, texto):
+    """Reels do Zé: vídeo como rascunho no app do TikTok (se a API estiver ligada) e a legenda no Telegram."""
+    if not ligado():
+        return
+    from . import tiktok, whatsapp_kit
+    aviso = ""
+    if tiktok.ligado():
+        try:
+            _, situacao = tiktok.postar_video(url)
+            print(f"🎵 Vídeo do Zé no TikTok (rascunho): {situacao}")
+            aviso = ("🎵 TikTok: o vídeo do Zé já está na caixa de entrada do app (Mensagens → Notificações do sistema). "
+                     "Abre, cola a legenda abaixo e posta.")
+        except Exception as e:
+            print(f"::warning::Vídeo do Zé no TikTok não foi: {e}")
+            aviso = f"⚠️ A API do TikTok falhou no vídeo do Zé ({str(e)[:150]}). Dá para baixar e postar: {url}"
+    else:
+        aviso = f"🎵 Vídeo do Zé para o TikTok: {url}"
+    chat = whatsapp_kit.chat_privado()
+    if not (chat and os.getenv("TELEGRAM_BOT_TOKEN", "").strip()):
+        return
+    try:
+        from . import telegram
+        telegram._api("sendMessage", data={"chat_id": chat, "text": aviso})
+        telegram._api("sendMessage", data={"chat_id": chat, "text": legenda_ze(texto)[:4000]})
+    except Exception as e:
+        print(f"::warning::Aviso do TikTok no Telegram não foi: {e}")

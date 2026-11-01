@@ -75,7 +75,21 @@ jobs:
           YT_CLIENT_ID: ${{ secrets.YT_CLIENT_ID }}
           YT_CLIENT_SECRET: ${{ secrets.YT_CLIENT_SECRET }}
           YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
+          # TikTok: vídeo do Zé como rascunho no app + legenda no Telegram privado (src/tiktok_kit.py)
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_PRIVADO: ${{ secrets.TELEGRAM_CHAT_PRIVADO }}
+          TIKTOK_CLIENT_KEY: ${{ secrets.TIKTOK_CLIENT_KEY }}
+          TIKTOK_CLIENT_SECRET: ${{ secrets.TIKTOK_CLIENT_SECRET }}
+          TIKTOK_REFRESH_TOKEN: ${{ secrets.TIKTOK_REFRESH_TOKEN }}
         run: python -m src.ze publicar
+
+      - name: Guardar o token novo do TikTok
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          [ -f "$RUNNER_TEMP/tiktok_refresh.txt" ] && [ -n "$GH_TOKEN" ] || exit 0
+          gh secret set TIKTOK_REFRESH_TOKEN -R "${{ github.repository }}" < "$RUNNER_TEMP/tiktok_refresh.txt"
       - name: Primeiro comentário do Zé no último Reels (se ainda não tiver)
         if: always() && steps.prep.outcome == 'success'
         continue-on-error: true
