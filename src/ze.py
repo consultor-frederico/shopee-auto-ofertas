@@ -358,7 +358,12 @@ def preparar():
         dias = ", ".join(NOMES_DIAS[d] for d in sorted(DIAS_SEMANA))
         print(f"⏳ {'A Ana' if ANA else 'O Zé'} posta sozinho às {dias} (uma vez no dia). Hoje não.")
         return
-    video = video_da_vez(dados)
+    marco = None
+    if not ANA:   # 🎉 passou de 150, 200, 250... seguidores: o post do dia vira a comemoração (src/marcos.py)
+        from . import marcos
+        if marcos.LIGADO:
+            marco = marcos.marco_da_vez(marcos.seguidores())
+    video = marcos.VIDEO if marco else video_da_vez(dados)
     if not video:
         print(f"⚠️  Nenhum vídeo {PREFIXO}*.mp4 em {PASTA}.")
         return
@@ -369,7 +374,15 @@ def preparar():
         (PASTA_SITE / fixo.name).write_text(fixo.read_text(encoding="utf-8"), encoding="utf-8")
     nome = f"{PREFIXO[:-1]}-{int(time.time())}.mp4"
     busca = ANA and "busca" in video.name   # chamada da Busca da Ana: faixa por cima + legenda #BuscaDaAna
-    if busca:
+    if marco:
+        try:
+            marcos.gravar_video(marco, pasta / nome)
+        except Exception as e:
+            print(f"::warning::Vídeo do marco de {marco} falhou ({e}); sai o post normal do Zé.")
+            marco, video = None, video_da_vez(dados)
+    if marco:
+        pass
+    elif busca:
         from . import busca_reels
         busca_reels.gravar_faixa(video, pasta / nome)   # já põe a música
     else:
@@ -383,7 +396,7 @@ def preparar():
             shutil.copy(video, pasta / nome)
     com_trilha = "comtrilha" in video.name   # *_comtrilha.mp4 já tem trilha própria: não põe música
     # Ana: todo vídeo sem _comtrilha recebe música. Zé: só os marcados _semtrilha (os antigos já têm música gravada).
-    precisa_musica = (not com_trilha) and (ANA or "semtrilha" in video.name)
+    precisa_musica = (not com_trilha) and (ANA or "semtrilha" in video.name) and not marco
     if MUSICA_LIGADA and not busca and precisa_musica:   # põe musiquinha (mais baixa quando ela fala)
         musicas = escolher_musicas({"id": video.name}, _duracao(pasta / nome))
         if musicas:
@@ -395,14 +408,16 @@ def preparar():
             except Exception as e:
                 print(f"::warning::Música não entrou ({e}); o vídeo sai só com a voz.")
     n = len(dados["posts"])
-    if busca:
+    if marco:
+        leg = marcos.legenda(marco)
+    elif busca:
         from . import busca_reels
         leg = busca_reels.LEGENDAS[0] + "\n\n" + busca_reels.HASHTAGS
     elif ANA:
         leg = _legenda_propria(n) + "\n\n" + PEDIDO_ANA + "\n\n" + HASHTAGS_ANA
     else:
         leg = _legenda_propria(n) + "\n\n" + PEDIDO + ("\n" + config.LEMBRETE_BIO if config.LEMBRETE_BIO else "") + "\n\n" + HASHTAGS
-    ARQ_PROX.write_text(json.dumps({"arquivo": f"midia/{nome}", "video": video.name, "legenda": leg},
+    ARQ_PROX.write_text(json.dumps({"arquivo": f"midia/{nome}", "video": video.name, "legenda": leg, "marco": marco},
                                    ensure_ascii=False), encoding="utf-8")
     print(f"🎬 Post {'da Ana' if ANA else 'do Zé'} preparado: {video.name}")
     _saida("tem_post", "true")
@@ -425,6 +440,10 @@ def publicar():
     dados = _carregar()
     dados["posts"].append(reg)
     _salvar(dados)
+    if prox.get("marco"):
+        from . import marcos
+        marcos.registrar(prox["marco"], media)
+        print(f"🎉 Marco de {prox['marco']} seguidores comemorado.")
     ARQ_PROX.unlink(missing_ok=True)
     print(f"✅ {'Ana' if ANA else 'Zé'} publicado no Instagram ({config.ARROBA}): {reg['permalink'] or media}")
     try:
