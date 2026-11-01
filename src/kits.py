@@ -204,7 +204,8 @@ def melhor_do_termo(termo, teto, fila, ja, tema_titulo=""):
 PROMPT_IA = """Estou montando um post "{tema}" com achados da Shopee. Para o item "{termo}", encontrei
 os produtos abaixo (número: nome). Quais SÃO de fato um(a) "{termo}" e combinam com o tema "{tema}"?
 Não conta acessório, peça, refil, nem produto de outro tipo que só cita a palavra (ex.: buscando "organizador de
-banheiro", sapateira ou organizador de armário NÃO servem).
+banheiro", sapateira ou organizador de armário NÃO servem). Também NÃO serve produto com personagem, desenho,
+herói, time ou marca famosa (ex.: mochila da Patrulha Canina, copo do Homem-Aranha): é risco de réplica.
 Para cada um que servir, escreva um título curto em português, de 2 a 5 palavras, sem marca, sem medidas e sem
 palavras de anúncio (ex.: "Dispenser de sabonete automático").
 Responda só com JSON {{"ok": [{{"n": número, "titulo": "..."}}]}}, do mais adequado para o menos.

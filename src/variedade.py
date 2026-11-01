@@ -64,7 +64,9 @@ FRANQUIAS = ["transformers", "optimus", "bumblebee", "megatron", "marvel", "iron
              "spider", "batman", "vingadores", "avengers", "disney", "stitch", "pokemon", "my little pony",
              "gabby", "hello kitty", "sanrio", "kuromi", "naruto", "dragon ball", "one piece", "harry potter",
              "hogwarts", "barbie", "frozen", "minecraft", "sonic", "mario", "star wars", "lego", "patrulha canina",
-             "peppa", "bluey", "hot wheels", "capitao america", "hulk", "wandinha", "labubu"]
+             "peppa", "bluey", "hot wheels", "capitao america", "hulk", "wandinha", "labubu", "paw patrol",
+             "mickey", "minnie", "toy story", "carros mcqueen", "mcqueen", "galinha pintadinha",
+             "mundo bita", "patati", "free fire", "fortnite", "roblox", "among us"]
 
 
 def franquia(o):
