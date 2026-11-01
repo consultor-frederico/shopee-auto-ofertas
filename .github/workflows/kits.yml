@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       tema:
-        description: 'Tema (vazio = o da vez; na prévia, "todos" testa todos)'
+        description: 'Tema (vazio = o da vez; na prévia, "todos" testa todos ou separe por vírgula: pet,infantil)'
         default: ''
       so_previa:
         description: 'Só gerar a prévia (não posta; os slides ficam em data/relatorios/kits)'

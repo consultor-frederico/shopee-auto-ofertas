@@ -12,6 +12,7 @@ Uso:
 """
 import json
 import os
+import random
 import re
 import shutil
 import sys
@@ -74,10 +75,14 @@ TEMAS = {
               "hashtags": "#festadefimdeano #decoracaodenatal #ceiadenatal"},
     "pet": {"titulo": "KIT DO PET", "teto": 80, "meses": [],
             "gancho": "Kit do pet: {n} achados até R$ {teto} pro seu bichinho",
+            # 01/11/2026: mais termos (o Fred pediu kit só de pet); a ordem é embaralhada a cada kit
             "termos": ["fonte bebedouro gato", "removedor de pelos", "comedouro elevado",
                        "brinquedo interativo gato", "cama pet", "escova para cachorro",
-                       "arranhador gato", "guia retrátil"],
-            "hashtags": "#petlovers #cachorro #gato"},
+                       "arranhador gato", "guia retrátil", "comedouro lento cachorro",
+                       "garrafa de água pet passeio", "cortador de unha pet", "tapete lambedor pet",
+                       "bolsa de transporte pet", "luva tira pelos pet", "porta saquinho cocô"],
+            "embaralhar": True,
+            "hashtags": "#petlovers #cachorro #gato #achadinhospet"},
     "carro": {"titulo": "CARRO EM ORDEM", "teto": 80, "meses": [],
               "gancho": "Carro em ordem: {n} achados até R$ {teto} pra quem vive no trânsito",
               "termos": ["organizador banco carro", "aspirador automotivo", "suporte celular carro",
@@ -90,6 +95,30 @@ TEMAS = {
                                "mouse pad grande", "apoio para os pés", "suporte de monitor",
                                "organizador de cabos", "luminária usb"],
                     "hashtags": "#homeoffice #escritorioemcasa #setup"},
+    # 01/11/2026: temas novos pedidos pelo Fred. "rodizio": False = só sai pedindo o tema (prévia ou workflow 28)
+    # até o Fred aprovar a prévia; depois é só tirar a linha.
+    "infantil": {"titulo": "KIT INFANTIL", "teto": 80, "meses": [], "rodizio": False,
+                 "gancho": "Kit infantil: {n} achados até R$ {teto} pra criançada",
+                 "termos": ["luminária infantil", "quadro magnético infantil", "organizador de brinquedos",
+                            "garrafa infantil", "lousa mágica lcd", "massinha de modelar kit",
+                            "mochila infantil", "kit pintura infantil", "quebra cabeça infantil",
+                            "toalha com capuz infantil"],
+                 "embaralhar": True,
+                 "hashtags": "#maternidade #brinquedos #achadinhosinfantis"},
+    "casa": {"titulo": "CASA EM ORDEM", "teto": 80, "meses": [], "rodizio": False,
+             "gancho": "Casa em ordem: {n} achados até R$ {teto} que mudam a rotina",
+             "termos": ["organizador de gaveta", "luminária com sensor de presença", "mop giratório",
+                        "saco a vácuo roupas", "cabide veludo", "organizador de sapatos",
+                        "porta chaves parede", "fita led", "rodo mágico", "umidificador de ar"],
+             "embaralhar": True,
+             "hashtags": "#casaorganizada #organizacaodecasa #achadinhosdecasa"},
+    "games": {"titulo": "KIT GAMER", "teto": 120, "meses": [], "rodizio": False,
+              "gancho": "Kit gamer: {n} achados até R$ {teto} pro seu setup",
+              "termos": ["headset gamer", "mouse gamer", "teclado gamer", "mouse pad gamer",
+                         "suporte para controle", "gatilho para celular", "cooler para celular",
+                         "fita led rgb", "suporte headset", "controle bluetooth celular"],
+              "embaralhar": True,
+              "hashtags": "#gamer #setupgamer #achadinhosgamer"},
 }
 
 
@@ -110,11 +139,12 @@ def tema_da_vez():
     usados = _carregar_estado()["temas"]
     mes = agora().month
     ultimo = max(usados, key=usados.get) if usados else None
-    festa = [t for t, c in TEMAS.items() if mes in c["meses"] and t != ultimo]
-    sempre = [t for t, c in TEMAS.items() if not c["meses"] and t != ultimo]
+    ativos = {t: c for t, c in TEMAS.items() if c.get("rodizio", True)}
+    festa = [t for t, c in ativos.items() if mes in c["meses"] and t != ultimo]
+    sempre = [t for t, c in ativos.items() if not c["meses"] and t != ultimo]
     # nos meses de festa, 2 de cada 3 kits são de festa
     n_festa = sum(1 for t in sorted(usados, key=usados.get)[-3:] if TEMAS.get(t, {}).get("meses"))
-    lista = (festa if festa and n_festa < 2 else sempre) or festa or list(TEMAS)
+    lista = (festa if festa and n_festa < 2 else sempre) or festa or list(ativos)
     return min(lista, key=lambda t: usados.get(t, ""))
 
 
@@ -222,7 +252,10 @@ def escolher(tema, conferir_foto=True):
     cfg = TEMAS[tema]
     fila = carregar_fila()
     itens = []
-    for termo in cfg["termos"]:
+    termos = list(cfg["termos"])
+    if cfg.get("embaralhar"):
+        random.shuffle(termos)
+    for termo in termos:
         if len(itens) >= QTD:
             break
         o = melhor_do_termo(termo, cfg["teto"], fila, [it["oferta"] for it in itens], cfg["titulo"])
@@ -325,7 +358,10 @@ COMPARTILHA = {"banheiro": "Conhece alguém arrumando o banheiro? Manda esse kit
                "festa": "Vai ter festa? Manda esse kit pra quem vai organizar",
                "pet": "Conhece alguém que tem pet em casa? Manda esse kit pra essa pessoa",
                "carro": "Conhece alguém que vive dentro do carro? Manda esse kit pra essa pessoa",
-               "home-office": "Conhece alguém que trabalha em casa? Manda esse kit pra essa pessoa"}
+               "home-office": "Conhece alguém que trabalha em casa? Manda esse kit pra essa pessoa",
+               "infantil": "Conhece alguém com criança pequena em casa? Manda esse kit pra essa pessoa",
+               "casa": "Conhece alguém arrumando a casa? Manda esse kit pra essa pessoa",
+               "games": "Conhece alguém que vive no videogame? Manda esse kit pra essa pessoa"}
 
 
 def gerar(tema, itens, pasta):
@@ -365,7 +401,7 @@ def preparar(tema=None):
     # se o tema da vez não fechar o kit, tenta os próximos (até 3 temas)
     primeiro = tema if tema in TEMAS else tema_da_vez()
     usados = _carregar_estado()["temas"]
-    outros = sorted((t for t in TEMAS if t != primeiro and (not TEMAS[t]["meses"] or agora().month in TEMAS[t]["meses"])),
+    outros = sorted((t for t in TEMAS if t != primeiro and TEMAS[t].get("rodizio", True) and (not TEMAS[t]["meses"] or agora().month in TEMAS[t]["meses"])),
                     key=lambda t: usados.get(t, ""))
     for tema in [primeiro] + outros[:2]:
         print(f"🧺 Kit da vez: {TEMAS[tema]['titulo']}")
@@ -440,7 +476,12 @@ def publicar():
 
 
 def previa(tema=None):
-    temas = list(TEMAS) if tema == "todos" else [tema if tema in TEMAS else tema_da_vez()]
+    if tema == "todos":
+        temas = list(TEMAS)
+    elif tema and "," in tema:   # ex.: "pet,infantil,casa,games"
+        temas = [t.strip() for t in tema.split(",") if t.strip() in TEMAS]
+    else:
+        temas = [tema if tema in TEMAS else tema_da_vez()]
     raiz = config.RAIZ / "data" / "relatorios" / "kits"
     shutil.rmtree(raiz, ignore_errors=True)
     resumo = []
