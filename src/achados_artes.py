@@ -351,7 +351,7 @@ def final_garimpo(v, n, n_variante, youtube=False, frase=None, tiktok=False):
     es = tm["borda"]
     top._ctext(d, 830, FINAIS_GARIMPO[n_variante % 3], top._f(66), top.AM, 5, es)
     fim = "que o Zé te responde aqui" if youtube else "que o Zé te manda o link no direct"
-    linhas = [f"Comenta  QUERO + o número (1 a {n})", fim]
+    linhas = [f"Comenta  QUERO + o número (1 a {n})" if n > 1 else "Comenta  QUERO 1", fim]
     if tiktok:   # TikTok: sem direct e sem link no comentário → o número do achado na página da bio
         linhas = ["Digite o número do achado (#)", "no link do perfil e abre na loja"]
     for i, ln in enumerate(linhas):

@@ -371,11 +371,15 @@ def preparar():
         return
     fila = carregar_fila()
     itens = escolher(fila)
-    if len(itens) >= MINIMO:
+    from . import jogos   # 🎲 segunda "Esse ou esse?", quinta "Adivinha o preço" (src/jogos.py)
+    jogo = jogos.modo_de_hoje() if capa_de_produto() else None
+    if jogo:
+        itens = itens[:jogos.QTD[jogo]]
+    if len(itens) >= (jogos.QTD[jogo] if jogo else MINIMO):
         for it in itens:   # número fixo do achado (#142), para o TikTok/YouTube e a busca da página da bio
             numeros.numerar(it["oferta"])
     salvar_fila(fila)   # guarda o que foi descartado na conferência de preço
-    if len(itens) < MINIMO:
+    if len(itens) < (jogos.QTD[jogo] if jogo else MINIMO):
         print(f"⚠️  Só {len(itens)} produtos bons na fila — não vale postar carrossel tão curto.")
         return
     pasta = PASTA_SITE / "midia" / "achados"
@@ -383,8 +387,13 @@ def preparar():
     (PASTA_SITE / ".nojekyll").write_text("")
     for fixo in (config.RAIZ / "assets" / "paginas").glob("*.[ht][tx][mt]*"):
         (PASTA_SITE / fixo.name).write_text(fixo.read_text(encoding="utf-8"), encoding="utf-8")
-    info = gerar(itens, pasta)
-    info["legenda"] = legenda(itens)
+    if jogo:
+        info = jogos.gerar(jogo, itens, pasta, variante())
+        info["legenda"] = jogos.legenda(jogo, itens, info)
+        print(f"🎲 Hoje o carrossel é brincadeira: {jogo}.")
+    else:
+        info = gerar(itens, pasta)
+        info["legenda"] = legenda(itens)
     ARQ_PROXIMO.write_text(json.dumps(info, ensure_ascii=False), encoding="utf-8")
     _saida("tem_post", "true")
     print(f"🛍️  Carrossel de achados preparado com {len(itens)} produtos.")
@@ -412,6 +421,7 @@ def publicar():
     # registro que o responder lê ("QUERO 2" → link do 2º; só "QUERO" → lista com todos)
     dados = json.loads(ARQ_TOP.read_text(encoding="utf-8")) if ARQ_TOP.exists() else {"posts": {}}
     dados["posts"][media_id] = {"tipo": "achados", "rotulo": agora().strftime("%d/%m"), "itens": info["itens"],
+                                **({"jogo": info["jogo"]} if info.get("jogo") else {}),
                                 "postado_em": agora_s, "permalink": permalink}
     limite = (agora() - timedelta(days=60)).strftime(FMT)
     dados["posts"] = {k: v for k, v in dados["posts"].items() if v.get("postado_em", "") >= limite}
@@ -431,7 +441,8 @@ def publicar():
             dados["posts"][media_id].update(extras)
             ARQ_TOP.write_text(json.dumps(dados, ensure_ascii=False, indent=2), encoding="utf-8")
     estado = _carregar_estado()
-    estado["videos"][info["clipe"]] = agora_s
+    if info.get("clipe"):   # brincadeira (src/jogos.py) não tem vídeo de abertura
+        estado["videos"][info["clipe"]] = agora_s
     estado["n"] = int(estado.get("n", 0)) + 1
     ARQ_ESTADO.write_text(json.dumps(estado, ensure_ascii=False, indent=2), encoding="utf-8")
     ARQ_PROXIMO.unlink(missing_ok=True)
