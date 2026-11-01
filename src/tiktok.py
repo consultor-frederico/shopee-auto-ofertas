@@ -120,5 +120,13 @@ def _status():
     if u.get("creator_username") and u["creator_username"] != "vipgarimpo4":
         sys.exit("⚠️  A conta conectada não é a @vipgarimpo4. Refaça o workflow 25 logado na conta certa.")
 
+def _teste():
+    """Manda 3 imagens do site da bio (prefixo verificado) como rascunho, para ver a notificação chegar no app."""
+    urls = [f"https://garimpovipbr.github.io/{n}" for n in ("og-ze.jpg", "og.jpg", "ze.jpg")]
+    pid, situacao = postar_fotos(urls, "Teste do Garimpo VIP 🤠⛏️",
+                                 "Teste do robô do Garimpo VIP. Pode apagar este rascunho.")
+    print(f"✅ Enviado ({modo()}): {situacao} (publish_id {pid}). Olhe as notificações do TikTok.")
+
+
 if __name__ == "__main__":
-    {"conectar": _conectar, "status": _status}[sys.argv[1] if len(sys.argv) > 1 else "status"]()
+    {"conectar": _conectar, "status": _status, "teste": _teste}[sys.argv[1] if len(sys.argv) > 1 else "status"]()

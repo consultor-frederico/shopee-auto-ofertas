@@ -10,6 +10,10 @@ on:
       codigo:
         description: 'Código que a página do TikTok mostrou (deixe vazio na 1ª vez)'
         required: false
+      teste:
+        description: 'Mandar 3 fotos de teste como rascunho para o app do TikTok'
+        type: boolean
+        default: false
 
 jobs:
   conectar:
@@ -28,7 +32,9 @@ jobs:
           TIKTOK_MODO: ${{ vars.TIKTOK_MODO || 'rascunho' }}
           TIKTOK_CODIGO: ${{ inputs.codigo }}
         run: |
-          if [ -z "$TIKTOK_CODIGO" ] && [ -n "$TIKTOK_REFRESH_TOKEN" ]; then
+          if [ "${{ inputs.teste }}" = "true" ]; then
+            python -m src.tiktok teste
+          elif [ -z "$TIKTOK_CODIGO" ] && [ -n "$TIKTOK_REFRESH_TOKEN" ]; then
             python -m src.tiktok status
           else
             python -m src.tiktok conectar
