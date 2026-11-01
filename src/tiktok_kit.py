@@ -51,17 +51,23 @@ def linha_busca(ofertas, tema=None):
 
 def legenda(ofertas, tema=None):
     """Legenda pensada para a busca do TikTok: as palavras que o comprador digita na lupa vêm primeiro."""
-    linhas = [linha_busca(ofertas, tema) + " 🤠⛏️", ""]
+    linhas = [linha_busca(ofertas, tema).replace("#", "") + " 🤠⛏️", ""]
     for o in ofertas:
-        linhas.append(f"#{o.get('num', '?')} {o.get('titulo') or o.get('nome')} — R$ {o.get('preco_fmt')}")
-    linhas += ["", f"👉 Gostou? Digite o número do achado no link do perfil ({config.PAGINA_BIO}) e abre direto na loja.",
+        # sem "#" no número: no TikTok "#142" vira hashtag e conta no limite de 5
+        nome = (o.get("titulo") or o.get("nome") or "").replace("#", "")
+        linhas.append(f"Nº {o.get('num', '?')} {nome} — R$ {o.get('preco_fmt')}")
+    linhas += ["", f"👉 Gostou? Digite o número (Nº) do achado no link do perfil ({config.PAGINA_BIO}) e abre direto na loja.",
                "Preços do dia do post, podem mudar na loja. Links de afiliado: você paga o mesmo.", ""]
     cats = []
     for o in ofertas:
         t = TAGS_CATEGORIA.get(o.get("categoria"))
         if t and t not in cats:
             cats.append(t)
-    linhas.append(" ".join(["#achadinhos #achadinhosshopee #garimpovip #comprinhas"] + cats[:2]))
+    tags = ["#achadinhos", "#achadinhosshopee", "#garimpovip"]   # TikTok aceita no máximo 5 hashtags
+    for t in " ".join(cats).split():
+        if len(tags) < 5 and t not in tags:
+            tags.append(t)
+    linhas.append(" ".join(tags))
     return "\n".join(linhas)
 
 
