@@ -69,6 +69,15 @@ def _post(caminho, tok, corpo):
     return j.get("data") or {}
 
 
+def _corta(texto, limite):
+    """O TikTok mede o tamanho em unidades UTF-16 (emoji conta 2): cortar por caractere estourava o limite de 90
+    do título e dava 'invalid_params: post info is empty or incorrect' (carrossel de 01/11 18:45)."""
+    texto = (texto or "").strip()
+    while len(texto.encode("utf-16-le")) // 2 > limite:
+        texto = texto[:-1]
+    return texto.rstrip(" ,:;—-")
+
+
 def postar_fotos(urls, titulo, descricao):
     """Manda até 35 fotos (URLs públicas e verificadas). Devolve (publish_id, situação final)."""
     tok = access_token()
@@ -76,11 +85,11 @@ def postar_fotos(urls, titulo, descricao):
         info = _post("/post/publish/creator_info/query/", tok, {})
         opcoes = info.get("privacy_level_options") or ["SELF_ONLY"]
         privacidade = "PUBLIC_TO_EVERYONE" if "PUBLIC_TO_EVERYONE" in opcoes else "SELF_ONLY"
-        post_info = {"title": titulo[:90], "description": descricao[:4000], "privacy_level": privacidade,
+        post_info = {"title": _corta(titulo, 90), "description": _corta(descricao, 4000), "privacy_level": privacidade,
                      "disable_comment": False, "auto_add_music": True}
         post_mode = "DIRECT_POST"
     else:
-        post_info = {"title": titulo[:90], "description": descricao[:4000]}
+        post_info = {"title": _corta(titulo, 90), "description": _corta(descricao, 4000)}
         post_mode = "MEDIA_UPLOAD"
     dados = _post("/post/publish/content/init/", tok, {
         "post_info": post_info, "post_mode": post_mode, "media_type": "PHOTO",
@@ -134,7 +143,7 @@ def _status():
 def _teste():
     """Manda 3 imagens do site da bio (prefixo verificado) como rascunho, para ver a notificação chegar no app."""
     urls = [f"https://garimpovipbr.github.io/{n}" for n in ("og-ze.jpg", "og.jpg", "ze.jpg")]
-    pid, situacao = postar_fotos(urls, "Teste do Garimpo VIP 🤠⛏️",
+    pid, situacao = postar_fotos(urls, "Teste do Garimpo VIP: Achadinhos Shopee até R$ 350, Projetor Luz Noturna 360°, Moto Elétrica e mais 🤠⛏️",
                                  "Teste do robô do Garimpo VIP. Pode apagar este rascunho.")
     print(f"✅ Enviado ({modo()}): {situacao} (publish_id {pid}). Olhe as notificações do TikTok.")
 
