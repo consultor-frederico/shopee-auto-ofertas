@@ -380,7 +380,16 @@ def preparar():
         except Exception as e:
             print(f"::warning::Vídeo do marco de {marco} falhou ({e}); sai o post normal do Zé.")
             marco, video = None, video_da_vez(dados)
-    if marco:
+    itens = None   # 🛍️ Reels com produtos: Zé encolhe pro canto e 3 achados passam por cima (src/ze_vitrine.py)
+    if not marco and not busca and not ANA:
+        from . import ze_vitrine
+        if ze_vitrine.LIGADO:
+            try:
+                itens = ze_vitrine.preparar(video, pasta / nome)
+            except Exception as e:
+                print(f"::warning::Reels com produtos não saiu ({e}); sai o Reels só com o Zé.")
+                itens = None
+    if marco or itens:
         pass
     elif busca:
         from . import busca_reels
@@ -396,7 +405,7 @@ def preparar():
             shutil.copy(video, pasta / nome)
     com_trilha = "comtrilha" in video.name   # *_comtrilha.mp4 já tem trilha própria: não põe música
     # Ana: todo vídeo sem _comtrilha recebe música. Zé: só os marcados _semtrilha (os antigos já têm música gravada).
-    precisa_musica = (not com_trilha) and (ANA or "semtrilha" in video.name) and not marco
+    precisa_musica = (not com_trilha) and (ANA or "semtrilha" in video.name) and not marco and not itens
     if MUSICA_LIGADA and not busca and precisa_musica:   # põe musiquinha (mais baixa quando ela fala)
         musicas = escolher_musicas({"id": video.name}, _duracao(pasta / nome))
         if musicas:
@@ -415,11 +424,15 @@ def preparar():
         leg = busca_reels.LEGENDAS[0] + "\n\n" + busca_reels.HASHTAGS
     elif ANA:
         leg = _legenda_propria(n) + "\n\n" + PEDIDO_ANA + "\n\n" + HASHTAGS_ANA
+    elif itens:
+        from . import ze_vitrine
+        leg = ze_vitrine.legenda(itens, _legenda_propria(n))
     else:
         leg = _legenda_propria(n) + "\n\n" + PEDIDO + ("\n" + config.LEMBRETE_BIO if config.LEMBRETE_BIO else "") + "\n\n" + HASHTAGS
-    ARQ_PROX.write_text(json.dumps({"arquivo": f"midia/{nome}", "video": video.name, "legenda": leg, "marco": marco},
+    ARQ_PROX.write_text(json.dumps({"arquivo": f"midia/{nome}", "video": video.name, "legenda": leg, "marco": marco,
+                                    "itens": itens},
                                    ensure_ascii=False), encoding="utf-8")
-    print(f"🎬 Post {'da Ana' if ANA else 'do Zé'} preparado: {video.name}")
+    print(f"🎬 Post {'da Ana' if ANA else 'do Zé'} preparado: {video.name}" + (" (com 3 produtos)" if itens else ""))
     _saida("tem_post", "true")
 
 
@@ -432,14 +445,22 @@ def publicar():
     url = f"{base}/{prox['arquivo']}"
     _esperar_url(url)
     ig_id = instagram.conferir_conta()["user_id"]
-    cont = instagram.criar_container(ig_id, prox["legenda"], video_url=url)
+    itens = prox.get("itens")
+    from . import ze_vitrine
+    cont = instagram.criar_container(ig_id, prox["legenda"], video_url=url,
+                                     thumb_offset=ze_vitrine.CAPA_MS if itens else None)   # capa com produto
     instagram.aguardar_container(cont)
     media = instagram.publicar(ig_id, cont)
     reg = {"video": prox["video"], "postado_em": _agora().strftime(FMT), "id_post": media,
            "permalink": instagram.permalink(media), "status": "postado"}
+    if itens:
+        reg["vitrine"] = [it["id"] for it in itens]
     dados = _carregar()
     dados["posts"].append(reg)
     _salvar(dados)
+    if itens:   # "QUERO 2" nos comentários → link do 2º no direct; produtos saem da fila
+        ze_vitrine.registrar(media, reg["permalink"], itens)
+        print(f"🛍️  Reels com {len(itens)} produtos registrado para o QUERO N.")
     if prox.get("marco"):
         from . import marcos
         marcos.registrar(prox["marco"], media)
@@ -465,13 +486,16 @@ def publicar():
         try:
             reg["fb_post"] = facebook.postar_video(url, legenda_facebook(prox["legenda"]))
             print(f"📘 Zé na página do Facebook ({reg['fb_post']}).")
+            if itens:
+                ze_vitrine.guardar_fb(media, reg["fb_post"])
         except Exception as e:
             print(f"::warning::Facebook falhou: {e}")
     if youtube.configurado():
         try:
             corpo = prox["legenda"].split("\n\n#")[0]
             reg["yt_video"] = youtube.enviar_video(
-                PASTA_SITE / prox["arquivo"], "Zé Garimpo achando ofertas pra você! ⛏️ #shorts",
+                PASTA_SITE / prox["arquivo"],
+                f"{len(itens)} achados do Zé de hoje 🤠⛏️ #shorts" if itens else "Zé Garimpo achando ofertas pra você! ⛏️ #shorts",
                 f"{corpo}\n\n📣 Ofertas com link direto no Telegram: {youtube.TELEGRAM}\n\n{HASHTAGS} #shorts",
                 ["zé garimpo", "achadinhos", "shopee", "ofertas"])
             print(f"▶️  Zé no YouTube Shorts: https://youtube.com/shorts/{reg['yt_video']}")
@@ -510,7 +534,11 @@ def comentar():
     if reg.get("comentario") or not reg.get("id_post"):
         print("💬 O último Reels do Zé já tem o comentário dele.")
         return
-    texto = texto_comentario(reg["video"], len(posts))
+    if reg.get("vitrine"):
+        from . import ze_vitrine
+        texto = ze_vitrine.COMENTARIO
+    else:
+        texto = texto_comentario(reg["video"], len(posts))
     try:
         reg["comentario"] = instagram.comentar(reg["id_post"], texto) or "ok"
         print(f"💬 Zé comentou no próprio Reels: {texto}")

@@ -49,6 +49,12 @@ jobs:
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
           IG_ACCESS_TOKEN_ANA: ${{ secrets.IG_ACCESS_TOKEN_ANA }}
           FORCAR: ${{ inputs.forcar && '1' || '0' }}
+          # Reels com produtos (src/ze_vitrine.py): confere preço na Shopee/Awin como o carrossel
+          SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
+          SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
+          AWIN_FEED_URL: ${{ secrets.AWIN_FEED_URL }}
+          AWIN_ATIVO: ${{ vars.AWIN_ATIVO || '1' }}
+          ZE_VITRINE: ${{ vars.ZE_VITRINE || '1' }}
         run: python -m src.ze preparar
       - if: steps.prep.outputs.tem_post == 'true'
         uses: actions/upload-pages-artifact@v3

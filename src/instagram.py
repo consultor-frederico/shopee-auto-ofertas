@@ -60,10 +60,12 @@ def conta():
     return c
 
 
-def criar_container(ig_id, legenda, imagem_url=None, video_url=None):
+def criar_container(ig_id, legenda, imagem_url=None, video_url=None, thumb_offset=None):
     if video_url:
         params = {"media_type": "REELS", "video_url": video_url, "caption": legenda,
                   "share_to_feed": "true"}
+        if thumb_offset is not None:   # capa do Reels: quadro nesse ponto do vídeo (ms)
+            params["thumb_offset"] = str(int(thumb_offset))
     else:
         params = {"image_url": imagem_url, "caption": legenda}
     return _req("POST", f"{ig_id}/media", params=params)["id"]
