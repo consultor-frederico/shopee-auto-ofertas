@@ -207,6 +207,9 @@ Não conta acessório, peça, capa, suporte, refil, nem produto de outro tipo qu
 (ex.: pediu "cama casal" → lençol, colcha ou protetor "para cama casal" NÃO servem; só a cama).
 Respeite as características do pedido (adulto ou infantil, masculino ou feminino, tamanho, cor, voltagem):
 se ele não pediu infantil/criança, produto infantil NÃO serve; se pediu adulto, só adulto.
+Entenda o pedido pelo uso mais comum do produto: "projetor parede" é projetor de imagem/vídeo (de filme,
+de ligar no celular), NÃO projetor de estrelas/galáxia, luminária ou luz decorativa; versão de
+brinquedo, decorativa ou miniatura só serve se ele pediu assim.
 Responda só com JSON {{"ok": [números]}}, do mais adequado para o menos.
 
 {lista}"""
