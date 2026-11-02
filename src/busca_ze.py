@@ -251,14 +251,24 @@ def _ia_gemini(t, ofs, lista):
             partes.append({"inline_data": {"mime_type": "image/jpeg", "data": f}})
         else:
             partes.append({"text": "(sem foto)"})
-    for modelo in ((os.getenv("GEMINI_MODELO") or "").strip() or "gemini-2.5-flash", "gemini-2.5-flash-lite"):
+    import time
+    from .radar_virais import _modelos_gemini   # os "flash" que a chave enxerga, do mais novo ao mais velho
+    try:
+        modelos = [m for m in _modelos_gemini(chave) if "lite" not in m][:4] or ["gemini-2.5-flash"]
+    except Exception:
+        modelos = ["gemini-2.5-flash"]
+    inicio = time.time()
+    for modelo in [m for m in modelos for _ in (0, 1)]:   # cada modelo tenta 2x (503 = "muita procura agora")
+        if time.time() - inicio > 90:
+            break
         try:
             r = requests.post(f"https://generativelanguage.googleapis.com/v1beta/models/{modelo}:generateContent",
                               params={"key": chave}, timeout=60,
                               json={"contents": [{"parts": partes}],
                                     "generationConfig": {"temperature": 0.1, "responseMimeType": "application/json"}})
             if r.status_code != 200:
-                print(f"⚠️  Gemini {modelo}: HTTP {r.status_code} {r.text[:120]}")
+                print(f"⚠️  Gemini {modelo}: HTTP {r.status_code} {' '.join(r.text[:200].split())[:120]}")
+                time.sleep(3 if r.status_code in (429, 500, 503) else 0)
                 continue
             bruto = r.json()["candidates"][0]["content"]["parts"][0]["text"]
             nums = json.loads(re.search(r"\{.*\}", bruto, re.S).group(0)).get("ok", [])
@@ -337,10 +347,16 @@ def achados(t):
     buscas = [t] + ([sem_genericas] if sem_genericas and sem_genericas != t else [])
     for busca in buscas:   # "roupa motocross adulto" também busca "motocross" (vendedor não escreve "roupa")
         for pagina, ordem in ((1, 1), (2, 1), (1, 2)):
-            try:
-                nos += shopee.buscar_ofertas(busca, pagina, 50, ordem)
-            except Exception as e:
-                print(f"⚠️  Shopee '{busca}' (página {pagina}, ordem {ordem}): {e}")
+            for tentativa in (1, 2, 3):   # a Shopee às vezes devolve "System Error" (10000) e na hora seguinte funciona
+                try:
+                    nos += shopee.buscar_ofertas(busca, pagina, 50, ordem)
+                    break
+                except Exception as e:
+                    print(f"⚠️  Shopee '{busca}' (página {pagina}, ordem {ordem}, tentativa {tentativa}): {str(e)[:100]}")
+                    if "10000" not in str(e) or tentativa == 3:
+                        break
+                    import time
+                    time.sleep(2 * tentativa)
     vistos, unicos = set(), []
     for n in nos:
         o = normalizar(n, "busca", t)
