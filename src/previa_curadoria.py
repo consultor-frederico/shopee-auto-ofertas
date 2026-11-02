@@ -45,7 +45,7 @@ def folha(itens, titulo, arquivo, cor=(70, 45, 20)):
             ty += 23
         foto_n = f" | foto {o['foto_nota']:.0f}" if o.get("foto_nota") is not None else ""
         d.text((x + 12, ty + 2), f"R$ {o.get('preco_fmt', '?')} | uau {o.get('uau', 0):.0f}{foto_n} | {o.get('vendas', 0)} vendas",
-               font=f_info, fill=(90, 60, 20))
+               font=f_info, fill=(60, 40, 10))
         ty += 26
         for ln in textwrap.wrap(f"“{o.get('gancho') or 'sem motivo: comum'}”", 34)[:3]:
             d.text((x + 12, ty), ln, font=f_info, fill=(20, 90, 40) if o.get("gancho") else (150, 30, 30))

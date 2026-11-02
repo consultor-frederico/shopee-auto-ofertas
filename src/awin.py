@@ -281,7 +281,7 @@ def candidatos(fila, ja_usado, julgar=None):
     # entra primeiro o que está em promoção e o que paga mais; o resto rodiza porque ja_usado bloqueia o que já saiu
     do_perfil.sort(key=lambda o: (o["desconto"], o["comissao"]), reverse=True)
     if julgar:   # 02/11/2026: o catálogo passa pela IA de "uau"; só o diferente entra, o mais uau primeiro
-        do_perfil = [dict(o) for o in do_perfil]
+        do_perfil = [dict(o) for o in do_perfil[:config.MARCAS_JULGADAS_POR_RODADA]]   # cota da IA por minuto
         julgar(do_perfil)
         comuns = [o for o in do_perfil if o.get("uau", 0) < config.UAU_MINIMO_POSTAR]
         if comuns:

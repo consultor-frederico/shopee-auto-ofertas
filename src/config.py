@@ -152,6 +152,8 @@ PESO_UAU = float(os.getenv("PESO_UAU", "8"))
 # Foto (Gemini olha a foto dos finalistas do Instagram): abaixo disso o produto fica só no Telegram
 CURADORIA_FOTO = os.getenv("CURADORIA_FOTO", "1") == "1"
 FOTO_MINIMA = float(os.getenv("FOTO_MINIMA", "6"))
+FOTO_FORTE = float(os.getenv("FOTO_FORTE", "8"))   # uau 7 com foto nota 8+ sobe para 8 (vale o Instagram)
+MARCAS_JULGADAS_POR_RODADA = int(os.getenv("MARCAS_JULGADAS_POR_RODADA", "150"))
 MAX_PENDENTES_POR_FAMILIA = int(os.getenv("MAX_PENDENTES_POR_FAMILIA", "2"))         # na fila ao mesmo tempo
 
 

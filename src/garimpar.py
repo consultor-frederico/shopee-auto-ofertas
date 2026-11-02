@@ -476,18 +476,24 @@ def curar(fila, candidatos, max_ia=None, max_achado=30):
 
 def olhar_fotos(ofertas):
     """Finalistas do Instagram (uau alto): o Gemini olha a foto. Foto sem graça → só Telegram."""
-    finalistas = [o for o in ofertas if o.get("uau", 0) >= config.UAU_MINIMO_INSTAGRAM]
+    finalistas = sorted((o for o in ofertas if o.get("uau", 0) >= config.UAU_MINIMO_INSTAGRAM - 1),
+                        key=lambda o: o.get("uau", 0), reverse=True)   # quem tem 8+ é olhado primeiro
     if not config.CURADORIA_FOTO or not finalistas:
         return
     notas = curadoria.notas_foto(finalistas)
-    barrados = 0
+    barrados = subiram = 0
     for o in finalistas:
-        if o["id"] in notas:
-            o["foto_nota"] = notas[o["id"]]
-            if notas[o["id"]] < config.FOTO_MINIMA:
-                barrados += 1
-                print(f"   📷 foto fraca ({notas[o['id']]:.0f}) → só Telegram: {o['nome'][:60]}")
-    print(f"📷 Fotos avaliadas: {len(notas)} de {len(finalistas)} finalistas | barradas no Instagram: {barrados}")
+        if o["id"] not in notas:
+            continue
+        o["foto_nota"] = notas[o["id"]]
+        if notas[o["id"]] < config.FOTO_MINIMA and o["uau"] >= config.UAU_MINIMO_INSTAGRAM:
+            barrados += 1
+            print(f"   📷 foto fraca ({notas[o['id']]:.0f}) → só Telegram: {o['nome'][:60]}")
+        elif notas[o["id"]] >= config.FOTO_FORTE and config.UAU_MINIMO_INSTAGRAM - 1 <= o["uau"] < config.UAU_MINIMO_INSTAGRAM:
+            o["uau"] = float(config.UAU_MINIMO_INSTAGRAM)   # ideia boa + foto que para o feed: vale o Instagram
+            subiram += 1
+            print(f"   📷 foto forte ({notas[o['id']]:.0f}) → sobe para o Instagram: {o['nome'][:60]}")
+    print(f"📷 Fotos avaliadas: {len(notas)} de {len(finalistas)} | barradas: {barrados} | subiram pela foto: {subiram}")
 
 
 def julgar_marcas(ofertas):
@@ -500,6 +506,7 @@ def julgar_marcas(ofertas):
         base = notas.get(o["id"], config.UAU_SEM_IA)
         o["uau"] = min(10.0, base + config.MARCA_BONUS_UAU) if base > 0 else 0.0
         o["gancho"] = ganchos.get(o["id"], "")
+    olhar_fotos(ofertas)   # loja oficial também tem que ter foto que chama atenção (e o nome vago não engana)
 
 
 def garimpar(buscar=shopee.buscar_ofertas):

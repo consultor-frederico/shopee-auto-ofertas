@@ -37,6 +37,9 @@ Regras da nota:
 - Nota 0: nome de franquia, marca famosa de personagem (filme, série, desenho, anime, time, grife)
   — risco de réplica; ou produto que não combina com o público acima (ex.: numa página para o
   público feminino, brinquedo infantil, ferramenta, isqueiro/acendedor, item automotivo ou masculino).
+- Nome que NÃO diz o que o produto é (só nome de estampa, coleção ou modelo, ex.: "Stop War",
+  "Urban Cammo", "Grey Sisal", "Peace And Love Daisies") = nota no máximo 4 e gancho vazio.
+NUNCA invente uma função que o nome não diz. O gancho tem que sair do próprio nome.
 Na dúvida entre duas notas, escolha a MENOR.
 
 Produtos (id, preço e nome):
