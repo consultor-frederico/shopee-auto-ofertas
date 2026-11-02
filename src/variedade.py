@@ -74,11 +74,30 @@ def franquia(o):
     return any(_texto(f) in txt for f in FRANQUIAS)
 
 
+# Utilidade comum (02/11/2026, reclamação dos seguidores: "varal, vaporizador, nada interessante").
+# Trava fixa no código, vale também para marca: nunca passa de uau 5, aconteça o que a IA disser.
+CASA_COMUM = ["varal", "pote", "potes", "porta mantimento", "organizador", "cabide", "prateleira", "espelho",
+              "tapete", "cortina", "lixeira", "comoda", "mesa de cabeceira", "painel ripado", "ripado", "panela",
+              "liquidificador", "batedeira", "cafeteira", "torradeira", "ventilador", "aquecedor", "vaporizador",
+              "passadeira", "ferro de passar", "multiprocessador", "processador de alimentos", "aparelho de pressao",
+              "monitor de pressao", "medidor de pressao", "balanca", "travesseiro", "almofada", "mop", "vassoura",
+              "rodo", "escova sanitaria", "saboneteira", "toalha", "lencol", "edredom", "jogo de cama",
+              "nescafe", "dolce gusto", "chaleira", "sanduicheira", "air fryer", "fritadeira", "garrafa termica"]
+TETO_CASA_COMUM = 5
+
+
+def casa_comum(o):
+    txt = _texto(o if isinstance(o, str) else o.get("nome", ""))
+    return any(f" {_texto(p).strip()} " in txt for p in CASA_COMUM)
+
+
 def uau(o):
     """Fator uau já com o teto dos produtos de vitrine (e zero para franquia/personagem)."""
     if franquia(o):
         return 0.0
     nota = float(o.get("uau", 0) or 0)
+    if casa_comum(o):
+        return min(nota, TETO_CASA_COMUM)
     if marcas.eh_marca(o):   # marca oficial (catálogo curado): aspirador/air fryer não são "vitrine"
         return nota
     return min(nota, TETO_COMUM) if familia(o) in COMUNS else nota
