@@ -464,6 +464,14 @@ DM_CONFERE = ("Oi! 🤠 Era isso que você procurava? Se não for, me conta com 
 if ANA:
     DM_CONFERE = ("Oi! 💚 Era isso que você procurava? Se não for, me conta com mais detalhe "
                   "(tamanho, cor, modelo...) que eu procuro de novo pra você!")
+DM_OBRIGADO = ("Oi! 🤠 Eu que agradeço! Fico feliz que o Zé acertou ⛏️ Quando quiser outro achado, "
+               "é só me mandar o nome do produto aqui que eu garimpo pra você 😉")
+DM_DETALHE = ("Oi! 🤠 Poxa, foi mal! Me conta com mais detalhe o que você procura "
+              "(ex.: adulto ou infantil, tamanho, cor, modelo, pra que vai usar) que eu garimpo de novo ⛏️")
+if ANA:
+    DM_OBRIGADO = ("Oi! 💚 Imagina, amiga! Que bom que gostou! Quando quiser outro achadinho, é só me mandar aqui 😉")
+    DM_DETALHE = ("Oi! 💚 Ah, poxa! Me conta com mais detalhe o que você procura (tamanho, cor, modelo...) "
+                  "que eu procuro de novo pra você!")
 # "quero" solto no direct (sem dizer qual achado): pergunta qual; a resposta vira busca ("Bora garimpar")
 DM_QUAL = ("Oi! 🤠 Aqui é o Zé Garimpo. Bora garimpar! ⛏️\n\nQual achado você quer? Me manda o nome do produto "
            "(ex.: \"câmera wi-fi\", \"kit lavabo\") que eu te mando o link aqui.\n\n"
@@ -675,10 +683,29 @@ def rodar_dms(api, minha):
                                and "Bora garimpar" in (anterior.get("message") or ""))
         # logo depois do "me diz o que você procura", qualquer resposta é a busca ("air fryer")
         # no direct, só o nome do produto já é busca ("fogão"); a IA barra "oi", "obrigado"...
-        anterior = _pedido_recente(feitos_ids, autor, agora)
-        t = termo(texto, anterior) if (acabou_de_perguntar or config.GROQ_API_KEY) else pedidos._termo(texto)
+        conferiu = ((anterior.get("from") or {}).get("id") == ig_id
+                    and "Era isso que você procurava" in (anterior.get("message") or ""))
+        # resposta ao "Era isso que você procurava?" continua a mesma busca, mesmo horas depois
+        anterior_t = _pedido_recente(feitos_ids, autor, agora, JANELA_DM if conferiu else SEGUE_PEDIDO)
+        t = termo(texto, anterior_t) if (acabou_de_perguntar or config.GROQ_API_KEY) else pedidos._termo(texto)
         reg = {"autor": autor, "usuario": (ultima.get("from") or {}).get("username", ""), "texto": texto,
                "termo": t, "em": agora.strftime(_fmt())}
+        if not t and conferiu:   # 2/11/2026 (Allan: "Sim obrigado" ficou sem resposta)
+            resposta = DM_DETALHE if _negou(texto) else DM_OBRIGADO
+            try:
+                r = api._req("POST", f"{ig_id}/messages", json={"recipient": {"id": autor},
+                                                                "message": {"text": resposta}})
+                if (r or {}).get("message_id"):
+                    enviados_robo.add(r["message_id"])
+                reg["status"] = "pediu_detalhe" if resposta == DM_DETALHE else "agradeceu"
+                feitos += 1
+                print(f"📩 Direct: resposta ao \"era isso?\" → {reg['status']}.")
+            except Exception as e:
+                reg["status"] = f"erro: {str(e)[:200]}"
+                print(f"::warning::Direct: não consegui responder o \"era isso?\": {e}")
+                _avisar_fred(reg, quando)
+            feitos_ids[ultima["id"]] = reg
+            continue
         if not t:
             from .responder import pediu_link
             if pediu_link(texto) and not acabou_de_perguntar:   # "quero" solto: pergunta qual achado
@@ -738,9 +765,15 @@ def rodar_dms(api, minha):
 SEGUE_PEDIDO = timedelta(minutes=30)   # mensagem nova até 30 min depois de uma busca pode ser detalhe dela
 
 
-def _pedido_recente(feitos, autor, agora):
+def _negou(texto):
+    """'não', 'não era', 'errado' (sem dizer o que quer) → pede mais detalhe."""
+    import re
+    return bool(re.search(r"\b(nao|n|errad[oa]|nada a ver|outr[oa])\b", _norm(texto)))
+
+
+def _pedido_recente(feitos, autor, agora, janela=None):
     """O último termo que essa pessoa buscou no direct, se foi há pouco ("" se não tem)."""
-    limite = (agora - SEGUE_PEDIDO).strftime(_fmt())
+    limite = (agora - (janela or SEGUE_PEDIDO)).strftime(_fmt())
     regs = [v for v in feitos.values() if v.get("autor") == autor and v.get("termo") and v.get("em", "") >= limite
             and v.get("status") in ("entregue", "nao_achou")]
     return max(regs, key=lambda v: v["em"])["termo"] if regs else ""
