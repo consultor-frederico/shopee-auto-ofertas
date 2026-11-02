@@ -524,8 +524,8 @@ def garimpar(buscar=shopee.buscar_ofertas):
         o["so_telegram"] = so_telegram(fila, o["id"])
     candidatos = candidatos + shark
     lojas_na_fila = {}
-    for r in fila["ofertas"].values():
-        if r["status"] == "pendente" and r.get("loja"):
+    for r in fila["ofertas"].values():   # só conta quem ainda pode ir para o Instagram (regra antiga não ocupa vaga)
+        if r["status"] == "pendente" and r.get("loja") and "gancho" in r:
             lojas_na_fila[r["loja"]] = lojas_na_fila.get(r["loja"], 0) + 1
     escolhidos = selecionar(candidatos, config.OFERTAS_POR_GARIMPO, variedade.contar_pendentes(fila), lojas_na_fila)
     fontes_ia = 0

@@ -141,6 +141,8 @@ DIAS_APAGAR_POSTS = int(os.getenv("DIAS_APAGAR_POSTS", "15"))  # posts de oferta
 DIAS_VALIDADE_PENDENTE = 3     # oferta não postada vence depois disso (preço muda)
 # Variedade (src/variedade.py): mesmo TIPO de produto (ex.: bomba de ar / compressor / inflador)
 HORAS_ENTRE_FAMILIA = int(os.getenv("HORAS_ENTRE_FAMILIA", "48"))                    # Instagram/Facebook
+# Trava dura no carrossel (02/11/2026: Niimbot saiu 4 vezes em 10 dias): mesmo tipo não volta antes disso
+DIAS_FAMILIA_INSTAGRAM = int(os.getenv("DIAS_FAMILIA_INSTAGRAM", "7"))
 HORAS_ENTRE_FAMILIA_TELEGRAM = int(os.getenv("HORAS_ENTRE_FAMILIA_TELEGRAM", "12"))  # Telegram (posta mais)
 PAGINAS_EM_ALTA = int(os.getenv("PAGINAS_EM_ALTA", "10"))   # páginas da lista "em alta" da Shopee por garimpo
 # Só sai o que é DIFERENCIADO: abaixo disso (fator uau da IA) não posta em lugar nenhum

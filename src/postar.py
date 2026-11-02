@@ -60,6 +60,9 @@ def candidatos_ordenados(fila):
     preferidos = [o for o in candidatos if o.get("preferencial") and not o.get("video_manual")]   # aprovadas por você
     resto = [o for o in candidatos if not o.get("video_manual") and not o.get("so_telegram") and not o.get("pedido")
              and o["categoria"] in config.NICHO and variedade.para_instagram(o)]   # outra conta fica de fora; só produto diferenciado
+    # mesmo tipo de produto no Instagram nos últimos DIAS_FAMILIA_INSTAGRAM dias: fora (repetição é inaceitável)
+    semana = variedade.familias_recentes(fila, "postado_em", horas=config.DIAS_FAMILIA_INSTAGRAM * 24)
+    resto = [o for o in resto if variedade.familia(o) not in semana]
     cheias = {p for p, n in marcas.hoje_por_marca(fila, "postado_em", agora().strftime("%Y-%m-%d")).items() if n >= config.SHARK_POR_DIA_INSTAGRAM}
     resto = [o for o in resto if o.get("plataforma") not in cheias]   # cada marca no máximo X por dia: não domina a página
     # produto de marca caro (acima de MARCA_CARA_RS): no máximo MARCA_CARA_POR_DIA no dia, somando todas as marcas

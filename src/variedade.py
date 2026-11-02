@@ -109,6 +109,8 @@ def diferenciado(o, minimo=None):
 
 def para_instagram(o):
     """Carrossel/feed: uau mais alto que o do Telegram e foto aprovada (quando o Gemini olhou)."""
+    if "gancho" not in o:   # nota dada pela regra antiga (antes de 02/11/2026): não vai mais para o Instagram
+        return False
     if o.get("foto_nota") is not None and o["foto_nota"] < config.FOTO_MINIMA:
         return False
     return diferenciado(o, config.UAU_MINIMO_INSTAGRAM)
@@ -169,7 +171,7 @@ def ordenar(lista, recentes):
 def contar_pendentes(fila):
     cont = {}
     for o in fila["ofertas"].values():
-        if o.get("status") == "pendente":
+        if o.get("status") == "pendente" and "gancho" in o:   # regra antiga não ocupa vaga
             f = familia(o)
             cont[f] = cont.get(f, 0) + 1
     return cont
