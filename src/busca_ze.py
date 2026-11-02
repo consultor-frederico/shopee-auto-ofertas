@@ -257,30 +257,33 @@ def _ia_gemini(t, ofs, lista):
         modelos = [m for m in _modelos_gemini(chave) if "lite" not in m][:4] or ["gemini-2.5-flash"]
     except Exception:
         modelos = ["gemini-2.5-flash"]
+    if _ia_usada[1] >= 2:   # o Gemini já falhou 2x nesta rodada (cota grátis acabou): vai direto pro Groq
+        return None
     inicio = time.time()
-    for modelo in [m for m in modelos for _ in (0, 1)]:   # cada modelo tenta 2x (503 = "muita procura agora")
-        if time.time() - inicio > 90:
+    for modelo in modelos[:3]:   # o plano grátis vive dando 429/503: no máximo ~30 s e segue com o Groq
+        if time.time() - inicio > 30:
             break
         try:
             r = requests.post(f"https://generativelanguage.googleapis.com/v1beta/models/{modelo}:generateContent",
-                              params={"key": chave}, timeout=60,
+                              params={"key": chave}, timeout=25,
                               json={"contents": [{"parts": partes}],
                                     "generationConfig": {"temperature": 0.1, "responseMimeType": "application/json"}})
             if r.status_code != 200:
                 print(f"⚠️  Gemini {modelo}: HTTP {r.status_code} {' '.join(r.text[:200].split())[:120]}")
-                time.sleep(3 if r.status_code in (429, 500, 503) else 0)
                 continue
             bruto = r.json()["candidates"][0]["content"]["parts"][0]["text"]
             nums = json.loads(re.search(r"\{.*\}", bruto, re.S).group(0)).get("ok", [])
             print(f"👁️  Busca conferida pelo Gemini ({modelo}, {sum(1 for f in fotos if f)} fotos).")
+            _ia_usada[1] = 0
             _ia_usada[0] = modelo
             return [ofs[int(n)] for n in nums if str(n).isdigit() and int(n) < len(ofs)]
         except Exception as e:
-            print(f"⚠️  Gemini {modelo} não conferiu ({e})")
+            print(f"⚠️  Gemini {modelo} não conferiu ({str(e)[:100]})")
+    _ia_usada[1] += 1
     return None
 
 
-_ia_usada = [""]
+_ia_usada = ["", 0]   # [IA que conferiu a última busca, falhas seguidas do Gemini nesta rodada]
 
 
 def _filtro_ia(t, ofs):
