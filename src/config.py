@@ -65,7 +65,7 @@ NICHO_GARIMPO = {
 # O que mais segura o Ouro é o "fator uau" (mantido em 7); vendas e comissão do Ouro foram
 # afrouxadas (1000→500 vendas, R$8/10%→R$6/8%), o que ~triplica as ofertas Ouro sem perder qualidade.
 NIVEIS = {
-    "ouro": {"vendas": 500, "comissao_rs": 6.0, "comissao_pct": 8.0, "uau": 7},
+    "ouro": {"vendas": 500, "comissao_rs": 6.0, "comissao_pct": 8.0, "uau": int(os.getenv("UAU_OURO", "8"))},  # 7 até 02/11/2026
     "prata": {"vendas": 500, "comissao_rs": 5.0, "comissao_pct": 8.0, "uau": 6},
 }
 # 🌎 AliExpress (produto internacional): no máximo isso por dia em cada canal (religado 27/10/2026, plano do Fred)
@@ -78,13 +78,19 @@ AWIN_FEED_URL = (os.getenv("AWIN_FEED_URL") or "").strip()
 AWIN_ATIVO = os.getenv("AWIN_ATIVO", "0") == "1"
 AWIN_COMISSAO_PCT = float(os.getenv("AWIN_COMISSAO_PCT", "8"))      # CPA da Shark-Ninja BR (jun/2026) e da Arno BR (out/2026): 8% nas duas
 SHARK_POR_GARIMPO = int(os.getenv("SHARK_POR_GARIMPO", "3"))        # produtos novos de cada marca por rodada, por conta
-SHARK_UAU = 8                                                       # marca oficial: não passa pela nota de "uau" da IA
+SHARK_UAU = 8                                                       # só para produto da marca escolhido à mão (kit do WhatsApp)
+# Desde 02/11/2026 o catálogo das marcas também passa pela IA de "uau" (liquidificador de marca continua
+# sendo liquidificador); ser loja oficial vale só este bônus na nota.
+MARCA_BONUS_UAU = float(os.getenv("MARCA_BONUS_UAU", "1"))
+MARCA_CARA_RS = float(os.getenv("MARCA_CARA_RS", "300"))          # marca acima disso: no máximo MARCA_CARA_POR_DIA no Instagram
+MARCA_CARA_POR_DIA = int(os.getenv("MARCA_CARA_POR_DIA", "1"))
 SHARK_PONTOS = int(os.getenv("SHARK_PONTOS", "70"))                 # prioridade na fila (Shopee costuma ficar entre 40 e 80)
 SHARK_POR_DIA_INSTAGRAM = int(os.getenv("SHARK_POR_DIA_INSTAGRAM", "1"))   # no máximo isso por dia de cada marca, em cada conta
 SHARK_POR_DIA_TELEGRAM = int(os.getenv("SHARK_POR_DIA_TELEGRAM", "3"))
 # 💎 Achado escondido: produto excelente e muito diferente que ainda não viralizou (poucas vendas).
 # Pouca prova social → só entra com nota alta e uau altíssimo, e no máximo ACHADOS_POR_DIA no Instagram.
-NIVEL_ACHADO = {"vendas_min": 50, "nota": 4.8, "uau": 8, "comissao_rs": 3.0, "comissao_pct": 8.0}  # R$3 liberado pelo Fred em 09/10/2026
+NIVEL_ACHADO = {"vendas_min": int(os.getenv("ACHADO_VENDAS_MIN", "100")),  # 50 até 02/11/2026 (pouca prova social)
+                 "nota": 4.8, "uau": 8, "comissao_rs": 3.0, "comissao_pct": 8.0}  # R$3 liberado pelo Fred em 09/10/2026
 ACHADOS_POR_DIA = int(os.getenv("ACHADOS_POR_DIA", "3"))   # 3 desde 27/10/2026 (Fred): abre espaço para as novidades do radar de virais
 NOTA_MINIMA = float(os.getenv("NOTA_MINIMA", "4.7"))
 PRECO_MAXIMO = float(os.getenv("PRECO_MAXIMO", "500"))   # 300 até 30/10/2026 (Fred subiu para 500; marcas da Awin não têm teto)
@@ -138,7 +144,16 @@ HORAS_ENTRE_FAMILIA = int(os.getenv("HORAS_ENTRE_FAMILIA", "48"))               
 HORAS_ENTRE_FAMILIA_TELEGRAM = int(os.getenv("HORAS_ENTRE_FAMILIA_TELEGRAM", "12"))  # Telegram (posta mais)
 PAGINAS_EM_ALTA = int(os.getenv("PAGINAS_EM_ALTA", "10"))   # páginas da lista "em alta" da Shopee por garimpo
 # Só sai o que é DIFERENCIADO: abaixo disso (fator uau da IA) não posta em lugar nenhum
-UAU_MINIMO_POSTAR = int(os.getenv("UAU_MINIMO_POSTAR", "7"))
+UAU_MINIMO_POSTAR = int(os.getenv("UAU_MINIMO_POSTAR", "7"))     # Telegram
+# Instagram/Facebook (carrossel): mais exigente (02/11/2026: seguidores achavam os produtos comuns)
+UAU_MINIMO_INSTAGRAM = int(os.getenv("UAU_MINIMO_INSTAGRAM", "8"))
+# Na fila, quanto vale cada ponto de uau (era 3: a comissão pesava mais que ser diferente)
+PESO_UAU = float(os.getenv("PESO_UAU", "8"))
+# Foto (Gemini olha a foto dos finalistas do Instagram): abaixo disso o produto fica só no Telegram
+CURADORIA_FOTO = os.getenv("CURADORIA_FOTO", "1") == "1"
+FOTO_MINIMA = float(os.getenv("FOTO_MINIMA", "6"))
+FOTO_FORTE = float(os.getenv("FOTO_FORTE", "8"))   # uau 7 com foto nota 8+ sobe para 8 (vale o Instagram)
+MARCAS_JULGADAS_POR_RODADA = int(os.getenv("MARCAS_JULGADAS_POR_RODADA", "150"))
 MAX_PENDENTES_POR_FAMILIA = int(os.getenv("MAX_PENDENTES_POR_FAMILIA", "2"))         # na fila ao mesmo tempo
 
 

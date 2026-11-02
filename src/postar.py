@@ -59,9 +59,14 @@ def candidatos_ordenados(fila):
     manuais += pedidos_ze[:1]   # "Você pediu, o Zé achou": um por vez, na frente da fila
     preferidos = [o for o in candidatos if o.get("preferencial") and not o.get("video_manual")]   # aprovadas por você
     resto = [o for o in candidatos if not o.get("video_manual") and not o.get("so_telegram") and not o.get("pedido")
-             and o["categoria"] in config.NICHO and variedade.diferenciado(o)]   # outra conta fica de fora; só produto diferenciado
+             and o["categoria"] in config.NICHO and variedade.para_instagram(o)]   # outra conta fica de fora; só produto diferenciado
     cheias = {p for p, n in marcas.hoje_por_marca(fila, "postado_em", agora().strftime("%Y-%m-%d")).items() if n >= config.SHARK_POR_DIA_INSTAGRAM}
     resto = [o for o in resto if o.get("plataforma") not in cheias]   # cada marca no máximo X por dia: não domina a página
+    # produto de marca caro (acima de MARCA_CARA_RS): no máximo MARCA_CARA_POR_DIA no dia, somando todas as marcas
+    caras_hoje = sum(1 for o in fila["ofertas"].values() if marcas.eh_marca(o) and (o.get("preco") or 0) > config.MARCA_CARA_RS
+                     and str(o.get("postado_em") or "").startswith(agora().strftime("%Y-%m-%d")))
+    if caras_hoje >= config.MARCA_CARA_POR_DIA:
+        resto = [o for o in resto if not (marcas.eh_marca(o) and (o.get("preco") or 0) > config.MARCA_CARA_RS)]
     if not aliexpress.vagas_hoje(fila, "postado_em", config.ALIEXPRESS_POR_DIA_INSTAGRAM, agora().strftime("%Y-%m-%d")):
         resto = [o for o in resto if o.get("plataforma") != "aliexpress"]   # 🌎 internacional: no máximo 2 por dia
     # 💎 Achado escondido: entra junto com o Ouro, mas no máximo config.ACHADOS_POR_DIA por dia
