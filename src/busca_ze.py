@@ -783,6 +783,30 @@ if __name__ == "__main__":   # teste: python -m src.busca_ze "celular" "fone blu
             print(f"::notice::{m['id']} {m.get('media_product_type')} {m.get('timestamp')} "
                   f"coments={m.get('comments_count')}/{n} {m.get('permalink')} | {(m.get('caption') or '')[:50]!r}")
         sys.exit(0)
+    if sys.argv[1:2] == ["enviar"]:   # python -m src.busca_ze enviar <@ de quem buscou no direct> <termo> [intro]
+        from . import instagram
+        usuario, t = sys.argv[2].lstrip("@").lower(), sys.argv[3].strip()
+        intro = (sys.argv[4] if len(sys.argv) > 4 else "").strip()
+        ig = instagram.conferir_conta()["user_id"]
+        d = carregar()
+        regs = [v for v in d.get("dms", {}).values() if (v.get("usuario") or "").lower() == usuario]
+        if not regs:
+            sys.exit(f"::error::Não achei busca de @{usuario} no direct. Nada foi enviado.")
+        autor = max(regs, key=lambda v: v["em"])["autor"]
+        ofs = achados(t)
+        if not ofs:
+            sys.exit(f"::error::Nada bom para '{t}'. Nada foi enviado.")
+        if intro:
+            instagram._req("POST", f"{ig}/messages", json={"recipient": {"id": autor}, "message": {"text": intro}})
+        enviar_dm(instagram, ig, None, t, ofs, destinatario=autor)
+        instagram._req("POST", f"{ig}/messages", json={"recipient": {"id": autor}, "message": {"text": DM_CONFERE}})
+        for o in ofs:
+            print(f"::notice::Enviado a @{usuario}: R$ {o['preco_fmt']} ⭐{o['nota']} {o['vendas']} vend. — {o['nome'][:80]}")
+        d["dms"][f"manual-{_agora().strftime('%Y%m%d%H%M%S')}"] = {
+            "autor": autor, "usuario": usuario, "texto": "(envio manual)", "termo": t, "em": _agora().strftime(_fmt()),
+            "status": "entregue", "achados": [o["id"] for o in ofs]}
+        salvar(d)
+        sys.exit(0)
     if sys.argv[1:2] == ["atalhos"]:   # python -m src.busca_ze atalhos → grava as perguntas do direct
         try:
             from . import instagram
