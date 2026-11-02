@@ -21,7 +21,8 @@ Regras da nota:
 - Gancho vazio = nota no máximo 5.
 - 0-4: básico, reposição ou commodity — roupa básica, meia, cueca, tapete higiênico, papel,
   sacos, cabos, capinha comum, refil, peça de reposição, higiene comum, material escolar.
-- 5-6: útil e bem vendido, mas COMUM, que se acha em qualquer loja ou supermercado: varal,
+- 5 NO MÁXIMO: útil e bem vendido, mas COMUM, que se acha em qualquer loja ou supermercado
+  (utilidade comum de casa nunca passa de 5, mesmo bem avaliada): varal,
   pote/porta-mantimento, organizador, cabide, prateleira, espelho, tapete, cortina, lixeira, cômoda,
   mesa de cabeceira, painel ripado, panela, liquidificador, batedeira, cafeteira, torradeira,
   ventilador, aquecedor, ferro/vaporizador de roupa, secador e chapinha comuns, aparelho de
@@ -29,7 +30,7 @@ Regras da nota:
   smartwatch, fone, power bank, carregador, caixa de som, ring light, aspirador, mochila, lanterna,
   brinquedo infantil comum (boneca, carrinho, blocos, pelúcia). Marca famosa NÃO sobe a nota:
   liquidificador de marca continua sendo liquidificador.
-- 7: tem um detalhe esperto de verdade, mas a pessoa já viu parecido.
+- 6-7: tem um detalhe esperto de verdade, mas a pessoa já viu parecido.
 - 8: "não sabia que existia isso" — gadget curioso, solução criativa, efeito visual forte,
   presente que impressiona. A pessoa marcaria um amigo.
 - 9-10: RARO, no máximo 1 em cada 15 — surpreendente e quase ninguém conhece.

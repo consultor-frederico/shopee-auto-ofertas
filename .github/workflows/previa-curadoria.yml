@@ -7,6 +7,10 @@ on:
     paths: ['src/**', '.github/workflows/previa-curadoria.yml']
   workflow_dispatch:
 
+concurrency:
+  group: previa-curadoria
+  cancel-in-progress: true
+
 jobs:
   previa:
     runs-on: ubuntu-latest
@@ -51,4 +55,5 @@ jobs:
           git add previa_curadoria
           git diff --cached --quiet && exit 0
           git commit -m "Prévia da curadoria nova [skip ci]"
+          git pull --rebase -X theirs origin ${{ github.ref_name }} || true
           git push origin HEAD:${{ github.ref_name }}

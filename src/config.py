@@ -82,12 +82,15 @@ SHARK_UAU = 8                                                       # só para p
 # Desde 02/11/2026 o catálogo das marcas também passa pela IA de "uau" (liquidificador de marca continua
 # sendo liquidificador); ser loja oficial vale só este bônus na nota.
 MARCA_BONUS_UAU = float(os.getenv("MARCA_BONUS_UAU", "1"))
+MARCA_CARA_RS = float(os.getenv("MARCA_CARA_RS", "300"))          # marca acima disso: no máximo MARCA_CARA_POR_DIA no Instagram
+MARCA_CARA_POR_DIA = int(os.getenv("MARCA_CARA_POR_DIA", "1"))
 SHARK_PONTOS = int(os.getenv("SHARK_PONTOS", "70"))                 # prioridade na fila (Shopee costuma ficar entre 40 e 80)
 SHARK_POR_DIA_INSTAGRAM = int(os.getenv("SHARK_POR_DIA_INSTAGRAM", "1"))   # no máximo isso por dia de cada marca, em cada conta
 SHARK_POR_DIA_TELEGRAM = int(os.getenv("SHARK_POR_DIA_TELEGRAM", "3"))
 # 💎 Achado escondido: produto excelente e muito diferente que ainda não viralizou (poucas vendas).
 # Pouca prova social → só entra com nota alta e uau altíssimo, e no máximo ACHADOS_POR_DIA no Instagram.
-NIVEL_ACHADO = {"vendas_min": 50, "nota": 4.8, "uau": 8, "comissao_rs": 3.0, "comissao_pct": 8.0}  # R$3 liberado pelo Fred em 09/10/2026
+NIVEL_ACHADO = {"vendas_min": int(os.getenv("ACHADO_VENDAS_MIN", "100")),  # 50 até 02/11/2026 (pouca prova social)
+                 "nota": 4.8, "uau": 8, "comissao_rs": 3.0, "comissao_pct": 8.0}  # R$3 liberado pelo Fred em 09/10/2026
 ACHADOS_POR_DIA = int(os.getenv("ACHADOS_POR_DIA", "3"))   # 3 desde 27/10/2026 (Fred): abre espaço para as novidades do radar de virais
 NOTA_MINIMA = float(os.getenv("NOTA_MINIMA", "4.7"))
 PRECO_MAXIMO = float(os.getenv("PRECO_MAXIMO", "500"))   # 300 até 30/10/2026 (Fred subiu para 500; marcas da Awin não têm teto)
