@@ -103,18 +103,13 @@ ZE_CAPA = {"aponta": config.RAIZ / "assets" / "ze" / "capa" / "ze_aponta.png",
            "joia": config.RAIZ / "assets" / "ze" / "capa" / "ze_joia.png"}
 
 
-def capa_produto(oferta, foto, n_mais, pose, destino, fundo=None):
+def capa_produto(oferta, foto, n_mais, pose, destino):
     """Capa do carrossel no lugar do vídeo de abertura (30/10/2026, sugestão do Gemini aprovada pelo Fred): o 1º
     produto grande num cartão branco, selo da loja e "+3 ACHADOS" no topo, faixa com nome/nota/preço e o Zé
-    pequeno (recortado do ze_joinha.mp4) no canto de baixo. Vale como o slide do produto 1 ("QUERO 1").
-    fundo (opcional, prévia do Nano Banana): cenário gerado por IA atrás; o cartão encolhe para o cenário aparecer
-    em volta, e a foto do vendedor entra igual, sem nenhuma mudança."""
+    pequeno (recortado do ze_joinha.mp4) no canto de baixo. Vale como o slide do produto 1 ("QUERO 1")."""
     img = Image.new("RGB", (L, A), imagem.FUNDO)
-    cx0, cy0, cx1, cy1 = 44, 44, L - 44, 1000
-    if fundo is not None:
-        img.paste(ImageOps.fit(fundo.convert("RGB"), (L, A), Image.LANCZOS), (0, 0))
-        cx0, cy0, cx1, cy1 = 130, 150, L - 130, 960
     d = ImageDraw.Draw(img)
+    cx0, cy0, cx1, cy1 = 44, 44, L - 44, 1000
     d.rounded_rectangle([cx0 + 6, cy0 + 10, cx1 + 6, cy1 + 10], 44, fill=imagem.SOMBRA)
     d.rounded_rectangle([cx0, cy0, cx1, cy1], 44, fill=imagem.BRANCO)
     if foto is not None:
