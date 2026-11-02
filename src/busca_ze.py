@@ -94,13 +94,36 @@ def posts_da_busca(api, ig_id, d):
     return list(ids)
 
 
-def termo(texto):
-    """No post fixo todo comentário é uma busca: a IA limpa o texto; sem IA, tira as palavras vazias."""
+PROMPT_SEGUE = """Numa conversa de busca de produtos na Shopee, o cliente tinha pedido "{ant}" e agora escreveu: "{texto}".
+Se a mensagem nova só detalha ou corrige o pedido anterior (ex.: "de adulto", "masculino", "tem maior?", "na cor preta",
+"mas pra adulto"), junte os dois num termo só (ex.: "roupa motocross" + "consegue de adulto?" → "roupa motocross adulto").
+Se ele pediu outro produto, use só o produto novo.
+Responda só com JSON {{"produto": "<termo curto de busca na Shopee, 1 a 5 palavras>"}}."""
+
+
+def _junta_pedido(anterior, texto, novo):
+    """2/11/2026 (Allan): "Roupa de motocross" e depois "Consegue roupa de adulto?" era buscado
+    como "roupa adulto", sem o motocross. Agora a continuação herda o pedido anterior."""
+    import re
+    from .legenda import _chamar_groq
+    try:
+        bruto = _chamar_groq(PROMPT_SEGUE.format(ant=anterior.replace('"', "'"),
+                                                 texto=(texto or "")[:200].replace('"', "'")))
+        t = str(json.loads(re.search(r"\{.*\}", bruto, re.S).group(0)).get("produto", "")).strip().lower()[:60]
+        return t or novo
+    except Exception as e:
+        print(f"⚠️  IA não juntou com o pedido anterior ({e}); fico com '{novo}'.")
+        return novo
+
+
+def termo(texto, anterior=""):
+    """No post fixo todo comentário é uma busca: a IA limpa o texto; sem IA, tira as palavras vazias.
+    anterior = o que a mesma pessoa pediu há pouco (a mensagem nova pode ser só um detalhe dele)."""
     from . import pedidos
     if config.GROQ_API_KEY:
         t = pedidos._refinar({"texto": texto, "termo": ""})
         if t is not None:
-            return t
+            return _junta_pedido(anterior, texto, t) if (t and anterior) else t
     return pedidos.termo_do_comentario(texto, exigir_pedido=False)
 
 
@@ -113,6 +136,10 @@ cobertor manta saia""".split())
 # palavras que não contam como "começo do nome" (o produto pedido tem que vir logo no início do título)
 VAZIAS = set("""de do da dos das para pra com sem e o a os as em no na kit novo nova original oferta promocao
 jogo conjunto super top premium lancamento envio imediato pronta entrega frete gratis""".split())
+# palavras genéricas do pedido: não precisam estar no nome ("roupa motocross" → "Conjunto Calça Camisa Motocross")
+GENERICAS = set("roupa roupinha produto coisa item artigo adulto adulta".split())
+# público infantil: se o pedido não fala de criança, esses produtos não servem (2/11/2026, motocross infantil)
+INFANTIL = set("infantil infantis crianca criancas kid kids bebe bebes baby menino menina meninos meninas juvenil mirim".split())
 POSICAO_MAX = 4   # o núcleo do pedido tem que estar entre as 4 primeiras palavras que contam do nome
 PREPOSICOES = r"(?:para|pra|p/|de|do|da|no|na|em|com)"
 
@@ -140,6 +167,7 @@ def relevante(nome, t):
     acessório "de/para" a coisa pedida (capinha de celular, suporte para celular...)."""
     import re
     pedido = [p for p in _palavras(t) if len(p) > 2 and p not in ("para", "pra", "com", "sem")]
+    pedido = [p for p in pedido if p not in GENERICAS] or pedido
     nome_p = _palavras(nome)
     if not pedido or not all(any(n.startswith(p) for n in nome_p) for p in pedido):
         return False
@@ -153,10 +181,14 @@ def relevante(nome, t):
     if not (set(pedido) & ACESSORIOS):          # pediu o produto, não um acessório
         if set(nome_p[:4]) & ACESSORIOS:         # nome começa com o acessório ("Capa ... celular")
             return False
-        nucleo = re.escape(_palavras(t)[0])
+        nucleo = re.escape(pedido[0])
         if re.search(rf"\b{PREPOSICOES}\s+(?:o\s+|a\s+|seu\s+|sua\s+)?{nucleo}", _norm(nome)):
             return False                          # "... para celular", "... de celular"
     return True
+
+
+def _infantil(txt):
+    return bool(set(_palavras(txt)) & INFANTIL)
 
 
 def _aceitavel(o, rigoroso=True):
@@ -173,6 +205,8 @@ PROMPT_IA = """Um cliente pediu na Shopee: "{t}".
 Abaixo, produtos encontrados (número: nome). Quais SÃO o próprio produto que ele pediu?
 Não conta acessório, peça, capa, suporte, refil, nem produto de outro tipo que só cita a palavra
 (ex.: pediu "cama casal" → lençol, colcha ou protetor "para cama casal" NÃO servem; só a cama).
+Respeite as características do pedido (adulto ou infantil, masculino ou feminino, tamanho, cor, voltagem):
+se ele não pediu infantil/criança, produto infantil NÃO serve; se pediu adulto, só adulto.
 Responda só com JSON {{"ok": [números]}}, do mais adequado para o menos.
 
 {lista}"""
@@ -228,11 +262,14 @@ def achados(t):
     from . import shopee
     from .garimpar import normalizar
     nos = []
-    for pagina, ordem in ((1, 1), (2, 1), (1, 2)):
-        try:
-            nos += shopee.buscar_ofertas(t, pagina, 50, ordem)
-        except Exception as e:
-            print(f"⚠️  Shopee (página {pagina}, ordem {ordem}): {e}")
+    sem_genericas = " ".join(p for p in t.split() if _raiz(_norm(p)) not in GENERICAS)
+    buscas = [t] + ([sem_genericas] if sem_genericas and sem_genericas != t else [])
+    for busca in buscas:   # "roupa motocross adulto" também busca "motocross" (vendedor não escreve "roupa")
+        for pagina, ordem in ((1, 1), (2, 1), (1, 2)):
+            try:
+                nos += shopee.buscar_ofertas(busca, pagina, 50, ordem)
+            except Exception as e:
+                print(f"⚠️  Shopee '{busca}' (página {pagina}, ordem {ordem}): {e}")
     vistos, unicos = set(), []
     for n in nos:
         o = normalizar(n, "busca", t)
@@ -240,6 +277,8 @@ def achados(t):
             vistos.add(o["id"])
             unicos.append(o)
     certos = [o for o in unicos if relevante(o["nome"], t)]
+    if not _infantil(t):   # pediu "roupa motocross" (ou "de adulto"): nada de roupa de criança
+        certos = [o for o in certos if not _infantil(o["nome"])]
     for rigoroso in (True, False):
         bons = sorted((o for o in certos if _aceitavel(o, rigoroso)), key=_pontos, reverse=True)[:15]
         if not bons:
@@ -323,6 +362,12 @@ DM_NADA = ("Oi! 🤠 Aqui é o Zé Garimpo. Cavei \"{t}\" na Shopee, mas não ac
 if ANA:
     DM_NADA = ("Oi! 💚 Aqui é a Ana. Procurei \"{t}\" na Shopee, mas não achei nada bom o bastante 😕 "
                "Me manda com outras palavras (ex.: \"bolsa transversal\", \"escova secadora\") que eu tento de novo!")
+# depois dos achados no direct: confere se era isso (a resposta em até 30 min se junta ao pedido)
+DM_CONFERE = ("Oi! 🤠 Era isso que você procurava? Se não for, me conta com mais detalhe "
+              "(ex.: adulto ou infantil, tamanho, cor, modelo) que eu garimpo de novo! ⛏️")
+if ANA:
+    DM_CONFERE = ("Oi! 💚 Era isso que você procurava? Se não for, me conta com mais detalhe "
+                  "(tamanho, cor, modelo...) que eu procuro de novo pra você!")
 # "quero" solto no direct (sem dizer qual achado): pergunta qual; a resposta vira busca ("Bora garimpar")
 DM_QUAL = ("Oi! 🤠 Aqui é o Zé Garimpo. Bora garimpar! ⛏️\n\nQual achado você quer? Me manda o nome do produto "
            "(ex.: \"câmera wi-fi\", \"kit lavabo\") que eu te mando o link aqui.\n\n"
@@ -534,7 +579,8 @@ def rodar_dms(api, minha):
                                and "Bora garimpar" in (anterior.get("message") or ""))
         # logo depois do "me diz o que você procura", qualquer resposta é a busca ("air fryer")
         # no direct, só o nome do produto já é busca ("fogão"); a IA barra "oi", "obrigado"...
-        t = termo(texto) if (acabou_de_perguntar or config.GROQ_API_KEY) else pedidos._termo(texto)
+        anterior = _pedido_recente(feitos_ids, autor, agora)
+        t = termo(texto, anterior) if (acabou_de_perguntar or config.GROQ_API_KEY) else pedidos._termo(texto)
         reg = {"autor": autor, "usuario": (ultima.get("from") or {}).get("username", ""), "texto": texto,
                "termo": t, "em": agora.strftime(_fmt())}
         if not t:
@@ -566,6 +612,13 @@ def rodar_dms(api, minha):
             if ofs:
                 r = enviar_dm(api, ig_id, None, t, ofs, destinatario=autor)
                 reg.update({"status": "entregue", "achados": [o["id"] for o in ofs]})
+                try:   # 2/11/2026 (Fred): o Zé confere se acertou; a resposta vira detalhe da mesma busca
+                    c = api._req("POST", f"{ig_id}/messages", json={"recipient": {"id": autor},
+                                                                    "message": {"text": DM_CONFERE}})
+                    if (c or {}).get("message_id"):
+                        enviados_robo.add(c["message_id"])
+                except Exception as e:
+                    print(f"⚠️  Não mandei a pergunta de conferência: {e}")
             else:
                 r = api._req("POST", f"{ig_id}/messages", json={"recipient": {"id": autor},
                                                                 "message": {"text": DM_NADA.format(t=t)}})
@@ -584,6 +637,17 @@ def rodar_dms(api, minha):
     d["msgs_robo"] = list(enviados_robo)[-300:]
     salvar(d)
     return feitos
+
+
+SEGUE_PEDIDO = timedelta(minutes=30)   # mensagem nova até 30 min depois de uma busca pode ser detalhe dela
+
+
+def _pedido_recente(feitos, autor, agora):
+    """O último termo que essa pessoa buscou no direct, se foi há pouco ("" se não tem)."""
+    limite = (agora - SEGUE_PEDIDO).strftime(_fmt())
+    regs = [v for v in feitos.values() if v.get("autor") == autor and v.get("termo") and v.get("em", "") >= limite
+            and v.get("status") in ("entregue", "nao_achou")]
+    return max(regs, key=lambda v: v["em"])["termo"] if regs else ""
 
 
 def _mesmo_pedido(t, titulo):
@@ -725,9 +789,13 @@ if __name__ == "__main__":   # teste: python -m src.busca_ze "celular" "fone blu
             sys.exit(1)
         sys.exit(0)
     for t in sys.argv[1:] or ["celular"]:
-        print(f"\n🔎 {t}")
+        t = t.strip()
+        ant, _, t = t.rpartition(">")   # "roupa de motocross > consegue de adulto?" = conversa com 2 mensagens
+        ant = (termo(ant.strip()) or ant.strip()) if ant else ""
+        busca = termo(t.strip(), ant) or t.strip()
+        print(f"\n🔎 {t.strip()}" + (f"  (antes: {ant})" if ant else "") + f"  → busca \"{busca}\"")
         try:
-            for o in achados(termo(t) or t):
+            for o in achados(busca):
                 print(f"  • R$ {o['preco_fmt']:>9} ⭐{o['nota']} {o['vendas']:>6} vend. — {o['nome'][:90]}")
         except Exception as e:
             print(f"  ⚠️  {e}")
