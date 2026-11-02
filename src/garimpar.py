@@ -7,7 +7,7 @@ import random
 import sys
 from datetime import datetime, timedelta, timezone
 
-from . import aliexpress, awin, busca_profunda, config, curadoria, legenda, shopee, variedade
+from . import aliexpress, awin, busca_profunda, config, curadoria, legenda, marcas, shopee, variedade
 
 BRT = timezone(timedelta(hours=-3))
 FMT = "%Y-%m-%d %H:%M:%S"
@@ -489,7 +489,8 @@ def olhar_fotos(ofertas):
         if notas[o["id"]] < config.FOTO_MINIMA and o["uau"] >= config.UAU_MINIMO_INSTAGRAM:
             barrados += 1
             print(f"   📷 foto fraca ({notas[o['id']]:.0f}) → só Telegram: {o['nome'][:60]}")
-        elif notas[o["id"]] >= config.FOTO_FORTE and config.UAU_MINIMO_INSTAGRAM - 1 <= o["uau"] < config.UAU_MINIMO_INSTAGRAM:
+        elif (notas[o["id"]] >= config.FOTO_FORTE and config.UAU_MINIMO_INSTAGRAM - 1 <= o["uau"] < config.UAU_MINIMO_INSTAGRAM
+              and not marcas.eh_marca(o)):   # marca já ganhou +1 por ser oficial: não sobe de novo pela foto
             o["uau"] = float(config.UAU_MINIMO_INSTAGRAM)   # ideia boa + foto que para o feed: vale o Instagram
             subiram += 1
             print(f"   📷 foto forte ({notas[o['id']]:.0f}) → sobe para o Instagram: {o['nome'][:60]}")
