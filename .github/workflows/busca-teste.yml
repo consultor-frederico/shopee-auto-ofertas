@@ -37,10 +37,11 @@ jobs:
           SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
           SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           TERMOS: ${{ inputs.termos }}
         run: |
           mkdir -p data/relatorios
-          IFS=, read -ra T <<< "$TERMOS"; python -u -m src.busca_ze "${T[@]}" 2>&1 | tee data/relatorios/teste_busca.txt
+          if [ "$TERMOS" = "revisar" ]; then python -u -m src.busca_ze revisar 7; else IFS=, read -ra T <<< "$TERMOS"; python -u -m src.busca_ze "${T[@]}"; fi 2>&1 | tee data/relatorios/teste_busca.txt
       - name: Mandar os achados de verdade (só se tiver @)
         if: inputs.enviar_para != ''
         env:
@@ -49,6 +50,7 @@ jobs:
           SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
           SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           PARA: ${{ inputs.enviar_para }}
           TERMOS: ${{ inputs.termos }}
           INTRO: ${{ inputs.intro }}

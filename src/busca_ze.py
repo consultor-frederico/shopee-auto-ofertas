@@ -202,7 +202,7 @@ def _aceitavel(o, rigoroso=True):
 
 
 PROMPT_IA = """Um cliente pediu na Shopee: "{t}".
-Abaixo, produtos encontrados (número: nome). Quais SÃO o próprio produto que ele pediu?
+Abaixo, produtos encontrados (número: nome — preço). Quais SÃO o próprio produto que ele pediu?
 Não conta acessório, peça, capa, suporte, refil, nem produto de outro tipo que só cita a palavra
 (ex.: pediu "cama casal" → lençol, colcha ou protetor "para cama casal" NÃO servem; só a cama).
 Respeite as características do pedido (adulto ou infantil, masculino ou feminino, tamanho, cor, voltagem):
@@ -210,21 +210,85 @@ se ele não pediu infantil/criança, produto infantil NÃO serve; se pediu adult
 Entenda o pedido pelo uso mais comum do produto: "projetor parede" é projetor de imagem/vídeo (de filme,
 de ligar no celular), NÃO projetor de estrelas/galáxia, luminária ou luz decorativa; versão de
 brinquedo, decorativa ou miniatura só serve se ele pediu assim.
+Confira o preço: barato demais para ser o produto de verdade (ex.: "notebook" por R$ 30) é peça,
+miniatura ou anúncio enganoso e NÃO serve.{fotos}
+Na dúvida, deixe de fora: é melhor mandar 1 produto certo do que 3 errados.
 Responda só com JSON {{"ok": [números]}}, do mais adequado para o menos.
 
 {lista}"""
+FOTOS_IA = "\nAs fotos vêm na mesma ordem dos números: use a foto para ver o que o produto realmente é."
+
+
+def _miniatura(url):
+    """Foto pequena do produto em base64 (a Shopee serve a miniatura com _tn no fim)."""
+    import base64
+    import requests
+    try:
+        r = requests.get(url + ("_tn" if "susercontent.com/file/" in url and not url.endswith("_tn") else ""),
+                         timeout=10)
+        if r.ok and r.content and len(r.content) < 400_000:
+            return base64.b64encode(r.content).decode()
+    except Exception:
+        pass
+    return None
+
+
+def _ia_gemini(t, ofs, lista):
+    """Gemini olhando nome, preço e FOTO de cada produto. None se não respondeu."""
+    import os
+    import re
+    import requests
+    chave = (os.getenv("GEMINI_API_KEY") or "").strip()
+    if not chave:
+        return None
+    from concurrent.futures import ThreadPoolExecutor
+    with ThreadPoolExecutor(8) as ex:
+        fotos = list(ex.map(_miniatura, [o["imagem"] for o in ofs]))
+    partes = [{"text": PROMPT_IA.format(t=t.replace('"', "'"), lista=lista, fotos=FOTOS_IA)}]
+    for i, f in enumerate(fotos):
+        partes.append({"text": f"Foto do produto {i}:"})
+        if f:
+            partes.append({"inline_data": {"mime_type": "image/jpeg", "data": f}})
+        else:
+            partes.append({"text": "(sem foto)"})
+    for modelo in ((os.getenv("GEMINI_MODELO") or "").strip() or "gemini-2.5-flash", "gemini-2.5-flash-lite"):
+        try:
+            r = requests.post(f"https://generativelanguage.googleapis.com/v1beta/models/{modelo}:generateContent",
+                              params={"key": chave}, timeout=60,
+                              json={"contents": [{"parts": partes}],
+                                    "generationConfig": {"temperature": 0.1, "responseMimeType": "application/json"}})
+            if r.status_code != 200:
+                print(f"⚠️  Gemini {modelo}: HTTP {r.status_code} {r.text[:120]}")
+                continue
+            bruto = r.json()["candidates"][0]["content"]["parts"][0]["text"]
+            nums = json.loads(re.search(r"\{.*\}", bruto, re.S).group(0)).get("ok", [])
+            print(f"👁️  Busca conferida pelo Gemini ({modelo}, {sum(1 for f in fotos if f)} fotos).")
+            _ia_usada[0] = modelo
+            return [ofs[int(n)] for n in nums if str(n).isdigit() and int(n) < len(ofs)]
+        except Exception as e:
+            print(f"⚠️  Gemini {modelo} não conferiu ({e})")
+    return None
+
+
+_ia_usada = [""]
 
 
 def _filtro_ia(t, ofs):
-    """A IA confere se cada produto é mesmo o pedido. None se a IA não respondeu."""
-    if not config.GROQ_API_KEY or not ofs:
+    """A IA confere se cada produto é mesmo o pedido: Gemini com as fotos; se falhar, Groq só pelos nomes.
+    None se nenhuma IA respondeu."""
+    if not ofs:
         return None
     import re
+    lista = "\n".join(f"{i}: {o['nome'][:110]} — R$ {o['preco_fmt']}" for i, o in enumerate(ofs))
+    _ia_usada[0] = ""
+    r = _ia_gemini(t, ofs, lista)
+    if r is not None or not config.GROQ_API_KEY:
+        return r
     from .legenda import _chamar_groq
-    lista = "\n".join(f"{i}: {o['nome'][:110]}" for i, o in enumerate(ofs))
     try:
-        bruto = _chamar_groq(PROMPT_IA.format(t=t.replace('"', "'"), lista=lista))
+        bruto = _chamar_groq(PROMPT_IA.format(t=t.replace('"', "'"), lista=lista, fotos=""))
         nums = json.loads(re.search(r"\{.*\}", bruto, re.S).group(0)).get("ok", [])
+        _ia_usada[0] = "groq"
         return [ofs[int(n)] for n in nums if str(n).isdigit() and int(n) < len(ofs)]
     except Exception as e:
         print(f"⚠️  IA não conferiu a busca ({e}); fico só com as regras.")
@@ -232,7 +296,11 @@ def _filtro_ia(t, ofs):
 
 
 def _pontos(o):
-    return (o["nota"] >= 4.8, min(o["vendas"], 5000) * o["nota"] + o["comissao"] * 30)
+    """2/11/2026 (Fred): primeiro o melhor para o cliente (avaliação e vendas = vendedor de confiança);
+    entre os confiáveis, a melhor comissão; sem teto de preço."""
+    confiavel = o["nota"] >= 4.7 and o["vendas"] >= 100
+    return (o["nota"] >= 4.8 and o["vendas"] >= 100, confiavel and o["comissao"] >= 3,
+            min(o["vendas"], 5000) * o["nota"] + o["comissao"] * 30)
 
 
 def _mesmo_produto(a, b):
@@ -287,12 +355,18 @@ def achados(t):
         if not bons:
             continue
         conferidos = _filtro_ia(t, bons)
-        if conferidos is not None:
-            bons = conferidos
+        if conferidos is not None:   # a IA decide o que serve; a ordem continua a da qualidade
+            bons = sorted(conferidos, key=_pontos, reverse=True)
         bons = _sem_repetidos(bons)
         if bons:
             return bons[:ACHADOS]
     return []
+
+
+def _resumo(ofs):
+    """O que foi mandado, para a revisão (python -m src.busca_ze revisar)."""
+    return {"enviados": [f"{o['nome'][:90]} | R$ {o['preco_fmt']} | ⭐{o['nota']} | {o['vendas']} vend. | "
+                         f"com. R$ {o['comissao']:.2f}" for o in ofs], "ia": _ia_usada[0] or "regras"}
 
 
 def _curto(nome, n=45):
@@ -614,7 +688,7 @@ def rodar_dms(api, minha):
         try:
             if ofs:
                 r = enviar_dm(api, ig_id, None, t, ofs, destinatario=autor)
-                reg.update({"status": "entregue", "achados": [o["id"] for o in ofs]})
+                reg.update({"status": "entregue", "achados": [o["id"] for o in ofs], **_resumo(ofs)})
                 try:   # 2/11/2026 (Fred): o Zé confere se acertou; a resposta vira detalhe da mesma busca
                     c = api._req("POST", f"{ig_id}/messages", json={"recipient": {"id": autor},
                                                                     "message": {"text": DM_CONFERE}})
@@ -743,7 +817,7 @@ def rodar(api, minha, ja_respondidos=None):
             if ofs:
                 enviar_dm(api, ig_id, cid, t, ofs)
                 api.responder_comentario(cid, PUBLICAS[len(d["comentarios"]) % len(PUBLICAS)].format(u=usuario))
-                reg.update({"status": "entregue", "achados": [o["id"] for o in ofs]})
+                reg.update({"status": "entregue", "achados": [o["id"] for o in ofs], **_resumo(ofs)})
                 print(f"🔎 @{usuario} buscou '{t}' → {len(ofs)} achados no direct.")
             else:
                 api.responder_comentario(cid, PUBLICA_NADA.format(u=usuario, t=t))
@@ -783,6 +857,18 @@ if __name__ == "__main__":   # teste: python -m src.busca_ze "celular" "fone blu
             print(f"::notice::{m['id']} {m.get('media_product_type')} {m.get('timestamp')} "
                   f"coments={m.get('comments_count')}/{n} {m.get('permalink')} | {(m.get('caption') or '')[:50]!r}")
         sys.exit(0)
+    if sys.argv[1:2] == ["revisar"]:   # buscas dos últimos N dias (padrão 7), com o que foi mandado
+        dias = int(sys.argv[2]) if len(sys.argv) > 2 else 7
+        lim = (_agora() - timedelta(days=dias)).strftime(_fmt())
+        d = carregar()
+        regs = [dict(v, onde="direct") for v in d.get("dms", {}).values()] + \
+               [dict(v, onde="comentário") for v in d.get("comentarios", {}).values()]
+        for v in sorted((v for v in regs if v.get("em", "") >= lim and v.get("termo")), key=lambda v: v["em"]):
+            print(f"\n{v['em']} @{v.get('usuario', '?')} ({v['onde']}): {v.get('texto', '')[:80]!r} → "
+                  f"\"{v['termo']}\" [{v.get('status')}, IA: {v.get('ia', '?')}]")
+            for e in v.get("enviados", []):
+                print(f"   • {e}")
+        sys.exit(0)
     if sys.argv[1:2] == ["enviar"]:   # python -m src.busca_ze enviar <@ de quem buscou no direct> <termo> [intro]
         from . import instagram
         usuario, t = sys.argv[2].lstrip("@").lower(), sys.argv[3].strip()
@@ -804,7 +890,7 @@ if __name__ == "__main__":   # teste: python -m src.busca_ze "celular" "fone blu
             print(f"::notice::Enviado a @{usuario}: R$ {o['preco_fmt']} ⭐{o['nota']} {o['vendas']} vend. — {o['nome'][:80]}")
         d["dms"][f"manual-{_agora().strftime('%Y%m%d%H%M%S')}"] = {
             "autor": autor, "usuario": usuario, "texto": "(envio manual)", "termo": t, "em": _agora().strftime(_fmt()),
-            "status": "entregue", "achados": [o["id"] for o in ofs]}
+            "status": "entregue", "achados": [o["id"] for o in ofs], **_resumo(ofs)}
         salvar(d)
         sys.exit(0)
     if sys.argv[1:2] == ["atalhos"]:   # python -m src.busca_ze atalhos → grava as perguntas do direct
