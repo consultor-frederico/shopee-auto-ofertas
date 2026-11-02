@@ -1,0 +1,54 @@
+name: 26 - Prévia da curadoria nova (não posta nada)
+
+# Roda sozinho quando a branch da curadoria nova recebe código; não grava fila nem posta.
+on:
+  push:
+    branches: [claude/project-thread-75yulp]
+    paths: ['src/**', '.github/workflows/previa-curadoria.yml']
+  workflow_dispatch:
+
+jobs:
+  previa:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      PERFIL: garimpo
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Fila de hoje vem da main (só leitura)
+        run: |
+          git fetch --depth=1 origin main
+          git checkout origin/main -- data/fila.json data/palavras.json data/radar.json data/ana/fila.json 2>/dev/null || git checkout origin/main -- data/fila.json
+      - name: Prévia
+        env:
+          SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
+          SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          ALIEXPRESS_APP_KEY: ${{ secrets.ALIEXPRESS_APP_KEY }}
+          ALIEXPRESS_APP_SECRET: ${{ secrets.ALIEXPRESS_APP_SECRET }}
+          ALIEXPRESS_TRACKING_ID: ${{ secrets.ALIEXPRESS_TRACKING_ID }}
+          FB_PAGE_ID: ${{ secrets.FB_PAGE_ID }}
+          FB_PAGE_TOKEN: ${{ secrets.FB_PAGE_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          AWIN_FEED_URL: ${{ secrets.AWIN_FEED_URL }}
+          AWIN_ATIVO: ${{ vars.AWIN_ATIVO || '1' }}
+        run: |
+          set -o pipefail
+          mkdir -p previa_curadoria
+          python -u -m src.previa_curadoria 2>&1 | tee previa_curadoria/relatorio.txt
+      - name: Guardar a prévia na branch (não mexe na main)
+        if: always()
+        run: |
+          git config user.name "GarimpoBot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git reset -q
+          git add previa_curadoria
+          git diff --cached --quiet && exit 0
+          git commit -m "Prévia da curadoria nova [skip ci]"
+          git push origin HEAD:${{ github.ref_name }}

@@ -267,7 +267,7 @@ def produtos(forcar=False):
 
 # ---------------------------------------------------------------- uso no garimpo
 
-def candidatos(fila, ja_usado):
+def candidatos(fila, ja_usado, julgar=None):
     """Ofertas novas das marcas para este perfil (no máximo SHARK_POR_GARIMPO de cada), prontas para a fila.
     `ja_usado(fila, id)` é a regra de não repetir (garimpar.ja_usado)."""
     if not configurado():
@@ -280,6 +280,14 @@ def candidatos(fila, ja_usado):
     do_perfil = [o for o in todas if o["categoria"] in config.NICHO and not ja_usado(fila, o["id"])]
     # entra primeiro o que está em promoção e o que paga mais; o resto rodiza porque ja_usado bloqueia o que já saiu
     do_perfil.sort(key=lambda o: (o["desconto"], o["comissao"]), reverse=True)
+    if julgar:   # 02/11/2026: o catálogo passa pela IA de "uau"; só o diferente entra, o mais uau primeiro
+        do_perfil = [dict(o) for o in do_perfil]
+        julgar(do_perfil)
+        comuns = [o for o in do_perfil if o.get("uau", 0) < config.UAU_MINIMO_POSTAR]
+        if comuns:
+            print(f"🏬 Marcas: {len(comuns)} produtos comuns ficaram de fora (ex.: {', '.join(o['nome'][:35] for o in comuns[:3])})")
+        do_perfil = sorted((o for o in do_perfil if o.get("uau", 0) >= config.UAU_MINIMO_POSTAR),
+                           key=lambda o: (o["uau"], o["desconto"], o["comissao"]), reverse=True)
     escolhidas, por_marca = [], {}
     for o in do_perfil:
         plat = o["plataforma"]
@@ -288,8 +296,10 @@ def candidatos(fila, ja_usado):
         o = dict(o)
         if MARCAS[plat]["conferir_site"] and _conferir_site(o) in ("sumiu", "erro"):
             continue   # feed parado: só entra o que a loja confirma que existe, com o preço de hoje
-        o.update({"uau": config.SHARK_UAU, "nivel": "ouro", "origem_busca": "marca",
-                  "pontos": config.SHARK_PONTOS, "so_telegram": False})
+        uau = o.get("uau", config.SHARK_UAU) if julgar else config.SHARK_UAU
+        o.update({"uau": uau, "nivel": "ouro" if uau >= config.NIVEIS["ouro"]["uau"] else "prata",
+                  "origem_busca": "marca", "so_telegram": False,
+                  "pontos": config.SHARK_PONTOS + (uau - config.SHARK_UAU) * config.PESO_UAU})
         escolhidas.append(o)
         por_marca[plat] = por_marca.get(plat, 0) + 1
     print(f"🏬 Marcas para o perfil {config.PERFIL}: {len(do_perfil)} disponíveis, entram na rodada: "

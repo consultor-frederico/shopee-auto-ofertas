@@ -59,7 +59,7 @@ def candidatos_ordenados(fila):
     manuais += pedidos_ze[:1]   # "Você pediu, o Zé achou": um por vez, na frente da fila
     preferidos = [o for o in candidatos if o.get("preferencial") and not o.get("video_manual")]   # aprovadas por você
     resto = [o for o in candidatos if not o.get("video_manual") and not o.get("so_telegram") and not o.get("pedido")
-             and o["categoria"] in config.NICHO and variedade.diferenciado(o)]   # outra conta fica de fora; só produto diferenciado
+             and o["categoria"] in config.NICHO and variedade.para_instagram(o)]   # outra conta fica de fora; só produto diferenciado
     cheias = {p for p, n in marcas.hoje_por_marca(fila, "postado_em", agora().strftime("%Y-%m-%d")).items() if n >= config.SHARK_POR_DIA_INSTAGRAM}
     resto = [o for o in resto if o.get("plataforma") not in cheias]   # cada marca no máximo X por dia: não domina a página
     if not aliexpress.vagas_hoje(fila, "postado_em", config.ALIEXPRESS_POR_DIA_INSTAGRAM, agora().strftime("%Y-%m-%d")):

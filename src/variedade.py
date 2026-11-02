@@ -84,8 +84,15 @@ def uau(o):
     return min(nota, TETO_COMUM) if familia(o) in COMUNS else nota
 
 
-def diferenciado(o):
-    return uau(o) >= config.UAU_MINIMO_POSTAR
+def diferenciado(o, minimo=None):
+    return uau(o) >= (config.UAU_MINIMO_POSTAR if minimo is None else minimo)
+
+
+def para_instagram(o):
+    """Carrossel/feed: uau mais alto que o do Telegram e foto aprovada (quando o Gemini olhou)."""
+    if o.get("foto_nota") is not None and o["foto_nota"] < config.FOTO_MINIMA:
+        return False
+    return diferenciado(o, config.UAU_MINIMO_INSTAGRAM)
 
 
 def _texto(nome):

@@ -122,7 +122,7 @@ SELO = {"ouro": "🏅", "achado": "💎", "prata": "🥈"}
 
 def pontuar(o):
     """Prioriza o que é diferente (uau), o que paga (comissão) e o que converte (vendas, nota)."""
-    return round(o.get("uau", 5) * 3 + min(o["comissao"], 60) * 1.2 + min(o["vendas"], 20000) / 800
+    return round(o.get("uau", 5) * config.PESO_UAU + min(o["comissao"], 60) * 1.2 + min(o["vendas"], 20000) / 800
                  + (o["nota"] - 4.5) * 10 + o["desconto"] / 10, 2)
 
 
@@ -439,15 +439,19 @@ def curar(fila, candidatos, max_ia=None, max_achado=30):
             if grupos[g]:
                 revezados.append(grupos[g].pop(0))
     unicos = revezados[:max_ia - len(poucos)] + poucos
-    notas = curadoria.notas_uau(unicos)
+    ganchos = {}
+    notas = curadoria.notas_uau(unicos, ganchos=ganchos)
     if not notas:
         print(f"::warning::Curadoria por IA indisponível — usando nota de uau padrão {config.UAU_SEM_IA}.")
     aprovados, cont = [], {"ouro": 0, "achado": 0, "prata": 0, "descartado": 0}
     for o in unicos:
         o["uau"] = notas.get(o["id"], config.UAU_SEM_IA)
+        o["gancho"] = ganchos.get(o["id"], "")
         o["uau"] = variedade.uau(o)   # produto de vitrine (smartwatch, bomba de ar…) tem teto
-        if o.get("origem_busca") == "viral" and 5 <= o["uau"] < 10:
+        if o.get("origem_busca") == "viral" and 6 <= o["uau"] < 10:
             o["uau"] += 1   # veio de um post que bombou em outra página: procura já comprovada
+    olhar_fotos(unicos)
+    for o in unicos:
         o["nivel"] = nivel(o)
         if not o["nivel"]:
             cont["descartado"] += 1
@@ -470,6 +474,34 @@ def curar(fila, candidatos, max_ia=None, max_achado=30):
     return aprovados
 
 
+def olhar_fotos(ofertas):
+    """Finalistas do Instagram (uau alto): o Gemini olha a foto. Foto sem graça → só Telegram."""
+    finalistas = [o for o in ofertas if o.get("uau", 0) >= config.UAU_MINIMO_INSTAGRAM]
+    if not config.CURADORIA_FOTO or not finalistas:
+        return
+    notas = curadoria.notas_foto(finalistas)
+    barrados = 0
+    for o in finalistas:
+        if o["id"] in notas:
+            o["foto_nota"] = notas[o["id"]]
+            if notas[o["id"]] < config.FOTO_MINIMA:
+                barrados += 1
+                print(f"   📷 foto fraca ({notas[o['id']]:.0f}) → só Telegram: {o['nome'][:60]}")
+    print(f"📷 Fotos avaliadas: {len(notas)} de {len(finalistas)} finalistas | barradas no Instagram: {barrados}")
+
+
+def julgar_marcas(ofertas):
+    """Catálogo das marcas oficiais passa pela mesma IA (com bônus de loja oficial)."""
+    if not ofertas:
+        return
+    ganchos = {}
+    notas = curadoria.notas_uau(ofertas, ganchos=ganchos)
+    for o in ofertas:
+        base = notas.get(o["id"], config.UAU_SEM_IA)
+        o["uau"] = min(10.0, base + config.MARCA_BONUS_UAU) if base > 0 else 0.0
+        o["gancho"] = ganchos.get(o["id"], "")
+
+
 def garimpar(buscar=shopee.buscar_ofertas):
     fila = carregar_fila()
     limpar_fila(fila)
@@ -479,7 +511,7 @@ def garimpar(buscar=shopee.buscar_ofertas):
     busca_profunda.registrar(memoria, escolhidas, candidatos)
     busca_profunda.salvar(memoria)
     # Marcas oficiais (Awin: Shark Ninja, Arno): catálogo da marca, regras próprias — entra depois da curadoria da Shopee/AliExpress
-    shark = awin.candidatos(fila, ja_usado)
+    shark = awin.candidatos(fila, ja_usado, julgar=julgar_marcas)
     for o in shark:
         o["so_telegram"] = so_telegram(fila, o["id"])
     candidatos = candidatos + shark
