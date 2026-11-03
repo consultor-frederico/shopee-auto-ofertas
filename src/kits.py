@@ -55,24 +55,86 @@ TEMAS = {
                            "escorredor de louça dobrável", "mini processador elétrico", "pote hermético",
                            "dispenser de detergente", "suporte papel toalha"],
                 "hashtags": "#cozinhapratica #utensiliosdecozinha #achadinhosdecasa"},
-    "amigo-secreto": {"titulo": "AMIGO SECRETO ATÉ R$ 50", "teto": 50, "meses": [11, 12],
+    "amigo-secreto": {"titulo": "AMIGO SECRETO ATÉ R$ 50", "teto": 50, "meses": [11, 12], "natal": True,
                       "gancho": "Amigo secreto até R$ 50: {n} presentes que ninguém vai querer trocar",
-                      "termos": ["caneca térmica", "luminária criativa", "umidificador de ar", "garrafa térmica",
-                                 "massageador de pescoço", "caixa de som bluetooth",
-                                 "kit vinho", "copo térmico"],
+                      # 03/11/2026: sem garrafa térmica/umidificador (comuns, trava variedade.CASA_COMUM)
+                      "termos": ["luminária de lua", "massageador de pescoço", "caixa de som bluetooth mini",
+                                 "projetor de galáxia", "kit vinho", "luminária 3d", "mini aspirador de mesa",
+                                 "caneca mixer", "chaveiro localizador", "copo térmico"],
+                      "embaralhar": True,
                       "hashtags": "#amigosecreto #presentecriativo #ideiasdepresente"},
-    "natal": {"titulo": "PRESENTES DE NATAL", "teto": 120, "meses": [11, 12],
-              "gancho": "Presentes de Natal até R$ {teto}: {n} ideias pra riscar da lista",
-              "termos": ["projetor de galáxia", "massageador elétrico", "fone bluetooth", "kit ferramentas",
-                         "luminária de lua", "mini câmera instantânea",
-                         "relógio digital despertador", "kit churrasco"],
+    # 03/11/2026: Natal com vários kits bem diferentes (pedido do Fred), buscando em todas as lojas: Shopee,
+    # AliExpress (selo INTERNACIONAL, máx 2 por kit) e as marcas oficiais da Awin (máx 2 por kit, só no teto do tema).
+    "natal": {"titulo": "PRESENTES QUE PARECEM CAROS", "teto": 100, "meses": [11, 12], "natal": True,
+              "gancho": "Presentes de Natal que parecem caros, mas custam até R$ {teto} 🎄",
+              "termos": ["projetor de galáxia", "luminária de lua", "difusor de aromas ultrassônico",
+                         "mini câmera instantânea", "relógio despertador digital led", "massageador elétrico",
+                         "luminária de cristal", "kit churrasco", "caixa de som retrô"],
+              "embaralhar": True,
               "hashtags": "#presentedenatal #natal #ideiasdepresente"},
-    "festa": {"titulo": "FESTA DE FIM DE ANO", "teto": 80, "meses": [11, 12],
-              "gancho": "Festa de fim de ano: {n} achados até R$ {teto} pra deixar tudo pronto",
-              "termos": ["cortina de led", "pisca pisca led", "taça acrílico", "balde de gelo",
-                         "toalha de mesa natal", "enfeite de natal",
-                         "luminária de natal", "porta guardanapo"],
-              "hashtags": "#festadefimdeano #decoracaodenatal #ceiadenatal"},
+    "natal-ela": {"titulo": "NATAL: PRESENTE PRA ELA", "teto": 150, "meses": [11, 12], "natal": True, "rodizio": False,
+                  "gancho": "Presente de Natal pra ela: {n} ideias até R$ {teto} que ela vai amar 🎁",
+                  "termos": ["escova secadora", "porta joias", "massageador facial", "kit manicure elétrico",
+                             "difusor de aromas", "bolsa transversal feminina", "kit pincel de maquiagem",
+                             "luminária de lua", "kit skincare", "mini impressora térmica"],
+                  "embaralhar": True,
+                  "hashtags": "#presenteparaela #presentedenatal #natal"},
+    "natal-ele": {"titulo": "NATAL: PRESENTE PRA ELE", "teto": 150, "meses": [11, 12], "natal": True, "rodizio": False,
+                  "gancho": "Presente de Natal pra ele: {n} ideias até R$ {teto} que ele vai usar de verdade 🎁",
+                  "termos": ["máquina de cortar cabelo", "kit barba", "canivete multifuncional", "lanterna tática",
+                             "carteira masculina slim", "kit ferramentas", "compressor de ar portátil",
+                             "kit churrasco", "fone bluetooth", "smartwatch"],
+                  "embaralhar": True,
+                  "hashtags": "#presenteparaele #presentedenatal #natal"},
+    "natal-criancas": {"titulo": "NATAL DA CRIANÇADA", "teto": 120, "meses": [11, 12], "natal": True, "rodizio": False,
+                       "gancho": "Natal da criançada: {n} presentes até R$ {teto} que tiram a criança da tela 🎄",
+                       "termos": ["câmera infantil", "walkie talkie infantil", "microscópio infantil",
+                                  "lousa mágica lcd", "carrinho controle remoto", "robô educativo",
+                                  "máquina de bolhas", "kit slime", "projetor infantil", "pista de carrinho"],
+                       "embaralhar": True,
+                       "hashtags": "#presentedenatal #brinquedos #natal"},
+    "natal-tech": {"titulo": "NATAL TECH", "teto": 250, "meses": [11, 12], "natal": True, "rodizio": False,
+                   "gancho": "Natal tech: {n} presentes até R$ {teto} pra quem ama tecnologia 🎁",
+                   "termos": ["fone com cancelamento de ruído", "smartwatch", "mini projetor",
+                              "caixa de som bluetooth", "carregador magnético 3 em 1", "microfone de lapela",
+                              "gimbal celular", "câmera de segurança wifi", "teclado bluetooth", "fone de condução óssea"],
+                   "embaralhar": True,
+                   "hashtags": "#tecnologia #presentedenatal #gadgets"},
+    "natal-arvore": {"titulo": "ÁRVORE E LUZES DE NATAL", "teto": 150, "meses": [11, 12], "natal": True,
+                     "rodizio": False,
+                     "gancho": "Árvore e luzes de Natal: {n} achados até R$ {teto} pra casa brilhar 🎄",
+                     "termos": ["árvore de natal", "pisca pisca led", "fio de fada led", "cascata led",
+                                "ponteira estrela árvore", "bolas de natal kit", "pisca pisca solar",
+                                "árvore de natal led", "mangueira luminosa", "projetor de natal"],
+                     "embaralhar": True,
+                     "hashtags": "#arvoredenatal #decoracaodenatal #natal"},
+    "natal-decoracao": {"titulo": "ENFEITES DE NATAL DIFERENTÕES", "teto": 150, "meses": [11, 12], "natal": True,
+                        "rodizio": False,
+                        "gancho": "Enfeites de Natal diferentões: {n} achados até R$ {teto} que todo mundo vai notar 🎅",
+                        "termos": ["papai noel musical", "globo de neve", "boneco de neve", "guirlanda de natal",
+                                   "presépio", "vela led", "enfeite de porta natal", "papai noel escalador",
+                                   "trenó decorativo", "casinha de natal led"],
+                        "embaralhar": True,
+                        "hashtags": "#decoracaodenatal #natal #casadecorada"},
+    "ceia": {"titulo": "CEIA DE NATAL SEM STRESS", "teto": 120, "meses": [11, 12], "natal": True, "rodizio": False,
+             "gancho": "Ceia de Natal sem stress: {n} achados até R$ {teto} que salvam a noite 🎄",
+             "termos": ["tábua de frios giratória", "abridor de vinho elétrico", "termômetro culinário digital",
+                        "fondue elétrico", "aerador de vinho", "maçarico culinário", "porta bolo giratório",
+                        "fatiador de frios", "balde de gelo"],
+             "embaralhar": True,
+             "hashtags": "#ceiadenatal #natal #receitasdenatal"},
+    "presentao": {"titulo": "PRESENTÃO DE LOJA OFICIAL", "teto": 3000, "meses": [11, 12], "natal": True,
+                  "rodizio": False, "so_marcas": True,
+                  "gancho": "Presentão de Natal de loja oficial: {n} ideias pra quem você quer impressionar 🎁",
+                  "termos": ["sorveteira", "chopeira", "máscara", "headphone", "fone", "gimbal",
+                             "carregador", "caixa de som", "secador", "modelador"],
+                  "hashtags": "#presentedenatal #lojaoficial #natal"},
+    "festa": {"titulo": "RÉVEILLON EM CASA", "teto": 100, "meses": [12], "natal": True,
+              "gancho": "Réveillon em casa: {n} achados até R$ {teto} pra virar o ano com estilo 🥂",
+              "termos": ["taça led", "balde de gelo led", "lança confete", "copo luminoso", "kit bar drinks",
+                         "caixa de som luminosa", "fio de fada led", "máquina de bolhas", "coqueteleira"],
+              "embaralhar": True,
+              "hashtags": "#reveillon #anonovo #festadefimdeano"},
     "pet": {"titulo": "KIT DO PET", "teto": 80, "meses": [],
             "gancho": "Kit do pet: {n} achados até R$ {teto} pro seu bichinho",
             # 01/11/2026: mais termos (o Fred pediu kit só de pet); a ordem é embaralhada a cada kit
@@ -156,24 +218,39 @@ def _postado_recente(fila, item_id):
     return reg["postado_em"] >= (agora() - timedelta(days=config.DIAS_SEM_REPETIR)).strftime(FMT)
 
 
-def _passa(o, teto, fila):
-    from . import variedade
+# 03/11/2026: o kit busca em todas as lojas. AliExpress entra com o selo INTERNACIONAL de sempre; as marcas da Awin
+# não têm nota nem vendas (catálogo oficial), então valem as regras delas (awin.motivo_recusa) e o teto do tema.
+KIT_MAX_ALIEXPRESS = int(os.getenv("KIT_MAX_ALIEXPRESS", "2"))
+KIT_MAX_MARCAS = int(os.getenv("KIT_MAX_MARCAS", "2"))
+PONTOS_MARCA = 14   # marca oficial que cabe no teto ganha da média da Shopee (o Fred aposta na qualidade delas)
+
+
+def _passa(o, teto, fila, natal=False):
+    from . import aliexpress, marcas, variedade
     nome = o["nome"].lower()
-    return (o["link_afiliado"] and o["imagem"] and 0 < o["preco"] <= teto
-            and o["nota"] >= KIT_NOTA and o["vendas"] >= KIT_VENDAS
-            and o["comissao_pct"] >= KIT_COMISSAO_PCT and o["comissao"] >= KIT_COMISSAO_RS
-            and not o.get("internacional")
+    if not (o["link_afiliado"] and o["imagem"] and 0 < o["preco"] <= teto
             and not any(p in nome for p in config.PALAVRAS_PROIBIDAS)
-            and not variedade.franquia(o) and not _postado_recente(fila, o["id"]))
+            and not variedade.franquia(o)
+            and not (natal and variedade.casa_comum(o))   # kit de Natal: nada de produto comum (02/11/2026)
+            and not _postado_recente(fila, o["id"])):
+        return False
+    if marcas.eh_marca(o):
+        return True
+    if o.get("plataforma") == "aliexpress" and aliexpress.recusa_extra(o):
+        return False
+    return (o["nota"] >= KIT_NOTA and o["vendas"] >= KIT_VENDAS
+            and o["comissao_pct"] >= KIT_COMISSAO_PCT and o["comissao"] >= KIT_COMISSAO_RS)
 
 
 def _pontos(o):
+    from . import marcas
+    if marcas.eh_marca(o):
+        return PONTOS_MARCA + min(o.get("desconto") or 0, 40) / 10
     return min(o["vendas"], 10000) / 1000 + (o["nota"] - 4.7) * 20 + o["comissao_pct"] / 2 + min(o["comissao"], 20) / 2
 
 
-def melhor_do_termo(termo, teto, fila, ja, tema_titulo=""):
-    """O melhor produto que é mesmo o buscado. `ja` = itens já no kit (para não repetir produto nem família)."""
-    from . import busca_ze, shopee, variedade
+def _da_shopee(termo):
+    from . import shopee
     nos = []
     for pagina, ordem in ((1, 1), (2, 1), (1, 2)):
         for tentativa in (1, 2):   # a Shopee às vezes devolve "System Error" e responde na segunda
@@ -183,14 +260,49 @@ def melhor_do_termo(termo, teto, fila, ja, tema_titulo=""):
             except Exception as e:
                 print(f"⚠️  Shopee '{termo}' (página {pagina}, ordem {ordem}, tentativa {tentativa}): {e}")
                 time.sleep(3)
+    return [normalizar(n, "kit", termo) for n in nos]
+
+
+def _da_aliexpress(termo):
+    from . import aliexpress
+    if not aliexpress.configurado():
+        return []
+    try:
+        return [aliexpress.normalizar(p, "kit", termo) for p in aliexpress.buscar_produtos(termo, 1, limite=50)]
+    except Exception as e:
+        print(f"⚠️  AliExpress '{termo}': {e}")
+        return []
+
+
+def _das_marcas(termo):
+    from . import awin, busca_ze
+    if not awin.configurado():
+        return []
+    try:
+        return [dict(o, palavra=termo) for o in awin.produtos() if busca_ze.relevante(o["nome"], termo)]
+    except Exception as e:
+        print(f"⚠️  Marcas (Awin) '{termo}': {e}")
+        return []
+
+
+def melhor_do_termo(termo, teto, fila, ja, tema_titulo="", fontes=("shopee", "aliexpress", "marcas"), natal=False):
+    """O melhor produto que é mesmo o buscado, olhando as lojas de `fontes`. `ja` = itens já no kit (para não
+    repetir produto nem família)."""
+    from . import awin, busca_ze, marcas, variedade
+    nos = []
+    if "shopee" in fontes:
+        nos += _da_shopee(termo)
+    if "aliexpress" in fontes:
+        nos += _da_aliexpress(termo)
+    if "marcas" in fontes:
+        nos += _das_marcas(termo)
     vistos, bons = set(), []
     familias = {variedade.familia(x) for x in ja}
-    for n in nos:
-        o = normalizar(n, "kit", termo)
+    for o in nos:
         if o["id"] in vistos:
             continue
         vistos.add(o["id"])
-        if (busca_ze.relevante(o["nome"], termo) and _passa(o, teto, fila)
+        if (busca_ze.relevante(o["nome"], termo) and _passa(o, teto, fila, natal)
                 and variedade.familia(o) not in familias
                 and not any(busca_ze._mesmo_produto(o, x) for x in ja)):
             bons.append(o)
@@ -198,7 +310,12 @@ def melhor_do_termo(termo, teto, fila, ja, tema_titulo=""):
     conferidos = _filtro_ia(tema_titulo, termo, bons)
     if conferidos is not None:
         bons = conferidos
-    return bons[0] if bons else None
+    for o in bons:   # marca com feed parado (Arno): só entra o que a loja confirma, com o preço de hoje
+        if marcas.eh_marca(o) and marcas.MARCAS[o["plataforma"]]["conferir_site"]:
+            if awin._conferir_site(o) in ("sumiu", "erro") or o["preco"] > teto:
+                continue
+        return o
+    return None
 
 
 PROMPT_IA = """Estou montando um post "{tema}" com achados da Shopee. Para o item "{termo}", encontrei
@@ -206,6 +323,8 @@ os produtos abaixo (número: nome). Quais SÃO de fato um(a) "{termo}" e combina
 Não conta acessório, peça, refil, nem produto de outro tipo que só cita a palavra (ex.: buscando "organizador de
 banheiro", sapateira ou organizador de armário NÃO servem). Também NÃO serve produto com personagem, desenho,
 herói, time ou marca famosa (ex.: mochila da Patrulha Canina, copo do Homem-Aranha): é risco de réplica.
+Também NÃO serve produto comum, sem graça, que todo mundo já tem em casa: o post só tem achado que faz alguém
+parar de rolar a tela.{extra}
 Para cada um que servir, escreva um título curto em português, de 2 a 5 palavras, sem marca, sem medidas e sem
 palavras de anúncio (ex.: "Dispenser de sabonete automático").
 Responda só com JSON {{"ok": [{{"n": número, "titulo": "..."}}]}}, do mais adequado para o menos.
@@ -220,7 +339,9 @@ def _filtro_ia(tema, termo, ofs):
     from .legenda import _chamar_groq
     lista = "\n".join(f"{i}: {o['nome'][:110]}" for i, o in enumerate(ofs))
     try:
-        bruto = _chamar_groq(PROMPT_IA.format(tema=tema.title(), termo=termo, lista=lista))
+        extra = ("\nÉ um kit de NATAL: só vale o que é um presente bonito de dar e de ganhar."
+                 if any(t["titulo"] == tema and t.get("natal") for t in TEMAS.values()) else "")
+        bruto = _chamar_groq(PROMPT_IA.format(tema=tema.title(), termo=termo, lista=lista, extra=extra))
         ok = json.loads(re.search(r"\{.*\}", bruto, re.S).group(0)).get("ok", [])
         saida = []
         for x in ok:
@@ -256,10 +377,20 @@ def escolher(tema, conferir_foto=True):
     termos = list(cfg["termos"])
     if cfg.get("embaralhar"):
         random.shuffle(termos)
+    from . import marcas
     for termo in termos:
         if len(itens) >= QTD:
             break
-        o = melhor_do_termo(termo, cfg["teto"], fila, [it["oferta"] for it in itens], cfg["titulo"])
+        if cfg.get("so_marcas"):
+            fontes = ("marcas",)
+        else:
+            fontes = ["shopee"]
+            if sum(it["oferta"].get("plataforma") == "aliexpress" for it in itens) < KIT_MAX_ALIEXPRESS:
+                fontes.append("aliexpress")
+            if sum(marcas.eh_marca(it["oferta"]) for it in itens) < KIT_MAX_MARCAS:
+                fontes.append("marcas")
+        o = melhor_do_termo(termo, cfg["teto"], fila, [it["oferta"] for it in itens], cfg["titulo"], fontes,
+                            bool(cfg.get("natal")))
         if not o:
             print(f"   '{termo}': nada que passe nas regras.")
             continue
@@ -274,7 +405,7 @@ def escolher(tema, conferir_foto=True):
             print(f"⚠️  Foto de {o['id']} não baixou ({e}).")
             continue
         itens.append({"oferta": o, "foto": foto, "termo": termo})
-        print(f"🧺 {len(itens)}. '{termo}' → {o['nome'][:60]} — R$ {o['preco_fmt']} "
+        print(f"🧺 {len(itens)}. '{termo}' → [{o.get('plataforma') or 'shopee'}] {o['nome'][:60]} — R$ {o['preco_fmt']} "
               f"(nota {o['nota']}, {o['vendas']} vendas, {o['comissao_pct']}%/R$ {o['comissao']})")
     return itens
 
@@ -286,12 +417,20 @@ def capa(tema, itens):
     maior = max(it["oferta"]["preco"] for it in itens)
     img = Image.new("RGB", (L, A))
     d = ImageDraw.Draw(img)
+    natal = bool(cfg.get("natal"))
     for y in range(A):
         k = y / A
-        d.line([(0, y), (L, y)], fill=(int(70 - 34 * k), int(40 - 20 * k), int(14 - 7 * k)))
+        cor = ((int(118 - 66 * k), int(16 - 8 * k), int(22 - 12 * k)) if natal    # vermelho de Natal
+               else (int(70 - 34 * k), int(40 - 20 * k), int(14 - 7 * k)))
+        d.line([(0, y), (L, y)], fill=cor)
+    if natal:   # neve caindo (sempre o mesmo desenho, para a capa não "piscar" entre os kits)
+        rnd = random.Random(7)
+        for _ in range(140):
+            x, y, r = rnd.randint(0, L), rnd.randint(0, A - 130), rnd.choice((2, 3, 3, 4, 5))
+            d.ellipse((x - r, y - r, x + r, y + r), fill=(255, 255, 255) if r > 3 else (236, 214, 200))
     # etiqueta
     fe = imagem._fonte(34, "ExtraBold")
-    t = "KIT DO ZÉ"
+    t = "NATAL DO ZÉ" if natal else "KIT DO ZÉ"
     w = d.textlength(t, font=fe) + 60
     d.rounded_rectangle(((L - w) / 2, 50, (L + w) / 2, 106), 28, fill=imagem.DOURADO)
     d.text((L / 2, 79), t, font=fe, fill=imagem.ESCURO, anchor="mm")
@@ -302,7 +441,8 @@ def capa(tema, itens):
     for ln in linhas:
         d.text((L / 2, y), ln, font=ft, fill=imagem.DOURADO_CLARO, anchor="ma")
         y += ft.size + 10
-    sub = f"{len(itens)} achados até R$ {int(round(maior + 0.49))}"
+    sub = (f"{len(itens)} presentes de loja oficial" if cfg.get("so_marcas")
+           else f"{len(itens)} achados até R$ {int(round(maior + 0.49))}")
     d.text((L / 2, y + 6), sub, font=imagem._fonte(46, "SemiBold"), fill=imagem.BRANCO, anchor="ma")
     # quadro 2x2
     topo = y + 90
@@ -346,6 +486,9 @@ def legenda(tema, itens):
     dias = dias_para_black_friday()
     if 0 < dias <= 45:
         linhas.append(f"⏳ Faltam {dias} dias pra Black Friday! Segue o Zé pra ver tudo primeiro.")
+    if any(it["oferta"].get("internacional") for it in itens):
+        linhas.append("🌎 Os itens da AliExpress são internacionais: vêm do exterior, então o prazo de entrega e os "
+                      "impostos de importação podem ser cobrados.")
     linhas += ["", "Preços conferidos na hora do post, podem mudar na loja. Links de afiliado: você paga o mesmo.",
                "", f"{cfg['hashtags']} #zegarimpo #achadinhosshopee"]
     return "\n".join(linhas)
@@ -356,7 +499,15 @@ COMPARTILHA = {"banheiro": "Conhece alguém arrumando o banheiro? Manda esse kit
                "cozinha": "Conhece alguém que vive na cozinha? Manda esse kit pra essa pessoa",
                "amigo-secreto": "Manda esse kit no grupo do amigo secreto",
                "natal": "Conhece alguém que ainda não comprou os presentes? Manda pra essa pessoa",
-               "festa": "Vai ter festa? Manda esse kit pra quem vai organizar",
+               "natal-ela": "Marca aqui quem precisa dessa dica pra acertar no presente dela",
+               "natal-ele": "Marca aqui quem precisa dessa dica pra acertar no presente dele",
+               "natal-criancas": "Conhece alguém com criança pra presentear? Manda esse kit pra essa pessoa",
+               "natal-tech": "Conhece alguém que ama tecnologia? Manda esse kit como indireta",
+               "natal-arvore": "Conhece alguém que já tá montando a árvore? Manda esse kit pra essa pessoa",
+               "natal-decoracao": "Conhece alguém que ama enfeitar a casa no Natal? Manda esse kit pra essa pessoa",
+               "ceia": "Quem vai fazer a ceia esse ano? Manda esse kit pra essa pessoa",
+               "presentao": "Manda esse kit como indireta pra quem vai te dar presente",
+               "festa": "Vai virar o ano em casa? Manda esse kit pra quem vai organizar",
                "pet": "Conhece alguém que tem pet em casa? Manda esse kit pra essa pessoa",
                "carro": "Conhece alguém que vive dentro do carro? Manda esse kit pra essa pessoa",
                "home-office": "Conhece alguém que trabalha em casa? Manda esse kit pra essa pessoa",
