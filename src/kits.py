@@ -172,7 +172,6 @@ TEMAS = {
                                "organizador de cabos", "luminária usb"],
                     "hashtags": "#homeoffice #escritorioemcasa #setup"},
     # 01/11/2026: temas novos pedidos pelo Fred; entraram no rodízio em 03/11/2026 (ok do Fred após a prévia).
-    # até o Fred aprovar a prévia; depois é só tirar a linha.
     "infantil": {"titulo": "KIT INFANTIL", "teto": 80, "meses": [],
                  "gancho": "Kit infantil: {n} achados até R$ {teto} pra criançada",
                  "termos": ["luminária infantil", "quadro magnético infantil", "organizador de brinquedos",
