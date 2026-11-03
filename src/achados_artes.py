@@ -8,7 +8,7 @@ Ana         — slide de produto: 0 = arco · 1 = polaroid (lavanda) · 2 = cír
 """
 from PIL import Image, ImageDraw, ImageFilter, ImageOps
 
-from . import config, imagem, lojas_arte, marcas
+from . import config, imagem, lojas_arte, marcas, natal
 
 L, A = 1080, 1350
 NOMES_LOJA = {"shopee": "SHOPEE", "aliexpress": "ALIEXPRESS", **{p: m["nome"].upper() for p, m in marcas.MARCAS.items()}}
@@ -95,6 +95,7 @@ def produto_garimpo(v, oferta, foto, pos, destino, tiktok=False):
         d.rectangle([0, A - 118, L, A], fill=imagem.ESCURO)
         _barra_quero(d, pos, A - 84, num)
     img = lojas_arte.moldura_oficial(img, oferta)   # marca oficial da Awin: moldura da marca
+    img = natal.aplicar(img)   # nov/dez: moldura de Natal (src/natal.py)
     img.save(destino, "JPEG", quality=90, optimize=True)
 
 
@@ -147,6 +148,7 @@ def capa_produto(oferta, foto, n_mais, pose, destino):
     img.paste(Image.new("RGB", ze.size, (0, 0, 0)), (zx + 8, zy + 6), sombra)
     img.paste(ze, (zx, zy), ze)
     img = lojas_arte.moldura_oficial(img, oferta)   # marca oficial da Awin: moldura da marca
+    img = natal.aplicar(img)   # nov/dez: moldura de Natal (src/natal.py)
     img.save(destino, "JPEG", quality=90, optimize=True)
 
 
@@ -371,7 +373,7 @@ def final_garimpo(v, n, n_variante, youtube=False, frase=None, tiktok=False):
     w = d.textlength(t, font=f)
     d.rounded_rectangle(((L - w) / 2 - 30, A - 130, (L + w) / 2 + 30, A - 62), 34, fill=top.AM)
     top._ctext(d, A - 121, t, f, es)
-    return im
+    return natal.aplicar(im)   # nov/dez: moldura de Natal (src/natal.py)
 
 
 PALETAS_ANA = [((0xFF, 0xF8, 0xF4), (0xFB, 0xE3, 0xE8)), ((252, 243, 250), (238, 224, 244)),

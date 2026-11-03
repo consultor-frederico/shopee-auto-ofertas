@@ -490,10 +490,8 @@ def capa(tema, itens):
                else (int(70 - 34 * k), int(40 - 20 * k), int(14 - 7 * k)))
         d.line([(0, y), (L, y)], fill=cor)
     if natal:   # neve caindo (sempre o mesmo desenho, para a capa não "piscar" entre os kits)
-        rnd = random.Random(7)
-        for _ in range(140):
-            x, y, r = rnd.randint(0, L), rnd.randint(0, A - 130), rnd.choice((2, 3, 3, 4, 5))
-            d.ellipse((x - r, y - r, x + r, y + r), fill=(255, 255, 255) if r > 3 else (236, 214, 200))
+        from .natal import neve
+        neve(d, L, A - 130)
     # etiqueta
     fe = imagem._fonte(34, "ExtraBold")
     t = "NATAL DO ZÉ" if natal else "KIT DO ZÉ"
