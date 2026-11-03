@@ -86,9 +86,22 @@ CASA_COMUM = ["varal", "pote", "potes", "porta mantimento", "organizador", "cabi
 TETO_CASA_COMUM = 5
 
 
+_RE_CASA = None
+
+
 def casa_comum(o):
+    """Aceita plural ("espelhos", "potes", "varais", "organizadores"): em 03/11/2026 "Kit 3 Espelhos" escapou."""
+    global _RE_CASA
+    if _RE_CASA is None:
+        import re
+        partes = []
+        for p in CASA_COMUM:
+            palavras = _texto(p).split()
+            partes.append(r"\s".join(re.escape(w[:-1]) + r"(?:l|is|es|s)?" if w.endswith("l") else
+                                     re.escape(w) + r"(?:s|es)?" for w in palavras))
+        _RE_CASA = re.compile(r" (?:" + "|".join(partes) + r") ")
     txt = _texto(o if isinstance(o, str) else o.get("nome", ""))
-    return any(f" {_texto(p).strip()} " in txt for p in CASA_COMUM)
+    return bool(_RE_CASA.search(txt))
 
 
 def uau(o):
