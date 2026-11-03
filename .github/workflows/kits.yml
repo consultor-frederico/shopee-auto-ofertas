@@ -1,5 +1,5 @@
 name: 28 - Kit do Zé (carrossel temático)
-run-name: 28 - Kit do Zé (${{ inputs.tema || 'tema da vez' }}${{ inputs.so_previa && ' - prévia' || '' }})
+run-name: 28 - Kit do Zé (${{ inputs.tema || 'tema da vez' }}${{ inputs.modo == 'natal' && ' - Natal' || '' }}${{ inputs.so_previa && ' - prévia' || '' }})
 
 # Carrossel temático (src/kits.py): capa com o tema ("Banheiro organizado", "Amigo secreto até R$ 50"...), 4 ou 5
 # produtos buscados na hora para o tema (QUERO N) e o slide final. Só Garimpo VIP por enquanto.
@@ -8,6 +8,9 @@ on:
     inputs:
       tema:
         description: 'Tema (vazio = o da vez; na prévia, "todos" testa todos ou separe por vírgula: pet,infantil)'
+        default: ''
+      modo:
+        description: 'natal = só temas de Natal, sem repetir produto na temporada (o agenda.yml usa às 20:00)'
         default: ''
       so_previa:
         description: 'Só gerar a prévia (não posta; os slides ficam em data/relatorios/kits)'
@@ -31,6 +34,7 @@ jobs:
     env:
       PERFIL: garimpo
       TEMA: ${{ inputs.tema }}
+      KIT_MODO: ${{ inputs.modo }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -74,7 +78,7 @@ jobs:
         run: python -m src.kits preparar $TEMA
 
       - name: Sem kit hoje → carrossel normal no lugar
-        if: ${{ !inputs.so_previa && steps.prep.outputs.tem_post != 'true' }}
+        if: ${{ !inputs.so_previa && inputs.modo != 'natal' && steps.prep.outputs.tem_post != 'true' }}
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh api -X POST "repos/${{ github.repository }}/actions/workflows/achados.yml/dispatches" -f ref=main
@@ -130,7 +134,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A data
           git diff --cached --quiet && exit 0
-          git commit -m "🧺 Kit do Zé${TEMA:+ ($TEMA)} $(TZ=America/Sao_Paulo date +'%d/%m/%Y %H:%M')"
+          git commit -m "🧺 Kit do Zé${KIT_MODO:+ $KIT_MODO}${TEMA:+ ($TEMA)} $(TZ=America/Sao_Paulo date +'%d/%m/%Y %H:%M')"
           # outro workflow pode ter salvo junto: tenta de novo até 5 vezes
           for i in 1 2 3 4 5; do
             git pull --rebase && git push && break

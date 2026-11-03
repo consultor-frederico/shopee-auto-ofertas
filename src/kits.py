@@ -55,84 +55,98 @@ TEMAS = {
                            "escorredor de louça dobrável", "mini processador elétrico", "pote hermético",
                            "dispenser de detergente", "suporte papel toalha"],
                 "hashtags": "#cozinhapratica #utensiliosdecozinha #achadinhosdecasa"},
-    "amigo-secreto": {"titulo": "AMIGO SECRETO ATÉ R$ 50", "teto": 50, "meses": [11, 12], "natal": True,
+    "amigo-secreto": {"titulo": "AMIGO SECRETO ATÉ R$ 50", "teto": 50, "meses": [11, 12], "natal": True, "ate": (12, 24),
                       "gancho": "Amigo secreto até R$ 50: {n} presentes que ninguém vai querer trocar",
                       # 03/11/2026: sem garrafa térmica/umidificador (comuns, trava variedade.CASA_COMUM)
                       "termos": ["luminária de lua", "massageador de pescoço", "caixa de som bluetooth mini",
                                  "projetor de galáxia", "kit vinho", "luminária 3d", "mini aspirador de mesa",
-                                 "caneca mixer", "chaveiro localizador", "copo térmico"],
+                                 "caneca mixer", "chaveiro localizador", "copo térmico",
+                                 "mini impressora fotográfica", "kit spa pés", "luminária pôr do sol", "fone infantil bluetooth",
+                                 "suporte celular articulado", "kit drinks"],
                       "embaralhar": True,
                       "hashtags": "#amigosecreto #presentecriativo #ideiasdepresente"},
     # 03/11/2026: Natal com vários kits bem diferentes (pedido do Fred), buscando em todas as lojas: Shopee,
     # AliExpress (selo INTERNACIONAL, máx 2 por kit) e as marcas oficiais da Awin (máx 2 por kit, só no teto do tema).
-    "natal": {"titulo": "PRESENTES QUE PARECEM CAROS", "teto": 100, "meses": [11, 12], "natal": True,
+    "natal": {"titulo": "PRESENTES QUE PARECEM CAROS", "teto": 100, "meses": [11, 12], "natal": True, "ate": (12, 24),
               "gancho": "Presentes de Natal que parecem caros, mas custam até R$ {teto} 🎄",
-              "termos": ["projetor de galáxia", "luminária de lua", "difusor de aromas ultrassônico",
-                         "mini câmera instantânea", "relógio despertador digital led", "massageador elétrico",
-                         "luminária de cristal", "kit churrasco", "caixa de som retrô"],
+              "termos": ["projetor de galáxia", "difusor de aromas ultrassônico", "porta retrato digital",
+                         "mini câmera instantânea", "relógio despertador digital led", "pistola massageadora",
+                         "kit churrasco", "caixa de som retrô", "luminária pôr do sol", "toca discos vitrola",
+                         "kit whisky pedras", "lareira elétrica decorativa", "umidificador chama", "kit vinho maleta"],
               "embaralhar": True,
               "hashtags": "#presentedenatal #natal #ideiasdepresente"},
-    "natal-ela": {"titulo": "NATAL: PRESENTE PRA ELA", "teto": 150, "meses": [11, 12], "natal": True, "rodizio": False,
+    "natal-ela": {"titulo": "NATAL: PRESENTE PRA ELA", "teto": 150, "meses": [11, 12], "natal": True, "ate": (12, 24),
                   "gancho": "Presente de Natal pra ela: {n} ideias até R$ {teto} que ela vai amar 🎁",
                   "termos": ["escova secadora", "porta joias", "massageador facial", "kit manicure elétrico",
                              "difusor de aromas", "bolsa transversal feminina", "kit pincel de maquiagem",
-                             "luminária de lua", "kit skincare", "mini impressora térmica"],
+                             "kit skincare", "mini impressora térmica",
+                             "chapinha sem fio", "necessaire organizadora", "massageador para os pés", "vela aromática kit",
+                             "caixa de música bailarina"],
                   "embaralhar": True,
                   "hashtags": "#presenteparaela #presentedenatal #natal"},
-    "natal-ele": {"titulo": "NATAL: PRESENTE PRA ELE", "teto": 150, "meses": [11, 12], "natal": True, "rodizio": False,
+    "natal-ele": {"titulo": "NATAL: PRESENTE PRA ELE", "teto": 150, "meses": [11, 12], "natal": True, "ate": (12, 24),
                   "gancho": "Presente de Natal pra ele: {n} ideias até R$ {teto} que ele vai usar de verdade 🎁",
                   "termos": ["máquina de cortar cabelo", "kit barba", "canivete multifuncional", "lanterna tática",
                              "carteira masculina slim", "kit ferramentas", "compressor de ar portátil",
-                             "kit churrasco", "fone bluetooth", "smartwatch"],
+                             "kit churrasco", "fone bluetooth", "smartwatch",
+                             "parafusadeira", "kit whisky pedras", "mochila antifurto", "aparador de pelos", "porta celular moto"],
                   "embaralhar": True,
                   "hashtags": "#presenteparaele #presentedenatal #natal"},
-    "natal-criancas": {"titulo": "NATAL DA CRIANÇADA", "teto": 120, "meses": [11, 12], "natal": True, "rodizio": False,
+    "natal-criancas": {"titulo": "NATAL DA CRIANÇADA", "teto": 120, "meses": [11, 12], "natal": True, "ate": (12, 24),
                        "gancho": "Natal da criançada: {n} presentes até R$ {teto} que tiram a criança da tela 🎄",
                        "termos": ["câmera infantil", "walkie talkie infantil", "microscópio infantil",
                                   "lousa mágica lcd", "carrinho controle remoto", "robô educativo",
-                                  "máquina de bolhas", "kit slime", "projetor infantil", "pista de carrinho"],
+                                  "máquina de bolhas", "kit slime", "projetor infantil", "pista de carrinho",
+                                  "kit mágica", "patinete infantil", "boneca bebê reborn", "kit ciências experiências",
+                                  "piano musical infantil", "câmera instantânea infantil"],
                        "embaralhar": True,
                        "hashtags": "#presentedenatal #brinquedos #natal"},
-    "natal-tech": {"titulo": "NATAL TECH", "teto": 250, "meses": [11, 12], "natal": True, "rodizio": False,
+    "natal-tech": {"titulo": "NATAL TECH", "teto": 250, "meses": [11, 12], "natal": True, "ate": (12, 24),
                    "gancho": "Natal tech: {n} presentes até R$ {teto} pra quem ama tecnologia 🎁",
-                   "termos": ["fone com cancelamento de ruído", "smartwatch", "mini projetor",
+                   "termos": ["fone com cancelamento de ruído", "smartwatch", "mini projetor wifi",
                               "caixa de som bluetooth", "carregador magnético 3 em 1", "microfone de lapela",
-                              "gimbal celular", "câmera de segurança wifi", "teclado bluetooth", "fone de condução óssea"],
+                              "gimbal celular", "câmera de segurança wifi", "teclado bluetooth", "fone de condução óssea",
+                              "controle gamer celular", "óculos vr", "localizador airtag", "ring light", "drone com câmera"],
                    "embaralhar": True,
                    "hashtags": "#tecnologia #presentedenatal #gadgets"},
-    "natal-arvore": {"titulo": "ÁRVORE E LUZES DE NATAL", "teto": 150, "meses": [11, 12], "natal": True,
-                     "rodizio": False,
+    "natal-arvore": {"titulo": "ÁRVORE E LUZES DE NATAL", "teto": 150, "meses": [11, 12], "natal": True, "ate": (12, 24),
                      "gancho": "Árvore e luzes de Natal: {n} achados até R$ {teto} pra casa brilhar 🎄",
                      "termos": ["árvore de natal", "pisca pisca led", "fio de fada led", "cascata led",
                                 "ponteira estrela árvore", "bolas de natal kit", "pisca pisca solar",
-                                "árvore de natal led", "mangueira luminosa", "projetor de natal"],
+                                "árvore de natal led", "mangueira luminosa", "projetor de natal",
+                                "pisca pisca cascata", "árvore de natal pequena", "festão natal", "luz de natal bolinha",
+                                "kit enfeite árvore"],
                      "embaralhar": True,
                      "hashtags": "#arvoredenatal #decoracaodenatal #natal"},
-    "natal-decoracao": {"titulo": "ENFEITES DE NATAL DIFERENTÕES", "teto": 150, "meses": [11, 12], "natal": True,
-                        "rodizio": False,
+    "natal-decoracao": {"titulo": "ENFEITES DE NATAL DIFERENTÕES", "teto": 150, "meses": [11, 12], "natal": True, "ate": (12, 24),
                         "gancho": "Enfeites de Natal diferentões: {n} achados até R$ {teto} que todo mundo vai notar 🎅",
                         "termos": ["papai noel musical", "globo de neve", "boneco de neve", "guirlanda de natal",
                                    "presépio", "vela led", "enfeite de porta natal", "papai noel escalador",
-                                   "trenó decorativo", "casinha de natal led"],
+                                   "trenó decorativo", "casinha de natal led",
+                                   "papai noel pelúcia", "rena decorativa", "meia natalina", "boneco quebra nozes",
+                                   "pelúcia natal"],
                         "embaralhar": True,
                         "hashtags": "#decoracaodenatal #natal #casadecorada"},
-    "ceia": {"titulo": "CEIA DE NATAL SEM STRESS", "teto": 120, "meses": [11, 12], "natal": True, "rodizio": False,
+    "ceia": {"titulo": "CEIA DE NATAL SEM STRESS", "teto": 120, "meses": [11, 12], "natal": True, "ate": (12, 24),
              "gancho": "Ceia de Natal sem stress: {n} achados até R$ {teto} que salvam a noite 🎄",
              "termos": ["tábua de frios giratória", "abridor de vinho elétrico", "termômetro culinário digital",
                         "fondue elétrico", "aerador de vinho", "maçarico culinário", "porta bolo giratório",
-                        "fatiador de frios", "balde de gelo"],
+                        "fatiador de frios", "balde de gelo",
+                        "forma de panetone", "jogo americano natal", "suporte de taças", "petisqueira giratória",
+                        "sousplat natal", "porta guardanapo natal"],
              "embaralhar": True,
              "hashtags": "#ceiadenatal #natal #receitasdenatal"},
-    "presentao": {"titulo": "PRESENTÃO DE LOJA OFICIAL", "teto": 3000, "meses": [11, 12], "natal": True,
-                  "rodizio": False, "so_marcas": True,
+    "presentao": {"titulo": "PRESENTÃO DE LOJA OFICIAL", "teto": 3000, "meses": [11, 12], "natal": True, "ate": (12, 24),
+                  "so_marcas": True,
                   "gancho": "Presentão de Natal de loja oficial: {n} ideias pra quem você quer impressionar 🎁",
-                  "termos": ["sorveteira", "chopeira", "máscara", "headphone", "fone", "gimbal",
-                             "carregador", "caixa de som", "secador", "modelador"],
+                  "termos": ["sorveteira", "chopeira", "máscara", "headphone", "gimbal", "tripé",
+                             "carregador", "caixa de som", "secador", "modelador", "mochila"],
                   "hashtags": "#presentedenatal #lojaoficial #natal"},
-    "festa": {"titulo": "RÉVEILLON EM CASA", "teto": 100, "meses": [12], "natal": True,
+    "festa": {"titulo": "RÉVEILLON EM CASA", "teto": 100, "meses": [12], "natal": True, "ate": (12, 31),
               "gancho": "Réveillon em casa: {n} achados até R$ {teto} pra virar o ano com estilo 🥂",
               "termos": ["taça led", "balde de gelo led", "lança confete", "copo luminoso", "kit bar drinks",
-                         "caixa de som luminosa", "fio de fada led", "máquina de bolhas", "coqueteleira"],
+                         "caixa de som luminosa", "fio de fada led", "máquina de bolhas", "coqueteleira",
+                         "óculos 2027", "kit bar", "taça de acrílico", "pulseira neon", "copo neon"],
               "embaralhar": True,
               "hashtags": "#reveillon #anonovo #festadefimdeano"},
     "pet": {"titulo": "KIT DO PET", "teto": 80, "meses": [],
@@ -196,18 +210,62 @@ def _carregar_estado():
     return {"temas": {}}
 
 
-def tema_da_vez():
-    """Tema de festa do mês primeiro (o que saiu há mais tempo), depois os do ano todo; nunca o mesmo duas vezes seguidas."""
+# 03/11/2026: o Fred quer o Kit de Natal TODO DIA até o fim da época, sempre com produtos diferentes.
+# KIT_MODO=natal (agenda.yml, 20:15 de 03/11 a 31/12) roda só os temas de Natal; o kit de quarta e sábado às 18:45
+# (modo normal) fica com os temas do ano todo enquanto o Natal tem horário próprio.
+MODO = os.getenv("KIT_MODO", "").strip().lower()
+INICIO_TEMPORADA = (11, 1)        # produto que já saiu num kit desde 01/11 não volta mais nesta temporada
+DIAS_FAMILIA_NATAL = int(os.getenv("KIT_DIAS_FAMILIA", "5"))   # o mesmo tipo de produto só volta depois disso
+
+
+def _no_prazo(cfg, hoje=None):
+    hoje = hoje or agora()
+    if cfg["meses"] and hoje.month not in cfg["meses"]:
+        return False
+    fim = cfg.get("ate")   # (mês, dia): presente de Natal até a véspera; réveillon até 31/12
+    return not fim or (hoje.month, hoje.day) <= tuple(fim)
+
+
+def temas_do_modo(modo=None):
+    modo = MODO if modo is None else modo
+    ativos = {t: c for t, c in TEMAS.items() if c.get("rodizio", True) and _no_prazo(c)}
+    if modo == "natal":
+        return {t: c for t, c in ativos.items() if c.get("natal")}
+    natal_tem_horario = any(c.get("natal") for c in ativos.values())
+    return {t: c for t, c in ativos.items() if not (natal_tem_horario and c.get("natal"))} or ativos
+
+
+def tema_da_vez(modo=None):
+    """O tema do modo que saiu há mais tempo; nunca o mesmo duas vezes seguidas.
+    Fora da temporada de Natal: 2 de cada 3 kits são do tema de festa do mês (quando houver)."""
     usados = _carregar_estado()["temas"]
-    mes = agora().month
     ultimo = max(usados, key=usados.get) if usados else None
-    ativos = {t: c for t, c in TEMAS.items() if c.get("rodizio", True)}
-    festa = [t for t, c in ativos.items() if mes in c["meses"] and t != ultimo]
+    ativos = temas_do_modo(modo)
+    if not ativos:
+        return None
+    festa = [t for t, c in ativos.items() if c["meses"] and t != ultimo]
     sempre = [t for t, c in ativos.items() if not c["meses"] and t != ultimo]
-    # nos meses de festa, 2 de cada 3 kits são de festa
     n_festa = sum(1 for t in sorted(usados, key=usados.get)[-3:] if TEMAS.get(t, {}).get("meses"))
     lista = (festa if festa and n_festa < 2 else sempre) or festa or list(ativos)
     return min(lista, key=lambda t: usados.get(t, ""))
+
+
+def _ja_nos_kits(fila):
+    """Ids que já saíram num kit nesta temporada e famílias de produto dos kits dos últimos dias."""
+    hoje = agora()
+    inicio = hoje.replace(month=INICIO_TEMPORADA[0], day=INICIO_TEMPORADA[1], hour=0, minute=0, second=0)
+    if inicio > hoje:
+        inicio = inicio.replace(year=hoje.year - 1)
+    ini_s, fam_s = inicio.strftime(FMT), (hoje - timedelta(days=DIAS_FAMILIA_NATAL)).strftime(FMT)
+    regs = [o for o in fila["ofertas"].values() if o.get("formato") == "kit"]
+    if ARQ_TOP.exists():
+        for post in json.loads(ARQ_TOP.read_text(encoding="utf-8")).get("posts", {}).values():
+            if post.get("tipo") == "kit":
+                regs += [dict(it, postado_em=post.get("postado_em", "")) for it in post.get("itens", [])]
+    from . import variedade
+    ids = {o["id"] for o in regs if o.get("id") and (o.get("postado_em") or "") >= ini_s}
+    familias = {variedade.familia(o) for o in regs if (o.get("postado_em") or "") >= fam_s}
+    return ids, familias
 
 
 # ---------------------------------------------------------------- produtos
@@ -225,9 +283,11 @@ KIT_MAX_MARCAS = int(os.getenv("KIT_MAX_MARCAS", "2"))
 PONTOS_MARCA = 14   # marca oficial que cabe no teto ganha da média da Shopee (o Fred aposta na qualidade delas)
 
 
-def _passa(o, teto, fila, natal=False):
+def _passa(o, teto, fila, natal=False, bloqueados=()):
     from . import aliexpress, marcas, variedade
     nome = o["nome"].lower()
+    if o["id"] in bloqueados:
+        return False
     if not (o["link_afiliado"] and o["imagem"] and 0 < o["preco"] <= teto
             and not any(p in nome for p in config.PALAVRAS_PROIBIDAS)
             and not variedade.franquia(o)
@@ -285,7 +345,8 @@ def _das_marcas(termo):
         return []
 
 
-def melhor_do_termo(termo, teto, fila, ja, tema_titulo="", fontes=("shopee", "aliexpress", "marcas"), natal=False):
+def melhor_do_termo(termo, teto, fila, ja, tema_titulo="", fontes=("shopee", "aliexpress", "marcas"), natal=False,
+                    bloqueados=(), familias_fora=()):
     """O melhor produto que é mesmo o buscado, olhando as lojas de `fontes`. `ja` = itens já no kit (para não
     repetir produto nem família)."""
     from . import awin, busca_ze, marcas, variedade
@@ -297,12 +358,12 @@ def melhor_do_termo(termo, teto, fila, ja, tema_titulo="", fontes=("shopee", "al
     if "marcas" in fontes:
         nos += _das_marcas(termo)
     vistos, bons = set(), []
-    familias = {variedade.familia(x) for x in ja}
+    familias = {variedade.familia(x) for x in ja} | set(familias_fora)
     for o in nos:
         if o["id"] in vistos:
             continue
         vistos.add(o["id"])
-        if (busca_ze.relevante(o["nome"], termo) and _passa(o, teto, fila, natal)
+        if (busca_ze.relevante(o["nome"], termo) and _passa(o, teto, fila, natal, bloqueados)
                 and variedade.familia(o) not in familias
                 and not any(busca_ze._mesmo_produto(o, x) for x in ja)):
             bons.append(o)
@@ -377,6 +438,11 @@ def escolher(tema, conferir_foto=True):
     termos = list(cfg["termos"])
     if cfg.get("embaralhar"):
         random.shuffle(termos)
+    natal = bool(cfg.get("natal"))
+    bloqueados, familias_fora = _ja_nos_kits(fila) if natal else (set(), set())
+    if natal:   # termos que saíram há mais tempo neste tema vêm primeiro (cada kit puxa produtos de outro tipo)
+        usados_t = _carregar_estado().get("termos", {}).get(tema, {})
+        termos.sort(key=lambda t: usados_t.get(t, ""))
     from . import marcas
     for termo in termos:
         if len(itens) >= QTD:
@@ -390,7 +456,7 @@ def escolher(tema, conferir_foto=True):
             if sum(marcas.eh_marca(it["oferta"]) for it in itens) < KIT_MAX_MARCAS:
                 fontes.append("marcas")
         o = melhor_do_termo(termo, cfg["teto"], fila, [it["oferta"] for it in itens], cfg["titulo"], fontes,
-                            bool(cfg.get("natal")))
+                            natal, bloqueados, familias_fora)
         if not o:
             print(f"   '{termo}': nada que passe nas regras.")
             continue
@@ -541,7 +607,8 @@ def gerar(tema, itens, pasta):
             "itens": [{k: it["oferta"].get(k) for k in ("id", "nome", "titulo", "preco_fmt", "preco", "link_afiliado",
                                                          "plataforma", "imagem", "nota", "vendas", "comissao",
                                                          "comissao_pct", "loja", "categoria", "palavra", "num")}
-                      for it in itens]}
+                      for it in itens],
+            "termos": [it["termo"] for it in itens]}
 
 
 # ---------------------------------------------------------------- preparar / publicar
@@ -552,9 +619,11 @@ def preparar(tema=None):
         return
     # se o tema da vez não fechar o kit, tenta os próximos (até 3 temas)
     primeiro = tema if tema in TEMAS else tema_da_vez()
+    if not primeiro:
+        print(f"⏸️  Nenhum tema no modo '{MODO or 'normal'}' hoje (fora da temporada).")
+        return
     usados = _carregar_estado()["temas"]
-    outros = sorted((t for t in TEMAS if t != primeiro and TEMAS[t].get("rodizio", True) and (not TEMAS[t]["meses"] or agora().month in TEMAS[t]["meses"])),
-                    key=lambda t: usados.get(t, ""))
+    outros = sorted((t for t in temas_do_modo() if t != primeiro), key=lambda t: usados.get(t, ""))
     for tema in [primeiro] + outros[:2]:
         print(f"🧺 Kit da vez: {TEMAS[tema]['titulo']}")
         itens = escolher(tema)
@@ -620,6 +689,8 @@ def publicar():
             ARQ_TOP.write_text(json.dumps(dados, ensure_ascii=False, indent=2), encoding="utf-8")
     estado = _carregar_estado()
     estado["temas"][info["tema"]] = agora_s
+    for t in info.get("termos", []):
+        estado.setdefault("termos", {}).setdefault(info["tema"], {})[t] = agora_s
     ARQ_ESTADO.write_text(json.dumps(estado, ensure_ascii=False, indent=2), encoding="utf-8")
     if info.get("tiktok"):
         tiktok_kit.enviar([PASTA_SITE / "midia" / "kits" / x for x in info["tiktok"]], info["legenda_tiktok"])

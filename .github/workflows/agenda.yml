@@ -36,6 +36,11 @@ jobs:
           if [ "$HQ" = "18:45" ]; then
             if [ "$DOW" = "3" ] || [ "$DOW" = "6" ]; then WFS="$WFS kits.yml"; else WFS="$WFS achados.yml"; fi
           fi
+          # 03/11/2026: Kit de Natal TODO DIA às 20:00 (pedido do Fred), só temas de Natal e nunca o mesmo produto
+          # (src/kits.py, KIT_MODO=natal). Vai de novembro a 31/12; fora da temporada o kits.yml não posta nada.
+          NATAL=""
+          MES=$(date +%m)
+          if [ "$HQ" = "20:00" ] && { [ "$MES" = "11" ] || [ "$MES" = "12" ]; }; then NATAL=1; fi
           # postar.yml agora só entrega "Você pediu, o Zé achou" e vídeos manuais (não faz nada se não houver)
           case "$HQ" in 10:45|15:45|20:45) WFS="$WFS postar.yml" ;; esac
           if [ "$Q" = "15" ] && [ $((10#$H)) -ge 8 ] && [ $((10#$H)) -le 22 ]; then WFS="$WFS telegram-ofertas.yml"; fi
@@ -80,12 +85,17 @@ jobs:
           # "grava-repositorio" com posts e Telegram, e o GitHub só guarda 1 rotina esperando nessa fila —
           # com 3 juntas, a do meio era cancelada (30/10/2026: 5 rodadas de Ofertas no Telegram perdidas por dia).
           LIVRE=1
+          [ -n "$NATAL" ] && LIVRE=0
           for WF in $WFS $ANA; do case "$WF" in responder.yml|revisao.yml) ;; *) LIVRE=0 ;; esac; done
           if [ "$LIVRE" = "1" ]; then WFS="$WFS aprovacao.yml"; fi
           for WF in $WFS; do
             echo "▶️  $WF"
             gh api -X POST "repos/$REPO/actions/workflows/$WF/dispatches" -f ref=main || echo "::warning::falhou $WF"
           done
+          if [ -n "$NATAL" ]; then
+            echo "▶️  kits.yml (natal)"
+            gh api -X POST "repos/$REPO/actions/workflows/kits.yml/dispatches" -f ref=main -f "inputs[modo]=natal" || echo "::warning::falhou kits.yml (natal)"
+          fi
           for WF in $ANA; do
             echo "▶️  $WF (ana)"
             gh api -X POST "repos/$REPO/actions/workflows/$WF/dispatches" -f ref=main -f "inputs[perfil]=ana" || echo "::warning::falhou $WF (ana)"
