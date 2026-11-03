@@ -171,9 +171,9 @@ TEMAS = {
                                "mouse pad grande", "apoio para os pés", "suporte de monitor",
                                "organizador de cabos", "luminária usb"],
                     "hashtags": "#homeoffice #escritorioemcasa #setup"},
-    # 01/11/2026: temas novos pedidos pelo Fred. "rodizio": False = só sai pedindo o tema (prévia ou workflow 28)
+    # 01/11/2026: temas novos pedidos pelo Fred; entraram no rodízio em 03/11/2026 (ok do Fred após a prévia).
     # até o Fred aprovar a prévia; depois é só tirar a linha.
-    "infantil": {"titulo": "KIT INFANTIL", "teto": 80, "meses": [], "rodizio": False,
+    "infantil": {"titulo": "KIT INFANTIL", "teto": 80, "meses": [],
                  "gancho": "Kit infantil: {n} achados até R$ {teto} pra criançada",
                  "termos": ["luminária infantil", "quadro magnético infantil", "organizador de brinquedos",
                             "garrafa infantil", "lousa mágica lcd", "massinha de modelar kit",
@@ -181,14 +181,14 @@ TEMAS = {
                             "toalha com capuz infantil"],
                  "embaralhar": True,
                  "hashtags": "#maternidade #brinquedos #achadinhosinfantis"},
-    "casa": {"titulo": "CASA EM ORDEM", "teto": 80, "meses": [], "rodizio": False,
+    "casa": {"titulo": "CASA EM ORDEM", "teto": 80, "meses": [],
              "gancho": "Casa em ordem: {n} achados até R$ {teto} que mudam a rotina",
              "termos": ["organizador de gaveta", "luminária com sensor de presença", "mop giratório",
                         "saco a vácuo roupas", "cabide veludo", "organizador de sapatos",
                         "porta chaves parede", "fita led", "rodo mágico", "umidificador de ar"],
              "embaralhar": True,
              "hashtags": "#casaorganizada #organizacaodecasa #achadinhosdecasa"},
-    "games": {"titulo": "KIT GAMER", "teto": 120, "meses": [], "rodizio": False,
+    "games": {"titulo": "KIT GAMER", "teto": 120, "meses": [],
               "gancho": "Kit gamer: {n} achados até R$ {teto} pro seu setup",
               "termos": ["headset gamer", "mouse gamer", "teclado gamer", "mouse pad gamer",
                          "suporte para controle", "gatilho para celular", "cooler para celular",
