@@ -132,7 +132,8 @@ def nome_e_cor(oferta):
     p = oferta.get("plataforma") or "shopee"
     if p in marcas.MARCAS:
         return marcas.MARCAS[p]["nome"].upper(), marcas.MARCAS[p]["cor"]
-    return {"shopee": ("SHOPEE", "#EE4D2D"), "aliexpress": ("ALIEXPRESS", "#E43225")}.get(p, (p.upper(), "#24150A"))
+    return {"shopee": ("SHOPEE", "#EE4D2D"), "aliexpress": ("ALIEXPRESS", "#E43225"),
+            "mercadolivre": ("MERCADO LIVRE", "#2D3277")}.get(p, (p.upper(), "#24150A"))
 
 
 def icone(d, oferta, cx, cy, r, cor):

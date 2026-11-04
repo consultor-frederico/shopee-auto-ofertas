@@ -14,6 +14,10 @@ on:
       termo:
         description: 'Termo para testar a busca (só quando já conectado)'
         default: 'garrafa termica'
+      previa:
+        description: 'Gerar prévia de posts com os mais vendidos (não posta nada)'
+        type: boolean
+        default: false
 
 concurrency:
   group: mercadolivre-token
@@ -26,7 +30,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: pip install requests
+      - run: pip install -r requirements.txt
       - name: Conectar ou testar
         env:
           ML_CLIENT_ID: ${{ secrets.ML_CLIENT_ID }}
@@ -35,11 +39,19 @@ jobs:
           ML_CODIGO: ${{ inputs.codigo }}
           TERMO: ${{ inputs.termo }}
         run: |
-          if [ -n "$ML_CODIGO" ]; then
+          if [ "${{ inputs.previa }}" = "true" ]; then
+            python -m src.mercadolivre previa
+          elif [ -n "$ML_CODIGO" ]; then
             python -m src.mercadolivre conectar
           else
             python -m src.mercadolivre busca "$TERMO"
           fi
+      - name: Guardar a prévia
+        if: inputs.previa
+        uses: actions/upload-artifact@v4
+        with:
+          name: previa-mercadolivre
+          path: previa_ml/
       - name: Salvar o refresh token
         if: always()
         env:

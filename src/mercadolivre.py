@@ -157,10 +157,111 @@ def _sonda(termo):
     tenta("item avulso", "/items", ids="MLB6756182602")
 
 
+# Categorias do ranking de mais vendidos usadas na prévia (ids do ML)
+CATEGORIAS = {
+    "MLB1574": ("Casa, Móveis e Decoração", "casa"),
+    "MLB1246": ("Beleza e Cuidado Pessoal", "beleza"),
+    "MLB1000": ("Eletrônicos, Áudio e Vídeo", "eletronicos"),
+    "MLB1276": ("Esportes e Fitness", "esportes"),
+    "MLB263532": ("Ferramentas", "ferramentas"),
+    "MLB5726": ("Eletrodomésticos", "eletrodomesticos"),
+    "MLB1132": ("Brinquedos e Hobbies", "brinquedos"),
+    "MLB1071": ("Animais", "pet"),
+}
+
+
+def _brl(v):
+    return f"{v:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+
+
+def produto(pid, categoria, posicao, nome_cat):
+    """Produto do catálogo → oferta no formato do robô (o mesmo da Shopee/AliExpress)."""
+    r = _get(f"/products/{pid}")
+    if r.status_code != 200:
+        return None
+    p = r.json()
+    r2 = _get(f"/products/{pid}/items", limit=20)
+    itens = r2.json().get("results", []) if r2.status_code == 200 else []
+    itens = [i for i in itens if i.get("condition") == "new" and i.get("price")]
+    if not itens:
+        return None
+    melhor = min(itens, key=lambda i: i["price"])
+    preco = float(melhor["price"])
+    de = melhor.get("original_price")
+    desconto = round((1 - preco / de) * 100) if de and de > preco else 0
+    fotos = [f.get("url") for f in p.get("pictures") or [] if f.get("url")]
+    return {
+        "id": f"ml{pid}",
+        "nome": p.get("name", ""),
+        "titulo": p.get("name", "")[:60],
+        "categoria": categoria,
+        "preco": preco,
+        "preco_fmt": _brl(preco),
+        "preco_de": de if desconto else None,
+        "desconto": desconto,
+        "vendas": 0,
+        "nota": 0.0,
+        "posicao": posicao,
+        "info_txt": f"Top {posicao} mais vendidos em {nome_cat}",
+        "loja": "Mercado Livre",
+        "plataforma": "mercadolivre",
+        "imagem": fotos[0] if fotos else "",
+        "link_afiliado": link_afiliado(f"https://www.mercadolivre.com.br/p/{pid}"),
+        "frete_gratis": "free_shipping" in str(melhor.get("shipping") or ""),
+        "full": "fulfillment" in str(melhor.get("shipping") or ""),
+        "vendedores": len(itens),
+    }
+
+
+def mais_vendidos(cat, quantos=5, preco_max=500):
+    r = _get(f"/highlights/MLB/category/{cat}")
+    if r.status_code != 200:
+        print(f"❌ Mais vendidos {cat}: {r.status_code}")
+        return []
+    nome_cat, categoria = CATEGORIAS.get(cat, (cat, "casa"))
+    saida = []
+    for c in r.json().get("content", []):
+        if c.get("type") != "PRODUCT":
+            continue
+        o = produto(c["id"], categoria, c.get("position"), nome_cat)
+        if o and o["preco"] <= preco_max and o["imagem"]:
+            saida.append(o)
+        if len(saida) >= quantos:
+            break
+    return saida
+
+
+def _previa(pasta="previa_ml"):
+    """Gera a arte do post de 1 mais vendido por categoria, sem postar. Fica em previa_ml/ (artefato do workflow)."""
+    from . import imagem
+    Path(pasta).mkdir(exist_ok=True)
+    linhas = []
+    for n, cat in enumerate(list(CATEGORIAS)[:6], 1):
+        ofs = mais_vendidos(cat, quantos=1)
+        if not ofs:
+            continue
+        o = ofs[0]
+        try:
+            imagem.gerar(o, f"{pasta}/{n}-{o['categoria']}.jpg")
+        except Exception as e:
+            print(f"⚠️  Arte de {o['nome']}: {e}")
+        linhas.append(f"{n}. {o['nome']} · R$ {o['preco_fmt']}" + (f" (de R$ {_brl(o['preco_de'])}, -{o['desconto']}%)" if o["preco_de"] else "")
+                      + f" · Top {o['posicao']} em {CATEGORIAS[cat][0]} · {o['vendedores']} vendedores"
+                      + (" · frete grátis" if o["frete_gratis"] else "") + f"\n   {o['link_afiliado']}")
+    texto = "\n".join(linhas)
+    Path(f"{pasta}/lista.txt").write_text(texto)
+    print(texto)
+    # tenta a nota do anúncio (se o ML liberar, entra no filtro de nota ≥4,7)
+    r = _get("/reviews/item/MLB7896357598")
+    print(f"Nota por anúncio (/reviews/item): {r.status_code} · {r.text[:200]}")
+
+
 if __name__ == "__main__":
     acao = sys.argv[1] if len(sys.argv) > 1 else "status"
     if acao == "conectar":
         _conectar()
+    elif acao == "previa":
+        _previa()
     elif acao == "busca":
         _status()
         _busca(" ".join(sys.argv[2:]) or "garrafa termica")

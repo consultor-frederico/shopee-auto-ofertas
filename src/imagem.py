@@ -283,7 +283,10 @@ def gerar(oferta: dict, destino, foto: Image.Image = None, moldura=True):
     xi = 90 + 44
     if loja_oficial(oferta):
         info, xi = marcas.texto_oficial(oferta), 90
-    else:
+    elif oferta.get("info_txt"):   # Mercado Livre: a API não dá vendas nem nota, vai a posição no ranking
+        info = oferta["info_txt"]
+        _estrela(d, 90 + 18, yi + 21, 20, DOURADO)
+    if not loja_oficial(oferta) and not oferta.get("info_txt"):
         _estrela(d, 90 + 18, yi + 21, 20, DOURADO)
     d.text((xi, yi), info, font=f_info, fill=CINZA)
 
