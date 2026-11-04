@@ -1,0 +1,50 @@
+name: 29 - Conectar Mercado Livre
+
+# 1ª vez: rode SEM código → o log mostra o link de autorização (abra logado na conta do afiliado).
+# 2ª vez: cole o endereço que abriu (com ?code=TG-...) → o refresh token vai sozinho para ML_REFRESH_TOKEN.
+# Já conectado: rode sem código para conferir a conta e testar a busca com o termo escolhido.
+
+on:
+  workflow_dispatch:
+    inputs:
+      codigo:
+        description: 'Endereço ou código que apareceu depois de autorizar (deixe vazio na 1ª vez)'
+        required: false
+      termo:
+        description: 'Termo para testar a busca (só quando já conectado)'
+        default: 'garrafa termica'
+
+concurrency:
+  group: mercadolivre-token
+
+jobs:
+  conectar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install requests
+      - name: Conectar ou testar
+        env:
+          ML_CLIENT_ID: ${{ secrets.ML_CLIENT_ID }}
+          ML_CLIENT_SECRET: ${{ secrets.ML_CLIENT_SECRET }}
+          ML_REFRESH_TOKEN: ${{ secrets.ML_REFRESH_TOKEN }}
+          ML_CODIGO: ${{ inputs.codigo }}
+          TERMO: ${{ inputs.termo }}
+        run: |
+          if [ -z "$ML_CODIGO" ] && [ -n "$ML_REFRESH_TOKEN" ]; then
+            python -m src.mercadolivre busca "$TERMO"
+          else
+            python -m src.mercadolivre conectar
+          fi
+      - name: Salvar o refresh token
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          [ -f "$RUNNER_TEMP/ml_refresh.txt" ] || exit 0
+          [ -n "$GH_TOKEN" ] || { echo "::error::Falta o GH_PAT para salvar o segredo."; exit 1; }
+          gh secret set ML_REFRESH_TOKEN -R "${{ github.repository }}" < "$RUNNER_TEMP/ml_refresh.txt"
+          echo "✅ ML_REFRESH_TOKEN salvo."
