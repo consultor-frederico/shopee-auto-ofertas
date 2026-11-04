@@ -413,7 +413,12 @@ def selecionar(candidatos, n, ja_na_fila=None, lojas_na_fila=None):
     if conhecidos:
         antes = len(escolhidos)
         por_cat = {}
+        n_marca = 0
         for o in sorted(conhecidos, key=lambda x: x["pontos"], reverse=True):
+            if marcas.eh_marca(o):   # loja oficial da Awin já tem vaga própria: no máximo 2 entre os conhecidos
+                if n_marca >= 2:
+                    continue
+                n_marca += 1
             por_cat.setdefault(o["categoria"], []).append(o)
         if tema:
             rodada({c: [o for o in v if linhas.de(o) in tema] for c, v in por_cat.items()},

@@ -122,6 +122,9 @@ def capa_produto(oferta, foto, n_mais, pose, destino):
     if imagem.tem_selo_ze(oferta):   # ⭐ a capa é sempre um especial: moldura dourada + selo ACHADO DO ZÉ
         imagem.moldura_ze(d, (cx0, cy0, cx1, cy1), 44)
         imagem.selo_ze(d, cx0 + 30, cy1 - 30 - 92)
+    elif imagem.eh_achado(oferta) and camadas_ligado():   # 💎 achado escondido na capa: o selo dele
+        imagem.moldura_achado(d, (cx0, cy0, cx1, cy1), 44)
+        imagem.selo_achado(d, cx0 + 30, cy1 - 30 - 92)
     fim_selo = cx0 + 126 + imagem.selo_loja(d, oferta, cx0 + 126, cy0 + 30)
     t = f"+{n_mais} ACHADOS  ›"
     f_a = imagem._fonte(30, "ExtraBold")
@@ -155,6 +158,11 @@ def capa_produto(oferta, foto, n_mais, pose, destino):
     img = linhas.faixa(img, oferta)   # 🗂️ faixa da linha ("LINHA CASA"), src/linhas.py
     img = natal.aplicar(img)   # nov/dez: moldura de Natal (src/natal.py)
     img.save(destino, "JPEG", quality=90, optimize=True)
+
+
+def camadas_ligado():
+    from . import camadas
+    return camadas.ligado()
 
 
 def _selo_numero(d, cx, cy, r, fundo, contorno, fonte, pos, cor):

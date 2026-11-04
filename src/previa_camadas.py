@@ -39,7 +39,7 @@ def _grade(arquivos, destino, por_linha=3):
 def carrossel_exemplo(escolhidos):
     """Carrossel de 4 com a regra nova: especiais na frente (o 1º vira a capa), no máximo 2 conhecidos."""
     esp = [o for o in escolhidos if camadas.especial(o)]
-    con = [o for o in escolhidos if not camadas.especial(o)]
+    con = [o for o in escolhidos if not camadas.especial(o) and camadas.conhecido(o)]
     itens, fams = [], set()
     for o in esp + con:
         if len(itens) >= 4:

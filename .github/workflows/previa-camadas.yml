@@ -1,10 +1,7 @@
 name: 31 - Prévia das camadas (conhecidos + especiais, não posta nada)
 
-# Roda sozinho quando a branch das camadas recebe código; não grava fila nem posta.
+# Só manual (gasta a cota diária da Groq, a mesma do garimpo); não grava fila nem posta.
 on:
-  push:
-    branches: [claude/project-thread-6w44as]
-    paths: ['src/**', '.github/workflows/previa-camadas.yml']
   workflow_dispatch:
 
 concurrency:
