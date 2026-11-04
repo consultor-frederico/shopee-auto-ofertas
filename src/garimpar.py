@@ -544,7 +544,8 @@ def garimpar(buscar=shopee.buscar_ofertas):
         o["so_telegram"] = so_telegram(fila, o["id"])
     candidatos = candidatos + shark
     # Mercado Livre (04/11/2026): mais vendidos das categorias da vez, pela mesma IA de "uau"
-    candidatos = candidatos + mercadolivre.candidatos(fila, ja_usado, julgar=julgar_ml)
+    candidatos = candidatos + mercadolivre.candidatos(fila, ja_usado, julgar=julgar_ml,
+                                                      palavras=[(c, p) for c, p, _ in escolhidas])
     lojas_na_fila = {}
     for r in fila["ofertas"].values():   # só conta quem ainda pode ir para o Instagram (regra antiga não ocupa vaga)
         if r["status"] == "pendente" and r.get("loja") and "gancho" in r:

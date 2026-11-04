@@ -291,7 +291,24 @@ def _subcategorias(cat):
     return filhas[:SUBCATEGORIAS_POR_CATEGORIA]
 
 
-def candidatos(fila, ja_usado, julgar=None):
+PALAVRAS_POR_GARIMPO = int(os.getenv("ML_PALAVRAS_POR_GARIMPO", "6"))
+
+
+def _categoria_da_palavra(palavra):
+    """Termo da busca do Zé → categoria-folha do ML (ex.: "luz led arvore" → Pisca-piscas). Devolve (id, nome, pct)."""
+    r = _get("/sites/MLB/domain_discovery/search", q=palavra, limit=1)
+    if r.status_code != 200 or not r.json():
+        return None
+    d = r.json()[0]
+    pct = 10.0
+    c = _get(f"/categories/{d['category_id']}")
+    if c.status_code == 200:
+        raiz = (c.json().get("path_from_root") or [{}])[0].get("id")
+        pct = CATEGORIAS.get(raiz, (None, None, 10.0))[2]
+    return d["category_id"], d.get("category_name") or palavra, pct
+
+
+def candidatos(fila, ja_usado, julgar=None, palavras=None):
     """Mais vendidos do ML nas categorias da vez, com as regras do Garimpo (preço, comissão, IA de "uau").
     `ja_usado(fila, id)` é a regra de não repetir (garimpar.ja_usado)."""
     from . import config
@@ -300,7 +317,18 @@ def candidatos(fila, ja_usado, julgar=None):
     ofs, recusas, vistos = [], {}, set()
     try:
         lista = []
-        for cat in _categorias_da_vez():
+        # 1º: os mesmos termos que o Zé está garimpando na Shopee (escolhidos pela curadoria por serem "uau"):
+        # cada termo vira a categoria certinha do ML e entram os mais vendidos dela
+        for nicho, palavra in (palavras or [])[:PALAVRAS_POR_GARIMPO]:
+            achou = _categoria_da_palavra(palavra)
+            if not achou:
+                continue
+            sub, nome_sub, pct = achou
+            lista += mais_vendidos(sub, quantos=PRODUTOS_POR_CATEGORIA, preco_max=config.PRECO_MAXIMO,
+                                   pular=lambda i: ja_usado(fila, i) or i in vistos, info=(nome_sub, nicho, pct))
+            vistos.update(o["id"] for o in lista)
+        # 2º: subcategorias sorteadas das categorias da vez
+        for cat in _categorias_da_vez() if len(lista) < 10 else []:
             _, nicho, pct = CATEGORIAS[cat]
             for sub, nome_sub in _subcategorias(cat):
                 lista += mais_vendidos(sub, quantos=PRODUTOS_POR_CATEGORIA, preco_max=config.PRECO_MAXIMO,
