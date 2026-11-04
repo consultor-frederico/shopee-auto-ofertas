@@ -72,6 +72,9 @@ def candidatos_ordenados(fila):
         resto = [o for o in resto if not (marcas.eh_marca(o) and (o.get("preco") or 0) > config.MARCA_CARA_RS)]
     if not aliexpress.vagas_hoje(fila, "postado_em", config.ALIEXPRESS_POR_DIA_INSTAGRAM, agora().strftime("%Y-%m-%d")):
         resto = [o for o in resto if o.get("plataforma") != "aliexpress"]   # 🌎 internacional: no máximo 2 por dia
+    from . import mercadolivre
+    if not mercadolivre.vagas_hoje(fila, "postado_em", config.MERCADOLIVRE_POR_DIA_INSTAGRAM, agora().strftime("%Y-%m-%d")):
+        resto = [o for o in resto if o.get("plataforma") != "mercadolivre"]
     # 💎 Achado escondido: entra junto com o Ouro, mas no máximo config.ACHADOS_POR_DIA por dia
     hoje = agora().strftime("%Y-%m-%d")
     achados_hoje = sum(1 for o in fila["ofertas"].values() if o.get("nivel") == "achado"

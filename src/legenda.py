@@ -64,6 +64,8 @@ def montar_hashtags(categoria, do_produto=(), plataforma=None):
     produto = [t for t in produto if _tag_ok(t)][:2]
     tags = list(dict.fromkeys(t.lower() for t in [ampla, da_categoria] + produto))
     tags += [t for t in base if t.lower() not in tags]          # completa se faltou tag do produto
+    if plataforma == "mercadolivre":   # post do ML não leva "#achadinhosshopee"
+        tags = ["#achadinhosmercadolivre" if t == "#achadinhosshopee" else t for t in tags]
     marca = [config.HASHTAG_MARCA] if config.HASHTAG_MARCA else []
     return " ".join(tags[:MAX_TAGS - len(marca)] + marca)
 
@@ -122,6 +124,29 @@ def _prompt_oficial():
 
 
 PROMPT_OFICIAL = _prompt_oficial()
+
+
+def _prompt_ml():
+    """Mercado Livre (04/11/2026): a API não dá nota nem vendas; a prova é a posição no ranking de mais vendidos."""
+    trocas = [
+        ("página de achadinhos da Shopee chamada", "página de achadinhos chamada"),
+        ("Avaliação: {nota} estrelas, {vendas} vendidos.{achado}",
+         "Loja: Mercado Livre. Está no ranking oficial: {ranking}.{achado}"),
+        ("Prefira números a adjetivos: use a nota, as vendas e o preço\n"
+         "  (ex.: \"nota 4,9 com mais de 2 mil vendidos\" em vez de \"super bem avaliado\"). Mencione o preço uma vez.",
+         "Este produto NÃO tem nota nem número de vendas: NUNCA cite nota, estrelas ou quantidade de vendidos.\n"
+         "  Use a posição no ranking de mais vendidos do Mercado Livre e o preço. Mencione o preço uma vez."),
+        ("escolhe produtos pela nota e pelas vendas na Shopee, mas NÃO testa nem",
+         "escolhe produtos entre os mais vendidos do Mercado Livre, mas NÃO testa nem"),
+    ]
+    p = PROMPT
+    for velho, novo in trocas:
+        assert velho in p, f"prompt mudou: {velho[:40]}"
+        p = p.replace(velho, novo)
+    return p
+
+
+PROMPT_ML = _prompt_ml()
 
 # A Ana tem as palavras dela: "garimpo/garimpar" é do Zé (Garimpo VIP) e nunca aparece na Ana.
 PROIBIDO_ANA = '\n  NUNCA use as palavras "garimpo", "garimpar", "garimpei" nem "garimpado".'
@@ -254,6 +279,7 @@ def _legenda_padrao(oferta):
     if oferta.get("nivel") == "achado":
         abre = "💎 Achado escondido que pouca gente conhece:"
     prova = (f"🏬 {marcas.texto_oficial(oferta)}" if marcas.eh_marca(oferta)
+             else f"🏆 {oferta['info_txt']} no Mercado Livre" if oferta.get("info_txt")
              else f"⭐ Nota {nota} e mais de {vendas} vendidos")
     return (f"{abre} {oferta['titulo']}\n"
             f"{prova}\n"
@@ -319,12 +345,14 @@ def gerar(oferta: dict) -> dict:
         print("⚠️  GROQ_API_KEY não configurada: usando legenda padrão.")
     else:
         desconto = f" ({oferta['desconto']}% OFF)" if oferta.get("desconto") else ""
-        modelo = PROMPT_OFICIAL if marcas.eh_marca(oferta) else PROMPT
+        modelo = (PROMPT_OFICIAL if marcas.eh_marca(oferta)
+                  else PROMPT_ML if oferta.get("plataforma") == "mercadolivre" else PROMPT)
         prompt = modelo.format(cta=CTA, marca=config.NOME_MARCA, publico=config.PUBLICO, tom=config.TOM,
                                proibido=PROIBIDO_ANA if config.PERFIL == "ana" else "",
                                nome=oferta["nome"], preco=oferta["preco_fmt"], desconto=desconto,
                                nota=oferta["nota"], vendas=oferta["vendas"],
                                marca_produto=oferta.get("marca", ""), descricao=oferta.get("descricao", ""),
+                               ranking=oferta.get("info_txt", ""),
                                achado=ACHADO if oferta.get("nivel") == "achado" else "")
         try:
             bruto = _chamar_groq(prompt)

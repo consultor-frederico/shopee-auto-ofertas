@@ -13,7 +13,7 @@ from . import marcas, vendas
 from .imagem import plataforma
 from .precos import aviso, tem_variacoes
 
-NOME_LOJA = {"shopee": "Shopee", "aliexpress": "AliExpress", **{p: m["nome"] for p, m in marcas.MARCAS.items()}}
+NOME_LOJA = {"shopee": "Shopee", "aliexpress": "AliExpress", "mercadolivre": "Mercado Livre", **{p: m["nome"] for p, m in marcas.MARCAS.items()}}
 
 
 def configurado():

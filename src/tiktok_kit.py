@@ -19,7 +19,7 @@ TAGS_CATEGORIA = {"lar": "#casaorganizada #utilidadesdomesticas", "pet": "#pet #
                   "beleza": "#beleza #maquiagem", "cabelo": "#cabelo #cuidadoscomcabelo",
                   "moda": "#moda #lookdodia", "autocuidado": "#autocuidado #selfcare",
                   "casa_fofa": "#decoracao #quartoaesthetic"}
-NOME_LOJA = {"shopee": "Shopee", "aliexpress": "AliExpress", **{p: m["nome"] for p, m in marcas.MARCAS.items()}}
+NOME_LOJA = {"shopee": "Shopee", "aliexpress": "AliExpress", "mercadolivre": "Mercado Livre", **{p: m["nome"] for p, m in marcas.MARCAS.items()}}
 
 
 def ligado():

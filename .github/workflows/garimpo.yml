@@ -48,12 +48,28 @@ jobs:
           FB_PAGE_TOKEN: ${{ secrets.FB_PAGE_TOKEN }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}   # radar: IA olha as fotos dos carrosséis (opcional)
           AWIN_FEED_URL: ${{ secrets.AWIN_FEED_URL }}
-          AWIN_ATIVO: ${{ vars.AWIN_ATIVO || '1' }}   # Shark Ninja ligada; para desligar: Settings → Secrets and variables → Actions → Variables → AWIN_ATIVO = 0
+          AWIN_ATIVO: ${{ vars.AWIN_ATIVO || '1' }}
+          ML_CLIENT_ID: ${{ secrets.ML_CLIENT_ID }}          # Mercado Livre (04/11/2026); desligar: variável ML_ATIVO = 0
+          ML_CLIENT_SECRET: ${{ secrets.ML_CLIENT_SECRET }}
+          ML_REFRESH_TOKEN: ${{ secrets.ML_REFRESH_TOKEN }}
+          ML_ATIVO: ${{ vars.ML_ATIVO || '1' }}   # Shark Ninja ligada; para desligar: Settings → Secrets and variables → Actions → Variables → AWIN_ATIVO = 0
         run: |
           # relatório da rodada salvo no repositório (para conferir o que a busca profunda achou)
           set -o pipefail
           mkdir -p data/relatorios
           python -u -m src.garimpar 2>&1 | tee "data/relatorios/garimpo_${PERFIL}.txt"
+
+      - name: Salvar o token novo do Mercado Livre (o antigo só vale uma vez)
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          [ -f "$RUNNER_TEMP/ml_refresh.txt" ] || exit 0
+          for i in 1 2 3; do
+            gh secret set ML_REFRESH_TOKEN -R "${{ github.repository }}" < "$RUNNER_TEMP/ml_refresh.txt" && exit 0
+            sleep 5
+          done
+          echo "::error::Não salvei o ML_REFRESH_TOKEN novo: rode o workflow 29 para conectar o Mercado Livre de novo."
 
       - name: Salvar fila
         run: |

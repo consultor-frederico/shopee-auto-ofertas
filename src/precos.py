@@ -90,7 +90,8 @@ def _consultar(o, antigo):
 
 
 def aviso(o):
-    loja = "AliExpress" if o.get("plataforma") == "aliexpress" else (marcas.nome(o) if marcas.eh_marca(o) else "Shopee")
+    loja = {"aliexpress": "AliExpress", "mercadolivre": "Mercado Livre"}.get(o.get("plataforma")) or (
+        marcas.nome(o) if marcas.eh_marca(o) else "Shopee")
     quando = o.get("preco_conferido_em") or agora().strftime("%d/%m às %H:%M")
     base = "Preço a partir de" if tem_variacoes(o) else "Preço"
     pix = " Pagando no Pix, a Shopee costuma dar desconto extra." if loja == "Shopee" else ""

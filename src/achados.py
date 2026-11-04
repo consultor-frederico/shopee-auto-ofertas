@@ -51,13 +51,17 @@ def escolher(fila, conferir=True):
     itens, familias, categorias, ids = [], set(), set(), set()
     shark = False
     vagas_ae = aliexpress.vagas_hoje(fila, "postado_em", config.ALIEXPRESS_POR_DIA_INSTAGRAM, agora().strftime("%Y-%m-%d"))
+    from . import mercadolivre
+    vagas_ml = mercadolivre.vagas_hoje(fila, "postado_em", config.MERCADOLIVRE_POR_DIA_INSTAGRAM, agora().strftime("%Y-%m-%d"))
 
     def tentar(o, so_categoria_nova):
-        nonlocal shark, vagas_ae
+        nonlocal shark, vagas_ae, vagas_ml
         fam = variedade.familia(o)
         if o["id"] in ids or fam in familias or (marcas.eh_marca(o) and shark):
             return
         if o.get("plataforma") == "aliexpress" and vagas_ae <= 0:   # 🌎 internacional: no máximo 2 por dia
+            return
+        if o.get("plataforma") == "mercadolivre" and vagas_ml <= 0:   # Mercado Livre: no máximo 2 por dia
             return
         if so_categoria_nova and o.get("categoria") in categorias:
             return
@@ -81,6 +85,7 @@ def escolher(fila, conferir=True):
         categorias.add(o.get("categoria"))
         shark = shark or marcas.eh_marca(o)
         vagas_ae -= o.get("plataforma") == "aliexpress"
+        vagas_ml -= o.get("plataforma") == "mercadolivre"
         print(f"🛍️  {len(itens)}. {o['titulo'][:60]} — R$ {o['preco_fmt']} ({o.get('categoria')})")
 
     for so_categoria_nova in (True, False):

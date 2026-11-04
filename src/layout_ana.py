@@ -22,7 +22,7 @@ ROSA = "#F2A7B8"           # pílula do preço e adesivo
 ROSA_ESCURA = "#D9668A"    # linhas, "QUERO" e detalhes
 CINZA = "#A08893"          # malva (preço antigo e avaliação)
 BRANCO = "#FFFFFF"
-LOJAS = {"shopee": ("Shopee", "#EE4D2D"), "aliexpress": ("AliExpress", "#E43225"),
+LOJAS = {"shopee": ("Shopee", "#EE4D2D"), "aliexpress": ("AliExpress", "#E43225"), "mercadolivre": ("Mercado Livre", "#2D3277"),
          **{p: (m["nome"], m["cor"]) for p, m in marcas.MARCAS.items()}}
 
 

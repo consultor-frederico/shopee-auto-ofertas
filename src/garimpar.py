@@ -7,7 +7,7 @@ import random
 import sys
 from datetime import datetime, timedelta, timezone
 
-from . import aliexpress, awin, busca_profunda, config, curadoria, legenda, marcas, shopee, variedade
+from . import aliexpress, awin, busca_profunda, config, curadoria, legenda, marcas, mercadolivre, shopee, variedade
 
 BRT = timezone(timedelta(hours=-3))
 FMT = "%Y-%m-%d %H:%M:%S"
@@ -510,6 +510,18 @@ def julgar_marcas(ofertas):
     olhar_fotos(ofertas)   # loja oficial também tem que ter foto que chama atenção (e o nome vago não engana)
 
 
+def julgar_ml(ofertas):
+    """Mais vendidos do Mercado Livre: mesma IA de "uau" e mesma olhada na foto (sem bônus de loja oficial)."""
+    if not ofertas:
+        return
+    ganchos = {}
+    notas = curadoria.notas_uau(ofertas, ganchos=ganchos)
+    for o in ofertas:
+        o["uau"] = notas.get(o["id"], config.UAU_SEM_IA)
+        o["gancho"] = ganchos.get(o["id"], "")
+    olhar_fotos(ofertas)
+
+
 def garimpar(buscar=shopee.buscar_ofertas):
     fila = carregar_fila()
     limpar_fila(fila)
@@ -523,6 +535,8 @@ def garimpar(buscar=shopee.buscar_ofertas):
     for o in shark:
         o["so_telegram"] = so_telegram(fila, o["id"])
     candidatos = candidatos + shark
+    # Mercado Livre (04/11/2026): mais vendidos das categorias da vez, pela mesma IA de "uau"
+    candidatos = candidatos + mercadolivre.candidatos(fila, ja_usado, julgar=julgar_ml)
     lojas_na_fila = {}
     for r in fila["ofertas"].values():   # só conta quem ainda pode ir para o Instagram (regra antiga não ocupa vaga)
         if r["status"] == "pendente" and r.get("loja") and "gancho" in r:
