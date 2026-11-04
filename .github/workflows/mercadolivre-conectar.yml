@@ -25,6 +25,8 @@ concurrency:
 jobs:
   conectar:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -52,6 +54,16 @@ jobs:
         with:
           name: previa-mercadolivre
           path: previa_ml/
+      - name: Guardar a prévia na branch de prévias (não mexe na main)
+        if: inputs.previa
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          cp -r previa_ml /tmp/previa_ml
+          git fetch origin previa-mercadolivre 2>/dev/null && git checkout -B previa-mercadolivre FETCH_HEAD || git checkout --orphan previa-mercadolivre
+          git rm -rfq . 2>/dev/null || true
+          cp -r /tmp/previa_ml ./previa_ml
+          git add previa_ml && git commit -qm "Prévia Mercado Livre" && git push -f origin previa-mercadolivre
       - name: Salvar o refresh token
         if: always()
         env:
