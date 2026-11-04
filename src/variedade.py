@@ -8,6 +8,7 @@ diferentes (não caem no filtro de produto repetido), mas para quem segue a pág
 - na postagem (Instagram e Telegram): a mesma família só volta depois de
   config.HORAS_ENTRE_FAMILIA horas naquele canal.
 """
+import re
 from datetime import datetime, timedelta
 
 from . import config, curadoria, marcas
@@ -69,9 +70,59 @@ FRANQUIAS = ["transformers", "optimus", "bumblebee", "megatron", "marvel", "iron
              "mundo bita", "patati", "free fire", "fortnite", "roblox", "among us"]
 
 
+# Marca de OUTRA empresa no produto (04/11/2026): o Instagram removeu o carrossel com o "Suporte MagSafe com
+# Ventosa" da VX Case por "falsificação/propriedade intelectual" — produto original, mas "MagSafe" e o iPhone
+# na legenda são da Apple. Produto original vendido com o nome da própria marca (fone JBL, barbeador Xiaomi do
+# lançamento do Mercado Livre e dos "conhecidos") continua liberado; o que trava é:
+#   - console retrô/emulador (Anbernic, R36S, "mil jogos"): pirataria aos olhos da Meta, sempre;
+#   - Apple (MagSafe, iPhone, iPad, AirPods...): quase sempre é acessório de outra empresa;
+#   - outra marca conhecida quando é acessório/compatível/"tipo" (capa Galaxy, copo tipo Stanley) ou quando a
+#     loja oficial que vende é outra (VX Case vendendo capa Samsung);
+#   - JBL/Stanley/Samsung/Nike/Adidas fora da loja oficial (exceto Mercado Livre): réplica comum.
+EMULADOR = ["anbernic", "r36s", "game stick", "emulador", "console retro", "videogame retro", "jogos retro",
+            "mil jogos"]
+APPLE = ["magsafe", "iphone", "apple", "airpod", "airpods", "ipad", "macbook", "airtag", "imac"]
+MARCAS_CONHECIDAS = {"samsung": ["samsung", "galaxy tab", "galaxy buds", "galaxy watch"],
+                     "xiaomi": ["xiaomi", "redmi"], "motorola": ["motorola"], "jbl": ["jbl"],
+                     "stanley": ["stanley"], "nike": ["nike"], "adidas": ["adidas"],
+                     "sony": ["playstation", "ps5", "ps4"], "microsoft": ["xbox"], "nintendo": ["nintendo"],
+                     "gopro": ["gopro"], "dyson": ["dyson"], "amazon": ["echo dot"]}
+ACESSORIO = ["para", "pra", "serve", "compativel", "capa", "case", "pelicula", "suporte", "pulseira", "tipo", "estilo",
+             "inspirado", "replica", "similar", "modelo"]
+# muito falsificadas: na Shopee/AliExpress só passam se a loja for a oficial (Mercado Livre é catálogo da marca)
+FALSIFICADAS = {"jbl", "stanley", "samsung", "nike", "adidas"}
+_RE_GALAXY = re.compile(r" galaxy (?:[sazm]\d|z? ?flip|z? ?fold|note)")   # "projetor galaxy" é genérico
+
+
+def _tem(txt, termos):
+    return any(_texto(t) in txt for t in termos)
+
+
+def marca_terceiro(o):
+    if isinstance(o, str):
+        o = {"nome": o}
+    txt = _texto(" ".join(str(o.get(k) or "") for k in ("nome", "titulo", "gancho")))
+    dono = _texto(" ".join(str(o.get(k) or "") for k in ("marca", "loja")))
+    if _tem(txt, EMULADOR):
+        return True
+    if _tem(txt, APPLE) and " apple " not in dono:
+        return True
+    for marca, termos in MARCAS_CONHECIDAS.items():
+        if not (_tem(txt, termos) or (marca == "samsung" and _RE_GALAXY.search(txt))):
+            continue
+        if _tem(dono, [marca] + termos):
+            continue   # loja/marca é a própria (Samsung vendendo Samsung)
+        if o.get("marca") or _tem(txt, ACESSORIO):
+            return True   # loja oficial de outra marca, ou acessório "para"/"tipo" a marca
+        if marca in FALSIFICADAS and o.get("plataforma") != "mercadolivre" and not _tem(dono, ["oficial", "official"]):
+            return True   # "JBL" em loja qualquer da Shopee: grande chance de ser réplica
+    return False
+
+
 def franquia(o):
+    """Franquia/personagem ou marca de outra empresa (zera o uau: fora de Instagram, Facebook, Telegram e kits)."""
     txt = _texto(o if isinstance(o, str) else o.get("nome", ""))
-    return any(_texto(f) in txt for f in FRANQUIAS)
+    return any(_texto(f) in txt for f in FRANQUIAS) or marca_terceiro(o)
 
 
 # Utilidade comum (02/11/2026, reclamação dos seguidores: "varal, vaporizador, nada interessante").

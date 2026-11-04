@@ -363,11 +363,22 @@ def candidatos(fila, ja_usado, julgar=None, palavras=None):
     comuns = [o for o in ofs if o not in passa]
     ofs = sorted(passa,
                  key=lambda o: (o.get("uau_ia", o["uau"]), o["comissao"], -(o.get("posicao") or 99)), reverse=True)
+    # variedade: no máximo 1 por família (nada de 3 câmeras) e só família que ainda tem vaga na fila
+    from . import variedade
+    from .garimpar import _limite_familia
+    pend = variedade.contar_pendentes(fila)
+    fams, diversos = set(), []
+    for o in ofs:
+        f = variedade.familia(o)
+        if f in fams or pend.get(f, 0) >= _limite_familia(f):
+            continue
+        fams.add(f)
+        diversos.append(o)
     escolhidas = []
-    for o in ofs[:POR_GARIMPO]:
+    for o in diversos[:POR_GARIMPO]:
         ouro = o["uau"] >= config.NIVEIS["ouro"]["uau"] and o["comissao"] >= config.NIVEIS["ouro"]["comissao_rs"]
         o.update({"nivel": "ouro" if ouro else "prata", "origem_busca": "mercadolivre", "so_telegram": False,
-                  "palavra": o["info_txt"],
+                  "palavra": f"mercadolivre {o['info_txt']}",
                   "pontos": config.SHARK_PONTOS + (o["uau"] - config.SHARK_UAU) * config.PESO_UAU})
         escolhidas.append(o)
     for o in comuns[:8]:
