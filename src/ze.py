@@ -321,6 +321,19 @@ def video_da_vez(dados):
     return min(lista, key=lambda v: ultimo_uso[v.name])
 
 
+def _especial_de_hoje(hoje):
+    """Anúncio aprovado pelo Fred com dia marcado: {"AAAA-MM-DD": {"video": "x.mp4", "legenda": "..."}}.
+    O vídeo fica em assets/ze/especiais/ (fora do rodízio) e já vem pronto, com texto e música."""
+    try:
+        dados = json.loads((PASTA / "especiais.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    e = dados.get(hoje.strftime("%Y-%m-%d"))
+    if e and (PASTA / "especiais" / e["video"]).exists():
+        return e
+    return None
+
+
 def _ordem():
     arq = PASTA / "ordem.txt"
     try:
@@ -363,7 +376,8 @@ def preparar():
         from . import marcos
         if marcos.LIGADO:
             marco = marcos.marco_da_vez(marcos.seguidores())
-    video = marcos.VIDEO if marco else video_da_vez(dados)
+    especial = None if (marco or ANA) else _especial_de_hoje(hoje)   # 📣 anúncio com data marcada (assets/ze/especiais.json)
+    video = marcos.VIDEO if marco else (PASTA / "especiais" / especial["video"] if especial else video_da_vez(dados))
     if not video:
         print(f"⚠️  Nenhum vídeo {PREFIXO}*.mp4 em {PASTA}.")
         return
@@ -381,7 +395,9 @@ def preparar():
             print(f"::warning::Vídeo do marco de {marco} falhou ({e}); sai o post normal do Zé.")
             marco, video = None, video_da_vez(dados)
     itens = None   # 🛍️ Reels com produtos: Zé encolhe pro canto e 3 achados passam por cima (src/ze_vitrine.py)
-    if not marco and not busca and not ANA:
+    if especial:   # vídeo já pronto (texto na tela + música): sai como está, sem produtos
+        shutil.copy(video, pasta / nome)
+    elif not marco and not busca and not ANA:
         from . import ze_vitrine
         if ze_vitrine.LIGADO:
             try:
@@ -389,7 +405,7 @@ def preparar():
             except Exception as e:
                 print(f"::warning::Reels com produtos não saiu ({e}); sai o Reels só com o Zé.")
                 itens = None
-    if marco or itens:
+    if marco or itens or especial:
         pass
     elif busca:
         from . import busca_reels
@@ -405,7 +421,7 @@ def preparar():
             shutil.copy(video, pasta / nome)
     com_trilha = "comtrilha" in video.name   # *_comtrilha.mp4 já tem trilha própria: não põe música
     # Ana: todo vídeo sem _comtrilha recebe música. Zé: só os marcados _semtrilha (os antigos já têm música gravada).
-    precisa_musica = (not com_trilha) and (ANA or "semtrilha" in video.name) and not marco and not itens
+    precisa_musica = (not com_trilha) and (ANA or "semtrilha" in video.name) and not marco and not itens and not especial
     if MUSICA_LIGADA and not busca and precisa_musica:   # põe musiquinha (mais baixa quando ela fala)
         musicas = escolher_musicas({"id": video.name}, _duracao(pasta / nome))
         if musicas:
@@ -417,7 +433,9 @@ def preparar():
             except Exception as e:
                 print(f"::warning::Música não entrou ({e}); o vídeo sai só com a voz.")
     n = len(dados["posts"])
-    if marco:
+    if especial:
+        leg = especial["legenda"]
+    elif marco:
         leg = marcos.legenda(marco)
     elif busca:
         from . import busca_reels
