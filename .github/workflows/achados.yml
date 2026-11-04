@@ -55,6 +55,7 @@ jobs:
           SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
           AWIN_FEED_URL: ${{ secrets.AWIN_FEED_URL }}
           AWIN_ATIVO: ${{ vars.AWIN_ATIVO || '1' }}
+          LINHAS: ${{ vars.LINHAS || '0' }}   # 🗂️ linhas temáticas (src/linhas.py)
         run: python -m src.achados previa
 
       - name: Preparar o carrossel
@@ -67,6 +68,7 @@ jobs:
           SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
           AWIN_FEED_URL: ${{ secrets.AWIN_FEED_URL }}
           AWIN_ATIVO: ${{ vars.AWIN_ATIVO || '1' }}
+          LINHAS: ${{ vars.LINHAS || '0' }}   # 🗂️ linhas temáticas (src/linhas.py)
         run: python -m src.achados preparar
 
       - name: Enviar mídia ao GitHub Pages
