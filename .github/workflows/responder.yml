@@ -43,7 +43,6 @@ jobs:
           ML_CLIENT_ID: ${{ secrets.ML_CLIENT_ID }}          # sem ML_REFRESH_TOKEN de propósito: a busca entra com
           ML_CLIENT_SECRET: ${{ secrets.ML_CLIENT_SECRET }}  # ID + chave (Client Credentials) e não gira o token do garimpo
           ML_ATIVO: ${{ vars.ML_ATIVO || '1' }}
-          BUSCA_LOJAS: shopee   # TEMPORÁRIO até o teste do workflow 19 passar
           SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
           SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}

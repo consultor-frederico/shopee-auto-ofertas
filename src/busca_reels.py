@@ -34,14 +34,16 @@ INTERVALO_DIAS = int(os.getenv("BUSCA_INTERVALO_DIAS", "7"))
 W, H = 1080, 1920
 
 LEGENDAS = [
-    "🔎 BUSCA DO ZÉ ⛏️\n\nTá procurando alguma coisa na Shopee? Comenta aqui embaixo o que você quer "
-    "(ex.: \"fone bluetooth\", \"organizador de cozinha\") e o Zé te manda no direct os 3 melhores achados! 🤠\n\n🤫 Prefere não comentar? Manda no direct o que você procura que funciona igual!",
+    "🔎 BUSCA DO ZÉ ⛏️\n\nTá procurando alguma coisa? Comenta aqui embaixo o que você quer "
+    "(ex.: \"fone bluetooth\", \"organizador de cozinha\") e o Zé procura na Shopee, no Mercado Livre, na AliExpress "
+    "e nas lojas oficiais e te manda no direct os 3 melhores achados! 🤠\n\n🤫 Prefere não comentar? Manda no direct o que você procura que funciona igual!",
     "🔎 BUSCA DO ZÉ ⛏️\n\nDeixa o Zé garimpar pra você! Escreve nos comentários o produto que você procura "
-    "e em poucos minutos chegam no seu direct os achados com nota alta e muita venda. 💎\n\n📩 Também dá pra pedir direto no direct da página!",
+    "e o Zé compara Shopee, Mercado Livre, AliExpress e lojas oficiais: em poucos minutos chegam no seu direct "
+    "os melhores achados. 💎\n\n📩 Também dá pra pedir direto no direct da página!",
     "🔎 BUSCA DO ZÉ ⛏️\n\nNão achou o que queria no feed? Comenta aqui o que você procura que o Zé cava "
-    "na Shopee e te manda os melhores no direct. Pode pedir quantas vezes quiser! 🤠\n\n📩 Se preferir, manda o pedido no direct que o Zé responde lá mesmo.",
+    "em todas as lojas (Shopee, Mercado Livre, AliExpress e lojas oficiais) e te manda os melhores no direct. Pode pedir quantas vezes quiser! 🤠\n\n📩 Se preferir, manda o pedido no direct que o Zé responde lá mesmo.",
 ]
-HASHTAGS = "#BuscaDoZe #garimpovip #zegarimpo #achadinhos #achadinhosshopee"
+HASHTAGS = "#BuscaDoZe #garimpovip #zegarimpo #achadinhosshopee #achadinhosmercadolivre"
 if ANA:
     LEGENDAS = [
         "💚 BUSCA DA ANA\n\nTá procurando alguma coisa e não acha? Comenta aqui embaixo o que você quer "

@@ -343,6 +343,7 @@ def com_aviso(leg, oferta):
 
 LEMBRETES_BUSCA = [
     "🔎 Não era isso que você procurava? Comenta no post fixado que o Zé garimpa pra você!",
+    "🔎 Procurando outra coisa? Manda no direct que o Zé procura na Shopee, no Mercado Livre, na AliExpress e nas lojas oficiais e te traz os 3 melhores!",
     "🔎 Procurando outra coisa? Fala pro Zé no post fixado do perfil (ou aqui no direct) que ele acha!",
     "🔎 Quer algo diferente? Manda no direct o que você procura que o Zé te traz os melhores achados!",
 ]
