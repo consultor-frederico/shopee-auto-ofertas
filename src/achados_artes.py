@@ -8,7 +8,7 @@ Ana         — slide de produto: 0 = arco · 1 = polaroid (lavanda) · 2 = cír
 """
 from PIL import Image, ImageDraw, ImageFilter, ImageOps
 
-from . import config, imagem, lojas_arte, marcas, natal
+from . import config, imagem, linhas, lojas_arte, marcas, natal
 
 L, A = 1080, 1350
 NOMES_LOJA = {"shopee": "SHOPEE", "aliexpress": "ALIEXPRESS", **{p: m["nome"].upper() for p, m in marcas.MARCAS.items()}}
@@ -95,6 +95,7 @@ def produto_garimpo(v, oferta, foto, pos, destino, tiktok=False):
         d.rectangle([0, A - 118, L, A], fill=imagem.ESCURO)
         _barra_quero(d, pos, A - 84, num)
     img = lojas_arte.moldura_oficial(img, oferta)   # marca oficial da Awin: moldura da marca
+    img = linhas.faixa(img, oferta)   # 🗂️ faixa da linha ("LINHA CASA"), src/linhas.py
     img = natal.aplicar(img)   # nov/dez: moldura de Natal (src/natal.py)
     img.save(destino, "JPEG", quality=90, optimize=True)
 
@@ -148,6 +149,7 @@ def capa_produto(oferta, foto, n_mais, pose, destino):
     img.paste(Image.new("RGB", ze.size, (0, 0, 0)), (zx + 8, zy + 6), sombra)
     img.paste(ze, (zx, zy), ze)
     img = lojas_arte.moldura_oficial(img, oferta)   # marca oficial da Awin: moldura da marca
+    img = linhas.faixa(img, oferta)   # 🗂️ faixa da linha ("LINHA CASA"), src/linhas.py
     img = natal.aplicar(img)   # nov/dez: moldura de Natal (src/natal.py)
     img.save(destino, "JPEG", quality=90, optimize=True)
 

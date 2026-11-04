@@ -22,7 +22,7 @@ from datetime import timedelta
 
 from PIL import Image, ImageDraw
 
-from . import achados_artes as artes, aliexpress, config, imagem, instagram, marcas, numeros, tiktok_kit, vitrine
+from . import achados_artes as artes, aliexpress, config, imagem, instagram, linhas, marcas, numeros, tiktok_kit, vitrine
 from .garimpar import FMT, agora, carregar_fila, salvar_fila
 
 ANA = config.PERFIL == "ana"
@@ -83,11 +83,20 @@ def escolher(fila, conferir=True):
         vagas_ae -= o.get("plataforma") == "aliexpress"
         print(f"🛍️  {len(itens)}. {o['titulo'][:60]} — R$ {o['preco_fmt']} ({o.get('categoria')})")
 
-    for so_categoria_nova in (True, False):
-        for o in lista:
-            if len(itens) >= QTD:
-                break
-            tentar(o, so_categoria_nova)
+    # 🗂️ dia temático (src/linhas.py): primeiro só a linha do dia; se não fechar, completa com as outras
+    grupos = [lista]
+    if linhas.ligado():
+        lista = linhas.ordenar(lista)
+        grupos = [[o for o in lista if linhas.eh_do_dia(o)], [o for o in lista if not linhas.eh_do_dia(o)]]
+        print(f"🗂️  Linha do dia: {', '.join(linhas.do_dia())} ({len(grupos[0])} na fila)")
+    for grupo in grupos:
+        for so_categoria_nova in (True, False):
+            for o in grupo:
+                if len(itens) >= QTD:
+                    break
+                tentar(o, so_categoria_nova)
+    for it in itens:
+        linhas.marcar(it["oferta"])
     return itens
 
 
@@ -271,6 +280,7 @@ def descricao_short(itens, legenda_ig):
 
 # ---------------------------------------------------------------- legenda
 def legenda(itens):
+    from . import linhas as _linhas
     from .ze import HASHTAGS, HASHTAGS_ANA, dias_para_black_friday
     n = len(itens)
     if ANA:
@@ -279,6 +289,9 @@ def legenda(itens):
         # 31/10/2026: a 1ª linha leva as palavras de busca (Instagram também busca por palavra-chave)
         linhas = [tiktok_kit.linha_busca([it["oferta"] for it in itens]) + " 🤠⛏️",
                   f"O Zé garimpou {n} achados pra você hoje!", ""]
+        tema = _linhas.abertura_legenda()   # 🗂️ dia temático: "🍳 Quinta é Dia da Cozinha no Garimpo!"
+        if tema:
+            linhas.insert(1, tema)
     for i, it in enumerate(itens):
         o = it["oferta"]
         linhas.append(f"{NUM[i]} {_curto(o['titulo'])} — R$ {o['preco_fmt']}")

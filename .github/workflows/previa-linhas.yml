@@ -1,0 +1,47 @@
+name: 30 - Prévia das linhas temáticas (não posta nada)
+
+# Roda sozinho quando a branch das linhas temáticas recebe código; não grava fila nem posta.
+on:
+  push:
+    branches: [claude/project-thread-k6kjby]
+    paths: ['src/**', '.github/workflows/previa-linhas.yml']
+  workflow_dispatch:
+
+concurrency:
+  group: previa-linhas
+  cancel-in-progress: true
+
+jobs:
+  previa:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      PERFIL: garimpo
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Fila de hoje vem da main (só leitura)
+        run: |
+          git fetch --depth=1 origin main
+          git checkout origin/main -- data/fila.json
+      - name: Prévia
+        run: |
+          set -o pipefail
+          python -u -m src.linhas previa previa_linhas 2>&1 | tee /tmp/relatorio.txt
+          cp /tmp/relatorio.txt previa_linhas/relatorio.txt
+      - name: Guardar a prévia na branch (não mexe na main)
+        if: always()
+        run: |
+          git config user.name "GarimpoBot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git reset -q
+          git add previa_linhas
+          git diff --cached --quiet && exit 0
+          git commit -m "Prévia das linhas temáticas [skip ci]"
+          git pull --rebase -X theirs origin ${{ github.ref_name }} || true
+          git push origin HEAD:${{ github.ref_name }}

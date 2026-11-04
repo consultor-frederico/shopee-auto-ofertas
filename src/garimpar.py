@@ -368,31 +368,39 @@ def selecionar(candidatos, n, ja_na_fila=None, lojas_na_fila=None):
     # Repetição é inaceitável: na mesma rodada, no máximo 1 oferta por palavra-chave, por tipo
     # (ex.: "interruptor") e por família — e a família não pode lotar a fila (config.MAX_PENDENTES_POR_FAMILIA).
     # (Antes uma 2ª passada aceitava 2 do mesmo tipo e entraram dois interruptores iguais em 27/10/2026.)
-    restos = {c: list(v) for c, v in por_cat.items()}
-    while len(escolhidos) < n and any(restos.values()):
-        for cat in list(restos):
-            while restos[cat] and len(escolhidos) < n:
-                o = restos[cat].pop(0)
-                t = tipo_produto(o["nome"])
-                f = variedade.familia(o)
-                motivo = ("mesma palavra" if o["palavra"] in palavras else
-                          f"mesmo tipo ({t})" if t in tipos else
-                          f"mesma família ({f})" if f in fams_rodada else
-                          f"família {f} já tem {fams[f]} na fila" if fams.get(f, 0) >= _limite_familia(f) else
-                          f"loja {o.get('loja')} cheia na fila" if o.get("loja") and lojas.get(o["loja"], 0) >= config.MAX_POR_LOJA_NA_FILA else
-                          "parecido com outro da rodada" if any(curadoria.parecido(o["nome"], e["nome"], 0.35) for e in escolhidos) else "")
-                if motivo:
-                    if o.get("nivel") in ("ouro", "achado"):
-                        print(f"   ↪️  {o['nivel']} fora da fila ({motivo}): {o['nome'][:60]}")
-                    continue
-                fams[f] = fams.get(f, 0) + 1
-                fams_rodada.add(f)
-                if o.get("loja"):
-                    lojas[o["loja"]] = lojas.get(o["loja"], 0) + 1
-                escolhidos.append(o)
-                palavras.add(o["palavra"])
-                tipos.add(t)
-                break
+    def rodada(restos, n):
+        while len(escolhidos) < n and any(restos.values()):
+            for cat in list(restos):
+                while restos[cat] and len(escolhidos) < n:
+                    o = restos[cat].pop(0)
+                    t = tipo_produto(o["nome"])
+                    f = variedade.familia(o)
+                    motivo = ("mesma palavra" if o["palavra"] in palavras else
+                              f"mesmo tipo ({t})" if t in tipos else
+                              f"mesma família ({f})" if f in fams_rodada else
+                              f"família {f} já tem {fams[f]} na fila" if fams.get(f, 0) >= _limite_familia(f) else
+                              f"loja {o.get('loja')} cheia na fila" if o.get("loja") and lojas.get(o["loja"], 0) >= config.MAX_POR_LOJA_NA_FILA else
+                              "parecido com outro da rodada" if any(curadoria.parecido(o["nome"], e["nome"], 0.35) for e in escolhidos) else "")
+                    if motivo:
+                        if o.get("nivel") in ("ouro", "achado"):
+                            print(f"   ↪️  {o['nivel']} fora da fila ({motivo}): {o['nome'][:60]}")
+                        continue
+                    fams[f] = fams.get(f, 0) + 1
+                    fams_rodada.add(f)
+                    if o.get("loja"):
+                        lojas[o["loja"]] = lojas.get(o["loja"], 0) + 1
+                    escolhidos.append(o)
+                    palavras.add(o["palavra"])
+                    tipos.add(t)
+                    break
+
+    # 🗂️ dia temático (src/linhas.py): a linha do dia (ou de amanhã, na rodada da tarde) entra primeiro na fila
+    from . import linhas
+    tema = linhas.para_garimpo() if linhas.ligado() else []
+    if tema:
+        rodada({c: [o for o in v if linhas.de(o) in tema] for c, v in por_cat.items()}, min(n, linhas.NA_FILA_POR_GARIMPO))
+        print(f"🗂️  Linha {', '.join(linhas.LINHAS[t]['nome'] for t in tema)}: {len(escolhidos)} na frente da fila")
+    rodada({c: [o for o in v if o not in escolhidos] for c, v in por_cat.items()}, n)
     return escolhidos
 
 

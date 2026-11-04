@@ -134,7 +134,9 @@ def escolher_palavras(mem):
             vistos.add(t)
             escolhidas.append((cat, termo, origem))
 
-    from . import radar_virais
+    from . import linhas, radar_virais
+    for cat, termo in linhas.termos_extra():   # 🗂️ dia temático: buscas da linha do dia (ou de amanhã, à tarde)
+        add(cat, termo, "linha")
     for cat, termo in radar_virais.termos_para_rodada(config.PALAVRAS_VIRAIS_POR_GARIMPO):
         add(cat, termo, "viral")
     for cat, termo in termos_da_memoria(config.PALAVRAS_MEMORIA_POR_GARIMPO, mem):
@@ -153,10 +155,10 @@ def escolher_palavras(mem):
         for cat in random.sample(list(fixas), len(fixas)):
             if fixas[cat]:
                 add(cat, fixas[cat].pop(), "fixa")
-    origens = {o: sum(1 for *_, x in escolhidas if x == o) for o in ("viral", "ia", "memoria", "fixa")}
-    print(f"🧭 Buscas da rodada: {origens['viral']} dos virais, {origens['ia']} novas da IA, "
+    origens = {o: sum(1 for *_, x in escolhidas if x == o) for o in ("linha", "viral", "ia", "memoria", "fixa")}
+    print(f"🧭 Buscas da rodada: {origens['linha']} da linha do dia, {origens['viral']} dos virais, {origens['ia']} novas da IA, "
           f"{origens['memoria']} da memória, {origens['fixa']} fixas")
-    icone = {"viral": "📡", "memoria": "🧠", "ia": "✨"}
+    icone = {"viral": "📡", "memoria": "🧠", "ia": "✨", "linha": "🗂️"}
     for cat, termo, origem in escolhidas:
         if origem != "fixa":
             print(f"   {icone[origem]} {cat}: {termo}")

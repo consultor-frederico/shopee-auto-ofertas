@@ -10,7 +10,7 @@ import time
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from . import aliexpress, config, imagem, marcas, precos, telegram, variedade
+from . import aliexpress, config, imagem, linhas, marcas, precos, telegram, variedade
 from .garimpar import BRT, FMT, agora, carregar_fila, salvar_fila
 
 POR_EXECUCAO = int(os.getenv("TELEGRAM_POR_EXECUCAO", "2"))
@@ -35,6 +35,10 @@ def candidatas(fila):
     # variedade: tipo de produto que já foi para o canal nas últimas horas fica para depois
     ofs = variedade.ordenar(ofs, variedade.familias_recentes(fila, "telegram_em",
                                                              config.HORAS_ENTRE_FAMILIA_TELEGRAM))
+    # 🗂️ dia temático (src/linhas.py): a linha do dia vem primeiro e não precisa alternar categoria entre si
+    tema = linhas.ligado()
+    if tema:
+        ofs = linhas.ordenar(ofs)
     # alterna categorias: evita duas seguidas do mesmo nicho
     escolhidas, cats, fams = [], set(), set()
     for o in ofs:
@@ -44,7 +48,9 @@ def candidatas(fila):
             continue   # no máximo 1 de marca oficial por rodada
         if ae_cheio(o, escolhidas):
             continue
-        if o["categoria"] not in cats and variedade.familia(o) not in fams:
+        if tema and not linhas.eh_do_dia(o):
+            continue   # fora da linha do dia: só se faltar (2ª passada)
+        if (tema or o["categoria"] not in cats) and variedade.familia(o) not in fams:
             escolhidas.append(o)
             cats.add(o["categoria"])
             fams.add(variedade.familia(o))
@@ -57,6 +63,8 @@ def candidatas(fila):
             continue
         if o not in escolhidas and variedade.familia(o) not in fams:
             escolhidas.append(o)
+    for o in escolhidas:
+        linhas.marcar(o)
     return escolhidas
 
 

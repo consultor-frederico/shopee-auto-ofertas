@@ -302,7 +302,8 @@ def gerar(oferta: dict, destino, foto: Image.Image = None, moldura=True):
     if moldura:   # marca oficial da Awin: arte dentro da moldura da marca (src/lojas_arte.py)
         from . import lojas_arte
         img = lojas_arte.moldura_oficial(img, oferta)
-        from . import natal
+        from . import linhas, natal
+        img = linhas.faixa(img, oferta)   # 🗂️ faixa da linha ("LINHA CASA"), src/linhas.py
         img = natal.aplicar(img)   # nov/dez: moldura de Natal por fora de tudo (03/11/2026)
     img.save(destino, "JPEG", quality=90, optimize=True)
     return destino
