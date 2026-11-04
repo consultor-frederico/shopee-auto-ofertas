@@ -44,4 +44,4 @@ jobs:
           git diff --cached --quiet && exit 0
           git commit -m "Prévia das linhas temáticas [skip ci]"
           git pull --rebase -X theirs origin ${{ github.ref_name }} || true
-          git push origin HEAD:${{ github.ref_name }}
+          for i in 1 2 3 4; do git push origin HEAD:${{ github.ref_name }} && break; sleep $((i*3)); git pull --rebase -X theirs origin ${{ github.ref_name }} || true; done

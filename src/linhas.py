@@ -50,12 +50,12 @@ EMOJI_DIA = {0: "🏠", 1: "💄", 2: "🔌", 3: "🍳", 4: "🛠️🚗", 5: "�
 # A ordem importa: a 1ª linha que achar palavra leva o produto (ex.: "aspirador automotivo" é CARRO, não CASA).
 PALAVRAS = [
     ("achados", r"baralho|\btaro\b|tarot|cigano"),
-    ("tech", r"smartwatch|relogio inteligente|smart ?band|bluetooth|oculos inteligente|impressora|fone de ouvido"),
+    ("tech", r"smartwatch|relogio inteligente|smart ?band|bluetooth|oculos inteligente|impressora|fone de ouvido|ring light|anel de luz"),
     ("bebe", r"baba eletronica|\bbebes?\b|infantil|crianca|\bkids\b|montessori|maternidade|fralda|mamadeira|"
              r"chupeta|mordedor|\bberco"),
     ("pet", r"\bpets?\b|cachorr|\bc[aã]o\b|\bcaes\b|gato|felin|canin|areia sanitaria|caixa de areia|coleira|peitoral|"
             r"arranhador|comedouro|bebedouro|aquario|passaro|\baves?\b|\bracao|hamster|focinh"),
-    ("bebe", r"\bmenin[oa]|brinquedo|boneca|boneco|montessori|educativ|"
+    ("bebe", r"\bmenin[oa]|brinquedo|squishy|fidget|anti.?stress|boneca|boneco|montessori|educativ|"
              r"controle remoto|\brc\b|blocos|lego|quebra.?cabeca|massinha|slime|pelucia|chupeta|"
              r"dinossauro|hot wheels|"
              r"tabuleiro|lousa magica|pista|atividades|tapete de atividade"),
