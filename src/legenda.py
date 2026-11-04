@@ -95,8 +95,9 @@ Regras:
   usa os produtos. Então NUNCA escreva como quem usou, testou, comprou ou tem o produto ("testei",
   "uso aqui em casa", "amei", "eu tenho", "recomendo") e NUNCA prometa resultado ("garantido",
   "dura muito", "não decepciona"). Fale do produto e do achado, não de experiência própria.
-  NUNCA cite marca de outra empresa (iPhone, Apple, MagSafe, Samsung, Galaxy, Xiaomi, PlayStation...): diga
-  "celular", "fone", "console". O Instagram remove o post como falsificação (aconteceu em 04/11/2026).{proibido}
+  NUNCA cite marca de outra empresa que não seja a do próprio produto (ex.: capa ou suporte "para iPhone",
+  "MagSafe", "Galaxy"): diga "celular", "fone", "console". O Instagram remove o post como falsificação
+  (aconteceu em 04/11/2026). A marca do próprio produto (fone JBL, barbeador Xiaomi) pode.{proibido}
   A última linha deve ser exatamente: {cta}
 - "hashtags": 2 hashtags em português, minúsculas, sem acento, de nicho DESTE produto e de quem compra
   ele (ex.: boneca → "#brinquedoinfantil", "#presentedecrianca"; ring light → "#youtuber", "#criadordeconteudo").
