@@ -27,6 +27,9 @@ def candidatas(fila):
     cheias = {p for p, n in marcas.hoje_por_marca(fila, "telegram_em", hoje).items() if n >= config.SHARK_POR_DIA_TELEGRAM}
     ofs = [o for o in ofs if o.get("plataforma") not in cheias]   # cada marca no máximo X por dia: não domina o canal
     vagas_ae = aliexpress.vagas_hoje(fila, "telegram_em", config.ALIEXPRESS_POR_DIA_TELEGRAM, hoje)
+    from . import mercadolivre
+    if not mercadolivre.vagas_hoje(fila, "telegram_em", config.MERCADOLIVRE_POR_DIA_TELEGRAM, hoje):
+        ofs = [o for o in ofs if o.get("plataforma") != "mercadolivre"]   # Mercado Livre: no máximo 4 por dia
 
     def ae_cheio(o, escolhidas):   # 🌎 internacional: no máximo 2 por dia no canal
         return o.get("plataforma") == "aliexpress" and sum(e.get("plataforma") == "aliexpress" for e in escolhidas) >= vagas_ae

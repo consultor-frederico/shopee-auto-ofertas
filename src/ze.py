@@ -50,7 +50,7 @@ PEDIDO = ("🙋 VOCÊ PEDE, O ZÉ ACHA! Comenta aqui embaixo o produto que você
           "e ainda manda o link no seu direct! 👇")
 LEGENDAS = [
     "🤠 Você sabe quantos achados o Zé descartou hoje pra te mostrar só os que valem? "
-    "Ele peneira a Shopee e o AliExpress todo dia. Segue o Zé pra ver o que sobrou de ouro! ⛏️💎",
+    "Ele peneira a Shopee, o Mercado Livre e o AliExpress todo dia. Segue o Zé pra ver o que sobrou de ouro! ⛏️💎",
     "💰 Achadinho bom é achadinho garimpado! O Zé confere preço, nota e vendas antes de mostrar "
     "qualquer coisa. Segue a página pra não perder nenhum. ✨",
     "⛏️ Mais um dia de garimpo! O Zé cava, você escolhe. Segue o @garimpovip4 pra receber os achados "

@@ -42,14 +42,14 @@ LEGENDAS = [
 # Chamada para a vitrine da bio: sem número de achados (a página mostra só os mais recentes) e sem promessa de preço.
 TITULOS_PAGINA = [("VÁRIAS LOJAS", "NUM LUGAR SÓ")]
 # lojas que o robô garimpa hoje (Shopee, AliExpress e as marcas da Awin em src/marcas.py)
-LOJAS = ["SHOPEE", "ALIEXPRESS", "ARNO", "SHARK NINJA", "VX CASE"]
+LOJAS = ["SHOPEE", "MERCADO LIVRE", "ALIEXPRESS", "ARNO", "SHARK NINJA", "VX CASE"]
 LEGENDAS_PAGINA = [
-    "🤠 Shopee, AliExpress, Arno, Shark Ninja e VX Case num lugar só! Na vitrine do Garimpo VIP ficam os "
+    "🤠 Shopee, Mercado Livre, AliExpress, Arno, Shark Ninja e VX Case num lugar só! Na vitrine do Garimpo VIP ficam os "
     "achados mais recentes do Zé, com foto e o link pronto pra tocar. ⛏️\n\n"
     "👉 Toque no link da bio: garimpovipbr.github.io",
     "🛍️ Perdeu algum achado do Zé no meio do feed? Tá tudo na vitrine do Garimpo VIP, de várias lojas, "
     "atualizada todo dia. E de lá você entra no nosso canal do Telegram também.\n\n👉 Entre pelo link da bio.",
-    "🔗 Um link só pra tudo que o Zé garimpa: Shopee, AliExpress e as marcas parceiras, sem precisar "
+    "🔗 Um link só pra tudo que o Zé garimpa: Shopee, Mercado Livre, AliExpress e as marcas parceiras, sem precisar "
     "comentar nada.\n\n👉 Link na bio: garimpovipbr.github.io",
 ]
 FOTO_ZE = config.RAIZ / "assets" / "ze" / "ze_joinha_foto.jpg"

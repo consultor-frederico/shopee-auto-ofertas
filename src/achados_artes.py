@@ -11,7 +11,7 @@ from PIL import Image, ImageDraw, ImageFilter, ImageOps
 from . import config, imagem, linhas, lojas_arte, marcas, natal
 
 L, A = 1080, 1350
-NOMES_LOJA = {"shopee": "SHOPEE", "aliexpress": "ALIEXPRESS", **{p: m["nome"].upper() for p, m in marcas.MARCAS.items()}}
+NOMES_LOJA = {"shopee": "SHOPEE", "aliexpress": "ALIEXPRESS", "mercadolivre": "MERCADO LIVRE", **{p: m["nome"].upper() for p, m in marcas.MARCAS.items()}}
 
 TITULOS_GARIMPO = [("ACHADOS DO ZÉ", "arrasta pro lado"), ("O ZÉ GARIMPOU", "arrasta e confere"),
                    ("OLHA O QUE O ZÉ ACHOU", "arrasta pro lado")]
@@ -41,7 +41,7 @@ def _loja(o):
 
 def _loja_nome(o):
     """Nome da loja como se escreve: Shopee, AliExpress, Shark Ninja..."""
-    return marcas.nome(o) if marcas.eh_marca(o) else {"ALIEXPRESS": "AliExpress"}.get(_loja(o), _loja(o).title())
+    return marcas.nome(o) if marcas.eh_marca(o) else {"ALIEXPRESS": "AliExpress", "MERCADO LIVRE": "Mercado Livre"}.get(_loja(o), _loja(o).title())
 
 
 def _degrade(topo, base):

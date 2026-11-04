@@ -81,6 +81,7 @@ def _estrela(d, cx, cy, r, cor):
 LOJAS = {
     "shopee": {"nome": "SHOPEE", "cor": "#EE4D2D"},
     "aliexpress": {"nome": "ALIEXPRESS", "cor": "#E43225"},
+    "mercadolivre": {"nome": "MERCADO LIVRE", "cor": "#2D3277"},
     **{p: {"nome": m["nome"].upper(), "cor": m["cor"]} for p, m in marcas.MARCAS.items()},
 }
 

@@ -260,7 +260,7 @@ def gancho(oferta):
     """Frase do primeiro segundo (2 linhas). Achado escondido tem a sua própria."""
     if eh_achado(oferta):
         return ["ACHADO QUE POUCA", "GENTE CONHECE"]
-    loja = "ALIEXPRESS" if oferta.get("plataforma") == "aliexpress" else (
+    loja = {"aliexpress": "ALIEXPRESS", "mercadolivre": "MERCADO LIVRE"}.get(oferta.get("plataforma")) or (
         marcas.nome(oferta).upper() if marcas.eh_marca(oferta) else "SHOPEE")
     g = GANCHOS[sum(map(ord, str(oferta.get("id", "")))) % len(GANCHOS)]
     return g.format(loja=loja).split("|")

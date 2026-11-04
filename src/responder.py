@@ -31,7 +31,7 @@ DM_BOTAO = ("Oi! 😊 Aqui está a oferta {titulo} 👇\n"
             "Toque no botão para abrir a oferta ({loja}). Corre que preço de oferta muda rápido! 🛒\n"
             f"(link de afiliado: você paga o mesmo e ajuda a página {config.NOME_MARCA})")
 TITULO_BOTAO = "🛒 Ver oferta"
-NOME_LOJA = {"shopee": "Shopee", "aliexpress": "AliExpress", **{p: m["nome"] for p, m in marcas.MARCAS.items()}}
+NOME_LOJA = {"shopee": "Shopee", "aliexpress": "AliExpress", "mercadolivre": "Mercado Livre", **{p: m["nome"] for p, m in marcas.MARCAS.items()}}
 
 # Plano B, se o Instagram recusar o botão
 DM = ("Oi! 😊 Aqui está o link da oferta {titulo} 👇\n{link}\n\n"

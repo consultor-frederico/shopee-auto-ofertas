@@ -157,24 +157,27 @@ def _sonda(termo):
     tenta("item avulso", "/items", ids="MLB6756182602")
 
 
-# Categorias do ranking de mais vendidos usadas na prévia (ids do ML)
+# Categorias do ranking de mais vendidos: id do ML → (nome, nicho do robô, comissão % do programa de afiliados)
+# Comissões da tabela do programa (fonte de terceiros, 2025; conferir no painel quando sair a 1ª venda).
 CATEGORIAS = {
-    "MLB1574": ("Casa, Móveis e Decoração", "casa"),
-    "MLB1246": ("Beleza e Cuidado Pessoal", "beleza"),
-    "MLB1000": ("Eletrônicos, Áudio e Vídeo", "eletronicos"),
-    "MLB1276": ("Esportes e Fitness", "esportes"),
-    "MLB263532": ("Ferramentas", "ferramentas"),
-    "MLB5726": ("Eletrodomésticos", "eletrodomesticos"),
-    "MLB1132": ("Brinquedos e Hobbies", "brinquedos"),
-    "MLB1071": ("Animais", "pet"),
+    "MLB1574": ("Casa, Móveis e Decoração", "lar", 10.0),
+    "MLB1246": ("Beleza e Cuidado Pessoal", "beleza", 16.0),
+    "MLB1000": ("Eletrônicos, Áudio e Vídeo", "eletronicos", 9.5),
+    "MLB1276": ("Esportes e Fitness", "masculino", 14.0),
+    "MLB263532": ("Ferramentas", "lar", 10.0),
+    "MLB5726": ("Eletrodomésticos", "lar", 10.0),
+    "MLB1132": ("Brinquedos e Hobbies", "brinquedos", 10.0),
+    "MLB1071": ("Animais", "pet", 9.0),
+    "MLB5672": ("Acessórios para Veículos", "automotivo", 11.0),
+    "MLB1648": ("Informática", "eletronicos", 9.5),
+    "MLB1430": ("Calçados, Roupas e Bolsas", "moda", 14.0),
 }
-
 
 def _brl(v):
     return f"{v:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
 
-def produto(pid, categoria, posicao, nome_cat):
+def produto(pid, categoria, posicao, nome_cat, pct=10.0):
     """Produto do catálogo → oferta no formato do robô (o mesmo da Shopee/AliExpress)."""
     r = _get(f"/products/{pid}")
     if r.status_code != 200:
@@ -199,6 +202,8 @@ def produto(pid, categoria, posicao, nome_cat):
         "preco_fmt": _brl(preco),
         "preco_de": de if desconto else None,
         "desconto": desconto,
+        "comissao": round(preco * pct / 100, 2),
+        "comissao_pct": pct,
         "vendas": 0,
         "nota": 0.0,
         "posicao": posicao,
@@ -213,22 +218,86 @@ def produto(pid, categoria, posicao, nome_cat):
     }
 
 
-def mais_vendidos(cat, quantos=5, preco_max=500):
+def mais_vendidos(cat, quantos=5, preco_max=500, pular=None):
     r = _get(f"/highlights/MLB/category/{cat}")
     if r.status_code != 200:
         print(f"❌ Mais vendidos {cat}: {r.status_code}")
         return []
-    nome_cat, categoria = CATEGORIAS.get(cat, (cat, "casa"))
+    nome_cat, categoria, pct = CATEGORIAS.get(cat, (cat, "lar", 9.0))
     saida = []
     for c in r.json().get("content", []):
         if c.get("type") != "PRODUCT":
             continue
-        o = produto(c["id"], categoria, c.get("position"), nome_cat)
+        if pular and pular(f"ml{c['id']}"):
+            continue
+        o = produto(c["id"], categoria, c.get("position"), nome_cat, pct)
         if o and o["preco"] <= preco_max and o["imagem"]:
             saida.append(o)
         if len(saida) >= quantos:
             break
     return saida
+
+
+# ---------------------------------------------------------------- uso no garimpo
+CATEGORIAS_POR_GARIMPO = int(os.getenv("ML_CATEGORIAS_POR_GARIMPO", "3"))
+PRODUTOS_POR_CATEGORIA = int(os.getenv("ML_PRODUTOS_POR_CATEGORIA", "8"))
+POR_GARIMPO = int(os.getenv("ML_POR_GARIMPO", "3"))
+
+
+def configurado():
+    return ligado() and os.getenv("ML_ATIVO", "1") != "0"
+
+
+def _categorias_da_vez():
+    """Rodízio: a cada rodada pega as próximas categorias da lista (pela hora do dia), para variar o feed."""
+    from datetime import datetime
+    ids = list(CATEGORIAS)
+    ini = (datetime.utcnow().timetuple().tm_yday * 24 + datetime.utcnow().hour) * CATEGORIAS_POR_GARIMPO % len(ids)
+    return [ids[(ini + i) % len(ids)] for i in range(CATEGORIAS_POR_GARIMPO)]
+
+
+def candidatos(fila, ja_usado, julgar=None):
+    """Mais vendidos do ML nas categorias da vez, com as regras do Garimpo (preço, comissão, IA de "uau").
+    `ja_usado(fila, id)` é a regra de não repetir (garimpar.ja_usado)."""
+    from . import config
+    if not configurado() or config.PERFIL != "garimpo":
+        return []
+    ofs, recusas = [], {}
+    try:
+        for cat in _categorias_da_vez():
+            for o in mais_vendidos(cat, quantos=PRODUTOS_POR_CATEGORIA, preco_max=config.PRECO_MAXIMO,
+                                   pular=lambda i: ja_usado(fila, i)):
+                if o["categoria"] not in config.NICHO:
+                    recusas["fora do nicho"] = recusas.get("fora do nicho", 0) + 1
+                elif o["comissao"] < config.NIVEIS["prata"]["comissao_rs"]:
+                    recusas["comissão baixa"] = recusas.get("comissão baixa", 0) + 1
+                else:
+                    ofs.append(o)
+    except Exception as e:
+        print(f"::warning::Mercado Livre ficou de fora desta rodada: {e}")
+        return []
+    if julgar:
+        julgar(ofs)
+    comuns = [o for o in ofs if o.get("uau", 0) < config.UAU_MINIMO_POSTAR]
+    ofs = sorted((o for o in ofs if o.get("uau", 0) >= config.UAU_MINIMO_POSTAR),
+                 key=lambda o: (o["uau"], o["comissao"], -(o.get("posicao") or 99)), reverse=True)
+    escolhidas = []
+    for o in ofs[:POR_GARIMPO]:
+        ouro = o["uau"] >= config.NIVEIS["ouro"]["uau"] and o["comissao"] >= config.NIVEIS["ouro"]["comissao_rs"]
+        o.update({"nivel": "ouro" if ouro else "prata", "origem_busca": "mercadolivre", "so_telegram": False,
+                  "palavra": o["info_txt"],
+                  "pontos": config.SHARK_PONTOS + (o["uau"] - config.SHARK_UAU) * config.PESO_UAU})
+        escolhidas.append(o)
+    print(f"🟡 Mercado Livre: {len(ofs) + len(comuns)} mais vendidos avaliados, {len(comuns)} comuns, "
+          f"recusados {recusas}, entram {len(escolhidas)}: {[o['nome'][:35] for o in escolhidas]}")
+    return escolhidas
+
+
+def vagas_hoje(fila, campo, maximo, hoje):
+    """Quantas ofertas do ML ainda cabem no dia no canal do `campo` ("postado_em" IG, "telegram_em" Telegram)."""
+    ja = sum(1 for o in fila["ofertas"].values()
+             if o.get("plataforma") == "mercadolivre" and str(o.get(campo) or "").startswith(hoje))
+    return max(0, maximo - ja)
 
 
 def _previa(pasta="previa_ml"):
@@ -246,7 +315,7 @@ def _previa(pasta="previa_ml"):
         except Exception as e:
             print(f"⚠️  Arte de {o['nome']}: {e}")
         linhas.append(f"{n}. {o['nome']} · R$ {o['preco_fmt']}" + (f" (de R$ {_brl(o['preco_de'])}, -{o['desconto']}%)" if o["preco_de"] else "")
-                      + f" · Top {o['posicao']} em {CATEGORIAS[cat][0]} · {o['vendedores']} vendedores"
+                      + f" · Top {o['posicao']} em {CATEGORIAS[cat][0]} · comissão R$ {o['comissao']:.2f} · {o['vendedores']} vendedores"
                       + (" · frete grátis" if o["frete_gratis"] else "") + f"\n   {o['link_afiliado']}")
     texto = "\n".join(linhas)
     Path(f"{pasta}/lista.txt").write_text(texto)

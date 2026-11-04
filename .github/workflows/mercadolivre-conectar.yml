@@ -56,6 +56,7 @@ jobs:
           path: previa_ml/
       - name: Guardar a prévia na branch de prévias (não mexe na main)
         if: inputs.previa
+        continue-on-error: true
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
