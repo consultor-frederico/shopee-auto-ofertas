@@ -164,6 +164,8 @@ def uau(o):
         return min(nota, TETO_CASA_COMUM)
     if marcas.eh_marca(o):   # marca oficial (catálogo curado): aspirador/air fryer não são "vitrine"
         return nota
+    if o.get("lancamento_ml"):   # lançamento do Mercado Livre (até config.ML_LANCAMENTO_ATE): conhecido pode entrar
+        return nota
     return min(nota, TETO_COMUM) if familia(o) in COMUNS else nota
 
 
