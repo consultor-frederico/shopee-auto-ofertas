@@ -55,6 +55,7 @@ jobs:
           AWIN_FEED_URL: ${{ secrets.AWIN_FEED_URL }}
           AWIN_ATIVO: ${{ vars.AWIN_ATIVO || '1' }}
           ZE_VITRINE: ${{ vars.ZE_VITRINE || '1' }}
+          CAMADAS: ${{ vars.CAMADAS || '0' }}   # ⭐ com as camadas ligadas, o Reels só mostra especiais (src/camadas.py)
         run: python -m src.ze preparar
       - if: steps.prep.outputs.tem_post == 'true'
         uses: actions/upload-pages-artifact@v3

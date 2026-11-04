@@ -54,6 +54,7 @@ jobs:
           ML_REFRESH_TOKEN: ${{ secrets.ML_REFRESH_TOKEN }}
           ML_ATIVO: ${{ vars.ML_ATIVO || '1' }}   # Shark Ninja ligada; para desligar: Settings → Secrets and variables → Actions → Variables → AWIN_ATIVO = 0
           LINHAS: ${{ vars.LINHAS || '1' }}   # 🗂️ linhas temáticas (src/linhas.py), ligadas 04/11/2026 (ok do Fred). Desligar: variável LINHAS = 0
+          CAMADAS: ${{ vars.CAMADAS || '0' }}   # ⭐/🏷️ especiais + conhecidos (src/camadas.py). Ligar: variável CAMADAS = 1
         run: |
           # relatório da rodada salvo no repositório (para conferir o que a busca profunda achou)
           set -o pipefail

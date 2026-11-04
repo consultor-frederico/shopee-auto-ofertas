@@ -194,7 +194,7 @@ def escolher_produtos():
     from . import achados, numeros
     from .garimpar import carregar_fila, salvar_fila
     fila = carregar_fila()
-    itens = achados.escolher(fila)
+    itens = achados.escolher(fila, so_especiais=True)   # Reels é só dos ⭐ especiais (src/camadas.py)
     salvar_fila(fila)   # guarda o que foi descartado na conferência de preço
     itens.sort(key=lambda it: (it["oferta"].get("uau") or 0, it["oferta"].get("vendas") or 0), reverse=True)
     itens = itens[:QTD]

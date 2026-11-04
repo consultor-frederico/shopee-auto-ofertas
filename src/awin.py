@@ -283,10 +283,12 @@ def candidatos(fila, ja_usado, julgar=None):
     if julgar:   # 02/11/2026: o catálogo passa pela IA de "uau"; só o diferente entra, o mais uau primeiro
         do_perfil = [dict(o) for o in do_perfil[:config.MARCAS_JULGADAS_POR_RODADA]]   # cota da IA por minuto
         julgar(do_perfil)
-        comuns = [o for o in do_perfil if o.get("uau", 0) < config.UAU_MINIMO_POSTAR]
+        from . import camadas   # 🏷️ com as camadas ligadas, o produto conhecido da marca também entra (sem selo)
+        passa = [o for o in do_perfil if o.get("uau", 0) >= config.UAU_MINIMO_POSTAR or camadas.conhecido(dict(o, gancho=o.get("gancho", "")))]
+        comuns = [o for o in do_perfil if o not in passa]
         if comuns:
             print(f"🏬 Marcas: {len(comuns)} produtos comuns ficaram de fora (ex.: {', '.join(o['nome'][:35] for o in comuns[:3])})")
-        do_perfil = sorted((o for o in do_perfil if o.get("uau", 0) >= config.UAU_MINIMO_POSTAR),
+        do_perfil = sorted(passa,
                            key=lambda o: (o["uau"], o["desconto"], o["comissao"]), reverse=True)
     escolhidas, por_marca = [], {}
     for o in do_perfil:

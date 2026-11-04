@@ -43,11 +43,15 @@ def _saida(chave, valor):
 
 
 # ---------------------------------------------------------------- o que entra
-def escolher(fila, conferir=True):
+def escolher(fila, conferir=True, so_especiais=False):
     """QTD ofertas de tipos diferentes (nada de dois espelhos no mesmo carrossel), com foto e preço conferidos.
-    Primeiro tenta uma de cada categoria; se faltar, completa com a mesma categoria."""
-    from . import postar, precos, variedade
+    Primeiro tenta uma de cada categoria; se faltar, completa com a mesma categoria.
+    🏷️ Camadas (src/camadas.py): os ⭐ especiais vêm primeiro (o 1º é a capa) e os conhecidos só completam, no máximo
+    camadas.CONHECIDOS_POR_CARROSSEL. so_especiais=True (Reels do Zé) deixa os conhecidos de fora."""
+    from . import camadas, postar, precos, variedade
     lista = [o for o in postar.candidatos_ordenados(fila) if not o.get("video_manual") and not o.get("pedido")]
+    if camadas.ligado():
+        lista = [o for o in lista if camadas.especial(o)] + ([] if so_especiais else [o for o in lista if not camadas.especial(o)])
     itens, familias, categorias, ids = [], set(), set(), set()
     shark = False
     vagas_ae = aliexpress.vagas_hoje(fila, "postado_em", config.ALIEXPRESS_POR_DIA_INSTAGRAM, agora().strftime("%Y-%m-%d"))
@@ -65,6 +69,9 @@ def escolher(fila, conferir=True):
             return
         if so_categoria_nova and o.get("categoria") in categorias:
             return
+        if (camadas.ligado() and not camadas.especial(o)
+                and sum(not camadas.especial(it["oferta"]) for it in itens) >= camadas.CONHECIDOS_POR_CARROSSEL):
+            return   # 🏷️ conhecido só completa: o destaque é dos especiais
         if conferir:
             situacao = precos.conferir(o)
             if situacao in ("sumiu", "subiu"):
@@ -100,6 +107,13 @@ def escolher(fila, conferir=True):
                 if len(itens) >= QTD:
                     break
                 tentar(o, so_categoria_nova)
+    if camadas.ligado():   # ⭐ especiais na frente (a capa é sempre um achado do Zé)
+        itens.sort(key=lambda it: not camadas.especial(it["oferta"]))
+        especiais = sum(camadas.especial(it["oferta"]) for it in itens)
+        if especiais < camadas.ESPECIAIS_POR_CARROSSEL_MIN:
+            print(f"⚠️  Só {especiais} achado(s) especial(is) na fila: sem especial não tem carrossel.")
+            return []
+        print(f"⭐ {especiais} especiais + 🏷️ {len(itens) - especiais} conhecidos")
     for it in itens:
         linhas.marcar(it["oferta"])
     return itens

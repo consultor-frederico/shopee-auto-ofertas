@@ -10,7 +10,7 @@ import time
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from . import aliexpress, config, imagem, linhas, marcas, precos, telegram, variedade
+from . import aliexpress, camadas, config, imagem, linhas, marcas, precos, telegram, variedade
 from .garimpar import BRT, FMT, agora, carregar_fila, salvar_fila
 
 POR_EXECUCAO = int(os.getenv("TELEGRAM_POR_EXECUCAO", "2"))
@@ -21,7 +21,7 @@ def candidatas(fila):
     ofs = [o for o in fila["ofertas"].values()
            if o.get("status") in ("pendente", "postado") and o.get("telegram") != "ok"
            and o.get("link_afiliado") and o.get("titulo") and not o.get("video_manual")
-           and (o.get("pedido") or variedade.diferenciado(o))   # só produto diferenciado
+           and (o.get("pedido") or variedade.diferenciado(o) or camadas.conhecido(o))   # só produto diferenciado (ou 🏷️ conhecido)
            and datetime.strptime(o["criado_em"], FMT).replace(tzinfo=BRT) >= limite]
     hoje = agora().strftime("%Y-%m-%d")
     cheias = {p for p, n in marcas.hoje_por_marca(fila, "telegram_em", hoje).items() if n >= config.SHARK_POR_DIA_TELEGRAM}

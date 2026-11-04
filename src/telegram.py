@@ -55,6 +55,10 @@ def legenda(oferta):
     partes = [f"🔥 <b>{html.escape(oferta['titulo'])}</b>", ""]
     if oferta.get("nivel") == "achado":
         partes = ["💎 <b>ACHADO ESCONDIDO</b> — pouca gente conhece", ""] + partes
+    else:
+        from . import camadas
+        if camadas.selo_ze(oferta):   # ⭐ especial (src/camadas.py)
+            partes = ["⭐ <b>ACHADO DO ZÉ</b> — o Zé garimpou e aprovou", ""] + partes
     partes += linhas + [""] if linhas else []
     prova = f"🏬 {marcas.texto_oficial(oferta)}" if marcas.eh_marca(oferta) else f"⭐ {nota}  •  {vendas}+ vendidos"
     partes += [preco, prova, f"🏷️ Oferta {loja}", "", f"<i>{html.escape(aviso(oferta))}</i>",

@@ -7,7 +7,7 @@ import random
 import sys
 from datetime import datetime, timedelta, timezone
 
-from . import aliexpress, awin, busca_profunda, config, curadoria, legenda, marcas, mercadolivre, shopee, variedade
+from . import aliexpress, awin, busca_profunda, camadas, config, curadoria, legenda, marcas, mercadolivre, shopee, variedade
 
 BRT = timezone(timedelta(hours=-3))
 FMT = "%Y-%m-%d %H:%M:%S"
@@ -113,6 +113,11 @@ def nivel(o):
     if (candidato_achado(o) and o.get("uau", 0) >= a["uau"]
             and o["comissao"] >= a["comissao_rs"] and o["comissao_pct"] >= _pct_min(o, a)):
         return "achado"
+    # 🏷️ conhecido (src/camadas.py): marca famosa / campeão de vendas com os números do Prata, uau a partir de 5
+    p = config.NIVEIS["prata"]
+    if (camadas.conhecido(o) and o["vendas"] >= p["vendas"] and o["comissao"] >= p["comissao_rs"]
+            and o["comissao_pct"] >= _pct_min(o, p)):
+        return "prata"
     return None
 
 
@@ -355,10 +360,13 @@ def _limite_familia(f):
 
 def selecionar(candidatos, n, ja_na_fila=None, lojas_na_fila=None):
     """Pega os melhores, equilibrando as categorias e sem lotar a fila do mesmo tipo de produto."""
-    fora = [o for o in candidatos if not variedade.diferenciado(o) and o.get("nivel") in ("ouro", "achado")]
+    fora = [o for o in candidatos if not variedade.diferenciado(o) and not camadas.conhecido(o)
+            and o.get("nivel") in ("ouro", "achado")]
     for o in fora:
         print(f"   ↪️  {o['nivel']} fora da fila (uau {variedade.uau(o):.0f} abaixo de {config.UAU_MINIMO_POSTAR}): {o['nome'][:60]}")
-    candidatos = [o for o in candidatos if variedade.diferenciado(o)]   # só achado de verdade
+    # só achado de verdade; com as camadas ligadas, também o 🏷️ conhecido (marca famosa, campeão de vendas)
+    conhecidos = [o for o in candidatos if not variedade.diferenciado(o) and camadas.conhecido(o)]
+    candidatos = [o for o in candidatos if variedade.diferenciado(o)]
     fams = dict(ja_na_fila or {})
     lojas = dict(lojas_na_fila or {})
     por_cat = {}
@@ -401,6 +409,20 @@ def selecionar(candidatos, n, ja_na_fila=None, lojas_na_fila=None):
         rodada({c: [o for o in v if linhas.de(o) in tema] for c, v in por_cat.items()}, min(n, linhas.NA_FILA_POR_GARIMPO))
         print(f"🗂️  Linha {', '.join(linhas.LINHAS[t]['nome'] for t in tema)}: {len(escolhidos)} na frente da fila")
     rodada({c: [o for o in v if o not in escolhidos] for c, v in por_cat.items()}, n)
+    # 🏷️ conhecidos (src/camadas.py) entram depois dos especiais, no máximo CONHECIDOS_POR_GARIMPO por rodada
+    if conhecidos:
+        antes = len(escolhidos)
+        por_cat = {}
+        for o in sorted(conhecidos, key=lambda x: x["pontos"], reverse=True):
+            por_cat.setdefault(o["categoria"], []).append(o)
+        if tema:
+            rodada({c: [o for o in v if linhas.de(o) in tema] for c, v in por_cat.items()},
+                   antes + min(camadas.CONHECIDOS_POR_GARIMPO, linhas.NA_FILA_POR_GARIMPO))
+        rodada({c: [o for o in v if o not in escolhidos] for c, v in por_cat.items()}, antes + camadas.CONHECIDOS_POR_GARIMPO)
+        for o in escolhidos[antes:]:
+            o["camada"] = "conhecido"
+            o["motivo_conhecido"] = camadas.motivo_conhecido(o)
+        print(f"🏷️  Conhecidos: {len(escolhidos) - antes} entram na fila (de {len(conhecidos)} candidatos)")
     return escolhidos
 
 

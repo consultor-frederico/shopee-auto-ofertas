@@ -119,6 +119,9 @@ def capa_produto(oferta, foto, n_mais, pose, destino):
         img.paste(f, (cx0 + (cx1 - cx0 - f.width) // 2, cy0 + 120 + (cy1 - cy0 - 150 - f.height) // 2))
     _selo_numero(d, cx0 + 66, cy0 + 62, 44, imagem.DOURADO, imagem.ESCURO, imagem._fonte(60, "Black"), 1,
                  imagem.ESCURO)
+    if imagem.tem_selo_ze(oferta):   # ⭐ a capa é sempre um especial: moldura dourada + selo ACHADO DO ZÉ
+        imagem.moldura_ze(d, (cx0, cy0, cx1, cy1), 44)
+        imagem.selo_ze(d, cx0 + 30, cy1 - 30 - 92)
     fim_selo = cx0 + 126 + imagem.selo_loja(d, oferta, cx0 + 126, cy0 + 30)
     t = f"+{n_mais} ACHADOS  ›"
     f_a = imagem._fonte(30, "ExtraBold")
@@ -170,13 +173,17 @@ def _mina(o, foto, pos, num=None):
     borda = (45, 20, 5)
     d.ellipse((50, 40, 190, 180), fill=top.AM)
     d.text((120, 112), str(pos), font=f(96), fill=borda, anchor="mm")
-    d.text((220, 58), "ACHADO DO ZÉ", font=f(32), fill=top.AM)
+    from . import camadas
+    d.text((220, 58), "ACHADO DO ZÉ" if not camadas.ligado() or camadas.especial(o) else "O ZÉ CONFERIU", font=f(32), fill=top.AM)
     d.text((220, 98), f"oferta {_loja_nome(o)}", font=f(52), fill=top.BR)
     d.rounded_rectangle((60, 220, L - 60, 900), 36, fill=top.CARD)
     fo = foto.copy()
     fo.thumbnail((L - 180, 620), Image.LANCZOS)
     im.paste(fo, ((L - fo.width) // 2, 250 + (620 - fo.height) // 2))
     imagem.selo_loja(d, o, 90, 900 - 30 - 58, escala=0.9)   # selo da loja (com 🌎 internacional) no pé do cartão
+    if imagem.tem_selo_ze(o):   # ⭐ especial: selo dourado no alto do cartão
+        imagem.moldura_ze(d, (60, 220, L - 60, 900), 36)
+        imagem.selo_ze(d, 84, 236, escala=0.85)
     if o.get("desconto"):
         t = f"-{o['desconto']}%"
         ft = f(36)
@@ -208,6 +215,9 @@ def _ouro(o, foto, pos, num=None):
     fo = ImageOps.contain(foto, (620, 620), Image.LANCZOS)
     im.paste(fo, (540 - fo.width // 2, 570 - fo.height // 2))
     _selo_numero(d, 100, 100, 62, imagem.ESCURO, imagem.BRANCO, imagem._fonte(78, "Black"), pos, (238, 200, 98))
+    if imagem.tem_selo_ze(o):   # ⭐ especial: selo no pé do círculo branco
+        rasc = ImageDraw.Draw(Image.new("RGB", (8, 8)))
+        imagem.selo_ze(d, (L - imagem.selo_ze(rasc, 0, 0, 0.9)) / 2, 170, escala=0.9)
     rascunho = ImageDraw.Draw(Image.new("RGB", (8, 8)))   # selo da loja (com 🌎 internacional) no canto
     imagem.selo_loja(d, o, L - 70 - imagem.selo_loja(rascunho, o, 0, 0), 62)
     if o.get("desconto"):
