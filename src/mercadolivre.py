@@ -14,6 +14,8 @@ Uso:
                                           com ML_CODIGO: troca o código pelo refresh token
   python -m src.mercadolivre status     → confere o token e mostra a conta conectada
   python -m src.mercadolivre busca TERMO → testa a busca com token e mostra 5 resultados
+                                          (sem ML_REFRESH_TOKEN tenta Client Credentials; se a busca
+                                          recusar, imprime o link para conectar a conta)
 """
 import os
 import re
@@ -36,7 +38,7 @@ def _env(nome):
 
 
 def ligado():
-    return all(_env(n) for n in ("ML_CLIENT_ID", "ML_CLIENT_SECRET", "ML_REFRESH_TOKEN"))
+    return all(_env(n) for n in ("ML_CLIENT_ID", "ML_CLIENT_SECRET"))
 
 
 def _token(dados):
@@ -55,8 +57,13 @@ _cache = {}
 
 
 def access_token():
+    """Com ML_REFRESH_TOKEN usa o token da conta; sem ele tenta Client Credentials (só ID + chave secreta)."""
     if "tok" not in _cache:
-        _cache["tok"] = _token({"grant_type": "refresh_token", "refresh_token": _env("ML_REFRESH_TOKEN")})["access_token"]
+        if _env("ML_REFRESH_TOKEN"):
+            dados = {"grant_type": "refresh_token", "refresh_token": _env("ML_REFRESH_TOKEN")}
+        else:
+            dados = {"grant_type": "client_credentials"}
+        _cache["tok"] = _token(dados)["access_token"]
     return _cache["tok"]
 
 
@@ -99,6 +106,10 @@ def _conectar():
 
 
 def _status():
+    if not _env("ML_REFRESH_TOKEN"):
+        access_token()
+        print("✅ Entrou só com ID + chave secreta (Client Credentials).")
+        return
     r = _get("/users/me")
     if r.status_code != 200:
         sys.exit(f"❌ /users/me respondeu {r.status_code}: {r.text[:300]}")
@@ -110,6 +121,9 @@ def _busca(termo):
     r = _get("/sites/MLB/search", q=termo, limit=5)
     if r.status_code != 200:
         print(f"❌ Busca respondeu {r.status_code}: {r.text[:300]}")
+        if not _env("ML_REFRESH_TOKEN"):
+            print("Próximo passo: conectar a conta. Abra o link abaixo, autorize e rode o 29 de novo colando o endereço.")
+            _conectar()
         return
     itens = r.json().get("results", [])
     print(f"✅ Busca com token funcionou: {termo} · {len(itens)} resultados")

@@ -1,6 +1,7 @@
 name: 29 - Conectar Mercado Livre
 
-# 1ª vez: rode SEM código → o log mostra o link de autorização (abra logado na conta do afiliado).
+# 1ª vez: rode SEM código → tenta entrar só com ID + chave (Client Credentials) e testa a busca.
+#          Se a busca recusar, o log mostra o link de autorização (abra logado na conta do afiliado).
 # 2ª vez: cole o endereço que abriu (com ?code=TG-...) → o refresh token vai sozinho para ML_REFRESH_TOKEN.
 # Já conectado: rode sem código para conferir a conta e testar a busca com o termo escolhido.
 
@@ -34,10 +35,10 @@ jobs:
           ML_CODIGO: ${{ inputs.codigo }}
           TERMO: ${{ inputs.termo }}
         run: |
-          if [ -z "$ML_CODIGO" ] && [ -n "$ML_REFRESH_TOKEN" ]; then
-            python -m src.mercadolivre busca "$TERMO"
-          else
+          if [ -n "$ML_CODIGO" ]; then
             python -m src.mercadolivre conectar
+          else
+            python -m src.mercadolivre busca "$TERMO"
           fi
       - name: Salvar o refresh token
         if: always()
