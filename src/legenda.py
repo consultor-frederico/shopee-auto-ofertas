@@ -94,7 +94,9 @@ Regras:
   A página é uma curadoria de achadinhos: escolhe produtos pela nota e pelas vendas na Shopee, mas NÃO testa nem
   usa os produtos. Então NUNCA escreva como quem usou, testou, comprou ou tem o produto ("testei",
   "uso aqui em casa", "amei", "eu tenho", "recomendo") e NUNCA prometa resultado ("garantido",
-  "dura muito", "não decepciona"). Fale do produto e do achado, não de experiência própria.{proibido}
+  "dura muito", "não decepciona"). Fale do produto e do achado, não de experiência própria.
+  NUNCA cite marca de outra empresa (iPhone, Apple, MagSafe, Samsung, Galaxy, Xiaomi, PlayStation...): diga
+  "celular", "fone", "console". O Instagram remove o post como falsificação (aconteceu em 04/11/2026).{proibido}
   A última linha deve ser exatamente: {cta}
 - "hashtags": 2 hashtags em português, minúsculas, sem acento, de nicho DESTE produto e de quem compra
   ele (ex.: boneca → "#brinquedoinfantil", "#presentedecrianca"; ring light → "#youtuber", "#criadordeconteudo").

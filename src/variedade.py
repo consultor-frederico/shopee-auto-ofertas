@@ -8,6 +8,7 @@ diferentes (não caem no filtro de produto repetido), mas para quem segue a pág
 - na postagem (Instagram e Telegram): a mesma família só volta depois de
   config.HORAS_ENTRE_FAMILIA horas naquele canal.
 """
+import re
 from datetime import datetime, timedelta
 
 from . import config, curadoria, marcas
@@ -69,9 +70,26 @@ FRANQUIAS = ["transformers", "optimus", "bumblebee", "megatron", "marvel", "iron
              "mundo bita", "patati", "free fire", "fortnite", "roblox", "among us"]
 
 
+# Marca de terceiro no nome (04/11/2026): o Instagram removeu o carrossel com o "Suporte MagSafe com Ventosa"
+# da VX Case por "falsificação/propriedade intelectual" — produto original, mas "MagSafe" e o iPhone na legenda
+# são da Apple. Strike repetido derruba a conta, então nome com marca de outra empresa não vai para nenhum canal
+# público (Instagram, Facebook, Telegram, kits). Console retrô com "mil jogos" (Anbernic, R36S) é pirataria aos olhos da Meta.
+MARCAS_TERCEIROS = ["magsafe", "iphone", "apple", "airpod", "airpods", "ipad", "macbook", "airtag", "imac",
+                    "galaxy tab", "galaxy buds", "galaxy watch", "samsung", "xiaomi", "redmi", "motorola", "jbl", "stanley", "nike", "adidas",
+                    "playstation", "ps5", "ps4", "xbox", "nintendo", "gopro", "dyson", "echo dot",
+                    "anbernic", "r36s", "game stick", "emulador", "console retro", "videogame retro",
+                    "jogos retro", "mil jogos"]
+
+
 def franquia(o):
-    txt = _texto(o if isinstance(o, str) else o.get("nome", ""))
-    return any(_texto(f) in txt for f in FRANQUIAS)
+    """Franquia/personagem OU marca de terceiro no nome, título ou gancho da legenda."""
+    if isinstance(o, str):
+        txt = _texto(o)
+    else:
+        txt = _texto(" ".join(str(o.get(k) or "") for k in ("nome", "titulo", "gancho")))
+    # "Galaxy S25/A55/Z Flip" é Samsung; "projetor galaxy" (de estrelas) é genérico e pode
+    return (any(_texto(f) in txt for f in FRANQUIAS + MARCAS_TERCEIROS)
+            or bool(re.search(r" galaxy (?:[sazm]\d|z? ?flip|z? ?fold|note)", txt)))
 
 
 # Utilidade comum (02/11/2026, reclamação dos seguidores: "varal, vaporizador, nada interessante").
