@@ -347,9 +347,17 @@ def candidatos(fila, ja_usado, julgar=None, palavras=None):
         return []
     if julgar:
         julgar(ofs)
+    from datetime import datetime
+    if datetime.utcnow().strftime("%Y-%m-%d") <= config.ML_LANCAMENTO_ATE:
+        # lançamento: produto conhecido (uau >= ML_LANCAMENTO_UAU) entra como se fosse achado do Instagram
+        for o in ofs:
+            if o.get("uau", 0) >= config.ML_LANCAMENTO_UAU:
+                o["uau_ia"] = o["uau"]
+                o["uau"] = max(o["uau"], config.UAU_MINIMO_INSTAGRAM)
+                o["lancamento_ml"] = True
     comuns = [o for o in ofs if o.get("uau", 0) < config.UAU_MINIMO_POSTAR]
     ofs = sorted((o for o in ofs if o.get("uau", 0) >= config.UAU_MINIMO_POSTAR),
-                 key=lambda o: (o["uau"], o["comissao"], -(o.get("posicao") or 99)), reverse=True)
+                 key=lambda o: (o.get("uau_ia", o["uau"]), o["comissao"], -(o.get("posicao") or 99)), reverse=True)
     escolhidas = []
     for o in ofs[:POR_GARIMPO]:
         ouro = o["uau"] >= config.NIVEIS["ouro"]["uau"] and o["comissao"] >= config.NIVEIS["ouro"]["comissao_rs"]

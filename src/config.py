@@ -74,7 +74,11 @@ ALIEXPRESS_POR_DIA_TELEGRAM = int(os.getenv("ALIEXPRESS_POR_DIA_TELEGRAM", "2"))
 COMISSAO_PCT_ALIEXPRESS = 7.0
 # --- Mercado Livre (src/mercadolivre.py), ligado em 04/11/2026 (ok do Fred): mais vendidos do ML, só no Garimpo ---
 MERCADOLIVRE_POR_DIA_INSTAGRAM = int(os.getenv("MERCADOLIVRE_POR_DIA_INSTAGRAM", "2"))
-MERCADOLIVRE_POR_DIA_TELEGRAM = int(os.getenv("MERCADOLIVRE_POR_DIA_TELEGRAM", "4"))  # AliExpress paga 7% padrão; o corte em R$ (5 prata / 6 ouro) segue igual
+MERCADOLIVRE_POR_DIA_TELEGRAM = int(os.getenv("MERCADOLIVRE_POR_DIA_TELEGRAM", "4"))
+# Lançamento (pedido do Fred 04/11): até esta data entra produto conhecido do ML (uau a partir de 5) para o
+# público ver que o ML chegou; depois vale a curadoria normal (só achado diferente).
+ML_LANCAMENTO_ATE = os.getenv("ML_LANCAMENTO_ATE", "2026-11-20")
+ML_LANCAMENTO_UAU = float(os.getenv("ML_LANCAMENTO_UAU", "5"))  # AliExpress paga 7% padrão; o corte em R$ (5 prata / 6 ouro) segue igual
 # --- Marcas oficiais pela Awin (src/awin.py, lista em src/marcas.py): Shark Ninja BR e Arno BR, sem teto de preço ---
 # Segredo AWIN_FEED_URL = URL do feed com todas as marcas (Awin → Ferramentas → Crie um Feed). Ligue com AWIN_ATIVO=1.
 AWIN_FEED_URL = (os.getenv("AWIN_FEED_URL") or "").strip()
