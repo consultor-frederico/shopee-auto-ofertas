@@ -48,7 +48,7 @@ def _token(dados):
     j = r.json() if r.content else {}
     if "access_token" not in j:
         raise RuntimeError(f"Mercado Livre recusou o token ({r.status_code}): {j.get('error')} {j.get('message')}")
-    if j.get("refresh_token"):   # vale uma vez só: o workflow salva o novo no segredo
+    if j.get("refresh_token") and dados.get("grant_type") != "client_credentials":   # vale uma vez só: o workflow salva o novo no segredo
         ARQ_NOVO_TOKEN.write_text(j["refresh_token"])
     return j
 
