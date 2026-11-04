@@ -134,6 +134,29 @@ def _busca(termo):
         print("Campos:", ", ".join(sorted(itens[0].keys())))
 
 
+def _sonda(termo):
+    """Testa outros caminhos da API (a busca aberta /sites/MLB/search dá 403 até com token)."""
+    def tenta(nome, caminho, **params):
+        r = _get(caminho, **params)
+        print(f"{'✅' if r.status_code == 200 else '❌'} {nome}: {r.status_code} · {r.text[:400]}")
+        return r.json() if r.status_code == 200 else {}
+    tenta("categoria do termo", "/sites/MLB/domain_discovery/search", q=termo, limit=1)
+    cat = (tenta("categorias", "/sites/MLB/categories") or [{}])
+    d = tenta("catálogo (products/search)", "/products/search", status="active", site_id="MLB", q=termo, limit=3)
+    for res in (d.get("results") or [])[:1]:
+        tenta("produto do catálogo", f"/products/{res.get('id')}")
+        tenta("ofertas do produto", f"/products/{res.get('id')}/items", limit=3)
+    h = tenta("mais vendidos (Casa, Móveis e Decoração)", "/highlights/MLB/category/MLB1574")
+    for c in (h.get("content") or [])[:2]:
+        tid = c.get("id")
+        if c.get("type") == "PRODUCT":
+            tenta("produto mais vendido", f"/products/{tid}")
+            tenta("ofertas do mais vendido", f"/products/{tid}/items", limit=3)
+        else:
+            tenta("item mais vendido", f"/items/{tid}")
+    tenta("item avulso", "/items", ids="MLB6756182602")
+
+
 if __name__ == "__main__":
     acao = sys.argv[1] if len(sys.argv) > 1 else "status"
     if acao == "conectar":
@@ -141,5 +164,7 @@ if __name__ == "__main__":
     elif acao == "busca":
         _status()
         _busca(" ".join(sys.argv[2:]) or "garrafa termica")
+        if _env("ML_REFRESH_TOKEN"):
+            _sonda(" ".join(sys.argv[2:]) or "garrafa termica")
     else:
         _status()
