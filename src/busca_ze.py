@@ -731,7 +731,7 @@ def responder_atalho(api, ig_id, autor, cod, d):
     if cod == "BUSCA_ZE":
         return enviar({"text": "Oi! 🤠 Aqui é o Zé Garimpo. Bora garimpar! ⛏️\n\nMe diz o que você procura "
                                "(ex.: \"fone bluetooth\", \"air fryer\", \"tênis de corrida\") que eu te mando "
-                               "os 3 melhores achados da Shopee, com nota alta e muita venda."
+                               "os 3 melhores achados da Shopee, do Mercado Livre e das outras lojas."
                                + ("\n\n🤔 Viu um produto e ficou na dúvida? Me manda o link (ou um print) "
                                   "que eu te digo se vale a pena!" if config.VALE_A_PENA_ATIVO else "")})
     if cod == "OFERTAS_HOJE":

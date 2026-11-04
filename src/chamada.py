@@ -32,7 +32,7 @@ LEGENDAS = [
     "Lá as ofertas chegam o dia todo, com link direto, sem precisar comentar. 💎\n\n"
     "👉 Toque no link da bio e entre no canal Garimpo VIP.",
     "📣 Aqui no Instagram vão só os melhores… mas no Telegram vai TUDO que a gente garimpa! 🔥\n"
-    "Cupons da Shopee, campanhas relâmpago e dezenas de achadinhos por dia.\n\n"
+    "Cupons da Shopee, achados do Mercado Livre, campanhas relâmpago e dezenas de achadinhos por dia.\n\n"
     "👉 Link na bio: canal Garimpo VIP no Telegram.",
     "💬 Cansou de comentar EU QUERO? No nosso canal do Telegram o link já vem pronto, é só tocar! 🛒\n"
     "E quando a Shopee solta cupom, quem está lá fica sabendo primeiro. 🎟️\n\n"
@@ -41,7 +41,7 @@ LEGENDAS = [
 
 # Chamada para a vitrine da bio: sem número de achados (a página mostra só os mais recentes) e sem promessa de preço.
 TITULOS_PAGINA = [("VÁRIAS LOJAS", "NUM LUGAR SÓ")]
-# lojas que o robô garimpa hoje (Shopee, AliExpress e as marcas da Awin em src/marcas.py)
+# lojas que o robô garimpa hoje (Shopee, Mercado Livre, AliExpress e as marcas da Awin em src/marcas.py)
 LOJAS = ["SHOPEE", "MERCADO LIVRE", "ALIEXPRESS", "ARNO", "SHARK NINJA", "VX CASE"]
 LEGENDAS_PAGINA = [
     "🤠 Shopee, Mercado Livre, AliExpress, Arno, Shark Ninja e VX Case num lugar só! Na vitrine do Garimpo VIP ficam os "
@@ -54,7 +54,7 @@ LEGENDAS_PAGINA = [
 ]
 FOTO_ZE = config.RAIZ / "assets" / "ze" / "ze_joinha_foto.jpg"
 
-HASHTAGS_PAGINA = "#achadinhos #achadinhosshopee #aliexpress #ofertasdodia #garimpovip"
+HASHTAGS_PAGINA = "#achadinhos #achadinhosshopee #achadinhosmercadolivre #aliexpress #garimpovip"
 HASHTAGS = "#cupomshopee #achadinhos #achadinhosshopee #cupomdedesconto #garimpovip"
 
 
