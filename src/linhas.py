@@ -11,7 +11,7 @@
 Não mexe em: Kits do Zé (qua/sáb 18:45, têm tema próprio), Kits de Natal (20h), brincadeiras de seg/qui (usam os
 produtos do dia), curadoria (uau>=8) nem na Ana (só Garimpo VIP).
 
-Liga com LINHAS=1 (dia temático + faixa) — ou só a faixa com LINHAS_FAIXA=1. LINHA_HOJE=tech força a linha (teste).
+LIGADO em 04/11/2026 (ok do Fred): os workflows passam LINHAS=1 (dia temático + faixa); variável LINHAS=0 desliga — ou só a faixa com LINHAS_FAIXA=1. LINHA_HOJE=tech força a linha (teste).
 Prévia: python -m src.linhas previa  → data/relatorios/linhas/
 """
 import os

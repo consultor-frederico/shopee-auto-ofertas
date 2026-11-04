@@ -52,7 +52,7 @@ jobs:
           SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
           SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
           AWIN_ATIVO: ${{ vars.AWIN_ATIVO || '1' }}
-          LINHAS: ${{ vars.LINHAS || '0' }}   # 🗂️ linhas temáticas (src/linhas.py)
+          LINHAS: ${{ vars.LINHAS || '1' }}   # 🗂️ linhas temáticas (src/linhas.py), ligadas 04/11/2026 (ok do Fred). Desligar: variável LINHAS = 0
           AWIN_FEED_URL: ${{ secrets.AWIN_FEED_URL }}   # confere preço/estoque das marcas (Arno, Shark) antes de mandar
         run: python -m src.whatsapp_kit
 

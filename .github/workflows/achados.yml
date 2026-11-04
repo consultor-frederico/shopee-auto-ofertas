@@ -55,7 +55,7 @@ jobs:
           SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
           AWIN_FEED_URL: ${{ secrets.AWIN_FEED_URL }}
           AWIN_ATIVO: ${{ vars.AWIN_ATIVO || '1' }}
-          LINHAS: ${{ vars.LINHAS || '0' }}   # 🗂️ linhas temáticas (src/linhas.py)
+          LINHAS: ${{ vars.LINHAS || '1' }}   # 🗂️ linhas temáticas (src/linhas.py), ligadas 04/11/2026 (ok do Fred). Desligar: variável LINHAS = 0
         run: python -m src.achados previa
 
       - name: Preparar o carrossel
@@ -68,7 +68,7 @@ jobs:
           SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
           AWIN_FEED_URL: ${{ secrets.AWIN_FEED_URL }}
           AWIN_ATIVO: ${{ vars.AWIN_ATIVO || '1' }}
-          LINHAS: ${{ vars.LINHAS || '0' }}   # 🗂️ linhas temáticas (src/linhas.py)
+          LINHAS: ${{ vars.LINHAS || '1' }}   # 🗂️ linhas temáticas (src/linhas.py), ligadas 04/11/2026 (ok do Fred). Desligar: variável LINHAS = 0
         run: python -m src.achados preparar
 
       - name: Enviar mídia ao GitHub Pages
