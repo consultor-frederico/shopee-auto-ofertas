@@ -238,6 +238,30 @@ def mais_vendidos(cat, quantos=5, preco_max=500, pular=None):
     return saida
 
 
+# ---------------------------------------------------------------- Busca do Zé (04/11/2026)
+def buscar(termo, quantos=12):
+    """Busca no catálogo do ML (/products/search; a busca aberta dá 403) e devolve ofertas no formato do robô,
+    na ordem da busca. O ML não mostra nota nem vendas: a posição na busca entra no lugar ("posicao")."""
+    r = _get("/products/search", status="active", site_id="MLB", q=termo, limit=min(quantos, 50))
+    if r.status_code != 200:
+        raise RuntimeError(f"busca no catálogo respondeu {r.status_code}: {r.text[:150]}")
+    ids = [x["id"] for x in r.json().get("results", []) if x.get("id")][:quantos]
+    from concurrent.futures import ThreadPoolExecutor
+
+    def um(par):
+        pos, pid = par
+        try:
+            o = produto(pid, "busca", pos, "busca")
+        except Exception as e:
+            print(f"⚠️  ML {pid}: {str(e)[:80]}")
+            return None
+        if o:
+            o["info_txt"] = f"{pos}º na busca do Mercado Livre"
+        return o
+    with ThreadPoolExecutor(6) as ex:
+        return [o for o in ex.map(um, enumerate(ids, 1)) if o and o["imagem"]]
+
+
 # ---------------------------------------------------------------- uso no garimpo
 CATEGORIAS_POR_GARIMPO = int(os.getenv("ML_CATEGORIAS_POR_GARIMPO", "3"))
 PRODUTOS_POR_CATEGORIA = int(os.getenv("ML_PRODUTOS_POR_CATEGORIA", "8"))

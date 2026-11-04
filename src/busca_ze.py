@@ -1,7 +1,8 @@
 """🔎 Busca do Zé — post fixo que funciona como ferramenta de busca.
 
 O seguidor comenta o que procura no post fixado (legenda com #BuscaDoZe). Na mesma rodada do
-responder (o webhook acorda o robô na hora), o Zé busca na Shopee, escolhe até 3 achados bons
+responder (o webhook acorda o robô na hora), o Zé busca na Shopee, AliExpress, Mercado Livre e no catálogo
+das lojas oficiais da Awin (04/11/2026), escolhe até 3 achados bons
 e manda no direct da pessoa (resposta privada ao comentário, com um botão por achado).
 No comentário, responde em público: "Te mandei no direct!".
 
@@ -23,11 +24,24 @@ TAG = "buscadaana" if ANA else "buscadoze"
 AVISO_ANA = "(são links de afiliada: você paga o mesmo e me ajuda a continuar caçando achadinhos 💚)"
 MAX_POR_RODADA = 15
 ACHADOS = 3
+# 04/11/2026 (Fred): o Zé procura em todas as lojas do Garimpo e junta os 3 melhores. A Ana segue só na Shopee.
+LOJAS = [l.strip() for l in __import__("os").getenv(
+    "BUSCA_LOJAS", "shopee" if ANA else "shopee,mercadolivre,aliexpress,marcas").split(",") if l.strip()]
+MAX_POR_LOJA = 2   # dos 3 achados, no máximo 2 da mesma loja (a pessoa vê opções de lugares diferentes)
+NOME_LOJA = {"shopee": "Shopee", "aliexpress": "AliExpress", "mercadolivre": "Mercado Livre"}
+
+
+def _onde(lojas=None):
+    """'na Shopee' / 'na Shopee, no Mercado Livre, na AliExpress e nas lojas oficiais'."""
+    nomes = {"shopee": "na Shopee", "mercadolivre": "no Mercado Livre", "aliexpress": "na AliExpress",
+             "marcas": "nas lojas oficiais"}
+    partes = [nomes[l] for l in (lojas or LOJAS) if l in nomes] or ["na Shopee"]
+    return partes[0] if len(partes) == 1 else ", ".join(partes[:-1]) + " e " + partes[-1]
 
 PUBLICAS = ["@{u} o Zé achou! ⛏️ Te mandei no direct 📩",
             "Achei, @{u}! 🤠 Confere o seu direct 📲",
             "@{u} garimpado! ⛏️ Os achados estão no seu direct 💌"]
-PUBLICA_NADA = ("@{u} o Zé cavou, cavou e não achou nada bom de \"{t}\" ainda 😅 "
+PUBLICA_NADA = ("@{u} o Zé cavou em todas as lojas e não achou nada bom de \"{t}\" ainda 😅 "
                 "Tenta com outras palavras (ex.: \"fone bluetooth\")!")
 if ANA:
     PUBLICAS = ["@{u} achei! 💚 Te mandei no direct", "Prontinho, @{u}! Olha o seu direct 🥰",
@@ -191,17 +205,34 @@ def _infantil(txt):
     return bool(set(_palavras(txt)) & INFANTIL)
 
 
+def _plat(o):
+    return o.get("plataforma") or "shopee"
+
+
+def _eh_marca(o):
+    from . import marcas
+    return marcas.eh_marca(o)
+
+
 def _aceitavel(o, rigoroso=True):
     nome = o["nome"].lower()
     if not (o["link_afiliado"] and o["imagem"] and 0 < o["preco"] and (not PRECO_MAX or o["preco"] <= PRECO_MAX)
             and not any(p in nome for p in config.PALAVRAS_PROIBIDAS)):
         return False
+    if _eh_marca(o):          # loja oficial (Awin): não tem nota nem vendas, a marca é a garantia
+        return True
+    if _plat(o) == "mercadolivre":   # catálogo do ML não mostra nota/vendas: vale a posição na busca
+        return (o.get("posicao") or 99) <= (6 if rigoroso else 12)
+    if _plat(o) == "aliexpress":
+        from . import aliexpress
+        if aliexpress.recusa_extra(o):
+            return False
     if rigoroso:
         return o["nota"] >= 4.5 and o["vendas"] >= 50
     return o["nota"] >= 4.3 and o["vendas"] >= 10
 
 
-PROMPT_IA = """Um cliente pediu na Shopee: "{t}".
+PROMPT_IA = """Um cliente pediu numa loja online: "{t}".
 Abaixo, produtos encontrados (número: nome — preço). Quais SÃO o próprio produto que ele pediu?
 Não conta acessório, peça, capa, suporte, refil, nem produto de outro tipo que só cita a palavra
 (ex.: pediu "cama casal" → lençol, colcha ou protetor "para cama casal" NÃO servem; só a cama).
@@ -224,8 +255,13 @@ def _miniatura(url):
     import base64
     import requests
     try:
-        r = requests.get(url + ("_tn" if "susercontent.com/file/" in url and not url.endswith("_tn") else ""),
-                         timeout=10)
+        if "susercontent.com/file/" in url and not url.endswith("_tn"):
+            url += "_tn"
+        elif "alicdn.com" in url and url.endswith((".jpg", ".png", ".webp")):
+            url += "_220x220.jpg"          # AliExpress: miniatura pelo próprio CDN
+        elif "mlstatic.com" in url:
+            url = url.replace("-O.", "-I.")   # Mercado Livre: versão pequena da foto
+        r = requests.get(url, timeout=10)
         if r.ok and r.content and len(r.content) < 400_000:
             return base64.b64encode(r.content).decode()
     except Exception:
@@ -310,7 +346,15 @@ def _filtro_ia(t, ofs):
 
 def _pontos(o):
     """2/11/2026 (Fred): primeiro o melhor para o cliente (avaliação e vendas = vendedor de confiança);
-    entre os confiáveis, a melhor comissão; sem teto de preço."""
+    entre os confiáveis, a melhor comissão; sem teto de preço.
+    04/11/2026: loja oficial vale como vendedor de confiança (nota 4,8 e 2.000 vendas); no Mercado Livre,
+    que não mostra nota nem vendas, o 1º da busca vale 3.000 vendas, o 2º 1.500, o 3º 1.000...
+    e do 4º em diante só "confiável"."""
+    if _eh_marca(o):
+        return (True, True, 2000 * 4.8 + o["comissao"] * 30)
+    if _plat(o) == "mercadolivre":
+        pos = o.get("posicao") or 99
+        return (pos <= 3, True, 3000 / pos * 4.8 + o["comissao"] * 30)
     confiavel = o["nota"] >= 4.7 and o["vendas"] >= 100
     return (o["nota"] >= 4.8 and o["vendas"] >= 100, confiavel and o["comissao"] >= 3,
             min(o["vendas"], 5000) * o["nota"] + o["comissao"] * 30)
@@ -340,9 +384,7 @@ def _sem_repetidos(ofs):
     return escolhidos
 
 
-def achados(t):
-    """Até 3 produtos que SÃO o que a pessoa pediu: busca por relevância (e mais vendidos),
-    regras contra acessórios, e a IA confere a lista final."""
+def _da_shopee(t):
     from . import shopee
     from .garimpar import normalizar
     nos = []
@@ -360,32 +402,137 @@ def achados(t):
                         break
                     import time
                     time.sleep(2 * tentativa)
+    return [normalizar(n, "busca", t) for n in nos]
+
+
+def _da_aliexpress(t):
+    from . import aliexpress
+    if not aliexpress.configurado():
+        return []
+    nos = []
+    for ordem in ("LAST_VOLUME_DESC", "SALE_PRICE_ASC"):
+        try:
+            nos += aliexpress.buscar_produtos(t, 1, ordem, 50)
+        except Exception as e:
+            print(f"⚠️  AliExpress '{t}' ({ordem}): {str(e)[:100]}")
+    return [aliexpress.normalizar(p, "busca", t) for p in nos]
+
+
+def _das_marcas(t):
+    """Catálogo das lojas oficiais (Awin). A Arno tem feed parado: preço e estoque conferidos na loja."""
+    from . import awin, marcas
+    if not awin.configurado():
+        return []
+    ofs = [dict(o, palavra=t) for o in awin.produtos() if relevante(o["nome"], t)]
+    ofs.sort(key=lambda o: (o.get("desconto") or 0, o["comissao"]), reverse=True)
+    saida = []
+    for o in ofs:
+        if len(saida) >= 3:
+            break
+        if marcas.MARCAS.get(o["plataforma"], {}).get("conferir_site") and awin._conferir_site(o) in ("sumiu", "erro"):
+            continue
+        saida.append(o)
+    return saida
+
+
+def _do_mercadolivre(t):
+    from . import mercadolivre
+    if not mercadolivre.configurado():
+        return []
+    return mercadolivre.buscar(t, quantos=12)
+
+
+FONTES = {"shopee": _da_shopee, "aliexpress": _da_aliexpress, "marcas": _das_marcas,
+          "mercadolivre": _do_mercadolivre}
+POR_LOJA_NA_IA = {"shopee": 12, "aliexpress": 5, "marcas": 3, "mercadolivre": 6}   # quantos de cada loja a IA confere
+
+
+def _buscar_lojas(t, lojas):
+    """Busca nas lojas ao mesmo tempo. Uma loja que falhar fica de fora, as outras seguem."""
+    from concurrent.futures import ThreadPoolExecutor
+    lojas = [l for l in lojas if l in FONTES]
+    if "mercadolivre" in lojas:   # pega o token antes das buscas paralelas
+        try:
+            from . import mercadolivre
+            if mercadolivre.configurado():
+                mercadolivre.access_token()
+        except Exception as e:
+            print(f"⚠️  Mercado Livre fora desta busca: {str(e)[:120]}")
+            lojas.remove("mercadolivre")
+
+    def roda(loja):
+        try:
+            return FONTES[loja](t)
+        except Exception as e:
+            print(f"⚠️  {NOME_LOJA.get(loja, loja)} falhou na busca '{t}': {str(e)[:120]}")
+            return []
+    with ThreadPoolExecutor(len(lojas) or 1) as ex:
+        return dict(zip(lojas, ex.map(roda, lojas)))
+
+
+def _loja(o):
+    return "marcas" if _eh_marca(o) else _plat(o)
+
+
+def achados(t, lojas=None):
+    """Até 3 produtos que SÃO o que a pessoa pediu, juntando as lojas (Shopee, Mercado Livre, AliExpress e
+    lojas oficiais): busca por relevância (e mais vendidos), regras contra acessórios, e a IA confere a lista final."""
+    lojas = list(lojas or LOJAS)
+    por_loja = _buscar_lojas(t, lojas)
     vistos, unicos = set(), []
-    for n in nos:
-        o = normalizar(n, "busca", t)
+    for o in (o for ofs in por_loja.values() for o in ofs):
         if o["id"] not in vistos:
             vistos.add(o["id"])
             unicos.append(o)
     certos = [o for o in unicos if relevante(o["nome"], t)]
     if not _infantil(t):   # pediu "roupa motocross" (ou "de adulto"): nada de roupa de criança
         certos = [o for o in certos if not _infantil(o["nome"])]
+    contagem = {l: len(v) for l, v in por_loja.items()}
     for rigoroso in (True, False):
-        bons = sorted((o for o in certos if _aceitavel(o, rigoroso)), key=_pontos, reverse=True)[:15]
+        bons = []
+        for loja in lojas:   # os melhores de cada loja vão para a IA conferir juntos
+            da_loja = sorted((o for o in certos if _loja(o) == loja and _aceitavel(o, rigoroso)), key=_pontos, reverse=True)
+            bons += da_loja[:POR_LOJA_NA_IA.get(loja, 5)]
         if not bons:
             continue
+        print(f"🛒 '{t}': encontrados {contagem}, para conferir {[(l, sum(1 for o in bons if _loja(o) == l)) for l in lojas]}")
+        bons.sort(key=_pontos, reverse=True)
         conferidos = _filtro_ia(t, bons)
         if conferidos is not None:   # a IA decide o que serve; a ordem continua a da qualidade
             bons = sorted(conferidos, key=_pontos, reverse=True)
-        bons = _sem_repetidos(bons)
-        if bons:
-            return bons[:ACHADOS]
+        bons = _sem_repetidos(bons)   # mesmo produto em duas lojas: fica o mais barato
+        escolhidos, n_loja = [], {}
+        for o in bons:
+            if n_loja.get(_loja(o), 0) < MAX_POR_LOJA:
+                escolhidos.append(o)
+                n_loja[_loja(o)] = n_loja.get(_loja(o), 0) + 1
+        if escolhidos:
+            return escolhidos[:ACHADOS]
     return []
 
 
 def _resumo(ofs):
     """O que foi mandado, para a revisão (python -m src.busca_ze revisar)."""
-    return {"enviados": [f"{o['nome'][:90]} | R$ {o['preco_fmt']} | ⭐{o['nota']} | {o['vendas']} vend. | "
+    return {"enviados": [f"{_nome_loja(o)} | {o['nome'][:90]} | R$ {o['preco_fmt']} | {_selo(o, True)} | "
                          f"com. R$ {o['comissao']:.2f}" for o in ofs], "ia": _ia_usada[0] or "regras"}
+
+
+def _nome_loja(o):
+    from . import marcas
+    return f"{marcas.nome(o)} oficial" if _eh_marca(o) else NOME_LOJA.get(_plat(o), _plat(o))
+
+
+def _selo(o, interno=False):
+    """O que garante o achado: nota e vendas; loja oficial; no Mercado Livre, frete grátis/Full (e, só no
+    relatório, a posição na busca)."""
+    if _eh_marca(o):
+        return "loja oficial"
+    if _plat(o) == "mercadolivre":
+        extras = [x for x, ok in (("frete grátis", o.get("frete_gratis")), ("Full", o.get("full"))) if ok]
+        return ", ".join(([f"{o.get('posicao')}º na busca"] if interno else []) + extras) or "Mercado Livre"
+    vendas_txt = f"{o['vendas']:,}".replace(",", ".")
+    nota = f"{o['nota']:.1f}".replace(".", ",")
+    return f"⭐ {nota}, {vendas_txt}+ vendidos"
 
 
 def _curto(nome, n=45):
@@ -394,13 +541,15 @@ def _curto(nome, n=45):
 
 
 def mensagem(t, ofs):
-    linhas = [(f"Oi! 💚 Aqui é a Ana. Procurei \"{t}\" na Shopee e separei pra você:" if ANA
-               else f"Oi! 🤠 Aqui é o Zé Garimpo. Garimpei \"{t}\" na Shopee e separei:"), ""]
+    linhas = [(f"Oi! 💚 Aqui é a Ana. Procurei \"{t}\" {_onde()} e separei pra você:" if ANA
+               else f"Oi! 🤠 Aqui é o Zé Garimpo. Garimpei \"{t}\" {_onde()} e separei os melhores:"), ""]
+    varias = len(LOJAS) > 1
     for i, o in enumerate(ofs, 1):
-        vendas = f"{o['vendas']:,}".replace(",", ".")
-        nota = f"{o['nota']:.1f}".replace(".", ",")
         intl = " 🌎 internacional" if o.get("internacional") else ""
-        linhas.append(f"{i}️⃣ {_curto(o['nome'])} — R$ {o['preco_fmt']} (⭐ {nota}, {vendas}+ vendidos){intl}")
+        selo = _selo(o)
+        loja = _nome_loja(o) if _eh_marca(o) or not varias or selo == "Mercado Livre" else f"{_nome_loja(o)} • "
+        selo = "" if _eh_marca(o) or selo == "Mercado Livre" else selo
+        linhas.append(f"{i}️⃣ {_curto(o['nome'])} — R$ {o['preco_fmt']} ({loja}{selo}){intl}")
     if config.PAGINA_BIO:
         linhas += ["", f"🔗 Os outros achados de hoje: {config.PAGINA_BIO}"]
     linhas += ["", "Toque no botão do que gostou 👇",
@@ -411,14 +560,14 @@ def mensagem(t, ofs):
 def _cartao(i, o):
     """Um achado em cartão (template genérico): foto, nome, preço/nota/vendas e os botões."""
     link = vendas.do_canal(o, "zebusca")
-    vendas_txt = f"{o['vendas']:,}".replace(",", ".")
-    nota = f"{o['nota']:.1f}".replace(".", ",")
     intl = " • internacional" if o.get("internacional") else ""
+    loja = f"{_nome_loja(o)} • " if len(LOJAS) > 1 or _plat(o) != "shopee" else ""
+    selo = "" if _eh_marca(o) or _selo(o) == "Mercado Livre" else f" • {_selo(o).replace(', ', ' • ')}"
     botoes = [{"type": "web_url", "url": link, "title": f"🛒 Ver achado {i}"}]
     if config.PAGINA_BIO:
         botoes.append({"type": "web_url", "url": f"https://{config.PAGINA_BIO}", "title": "🔗 Achados de hoje"})
     return {"title": f"{i}. {_curto(o['nome'], 70)}",
-            "subtitle": f"R$ {o['preco_fmt']} • ⭐ {nota} • {vendas_txt}+ vendidos{intl} • link de afiliado"[:80],
+            "subtitle": f"{loja}R$ {o['preco_fmt']}{selo}{intl} • link de afiliado"[:80],
             "image_url": o["imagem"], "default_action": {"type": "web_url", "url": link}, "buttons": botoes}
 
 
@@ -453,7 +602,7 @@ def enviar_dm(api, ig_id, cid, t, ofs, destinatario=None):
 JANELA_DM = timedelta(hours=23)       # o Instagram só deixa responder até 24h depois da mensagem
 SILENCIO_HUMANO = timedelta(hours=2)  # se o Fred escreveu na conversa há pouco, o robô não se mete
 MARCAS_ROBO = ("Oi! 😊", "Oi! 🤠", "Oi! 💚", "Oiê!", "Oi, amiga!", "Aaah", "Prontinho!", "Oi! Esse")   # começo das mensagens automáticas (não contam como o Fred)
-DM_NADA = ("Oi! 🤠 Aqui é o Zé Garimpo. Cavei \"{t}\" na Shopee, mas não achei nada bom o bastante 😅 "
+DM_NADA = ("Oi! 🤠 Aqui é o Zé Garimpo. Cavei \"{t}\" em todas as lojas, mas não achei nada bom o bastante 😅 "
            "Me manda com outras palavras (ex.: \"fone bluetooth\", \"air fryer 5 litros\") que eu tento de novo!")
 if ANA:
     DM_NADA = ("Oi! 💚 Aqui é a Ana. Procurei \"{t}\" na Shopee, mas não achei nada bom o bastante 😕 "
@@ -939,7 +1088,7 @@ if __name__ == "__main__":   # teste: python -m src.busca_ze "celular" "fone blu
         enviar_dm(instagram, ig, None, t, ofs, destinatario=autor)
         instagram._req("POST", f"{ig}/messages", json={"recipient": {"id": autor}, "message": {"text": DM_CONFERE}})
         for o in ofs:
-            print(f"::notice::Enviado a @{usuario}: R$ {o['preco_fmt']} ⭐{o['nota']} {o['vendas']} vend. — {o['nome'][:80]}")
+            print(f"::notice::Enviado a @{usuario}: {_nome_loja(o)} R$ {o['preco_fmt']} {_selo(o, True)} — {o['nome'][:80]}")
         d["dms"][f"manual-{_agora().strftime('%Y%m%d%H%M%S')}"] = {
             "autor": autor, "usuario": usuario, "texto": "(envio manual)", "termo": t, "em": _agora().strftime(_fmt()),
             "status": "entregue", "achados": [o["id"] for o in ofs], **_resumo(ofs)}
@@ -961,6 +1110,6 @@ if __name__ == "__main__":   # teste: python -m src.busca_ze "celular" "fone blu
         print(f"\n🔎 {t.strip()}" + (f"  (antes: {ant})" if ant else "") + f"  → busca \"{busca}\"")
         try:
             for o in achados(busca):
-                print(f"  • R$ {o['preco_fmt']:>9} ⭐{o['nota']} {o['vendas']:>6} vend. — {o['nome'][:90]}")
+                print(f"  • {_nome_loja(o):<14} R$ {o['preco_fmt']:>9} {_selo(o, True):<28} — {o['nome'][:80]}")
         except Exception as e:
             print(f"  ⚠️  {e}")

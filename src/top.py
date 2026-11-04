@@ -119,7 +119,7 @@ def escolher(tipo):
         if len(itens) >= QTD:
             break
         try:
-            achados = busca_ze.achados(termo)
+            achados = busca_ze.achados(termo, lojas=("shopee",))   # slides do Top mostram nota e vendas
         except Exception as e:
             print(f"⚠️  Busca de '{termo}' falhou: {e}")
             continue

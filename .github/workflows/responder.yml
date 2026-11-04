@@ -35,6 +35,15 @@ jobs:
           YT_REFRESH_TOKEN: ${{ secrets.YT_REFRESH_TOKEN }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          ALIEXPRESS_APP_KEY: ${{ secrets.ALIEXPRESS_APP_KEY }}      # Busca do Zé em todas as lojas (04/11/2026)
+          ALIEXPRESS_APP_SECRET: ${{ secrets.ALIEXPRESS_APP_SECRET }}
+          ALIEXPRESS_TRACKING_ID: ${{ secrets.ALIEXPRESS_TRACKING_ID }}
+          AWIN_FEED_URL: ${{ secrets.AWIN_FEED_URL }}
+          AWIN_ATIVO: ${{ vars.AWIN_ATIVO || '1' }}
+          ML_CLIENT_ID: ${{ secrets.ML_CLIENT_ID }}          # sem ML_REFRESH_TOKEN de propósito: a busca entra com
+          ML_CLIENT_SECRET: ${{ secrets.ML_CLIENT_SECRET }}  # ID + chave (Client Credentials) e não gira o token do garimpo
+          ML_ATIVO: ${{ vars.ML_ATIVO || '1' }}
+          BUSCA_LOJAS: shopee   # TEMPORÁRIO até o teste do workflow 19 passar
           SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
           SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
