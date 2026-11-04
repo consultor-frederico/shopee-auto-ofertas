@@ -284,8 +284,8 @@ _gemini = {"modelos": None, "inicio": None}
 
 
 def _modelos_gemini(chave):
-    """O modelo pedido (GEMINI_MODELO), ou os "flash" que a chave enxerga, do mais novo ao mais velho.
-    Modelo novo às vezes não tem cota no plano gratuito (HTTP 429), então os outros ficam de reserva."""
+    """O modelo pedido (GEMINI_MODELO), depois os 2.5 (baratos) e por fim os outros "flash" da chave,
+    do mais novo ao mais velho, de reserva para quando um der 429/503."""
     if _gemini["modelos"] is None:
         pedido = os.getenv("GEMINI_MODELO", "").strip()
         nomes = []
@@ -299,9 +299,21 @@ def _modelos_gemini(chave):
         flash = sorted((n for n in nomes if "flash" in n and not any(r in n for r in ruins)), reverse=True)
         # o flash normal antes do lite da mesma geração
         flash.sort(key=lambda n: "lite" in n)
-        reserva = [n for n in ("gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-2.0-flash") if n not in flash]
-        _gemini["modelos"] = ([pedido] if pedido else []) + flash + reserva
+        # Plano pago (04/11/2026): o 2.5-flash é o mais barato que dá conta (US$0,30/2,50 por milhão);
+        # os flash novos (3.6/3.8) custam 2,5x mais e dobram em jan/2027, então só entram de reserva.
+        baratos = ["gemini-2.5-flash", "gemini-2.5-flash-lite"]
+        _gemini["modelos"] = list(dict.fromkeys(([pedido] if pedido else []) + baratos + flash))
     return _gemini["modelos"]
+
+
+def config_geracao(modelo, temperatura):
+    """generationConfig de todas as chamadas: JSON e, no 2.5, sem "pensar" (o pensamento é cobrado como saída)."""
+    cfg = {"temperature": temperatura, "responseMimeType": "application/json"}
+    if modelo.startswith("gemini-2.5"):
+        cfg["thinkingConfig"] = {"thinkingBudget": 0}
+    return cfg
+
+
 
 
 def _ver_gemini(texto, fotos):
@@ -318,8 +330,7 @@ def _ver_gemini(texto, fotos):
         try:
             r = requests.post(f"{GEMINI_URL}/models/{modelo}:generateContent", params={"key": chave},
                               timeout=45, json={"contents": [{"parts": partes}],
-                                                "generationConfig": {"temperature": 0.3,
-                                                                     "responseMimeType": "application/json"}})
+                                                "generationConfig": config_geracao(modelo, 0.3)})
             if r.status_code == 429 and "PerMinute" in r.text and not _gemini.get(modelo):
                 _gemini[modelo] = True   # limite por minuto: espera uma vez e tenta de novo
                 espera = re.search(r'"retryDelay": "(\d+)', r.text)

@@ -227,15 +227,13 @@ def _gemini_json(texto, fotos):
         try:
             r = requests.post(f"{rv.GEMINI_URL}/models/{modelo}:generateContent", params={"key": chave},
                               timeout=60, json={"contents": [{"parts": partes}],
-                                                "generationConfig": {"temperature": 0.2,
-                                                                     "responseMimeType": "application/json"}})
+                                                "generationConfig": rv.config_geracao(modelo, 0.2)})
             if r.status_code == 429 and "PerMinute" in r.text:
                 espera = re.search(r'"retryDelay": "(\d+)', r.text)
                 time.sleep(min(int(espera.group(1)) if espera else 30, 60) + 2)
                 r = requests.post(f"{rv.GEMINI_URL}/models/{modelo}:generateContent", params={"key": chave},
                                   timeout=60, json={"contents": [{"parts": partes}],
-                                                    "generationConfig": {"temperature": 0.2,
-                                                                         "responseMimeType": "application/json"}})
+                                                    "generationConfig": rv.config_geracao(modelo, 0.2)})
             if r.status_code != 200:
                 print(f"   ⚠️  foto/Gemini {modelo}: HTTP {r.status_code} → próximo modelo")
                 modelos.pop(0)

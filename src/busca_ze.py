@@ -252,7 +252,7 @@ def _ia_gemini(t, ofs, lista):
         else:
             partes.append({"text": "(sem foto)"})
     import time
-    from .radar_virais import _modelos_gemini   # os "flash" que a chave enxerga, do mais novo ao mais velho
+    from .radar_virais import _modelos_gemini, config_geracao   # os "flash" que a chave enxerga, do mais novo ao mais velho
     try:
         modelos = [m for m in _modelos_gemini(chave) if "lite" not in m][:4] or ["gemini-2.5-flash"]
     except Exception:
@@ -267,7 +267,7 @@ def _ia_gemini(t, ofs, lista):
             r = requests.post(f"https://generativelanguage.googleapis.com/v1beta/models/{modelo}:generateContent",
                               params={"key": chave}, timeout=25,
                               json={"contents": [{"parts": partes}],
-                                    "generationConfig": {"temperature": 0.1, "responseMimeType": "application/json"}})
+                                    "generationConfig": config_geracao(modelo, 0.1)})
             if r.status_code != 200:
                 print(f"⚠️  Gemini {modelo}: HTTP {r.status_code} {' '.join(r.text[:200].split())[:120]}")
                 continue
