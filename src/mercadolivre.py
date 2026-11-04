@@ -218,12 +218,12 @@ def produto(pid, categoria, posicao, nome_cat, pct=10.0):
     }
 
 
-def mais_vendidos(cat, quantos=5, preco_max=500, pular=None):
+def mais_vendidos(cat, quantos=5, preco_max=500, pular=None, info=None):
     r = _get(f"/highlights/MLB/category/{cat}")
     if r.status_code != 200:
         print(f"❌ Mais vendidos {cat}: {r.status_code}")
         return []
-    nome_cat, categoria, pct = CATEGORIAS.get(cat, (cat, "lar", 9.0))
+    nome_cat, categoria, pct = info or CATEGORIAS.get(cat, (cat, "lar", 9.0))
     saida = []
     for c in r.json().get("content", []):
         if c.get("type") != "PRODUCT":
@@ -264,7 +264,8 @@ def buscar(termo, quantos=12):
 
 # ---------------------------------------------------------------- uso no garimpo
 CATEGORIAS_POR_GARIMPO = int(os.getenv("ML_CATEGORIAS_POR_GARIMPO", "3"))
-PRODUTOS_POR_CATEGORIA = int(os.getenv("ML_PRODUTOS_POR_CATEGORIA", "8"))
+PRODUTOS_POR_CATEGORIA = int(os.getenv("ML_PRODUTOS_POR_CATEGORIA", "6"))
+SUBCATEGORIAS_POR_CATEGORIA = int(os.getenv("ML_SUBCATEGORIAS", "4"))
 POR_GARIMPO = int(os.getenv("ML_POR_GARIMPO", "3"))
 
 
@@ -280,23 +281,39 @@ def _categorias_da_vez():
     return [ids[(ini + i) % len(ids)] for i in range(CATEGORIAS_POR_GARIMPO)]
 
 
+def _subcategorias(cat):
+    """Subcategorias sorteadas da categoria (o ranking geral é dominado por produto comum, tipo refil e
+    alvejante; o ranking de cada subcategoria mostra os achados de nicho). Devolve [(id, nome)]."""
+    import random
+    r = _get(f"/categories/{cat}")
+    filhas = [(c["id"], c["name"]) for c in (r.json().get("children_categories") or [])] if r.status_code == 200 else []
+    random.shuffle(filhas)
+    return filhas[:SUBCATEGORIAS_POR_CATEGORIA]
+
+
 def candidatos(fila, ja_usado, julgar=None):
     """Mais vendidos do ML nas categorias da vez, com as regras do Garimpo (preço, comissão, IA de "uau").
     `ja_usado(fila, id)` é a regra de não repetir (garimpar.ja_usado)."""
     from . import config
     if not configurado() or config.PERFIL != "garimpo":
         return []
-    ofs, recusas = [], {}
+    ofs, recusas, vistos = [], {}, set()
     try:
+        lista = []
         for cat in _categorias_da_vez():
-            for o in mais_vendidos(cat, quantos=PRODUTOS_POR_CATEGORIA, preco_max=config.PRECO_MAXIMO,
-                                   pular=lambda i: ja_usado(fila, i)):
-                if o["categoria"] not in config.NICHO:
-                    recusas["fora do nicho"] = recusas.get("fora do nicho", 0) + 1
-                elif o["comissao"] < config.NIVEIS["prata"]["comissao_rs"]:
-                    recusas["comissão baixa"] = recusas.get("comissão baixa", 0) + 1
-                else:
-                    ofs.append(o)
+            _, nicho, pct = CATEGORIAS[cat]
+            for sub, nome_sub in _subcategorias(cat):
+                lista += mais_vendidos(sub, quantos=PRODUTOS_POR_CATEGORIA, preco_max=config.PRECO_MAXIMO,
+                                       pular=lambda i: ja_usado(fila, i) or i in vistos,
+                                       info=(nome_sub, nicho, pct))
+                vistos.update(o["id"] for o in lista)
+        for o in lista:
+            if o["categoria"] not in config.NICHO:
+                recusas["fora do nicho"] = recusas.get("fora do nicho", 0) + 1
+            elif o["comissao"] < config.NIVEIS["prata"]["comissao_rs"]:
+                recusas["comissão baixa"] = recusas.get("comissão baixa", 0) + 1
+            else:
+                ofs.append(o)
     except Exception as e:
         print(f"::warning::Mercado Livre ficou de fora desta rodada: {e}")
         return []
@@ -312,6 +329,8 @@ def candidatos(fila, ja_usado, julgar=None):
                   "palavra": o["info_txt"],
                   "pontos": config.SHARK_PONTOS + (o["uau"] - config.SHARK_UAU) * config.PESO_UAU})
         escolhidas.append(o)
+    for o in comuns[:8]:
+        print(f"   🟡 comum (uau {o.get('uau', 0):.0f}): {o['nome'][:60]} · R$ {o['preco_fmt']}")
     print(f"🟡 Mercado Livre: {len(ofs) + len(comuns)} mais vendidos avaliados, {len(comuns)} comuns, "
           f"recusados {recusas}, entram {len(escolhidas)}: {[o['nome'][:35] for o in escolhidas]}")
     return escolhidas
