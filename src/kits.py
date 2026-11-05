@@ -545,7 +545,7 @@ def legenda(tema, itens):
         linhas.append(f"{NUM[i]} {o['titulo']} — R$ {o['preco_fmt']}")
     linhas += ["", "📌 Salva pra não esquecer e manda pra quem tá precisando!",
                "👇 Comenta QUERO + o número (ex.: QUERO 2) que o Zé te manda o link no direct.",
-               "🔎 Faltou alguma coisa? Comenta o que você procura que o Zé garimpa pra você 🤠"]
+               config.chamada_busca()]
     dias = dias_para_black_friday()
     if 0 < dias <= 45:
         linhas.append(f"⏳ Faltam {dias} dias pra Black Friday! Segue o Zé pra ver tudo primeiro.")

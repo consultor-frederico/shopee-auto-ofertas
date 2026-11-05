@@ -7,7 +7,7 @@ import random
 import sys
 from datetime import datetime, timedelta, timezone
 
-from . import aliexpress, awin, busca_profunda, config, curadoria, legenda, marcas, mercadolivre, shopee, variedade
+from . import aliexpress, awin, busca_profunda, config, curadoria, historico_precos, legenda, marcas, mercadolivre, shopee, variedade
 
 BRT = timezone(timedelta(hours=-3))
 FMT = "%Y-%m-%d %H:%M:%S"
@@ -317,6 +317,9 @@ def coletar_candidatos(fila, buscar=shopee.buscar_ofertas, escolhidas=None, mem=
         print(f"🔎 '{palavra}' ({cat}{', ' + origem if profunda else ''}): {len(nos)} resultados")
         busca_profunda.aprender_categorias(mem, nos, cat)
         ofertas = [normalizar(no, cat, palavra) for no in nos]
+        n_hist = historico_precos.registrar(ofertas, fila)   # 📈 1 preço por dia (Tatu Carão da Black)
+        if n_hist:
+            print(f"   📈 {n_hist} preços no histórico")
         if aliexpress.configurado():
             ae = []
             buscas_ae = [("busca", 1)] + ([("alta", 1), ("busca", 2)] if profunda else [])

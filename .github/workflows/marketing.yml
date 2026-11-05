@@ -1,0 +1,40 @@
+name: 32 - Marketing (divulgação do Fred e Lista da Black)
+
+# 05/11/2026 — estratégia de marketing aprovada pelo Fred (src/marketing.py).
+# divulgar: terça e sexta 10:00, texto pronto no seu Telegram privado (botão abre o WhatsApp).
+# lista_black: todo dia 08:30 de 12 a 30/11, lista fixada no canal do Telegram (em 01/12 desafixa).
+# teste: só mostra no log o que sairia, sem mandar nada.
+# Não grava nada no repositório (por isso fica fora da fila "grava-repositorio").
+on:
+  workflow_dispatch:
+    inputs:
+      acao:
+        description: 'divulgar, lista_black ou teste'
+        required: true
+        default: 'teste'
+
+jobs:
+  rodar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      - name: Rodar
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TELEGRAM_CHAT_PRIVADO: ${{ secrets.TELEGRAM_CHAT_PRIVADO }}
+          SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
+          SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
+          ACAO: ${{ inputs.acao }}
+        run: python -m src.marketing "$ACAO"

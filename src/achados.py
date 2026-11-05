@@ -312,7 +312,7 @@ def legenda(itens):
                    "💬 Quer outra coisa? Comenta o que você procura que eu busco pra você."]
     else:
         linhas += ["", "👇 Comenta QUERO + o número (ex.: QUERO 2) que o Zé te manda o link no direct!",
-                   "🔎 Não achou o seu? Comenta o que você procura que o Zé garimpa pra você 🤠"]
+                   config.chamada_busca()]
     dias = dias_para_black_friday()
     if 0 < dias <= 45:
         linhas.append(f"⏳ Faltam {dias} dias pra Black Friday! " + ("Me segue pra ver tudo primeiro 💚" if ANA

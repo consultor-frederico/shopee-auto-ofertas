@@ -233,7 +233,8 @@ def preparar(video, saida):
 def legenda(itens, abertura):
     linhas = [abertura, "", f"🛍️ Os {len(itens)} achados do Zé de hoje:"]
     linhas += [f"{NUM[i]} {achados_curto(it)} — R$ {it['preco_fmt']}" for i, it in enumerate(itens)]
-    linhas += ["", "👇 Comenta QUERO + o número (ex.: QUERO 2) que o Zé te manda o link no direct!"]
+    linhas += ["", "👇 Comenta QUERO + o número (ex.: QUERO 2) que o Zé te manda o link no direct!",
+               config.chamada_busca()]
     if config.LEMBRETE_BIO:
         linhas.append(config.LEMBRETE_BIO)
     linhas += ["", "Preços conferidos na hora do post — podem mudar na loja. Links de afiliado: você paga o mesmo.",
@@ -246,7 +247,8 @@ def achados_curto(it):
     return _curto(it.get("titulo") or it.get("nome") or "")
 
 
-COMENTARIO = "Gostou de algum? Comenta QUERO + o número (QUERO 1, 2 ou 3) que o Zé te manda o link no direct 👇🤠"
+COMENTARIO = ("Gostou de algum? Comenta QUERO + o número (QUERO 1, 2 ou 3) que o Zé te manda o link no direct 👇🤠\n"
+              + config.chamada_busca().replace("🔎 ", "Procurando outra coisa? "))
 
 
 def registrar(media_id, permalink, itens, fb_post=None):

@@ -96,6 +96,15 @@ jobs:
             echo "▶️  kits.yml (natal)"
             gh api -X POST "repos/$REPO/actions/workflows/kits.yml/dispatches" -f ref=main -f "inputs[modo]=natal" || echo "::warning::falhou kits.yml (natal)"
           fi
+          # 05/11/2026: estratégia de marketing (src/marketing.py, ok do Fred). Fora da fila "grava-repositorio".
+          MKT=""
+          if [ "$HQ" = "10:00" ] && { [ "$DOW" = "2" ] || [ "$DOW" = "5" ]; }; then MKT="divulgar"; fi   # texto pronto no seu Telegram privado
+          DM=$(date +%m%d)
+          if [ "$HQ" = "08:30" ] && [ "$DM" -ge 1112 ] && [ "$DM" -le 1201 ]; then MKT="$MKT lista_black"; fi   # Lista da Black fixada no canal (01/12 desafixa)
+          for A in $MKT; do
+            echo "▶️  marketing.yml ($A)"
+            gh api -X POST "repos/$REPO/actions/workflows/marketing.yml/dispatches" -f ref=main -f "inputs[acao]=$A" || echo "::warning::falhou marketing $A"
+          done
           for WF in $ANA; do
             echo "▶️  $WF (ana)"
             gh api -X POST "repos/$REPO/actions/workflows/$WF/dispatches" -f ref=main -f "inputs[perfil]=ana" || echo "::warning::falhou $WF (ana)"

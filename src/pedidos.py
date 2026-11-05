@@ -105,6 +105,12 @@ def coletar(api, minha):
         return 0
     from .responder import pediu_link
     posts = _posts_do_ze()
+    try:   # Reels do Zé com produtos (top.json): a Busca do Zé já atende na hora, não responde duas vezes
+        from .responder import posts_top
+        tops = posts_top()
+        posts = [p for p in posts if p["id_post"] not in tops]
+    except Exception as e:
+        print(f"⚠️  Pedidos do Zé: não li o top.json ({e})")
     if not posts:
         return 0
     dados, novos = carregar(), 0

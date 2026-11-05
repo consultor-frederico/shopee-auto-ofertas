@@ -45,9 +45,7 @@ MUSICA_LIGADA = os.getenv("MUSICA_REELS", "1") != "0"
 # Ana: música ambiente, bem de fundo
 VOLUME_MUSICA = float(os.getenv("VOLUME_MUSICA", "0.35" if ANA else "0.6"))
 
-PEDIDO = ("🙋 VOCÊ PEDE, O ZÉ ACHA! Comenta aqui embaixo o produto que você procura "
-          "(ex.: \"fone bluetooth\", \"air fryer\"). O Zé garimpa, posta o achado marcando você "
-          "e ainda manda o link no seu direct! 👇")
+PEDIDO = config.chamada_busca() + " (ex.: \"fone bluetooth\", \"air fryer\") 👇"   # chamada única (05/11/2026)
 LEGENDAS = [
     "🤠 Você sabe quantos achados o Zé descartou hoje pra te mostrar só os que valem? "
     "Ele peneira a Shopee, o Mercado Livre e o AliExpress todo dia. Segue o Zé pra ver o que sobrou de ouro! ⛏️💎",

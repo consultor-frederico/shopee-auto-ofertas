@@ -251,6 +251,18 @@ MARCA, NOME_MARCA, ARROBA, HASHTAG_MARCA = _P["marca"], _P["nome"], _P["arroba"]
 PAGINA_BIO = "garimpovipbr.github.io" if PERFIL == "garimpo" else ""
 ARROBA_TIKTOK = "@vipgarimpo4" if PERFIL == "garimpo" else ""   # conta criada em 31/10/2026 (tiktok.com/@vipgarimpo4)
 LEMBRETE_BIO = f"🔗 Todos os achados de hoje num lugar só: {PAGINA_BIO} (link na bio)" if PAGINA_BIO else ""
+
+
+def chamada_busca(hoje=None):
+    """05/11/2026 (estratégia de marketing, ok do Fred): UMA chamada só em todos os posts do Garimpo,
+    puxando a Busca do Zé. De 12 a 30/11 ela vira a chamada da Black Friday."""
+    from datetime import date
+    hoje = hoje or date.today()
+    if hoje.month == 11 and 12 <= hoje.day <= 30:
+        return "🔎 Comenta o que você quer comprar na Black que o Zé acha pra você e te manda no direct 🤠"
+    return "🔎 Comenta o que você procura que o Zé acha pra você e te manda no direct 🤠"
+
+
 LOGO = _P["logo"]
 CORES = _P["cores"]
 TOM, PUBLICO = _P["tom"], _P["publico"]
