@@ -50,6 +50,8 @@ def _motivos(oferta):
         preco = f"Sai por R$ {oferta['preco_fmt']}"
     if marcas.eh_marca(oferta):   # marca oficial: sem nota nem vendas no feed
         return [marcas.texto_oficial(oferta), "Preço conferido hoje", preco]
+    if oferta.get("info_txt") and not oferta.get("nota"):   # Mercado Livre: ranking no lugar de nota/vendas
+        return [oferta["info_txt"], "Preço conferido hoje", preco]
     return [nota, f"Mais de {vendas} vendidos", preco]
 
 

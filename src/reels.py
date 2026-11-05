@@ -224,6 +224,8 @@ def _quadro(t, base, foto, oferta, e=None):
         txt, tam = f"{nota}   •   {vendas}+ vendidos", 40
         if oficial:
             txt = marcas.texto_oficial(oferta)
+        elif oferta.get("info_txt") and not oferta.get("nota"):   # Mercado Livre: ranking no lugar de nota/vendas
+            txt = oferta["info_txt"]
         while tam > 28 and d.textlength(txt, font=_fonte(tam, "SemiBold")) > 1080 - 124 - 40:
             tam -= 2
         d.text((70 + (0 if oficial else 54), yi + (40 - tam) // 2), txt, font=_fonte(tam, "SemiBold"), fill=cor)

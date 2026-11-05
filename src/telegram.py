@@ -57,6 +57,8 @@ def legenda(oferta):
         partes = ["💎 <b>ACHADO ESCONDIDO</b> — pouca gente conhece", ""] + partes
     partes += linhas + [""] if linhas else []
     prova = f"🏬 {marcas.texto_oficial(oferta)}" if marcas.eh_marca(oferta) else f"⭐ {nota}  •  {vendas}+ vendidos"
+    if oferta.get("info_txt") and not oferta.get("nota"):   # Mercado Livre: sem nota/vendas na API, vai o ranking
+        prova = f"🏆 {oferta['info_txt']}"
     partes += [preco, prova, f"🏷️ Oferta {loja}", "", f"<i>{html.escape(aviso(oferta))}</i>",
                "<i>Link de afiliado: você paga o mesmo e ajuda o Garimpo VIP 💛</i>"]
     return "\n".join(partes)[:1024]

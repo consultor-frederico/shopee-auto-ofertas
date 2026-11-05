@@ -29,6 +29,8 @@ def _brl_linha(o):
 def _info(o):
     if marcas.eh_marca(o):
         return marcas.texto_oficial(o)
+    if o.get("info_txt") and not o.get("nota"):   # Mercado Livre: ranking no lugar de nota/vendas
+        return o["info_txt"]
     vendas = f"{o.get('vendas', 0):,}".replace(",", ".")
     if o.get("avaliacao_pct"):
         return f"{o['avaliacao_pct']:.0f}% aprovação  •  {vendas}+ vendidos"
