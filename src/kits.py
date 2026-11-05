@@ -704,6 +704,16 @@ def previa(tema=None):
         temas = [tema if tema in TEMAS else tema_da_vez()]
     raiz = config.RAIZ / "data" / "relatorios" / "kits"
     shutil.rmtree(raiz, ignore_errors=True)
+    # a prévia não gasta números de achado (senão a busca da página fica com buracos: 05/11/2026)
+    contador = numeros.ARQ.read_text(encoding="utf-8") if numeros.ARQ.exists() else None
+    try:
+        _previa_temas(temas, raiz)
+    finally:
+        if contador is not None:
+            numeros.ARQ.write_text(contador, encoding="utf-8")
+
+
+def _previa_temas(temas, raiz):
     resumo = []
     for t in temas:
         print(f"\n===== {TEMAS[t]['titulo']} =====")
