@@ -94,6 +94,13 @@ def escolher(fila, conferir=True):
         lista = linhas.ordenar(lista)
         grupos = [[o for o in lista if linhas.eh_do_dia(o)], [o for o in lista if not linhas.eh_do_dia(o)]]
         print(f"🗂️  Linha do dia: {', '.join(linhas.do_dia())} ({len(grupos[0])} na fila)")
+    if agora().strftime("%Y-%m-%d") <= config.ML_LANCAMENTO_ATE:
+        # 🆕 lançamento do Mercado Livre: 1 achado do ML na frente do carrossel (máx 2 por dia, como sempre)
+        for o in lista:
+            if itens or vagas_ml <= 0:
+                break
+            if o.get("plataforma") == "mercadolivre":
+                tentar(o, False)
     for grupo in grupos:
         for so_categoria_nova in (True, False):
             for o in grupo:
