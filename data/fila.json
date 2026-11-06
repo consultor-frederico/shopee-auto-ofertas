@@ -7462,7 +7462,12 @@
       "linha": "bebe",
       "preco_conferido_em": "06/11 às 19:15",
       "telegram": "ok",
-      "telegram_em": "2026-11-06 19:15:41"
+      "telegram_em": "2026-11-06 19:15:41",
+      "whatsapp_analise": {
+        "status": "APROVADO",
+        "justificativa": "Quebra‑cabeça magnético de feições humanas estimula reconhecimento facial e montagem criativa, diferente dos puzzles tradicionais.",
+        "diferencial": "Peças magnéticas que formam rostos humanos, promovendo aprendizado de expressões."
+      }
     },
     "ae1005012172793474": {
       "id": "ae1005012172793474",
@@ -10226,10 +10231,11 @@
       "telegram": "ok",
       "telegram_em": "2026-11-06 08:15:35",
       "whatsapp_analise": {
-        "status": "APROVADO",
-        "justificativa": "Inclui pista com looping radical, carrinho com luzes e som, oferecendo experiência interativa e visualmente chamativa que vai além de brinquedos de dinossauro comuns.",
-        "diferencial": "Pista com looping e efeitos de luz e som integrados ao carrinho"
-      }
+        "status": "REPROVADO",
+        "justificativa": "Pista de carrinho de dinossauro com luz e som segue o padrão de brinquedos de trilha, sem inovação significativa.",
+        "diferencial": ""
+      },
+      "whatsapp": "reprovado"
     },
     "41265401757": {
       "id": "41265401757",
@@ -29169,7 +29175,13 @@
       "linha": "bebe",
       "preco_conferido_em": "06/11 às 14:15",
       "telegram": "ok",
-      "telegram_em": "2026-11-06 14:15:44"
+      "telegram_em": "2026-11-06 14:15:44",
+      "whatsapp_analise": {
+        "status": "REPROVADO",
+        "justificativa": "Pula‑pula com fechamento por zíper é um modelo tradicional de cama elástica infantil, sem elemento surpresa ou originalidade.",
+        "diferencial": ""
+      },
+      "whatsapp": "reprovado"
     },
     "ae1005010585632082": {
       "id": "ae1005010585632082",
@@ -29248,7 +29260,13 @@
       "linha": "cozinha",
       "preco_conferido_em": "06/11 às 15:15",
       "telegram": "ok",
-      "telegram_em": "2026-11-06 15:15:39"
+      "telegram_em": "2026-11-06 15:15:39",
+      "whatsapp_analise": {
+        "status": "REPROVADO",
+        "justificativa": "Espremedor industrial de inox é um equipamento padrão para estabelecimentos, sem característica diferenciadora.",
+        "diferencial": ""
+      },
+      "whatsapp": "reprovado"
     },
     "46802082172": {
       "id": "46802082172",
@@ -29292,7 +29310,13 @@
       "linha": "casa",
       "preco_conferido_em": "06/11 às 15:15",
       "telegram": "ok",
-      "telegram_em": "2026-11-06 15:15:47"
+      "telegram_em": "2026-11-06 15:15:47",
+      "whatsapp_analise": {
+        "status": "REPROVADO",
+        "justificativa": "Sofá/poltrona inflável de veludo é um item comum de uso ocasional, sem inovação funcional ou de design.",
+        "diferencial": ""
+      },
+      "whatsapp": "reprovado"
     },
     "ae1005013380891136": {
       "id": "ae1005013380891136",
@@ -29417,7 +29441,7 @@
       "criado_em": "2026-11-06 18:16:32",
       "postado_em": "2026-11-06 18:46:57",
       "id_post": "",
-      "preco_conferido_em": "06/11 às 19:15",
+      "preco_conferido_em": "06/11 às 20:30",
       "linha": "cozinha",
       "num": 286,
       "formato": "achados",
@@ -29425,7 +29449,14 @@
       "achados_post": "17974903566160060",
       "permalink": "https://www.instagram.com/p/DfamvNYEUGX/",
       "telegram": "ok",
-      "telegram_em": "2026-11-06 19:15:46"
+      "telegram_em": "2026-11-06 19:15:46",
+      "whatsapp_analise": {
+        "status": "APROVADO",
+        "justificativa": "Combina três funções (corte, afiação e moedor de alho) em um único utensílio, oferecendo praticidade inédita para cozinha doméstica.",
+        "diferencial": "Integração de tábua, amolador e moedor de alho em um único produto."
+      },
+      "whatsapp": "ok",
+      "whatsapp_em": "2026-11-06 20:30:53"
     },
     "vx42279154234": {
       "id": "vx42279154234",
@@ -29494,7 +29525,13 @@
       "postado_em": "2026-11-06 20:08:25",
       "postado_ts": 1794006505.8107533,
       "achados_post": "18119182397104050",
-      "permalink": "https://www.instagram.com/p/DfawD4uD8dy/"
+      "permalink": "https://www.instagram.com/p/DfawD4uD8dy/",
+      "whatsapp_analise": {
+        "status": "REPROVADO",
+        "justificativa": "É um teclado infantil padrão com microfone, sem inovação ou diferencial além de combinar dois brinquedos comuns.",
+        "diferencial": ""
+      },
+      "whatsapp": "reprovado"
     },
     "23093553774": {
       "id": "23093553774",
@@ -29519,7 +29556,13 @@
       "postado_em": "2026-11-06 20:08:25",
       "postado_ts": 1794006505.8107631,
       "achados_post": "18119182397104050",
-      "permalink": "https://www.instagram.com/p/DfawD4uD8dy/"
+      "permalink": "https://www.instagram.com/p/DfawD4uD8dy/",
+      "whatsapp_analise": {
+        "status": "REPROVADO",
+        "justificativa": "Patinete de três rodas com luzes LED é um produto típico do segmento infantil, sem originalidade ou surpresa.",
+        "diferencial": ""
+      },
+      "whatsapp": "reprovado"
     },
     "23995167679": {
       "id": "23995167679",
@@ -29544,7 +29587,13 @@
       "postado_em": "2026-11-06 20:08:25",
       "postado_ts": 1794006505.8107662,
       "achados_post": "18119182397104050",
-      "permalink": "https://www.instagram.com/p/DfawD4uD8dy/"
+      "permalink": "https://www.instagram.com/p/DfawD4uD8dy/",
+      "whatsapp_analise": {
+        "status": "REPROVADO",
+        "justificativa": "Walkie talkies infantis com câmera são comuns no mercado; não apresentam funcionalidade ou design inovador.",
+        "diferencial": ""
+      },
+      "whatsapp": "reprovado"
     }
   },
   "ultimo_garimpo": "2026-11-06 18:16:33"
