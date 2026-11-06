@@ -10247,7 +10247,12 @@
       "linha": "bebe",
       "preco_conferido_em": "06/11 às 08:15",
       "telegram": "ok",
-      "telegram_em": "2026-11-06 08:15:35"
+      "telegram_em": "2026-11-06 08:15:35",
+      "whatsapp_analise": {
+        "status": "APROVADO",
+        "justificativa": "Inclui pista com looping radical, carrinho com luzes e som, oferecendo experiência interativa e visualmente chamativa que vai além de brinquedos de dinossauro comuns.",
+        "diferencial": "Pista com looping e efeitos de luz e som integrados ao carrinho"
+      }
     },
     "41265401757": {
       "id": "41265401757",
@@ -28872,7 +28877,13 @@
       "legenda": "",
       "status": "pendente",
       "origem": "link_manual",
-      "criado_em": "2026-11-05 20:44:31"
+      "criado_em": "2026-11-05 20:44:31",
+      "whatsapp_analise": {
+        "status": "REPROVADO",
+        "justificativa": "É um fone Bluetooth padrão sem características distintivas ou inovação evidente; similar a inúmeros modelos disponíveis no mercado.",
+        "diferencial": ""
+      },
+      "whatsapp": "reprovado"
     },
     "mlMLB47222098": {
       "id": "mlMLB47222098",
@@ -28958,7 +28969,15 @@
       "status": "pendente",
       "criado_em": "2026-11-06 07:11:46",
       "postado_em": "",
-      "id_post": ""
+      "id_post": "",
+      "whatsapp_analise": {
+        "status": "APROVADO",
+        "justificativa": "Permite escrever e apagar notas diretamente na superfície da luminária, combinando iluminação funcional com quadro de anotações, algo pouco comum em decoração.",
+        "diferencial": "Luminária que funciona também como quadro de escrita 3D"
+      },
+      "preco_conferido_em": "06/11 às 09:00",
+      "whatsapp": "ok",
+      "whatsapp_em": "2026-11-06 09:00:43"
     },
     "vx42279154168": {
       "id": "vx42279154168",
