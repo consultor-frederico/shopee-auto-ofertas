@@ -675,7 +675,7 @@ Conversa (mais antiga primeiro):
 {conversa}
 
 Escreva a próxima resposta de {quem}: curta (até 3 frases), simpática, em português do Brasil, {estilo}.
-Responda só com o texto da mensagem."""
+Responda só com JSON {{"resposta": "<texto da mensagem>"}}."""
 
 
 def _conversa_livre(texto, msgs, ig_id):
@@ -694,7 +694,8 @@ def _conversa_livre(texto, msgs, ig_id):
             quem="Ana" if ANA else "Zé Garimpo", arroba=config.ARROBA, telegram=TELEGRAM,
             conversa="\n".join(linhas[-8:]),
             estilo="jeito de amiga, com 💚" if ANA else "jeito de garimpeiro bem-humorado, começando com \"Oi! 🤠\""))
-        r = (r or "").strip().strip('"').strip()
+        import re
+        r = str(json.loads(re.search(r"\{.*\}", r or "", re.S).group(0)).get("resposta", "")).strip()
         if not r or len(r) > 700:
             return ""
         return r if r.startswith(MARCAS_ROBO) else (("Oi! 💚 " if ANA else "Oi! 🤠 ") + r)
