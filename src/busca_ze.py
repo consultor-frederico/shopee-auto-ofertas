@@ -1093,10 +1093,15 @@ if __name__ == "__main__":   # teste: python -m src.busca_ze "celular" "fone blu
         ofs = achados(t)
         if not ofs:
             sys.exit(f"::error::Nada bom para '{t}'. Nada foi enviado.")
+        # 7/11/2026 (Bruno): as mensagens do envio manual contam como do robô, senão o robô achava
+        # que era o Fred conversando e ficava 2h sem responder a pessoa
+        robo = d.setdefault("msgs_robo", [])
+        rs = []
         if intro:
-            instagram._req("POST", f"{ig}/messages", json={"recipient": {"id": autor}, "message": {"text": intro}})
-        enviar_dm(instagram, ig, None, t, ofs, destinatario=autor)
-        instagram._req("POST", f"{ig}/messages", json={"recipient": {"id": autor}, "message": {"text": DM_CONFERE}})
+            rs.append(instagram._req("POST", f"{ig}/messages", json={"recipient": {"id": autor}, "message": {"text": intro}}))
+        rs.append(enviar_dm(instagram, ig, None, t, ofs, destinatario=autor))
+        rs.append(instagram._req("POST", f"{ig}/messages", json={"recipient": {"id": autor}, "message": {"text": DM_CONFERE}}))
+        robo += [r["message_id"] for r in rs if (r or {}).get("message_id")]
         for o in ofs:
             print(f"::notice::Enviado a @{usuario}: {_nome_loja(o)} R$ {o['preco_fmt']} {_selo(o, True)} — {o['nome'][:80]}")
         d["dms"][f"manual-{_agora().strftime('%Y%m%d%H%M%S')}"] = {
