@@ -29758,7 +29758,12 @@
       "linha": "carro",
       "preco_conferido_em": "07/11 às 13:15",
       "telegram": "ok",
-      "telegram_em": "2026-11-07 13:15:56"
+      "telegram_em": "2026-11-07 13:15:56",
+      "whatsapp_analise": {
+        "status": "APROVADO",
+        "justificativa": "Luva robótica pneumática oferece terapia de reabilitação motora avançada, tecnologia pouco comum em produtos de consumo.",
+        "diferencial": "Uso de pneumática para exercícios de mão e dedos em reabilitação"
+      }
     },
     "23198658831": {
       "id": "23198658831",
@@ -29802,7 +29807,13 @@
       "preco_conferido_em": "07/11 às 14:15",
       "linha": "cozinha",
       "telegram": "ok",
-      "telegram_em": "2026-11-07 14:16:12"
+      "telegram_em": "2026-11-07 14:16:12",
+      "whatsapp_analise": {
+        "status": "REPROVADO",
+        "justificativa": "A tábua é apenas uma variação estética de utensílios de cozinha, sem funcionalidade inovadora além do design em forma de coração.",
+        "diferencial": ""
+      },
+      "whatsapp": "reprovado"
     },
     "ae1005013255469514": {
       "id": "ae1005013255469514",
@@ -29877,7 +29888,15 @@
       "status": "pendente",
       "criado_em": "2026-11-07 18:14:23",
       "postado_em": "",
-      "id_post": ""
+      "id_post": "",
+      "whatsapp_analise": {
+        "status": "APROVADO",
+        "justificativa": "Livro pop-up 3D com animações interativas que transforma a leitura em experiência tátil e visual, diferente de livros infantis tradicionais.",
+        "diferencial": "Pop-up 3D e interatividade dos animais marinhos"
+      },
+      "preco_conferido_em": "07/11 às 18:14",
+      "whatsapp": "ok",
+      "whatsapp_em": "2026-11-07 18:15:04"
     },
     "ae1005011692490549": {
       "id": "ae1005011692490549",
