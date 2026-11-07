@@ -921,6 +921,8 @@ def rodar_dms(api, minha):
             t = _norm(texto).strip(" ?!.")
         reg = {"autor": autor, "usuario": (ultima.get("from") or {}).get("username", ""), "texto": texto,
                "termo": t, "em": agora.strftime(_fmt())}
+        if not t and conferiu and not (_negou(texto) or _agradeceu(texto)):
+            conferiu = False   # 7/11/2026 (Bianca: "Como funciona?" recebeu "Eu que agradeço!"): vira conversa
         if not t and conferiu:   # 2/11/2026 (Allan: "Sim obrigado" ficou sem resposta)
             resposta = DM_DETALHE if _negou(texto) else DM_OBRIGADO
             try:
@@ -1018,6 +1020,15 @@ def _parece_modelo(texto):
 
 
 SEGUE_PEDIDO = timedelta(minutes=30)   # mensagem nova até 30 min depois de uma busca pode ser detalhe dela
+
+
+def _agradeceu(texto):
+    """'obrigado', 'valeu', 'sim', 'era isso', 'gostei', 'entendi', emoji de joinha/coração."""
+    import re
+    t = _norm(texto)
+    return bool(re.search(r"\b(obrigad[oa]|obg|brigad[oa]|valeu|vlw|sim|s|era isso|isso mesmo|gostei|amei|perfeito|"
+                          r"show|top|otimo|beleza|blz|ok|entendi|certo|massa)\b", t)) or (
+        not re.search(r"[a-z0-9]", t) and bool(texto.strip()))   # só emoji (👍❤️)
 
 
 def _negou(texto):
