@@ -640,12 +640,12 @@ DM_CONFERE = ("Oi! 🤠 Era isso que você procurava? Se não for, me conta com 
 if ANA:
     DM_CONFERE = ("Oi! 💚 Era isso que você procurava? Se não for, me conta com mais detalhe "
                   "(tamanho, cor, modelo...) que eu procuro de novo pra você!")
-DM_OBRIGADO = ("Oi! 🤠 Eu que agradeço! Fico feliz que o Zé acertou ⛏️ Quando quiser outro achado, "
-               "é só me mandar o nome do produto aqui que eu garimpo pra você 😉")
+DM_OBRIGADO = ("Oi! 🤠 Disponha! Se precisar de qualquer coisa, tô aqui. É só me mandar o nome do produto "
+               "que eu garimpo pra você ⛏️😉")   # 7/11/2026 (Fred: "disponha, se precisar de qualquer coisa tô aqui")
 DM_DETALHE = ("Oi! 🤠 Poxa, foi mal! Me conta com mais detalhe o que você procura "
               "(ex.: adulto ou infantil, tamanho, cor, modelo, pra que vai usar) que eu garimpo de novo ⛏️")
 if ANA:
-    DM_OBRIGADO = ("Oi! 💚 Imagina, amiga! Que bom que gostou! Quando quiser outro achadinho, é só me mandar aqui 😉")
+    DM_OBRIGADO = ("Oi! 💚 Imagina, amiga! Disponha! Se precisar de qualquer coisa, tô aqui. É só me mandar o que procura 😉")
     DM_DETALHE = ("Oi! 💚 Ah, poxa! Me conta com mais detalhe o que você procura (tamanho, cor, modelo...) "
                   "que eu procuro de novo pra você!")
 # "quero" solto no direct (sem dizer qual achado): pergunta qual; a resposta vira busca ("Bora garimpar")
@@ -977,7 +977,8 @@ def rodar_dms(api, minha):
                     print(f"::warning::Direct: não consegui perguntar qual achado: {e}")
                     _avisar_fred(reg, quando)
             else:   # 7/11/2026 (Fred): o Zé tem que entender tudo o que a pessoa escreve, não só pedido
-                resposta = _conversa_livre(texto_todo, msgs, ig_id)
+                agradeceu = _agradeceu(texto) and "?" not in texto
+                resposta = DM_OBRIGADO if agradeceu else _conversa_livre(texto_todo, msgs, ig_id)
                 try:
                     if not resposta:
                         raise RuntimeError("IA não respondeu")
@@ -985,9 +986,11 @@ def rodar_dms(api, minha):
                                                                     "message": {"text": resposta}})
                     if (r or {}).get("message_id"):
                         enviados_robo.add(r["message_id"])
-                    reg["status"] = "conversou"
+                    reg["status"] = "agradeceu" if agradeceu else "conversou"
                     reg["resposta"] = resposta
-                    if "equipe" in resposta.lower():   # prometeu que alguém responde: avisa o Fred
+                    if agradeceu:
+                        pass
+                    elif "equipe" in resposta.lower():   # prometeu que alguém responde: avisa o Fred
                         _avisar_fred(reg, quando)
                     else:   # 7/11/2026 (Fred): cópia de toda resposta livre do Zé para ele conferir
                         _copia_fred(reg, texto_todo, resposta)
