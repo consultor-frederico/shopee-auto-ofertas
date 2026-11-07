@@ -625,10 +625,14 @@ def enviar_dm(api, ig_id, cid, t, ofs, destinatario=None):
 JANELA_DM = timedelta(hours=23)       # o Instagram só deixa responder até 24h depois da mensagem
 SILENCIO_HUMANO = timedelta(hours=2)  # se o Fred escreveu na conversa há pouco, o robô não se mete
 MARCAS_ROBO = ("Oi! 😊", "Oi! 🤠", "Oi! 💚", "Oiê!", "Oi, amiga!", "Aaah", "Prontinho!", "Oi! Esse")   # começo das mensagens automáticas (não contam como o Fred)
-DM_NADA = ("Oi! 🤠 Aqui é o Zé Garimpo. Cavei \"{t}\" em todas as lojas, mas não achei nada bom o bastante 😅 "
-           "Me manda com outras palavras (ex.: \"fone bluetooth\", \"air fryer 5 litros\") que eu tento de novo!")
+DM_NADA = ("Oi! 🤠 Aqui é o Zé Garimpo. Cavei \"{t}\" na Shopee, no Mercado Livre e no AliExpress, mas não "
+           "achei de vendedor confiável 😅 Eu só mando produto de vendedor bem avaliado e com muitas vendas, "
+           "pra você não cair em furada. Por isso não te mandei nenhum agora.\n\n"
+           "Me pede de novo daqui uns dias, ou manda com outras palavras (ex.: \"fone bluetooth\", "
+           "\"air fryer 5 litros\") que eu tento de novo! ⛏️")
 if ANA:
-    DM_NADA = ("Oi! 💚 Aqui é a Ana. Procurei \"{t}\" na Shopee, mas não achei nada bom o bastante 😕 "
+    DM_NADA = ("Oi! 💚 Aqui é a Ana. Procurei \"{t}\" na Shopee, mas não achei de vendedor confiável 😕 "
+               "Só mando produto bem avaliado e com muitas vendas, por isso não te mandei nenhum agora. "
                "Me manda com outras palavras (ex.: \"bolsa transversal\", \"escova secadora\") que eu tento de novo!")
 # depois dos achados no direct: confere se era isso (a resposta em até 30 min se junta ao pedido)
 DM_CONFERE = ("Oi! 🤠 Era isso que você procurava? Se não for, me conta com mais detalhe "
@@ -652,6 +656,47 @@ if ANA:
     DM_QUAL = ("Oi, amiga! 💚 Bora garimpar? Qual achado você quer? Me manda o nome do produto "
                "(ex.: \"bolsa transversal\", \"escova secadora\") que eu te mando o link aqui.\n\n"
                "Dica: comentando QUERO no post, o link chega sozinho no direct 😉")
+
+
+PROMPT_CONVERSA = """Você é {quem}, que responde o direct do Instagram {arroba}, uma página de achadinhos.
+Como funciona: a pessoa manda aqui o nome do produto que procura e {quem} garimpa na Shopee, no Mercado Livre
+e no AliExpress e manda os 3 melhores, SÓ de vendedor confiável (bem avaliado e com muitas vendas); quando não acha
+de vendedor confiável, não manda nenhum. Os links são de afiliado: a pessoa paga o mesmo preço.
+Também tem ofertas no feed e no canal do Telegram ({telegram}).
+NUNCA prometa frete grátis, desconto, prazo, estoque, aviso futuro nem nada que você não faz. Não invente
+produto, preço ou link. Não fale de assunto fora de compras. Se a pessoa reclamar, pedir para falar com gente
+ou o assunto for sério (pedido, troca, problema com compra), diga que a equipe vai responder por aqui.
+
+Conversa (mais antiga primeiro):
+{conversa}
+
+Escreva a próxima resposta de {quem}: curta (até 3 frases), simpática, em português do Brasil, {estilo}.
+Responda só com o texto da mensagem."""
+
+
+def _conversa_livre(texto, msgs, ig_id):
+    """Resposta da IA para o que não é pedido de produto (dúvida, comentário, "entendi"...). "" se falhar."""
+    if not config.GROQ_API_KEY:
+        return ""
+    from .legenda import _chamar_groq
+    linhas = []
+    for m in reversed(msgs):
+        txt = (m.get("message") or "").strip()
+        if txt:
+            quem = "Página" if (m.get("from") or {}).get("id") == ig_id else "Cliente"
+            linhas.append(f"{quem}: {txt[:300]}")
+    try:
+        r = _chamar_groq(PROMPT_CONVERSA.format(
+            quem="Ana" if ANA else "Zé Garimpo", arroba=config.ARROBA, telegram=TELEGRAM,
+            conversa="\n".join(linhas[-8:]),
+            estilo="jeito de amiga, com 💚" if ANA else "jeito de garimpeiro bem-humorado, começando com \"Oi! 🤠\""))
+        r = (r or "").strip().strip('"').strip()
+        if not r or len(r) > 700:
+            return ""
+        return r if r.startswith(MARCAS_ROBO) else (("Oi! 💚 " if ANA else "Oi! 🤠 ") + r)
+    except Exception as e:
+        print(f"⚠️  IA da conversa no direct falhou: {e}")
+        return ""
 
 
 def _avisar_fred(reg, quando):
@@ -850,7 +895,15 @@ def rodar_dms(api, minha):
             if reg["status"] != "vale_a_pena: ignorado":
                 feitos += 1
             continue
-        anterior = msgs[1] if len(msgs) > 1 else {}
+        # 7/11/2026 (Bruno: "Entendi" + "Mas eu quero só o galaxy S25, nem FE nem ultra"): lê juntas as
+        # mensagens seguidas da pessoa e olha a última mensagem do robô, não só a imediatamente anterior
+        seguidas = []
+        for m in msgs:
+            if (m.get("from") or {}).get("id") == ig_id:
+                break
+            seguidas.append(m.get("message") or "")
+        texto_todo = " / ".join(x for x in reversed(seguidas) if x.strip()) or texto
+        anterior = next((m for m in msgs[1:] if (m.get("from") or {}).get("id") == ig_id), {})
         acabou_de_perguntar = ((anterior.get("from") or {}).get("id") == ig_id
                                and "Bora garimpar" in (anterior.get("message") or ""))
         # logo depois do "me diz o que você procura", qualquer resposta é a busca ("air fryer")
@@ -859,7 +912,7 @@ def rodar_dms(api, minha):
                     and "Era isso que você procurava" in (anterior.get("message") or ""))
         # resposta ao "Era isso que você procurava?" continua a mesma busca, mesmo horas depois
         anterior_t = _pedido_recente(feitos_ids, autor, agora, JANELA_DM if conferiu else SEGUE_PEDIDO)
-        t = termo(texto, anterior_t) if (acabou_de_perguntar or config.GROQ_API_KEY) else pedidos._termo(texto)
+        t = termo(texto_todo, anterior_t) if (acabou_de_perguntar or config.GROQ_API_KEY) else pedidos._termo(texto)
         if not t and not conferiu and _parece_modelo(texto):   # 7/11/2026 (Bruno: "S25" no story ficou sem resposta)
             t = _norm(texto).strip(" ?!.")
         reg = {"autor": autor, "usuario": (ultima.get("from") or {}).get("username", ""), "texto": texto,
@@ -895,9 +948,25 @@ def rodar_dms(api, minha):
                     reg["status"] = f"erro: {str(e)[:200]}"
                     print(f"::warning::Direct: não consegui perguntar qual achado: {e}")
                     _avisar_fred(reg, quando)
-            else:
-                reg["status"] = "ignorado"
-                _avisar_fred(reg, quando)
+            else:   # 7/11/2026 (Fred): o Zé tem que entender tudo o que a pessoa escreve, não só pedido
+                resposta = _conversa_livre(texto_todo, msgs, ig_id)
+                try:
+                    if not resposta:
+                        raise RuntimeError("IA não respondeu")
+                    r = api._req("POST", f"{ig_id}/messages", json={"recipient": {"id": autor},
+                                                                    "message": {"text": resposta}})
+                    if (r or {}).get("message_id"):
+                        enviados_robo.add(r["message_id"])
+                    reg["status"] = "conversou"
+                    reg["resposta"] = resposta
+                    if "equipe" in resposta.lower():   # prometeu que alguém responde: avisa o Fred
+                        _avisar_fred(reg, quando)
+                    feitos += 1
+                    print(f"📩 Direct: conversa → {resposta[:80]!r}")
+                except Exception as e:
+                    reg["status"] = "ignorado"
+                    print(f"⚠️  Direct sem resposta do Zé ({e}); avisei o Fred.")
+                    _avisar_fred(reg, quando)
             feitos_ids[ultima["id"]] = reg
             continue
         try:
