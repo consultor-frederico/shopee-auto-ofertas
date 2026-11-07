@@ -164,6 +164,7 @@ def _termo(texto):
 # ------------------------------------------------------------------ 2) atender (garimpo)
 PROMPT_TERMO = """Um seguidor de uma página de achadinhos da Shopee comentou: "{texto}"
 Se ele está pedindo um produto, responda só com JSON {{"produto": "<termo curto de busca na Shopee, 1 a 4 palavras>", "sensivel": false}}.
+Só o nome ou o modelo de um produto também é pedido ("S25", "iPhone 15", "PS5", "air fryer"): complete com o tipo do produto ("S25" → "celular samsung s25").
 Se o produto pedido é íntimo ou sexual (lingerie, roupa íntima, sex shop, produto erótico ou sensual), use "sensivel": true.
 Se não é pedido de produto (elogio, piada, pergunta, spam, algo proibido como droga ou arma), responda {{"produto": "", "sensivel": false}}."""
 

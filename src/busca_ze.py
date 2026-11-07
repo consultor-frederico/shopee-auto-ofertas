@@ -837,6 +837,8 @@ def rodar_dms(api, minha):
         # resposta ao "Era isso que você procurava?" continua a mesma busca, mesmo horas depois
         anterior_t = _pedido_recente(feitos_ids, autor, agora, JANELA_DM if conferiu else SEGUE_PEDIDO)
         t = termo(texto, anterior_t) if (acabou_de_perguntar or config.GROQ_API_KEY) else pedidos._termo(texto)
+        if not t and not conferiu and _parece_modelo(texto):   # 7/11/2026 (Bruno: "S25" no story ficou sem resposta)
+            t = _norm(texto).strip(" ?!.")
         reg = {"autor": autor, "usuario": (ultima.get("from") or {}).get("username", ""), "texto": texto,
                "termo": t, "em": agora.strftime(_fmt())}
         if not t and conferiu:   # 2/11/2026 (Allan: "Sim obrigado" ficou sem resposta)
@@ -909,6 +911,14 @@ def rodar_dms(api, minha):
     d["msgs_robo"] = list(enviados_robo)[-300:]
     salvar(d)
     return feitos
+
+
+def _parece_modelo(texto):
+    """Mensagem curta que é só um modelo de produto ("S25", "iphone 15", "ps5", "rtx 4060")."""
+    import re
+    t = _norm(texto).strip(" ?!.")
+    return (len(t.split()) <= 3 and len(t) <= 25 and bool(re.search(r"[a-z]", t)) and bool(re.search(r"\d", t))
+            and not re.search(r"\b(r\$|reais|real|kg|dia|dias|hora|horas|h)\b", t))
 
 
 SEGUE_PEDIDO = timedelta(minutes=30)   # mensagem nova até 30 min depois de uma busca pode ser detalhe dela
