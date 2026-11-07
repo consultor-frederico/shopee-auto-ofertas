@@ -176,6 +176,24 @@ def _palavras(txt):
     return [_raiz(p) for p in re.findall(r"[a-z0-9]+", _norm(txt))]
 
 
+VERSOES = set("fe ultra plus pro max lite mini edge neo".split())   # "S25" ≠ "S25 FE" / "S25 Ultra"
+
+
+def _outra_versao(nome_p, ped_p):
+    """Pediu um modelo exato (palavra com letra e número, ex.: "s25", "a15") e o produto é outra
+    versão dele (FE, Ultra, Plus, "+"...). 7/11/2026 (Bruno: "quero só o S25, nem FE nem Ultra")."""
+    import re
+    modelos = [p for p in ped_p if re.search(r"[a-z]", p) and re.search(r"\d", p)]
+    for m in modelos:
+        if m not in nome_p:
+            continue
+        i = nome_p.index(m)
+        depois = nome_p[i + 1:i + 2]
+        if depois and depois[0] in VERSOES and depois[0] not in ped_p:
+            return True
+    return False
+
+
 def relevante(nome, t):
     """O produto É o que a pessoa pediu? Todas as palavras do pedido no nome, e não pode ser
     acessório "de/para" a coisa pedida (capinha de celular, suporte para celular...)."""
@@ -184,6 +202,10 @@ def relevante(nome, t):
     pedido = [p for p in pedido if p not in GENERICAS] or pedido
     nome_p = _palavras(nome)
     if not pedido or not all(any(n.startswith(p) for n in nome_p) for p in pedido):
+        return False
+    if _outra_versao(nome_p, _palavras(t)) or ("+" in nome and "+" not in t and any(
+            re.search(rf"\b{re.escape(m)}\s*\+", _norm(nome)) for m in _palavras(t)
+            if re.search(r"[a-z]", m) and re.search(r"\d", m))):
         return False
     # "cama casal" ≠ "Lençol Queen 400 Fios ... Cama Casal": o que a pessoa pediu tem que ser
     # o próprio produto, ou seja, aparecer no começo do título, não só citado no meio/fim.
@@ -243,6 +265,7 @@ de ligar no celular), NÃO projetor de estrelas/galáxia, luminária ou luz deco
 brinquedo, decorativa ou miniatura só serve se ele pediu assim.
 Confira o preço: barato demais para ser o produto de verdade (ex.: "notebook" por R$ 30) é peça,
 miniatura ou anúncio enganoso e NÃO serve.{fotos}
+Modelo exato: se ele pediu "S25", S25 FE, S25 Ultra ou S25+ NÃO servem (só se ele pediu essa versão).
 Na dúvida, deixe de fora: é melhor mandar 1 produto certo do que 3 errados.
 Responda só com JSON {{"ok": [números]}}, do mais adequado para o menos.
 
