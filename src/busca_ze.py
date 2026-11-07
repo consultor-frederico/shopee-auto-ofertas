@@ -703,6 +703,27 @@ def _conversa_livre(texto, msgs, ig_id):
         return ""
 
 
+def _copia_fred(reg, pergunta, resposta):
+    """Cópia da conversa livre no Telegram privado do Fred (para ele conferir se o Zé acertou)."""
+    import os
+    import requests
+    from . import direct_telegram
+    chat = os.getenv("TELEGRAM_CHAT_PRIVADO", "").strip()
+    token = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
+    if not (chat and token):
+        return
+    quem = f"@{reg['usuario']}" if reg.get("usuario") else "alguém"
+    texto = (f"💬 O Zé respondeu sozinho no direct do {config.ARROBA}\n\n"
+             f"{quem}: \"{pergunta[:400]}\"\n\n🤠 Zé: \"{resposta[:700]}\"\n\n"
+             "Se estiver errado: segure esta mensagem → Responder → escreva a resposta certa. Eu mando no direct.\n\n"
+             + direct_telegram.ref(config.PERFIL, reg["autor"]))
+    try:
+        requests.post(f"https://api.telegram.org/bot{token}/sendMessage", timeout=30,
+                      data={"chat_id": chat, "text": texto, "disable_web_page_preview": "true"})
+    except Exception as e:
+        print(f"⚠️  Cópia da conversa no Telegram falhou: {e}")
+
+
 def _avisar_fred(reg, quando):
     """Mensagem do direct que o robô não respondeu → alerta no Telegram privado do Fred."""
     import os
@@ -967,6 +988,8 @@ def rodar_dms(api, minha):
                     reg["resposta"] = resposta
                     if "equipe" in resposta.lower():   # prometeu que alguém responde: avisa o Fred
                         _avisar_fred(reg, quando)
+                    else:   # 7/11/2026 (Fred): cópia de toda resposta livre do Zé para ele conferir
+                        _copia_fred(reg, texto_todo, resposta)
                     feitos += 1
                     print(f"📩 Direct: conversa → {resposta[:80]!r}")
                 except Exception as e:
