@@ -235,6 +235,8 @@ def legenda(itens, abertura):
     linhas += [f"{NUM[i]} {achados_curto(it)} — R$ {it['preco_fmt']}" for i, it in enumerate(itens)]
     linhas += ["", "👇 Comenta QUERO + o número (ex.: QUERO 2) que o Zé te manda o link no direct!",
                config.chamada_busca()]
+    if config.compartilhar(len(abertura)):
+        linhas.append(config.compartilhar(len(abertura)))   # 08/11/2026: pede compartilhamento
     if config.LEMBRETE_BIO:
         linhas.append(config.LEMBRETE_BIO)
     linhas += ["", "Preços conferidos na hora do post — podem mudar na loja. Links de afiliado: você paga o mesmo.",

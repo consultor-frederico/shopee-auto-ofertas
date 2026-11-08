@@ -263,6 +263,20 @@ def chamada_busca(hoje=None):
     return "🔎 Comenta o que você procura que o Zé acha pra você e te manda no direct 🤠"
 
 
+COMPARTILHAR = ("📲 Manda pra aquele amigo que vive caçando promoção",
+                "📲 Conhece alguém que ia amar isso? Manda pra essa pessoa",
+                "📲 Marca aqui quem precisa ver isso 👇",
+                "📲 Compartilha com quem vai comprar presente de Natal")
+
+
+def compartilhar(n=0):
+    """08/11/2026 (revisão da estratégia, ok do Fred): os Reels do Zé pedem compartilhamento
+    (0 compartilhamentos em 40 posts). Desliga com a variável COMPARTILHAR=0."""
+    if os.getenv("COMPARTILHAR", "1") == "0":
+        return ""
+    return COMPARTILHAR[n % len(COMPARTILHAR)]
+
+
 LOGO = _P["logo"]
 CORES = _P["cores"]
 TOM, PUBLICO = _P["tom"], _P["publico"]

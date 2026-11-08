@@ -3,13 +3,15 @@ name: 32 - Marketing (divulgação do Fred e Lista da Black)
 # 05/11/2026 — estratégia de marketing aprovada pelo Fred (src/marketing.py).
 # divulgar: terça e sexta 10:00, texto pronto no seu Telegram privado (botão abre o WhatsApp).
 # lista_black: todo dia 08:30 de 12 a 30/11, lista fixada no canal do Telegram (em 01/12 desafixa).
+# lista_barata: 11/11 e 20-30/11, achados até R$50 no canal + pronta para o Canal do WhatsApp (lista_barata_agora força).
+# relatorio: segunda 9h, placar das metas no Telegram privado.
 # teste: só mostra no log o que sairia, sem mandar nada.
 # Não grava nada no repositório (por isso fica fora da fila "grava-repositorio").
 on:
   workflow_dispatch:
     inputs:
       acao:
-        description: 'divulgar, lista_black, busca ou teste'
+        description: 'divulgar, lista_black, lista_barata, lista_barata_agora, relatorio, busca ou teste'
         required: true
         default: 'teste'
 
@@ -42,5 +44,7 @@ jobs:
           TELEGRAM_CHAT_PRIVADO: ${{ secrets.TELEGRAM_CHAT_PRIVADO }}
           SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
           SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
+          AWIN_ATIVO: ${{ vars.AWIN_ATIVO || '1' }}
+          AWIN_FEED_URL: ${{ secrets.AWIN_FEED_URL }}   # confere preço das marcas na lista até R$50
           ACAO: ${{ inputs.acao }}
         run: python -m src.marketing "$ACAO"

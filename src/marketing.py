@@ -207,6 +207,193 @@ def teste():
     print(f"\n===== Lista da Black (prévia, {len(ofs)} ofertas) =====")
     for o in ofs:
         print(f"- {o.get('titulo')} — R$ {o['preco_fmt']} (uau {o.get('uau')}, {o.get('vendas')} vendas)")
+    baratas = ofertas_baratas(carregar_fila())
+    print(f"\n===== Lista até R$50 (prévia sem conferir preço, {len(baratas)} candidatas) =====")
+    for o in baratas:
+        print(f"- {o.get('titulo')} — R$ {o['preco_fmt']} (uau {o.get('uau')}, {o.get('vendas')} vendas)")
+
+
+# ------------------------------------------------------------------ Lista "achados até R$50" (revisão 08/11/2026)
+# Ok do Fred em 08/11/2026 ("tudo que o robô tiver que fazer está autorizado"), doc "Garimpo VIP: revisão da
+# estratégia e plano da Black Friday". O que vendeu até agora foi barato e veio de quem confia no Fred, então a
+# oferta-chave da Black é uma lista de achados até R$50 por dia, no canal do Telegram e pronta para o Canal do
+# WhatsApp (o Fred repassa). Dias: 11/11 (11.11 da Shopee) e 20 a 30/11; em 27/11 (Black Friday) sai 3 vezes.
+# Junto vai a arte do 1º achado para o Status do WhatsApp do Fred.
+BARATA_TETO = 50.0
+BARATA_MAX = 6
+BARATA_DIAS = ((11, 11),) + tuple((11, d) for d in range(20, 31))
+
+
+def _turno():
+    from .garimpar import agora
+    h = agora().hour
+    return 0 if h < 10 else (1 if h < 16 else 2)
+
+
+def ofertas_baratas(fila, turno=0):
+    """Até BARATA_MAX achados até R$50 que passaram no canal nos últimos 3 dias (ou estão na fila
+    aprovados), um por família, os melhores primeiro. `turno` pula os já usados nas listas anteriores do dia."""
+    from .garimpar import FMT, agora
+    from .variedade import familia
+    limite = (agora() - timedelta(days=LISTA_DIAS)).strftime(FMT)
+    ofs = [o for o in fila["ofertas"].values()
+           if o.get("status") in ("pendente", "postado") and o.get("link_afiliado") and o.get("preco_fmt")
+           and 0 < (o.get("preco") or 0) <= BARATA_TETO and (o.get("uau") or 0) >= 7
+           and max(o.get("telegram_em") or "", o.get("criado_em") or "") >= limite]
+    ofs.sort(key=lambda o: (o.get("uau") or 0, o.get("vendas") or 0), reverse=True)
+    unicas, familias = [], set()
+    for o in ofs:
+        f = familia(o)
+        if f in familias:
+            continue
+        familias.add(f)
+        unicas.append(o)
+    ini = turno * BARATA_MAX
+    return unicas[ini:ini + BARATA_MAX * 2] or unicas[:BARATA_MAX * 2]
+
+
+def _conferidas(ofs):
+    from . import precos
+    boas = []
+    for o in ofs:
+        try:
+            if precos.conferir(o) in ("sumiu", "subiu") or (o.get("preco") or 0) > BARATA_TETO:
+                continue
+        except Exception as e:
+            print(f"⚠️  Não conferi {o.get('id')}: {e}")
+            continue
+        boas.append(o)
+        if len(boas) >= BARATA_MAX:
+            break
+    return boas
+
+
+def _titulo_barata(hoje):
+    if (hoje.month, hoje.day) == (11, 11):
+        return "🛒 11.11 DO ZÉ: ACHADOS ATÉ R$50"
+    if (hoje.month, hoje.day) == (11, 27):
+        return "🖤 BLACK FRIDAY DO ZÉ: ACHADOS ATÉ R$50"
+    return "🖤 BLACK DO ZÉ: ACHADOS ATÉ R$50"
+
+
+def texto_barata(ofs, canal, hoje=None, html_ok=True):
+    from . import vendas
+    hoje = hoje or date.today()
+    tit = _titulo_barata(hoje)
+    if html_ok:
+        linhas = [f"<b>{tit}</b>", ""]
+        for i, o in enumerate(ofs, 1):
+            link = html.escape(vendas.do_canal(o, canal), quote=True)
+            linhas.append(f"{i}. <a href=\"{link}\">{html.escape(o.get('titulo') or o.get('nome', ''))[:70]}</a> — "
+                          f"<b>R$ {o['preco_fmt']}</b>")
+        linhas += ["", f"<i>Preços conferidos em {hoje.strftime('%d/%m')} e podem mudar a qualquer momento. "
+                   "Links de afiliado: você paga o mesmo e ajuda o Garimpo VIP 💛</i>"]
+    else:
+        linhas = [f"*{tit}*", ""]
+        for i, o in enumerate(ofs, 1):
+            linhas += [f"{i}. *{(o.get('titulo') or o.get('nome', ''))[:70]}*", f"💰 R$ {o['preco_fmt']}",
+                       vendas.do_canal(o, canal), ""]
+        linhas += [f"_Preços conferidos em {hoje.strftime('%d/%m')} e podem mudar a qualquer momento. "
+                   "Links de afiliado: você paga o mesmo e ajuda o Garimpo VIP 💛_"]
+    return "\n".join(linhas)[:4000]
+
+
+def lista_barata(hoje=None, forcar=False):
+    from .garimpar import carregar_fila
+    hoje = hoje or date.today()
+    if not forcar and (hoje.month, hoje.day) not in BARATA_DIAS:
+        print("⏸️  Hoje não tem lista até R$50 (11/11 e 20 a 30/11).")
+        return
+    canal = os.getenv("TELEGRAM_CHAT_ID", "").strip()
+    privado = os.getenv("TELEGRAM_CHAT_PRIVADO", "").strip()
+    if not os.getenv("TELEGRAM_BOT_TOKEN", "").strip() or not (canal or privado):
+        print("⏸️  Faltam TELEGRAM_BOT_TOKEN ou os chats do Telegram.")
+        return
+    ofs = _conferidas(ofertas_baratas(carregar_fila(), _turno()))
+    if len(ofs) < 3:
+        print(f"⚠️  Só {len(ofs)} achados até R$50 conferidos: lista não sai hoje.")
+        return
+    if canal:
+        telegram._api("sendMessage", data={"chat_id": canal, "text": texto_barata(ofs, "tg", hoje),
+                                           "parse_mode": "HTML", "disable_web_page_preview": "true"})
+        print(f"📣 Lista até R$50 no canal do Telegram ({len(ofs)} achados).")
+    if privado:
+        _status_do_dia(privado, ofs[0])
+        zap = texto_barata(ofs, "zap", hoje, html_ok=False)
+        telegram._api("sendMessage", data={"chat_id": privado, "text":
+                      "📲 Lista até R$50 para o Canal do WhatsApp: segura a mensagem abaixo → Copiar, e cola no Canal."})
+        dados = {"chat_id": privado, "text": zap, "disable_web_page_preview": "true"}
+        if len(quote(zap)) < 1800:
+            dados["reply_markup"] = json.dumps(_botao_zap(zap))
+        telegram._api("sendMessage", data=dados)
+        print("📲 Lista até R$50 + arte do Status no Telegram privado.")
+
+
+def _status_do_dia(chat, o):
+    """Arte do achado (mesma do kit do WhatsApp) para o Status do Fred."""
+    import tempfile
+    from pathlib import Path
+    from . import imagem, vendas
+    try:
+        arte = Path(tempfile.mkdtemp()) / f"status_{o['id']}.jpg"
+        imagem.gerar(o, arte, foto=imagem._baixar_foto(o["imagem"]))
+        legenda = (f"📲 Para o seu Status do WhatsApp: segura a foto → Salvar e posta com o texto abaixo.\n\n"
+                   f"Achado do dia até R$50 👇 {o.get('titulo') or ''} por R$ {o['preco_fmt']}\n"
+                   f"{vendas.do_canal(o, 'zap')}\nMais no canal: https://whatsapp.com/channel/0029Vb9As8d2ER6ZGIsRPo0z")
+        with open(arte, "rb") as f:
+            telegram._api("sendPhoto", data={"chat_id": chat, "caption": legenda[:1000]}, files={"photo": f})
+    except Exception as e:
+        print(f"⚠️  Arte do Status não saiu ({e})")
+
+
+# ------------------------------------------------------------------ Relatório semanal (segunda 9h)
+
+def relatorio(agora_=None):
+    """Placar das metas da revisão de 08/11/2026 no Telegram privado do Fred, toda segunda 9h."""
+    from datetime import datetime
+    from . import cofre, vendas
+    from .garimpar import BRT
+    privado = os.getenv("TELEGRAM_CHAT_PRIVADO", "").strip()
+    agora_ = agora_ or datetime.now(BRT)
+    hist = cofre.ler_json(config.RAIZ / "data" / "seguidores.json", [])
+    atual = hist[-1]["contas"] if hist else {}
+    semana = (agora_ - timedelta(days=7)).strftime("%Y-%m-%d")
+    antes = next((h["contas"] for h in reversed(hist) if h["data"] <= semana), hist[0]["contas"] if hist else {})
+
+    def linha(nome, chave, meta=None):
+        a, b = atual.get(chave), antes.get(chave)
+        if a is None:
+            return f"• {nome}: sem medição"
+        dif = f" ({a - b:+d} na semana)" if isinstance(b, int) else ""
+        return f"• {nome}: {a}{dif}" + (f" | meta {meta}" if meta else "")
+
+    busca = cofre.ler_json(config.RAIZ / "data" / "busca_ze.json", {})
+    from .top import DONOS
+    pessoas = {v.get("usuario") for k in ("comentarios", "dms") for v in (busca.get(k) or {}).values()
+               if (v.get("em") or "") >= semana and (v.get("usuario") or "").lower() not in DONOS}
+    try:
+        _, sete = vendas.resumo(7, agora_)
+        _, mes = vendas.resumo(agora_.day, agora_)
+        vend = (f"• Vendas Shopee 7 dias: {sete['pedidos']} pedido(s), {vendas._brl(sete['comissao'])}\n"
+                f"• Vendas Shopee no mês: {mes['pedidos']} | meta 10 em novembro (somar Mercado Livre e Awin à mão)")
+    except Exception as e:
+        vend = f"• Vendas: não consegui ler o relatório da Shopee ({str(e)[:80]})"
+    texto = "\n".join([
+        f"📊 Relatório de marketing — {agora_.strftime('%d/%m')}", "",
+        linha("Instagram Garimpo", "ig_garimpo", "180 em 30/11"),
+        linha("Telegram", "telegram"),
+        "• Canal do WhatsApp: confira no app quantos seguem (o robô não enxerga)",
+        "  Meta: Canal + Telegram = 100 até 20/11",
+        linha("Facebook", "facebook"),
+        f"• Busca do Zé: {len(pessoas)} pessoa(s) de fora na semana | meta 5",
+        vend, "",
+        "Medição de alcance e compartilhamentos: rotina 25 (Métricas).",
+    ])
+    if not privado or not os.getenv("TELEGRAM_BOT_TOKEN", "").strip():
+        print(texto)
+        return
+    telegram._api("sendMessage", data={"chat_id": privado, "text": texto})
+    print("📊 Relatório de marketing enviado.")
 
 
 TEXTO_BUSCA = ("Tá procurando presente de Natal ou alguma coisa pra casa? 🎄\n\n"
@@ -232,7 +419,9 @@ def busca():
 
 
 if __name__ == "__main__":
-    acao = {"divulgar": divulgar, "lista_black": lista_black, "teste": teste, "busca": busca}.get(sys.argv[1] if len(sys.argv) > 1 else "")
+    acao = {"divulgar": divulgar, "lista_black": lista_black, "teste": teste, "busca": busca,
+            "lista_barata": lista_barata, "lista_barata_agora": lambda: lista_barata(forcar=True),
+            "relatorio": relatorio}.get(sys.argv[1] if len(sys.argv) > 1 else "")
     if not acao:
-        raise SystemExit("Uso: python -m src.marketing divulgar|lista_black|teste|busca")
+        raise SystemExit("Uso: python -m src.marketing divulgar|lista_black|lista_barata|lista_barata_agora|relatorio|teste|busca")
     acao()

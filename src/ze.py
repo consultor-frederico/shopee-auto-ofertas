@@ -444,7 +444,7 @@ def preparar():
         from . import ze_vitrine
         leg = ze_vitrine.legenda(itens, _legenda_propria(n))
     else:
-        leg = _legenda_propria(n) + "\n\n" + PEDIDO + ("\n" + config.LEMBRETE_BIO if config.LEMBRETE_BIO else "") + "\n\n" + HASHTAGS
+        leg = _legenda_propria(n) + ("\n" + config.compartilhar(n) if config.compartilhar(n) else "") + "\n\n" + PEDIDO + ("\n" + config.LEMBRETE_BIO if config.LEMBRETE_BIO else "") + "\n\n" + HASHTAGS
     ARQ_PROX.write_text(json.dumps({"arquivo": f"midia/{nome}", "video": video.name, "legenda": leg, "marco": marco,
                                     "itens": itens},
                                    ensure_ascii=False), encoding="utf-8")

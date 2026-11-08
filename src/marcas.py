@@ -39,7 +39,11 @@ MARCAS = {
              "categoria": "brinquedos", "preco_max": 500, "sem_licencas": True, "awin_id": 30511,
              "linhas_proprias": ("city", "friends", "duplo", "creator", "creator 3 em 1", "classic", "technic",
                                  "ninjago", "dreamzzz", "botanicos", "colecao botanica", "icons"),
-             "bloquear": ("aloy", "horizon", "olivia rodrigo", "editions", "brickheadz", "velozes", "filme", "f1", "ferrari", "mclaren")},
+             "bloquear": ("aloy", "horizon", "olivia rodrigo", "editions", "brickheadz", "velozes", "filme", "f1", "ferrari", "mclaren",
+                          # 08/11/2026: carros e marcas licenciados (o Koenigsegg Jesko passou no kit Lego)
+                          "koenigsegg", "lamborghini", "porsche", "bugatti", "mercedes", "bmw", "audi", "ford",
+                          "chevrolet", "jeep", "land rover", "aston martin", "ducati", "yamaha", "toyota", "volkswagen",
+                          "nasa", "nintendo", "pokemon", "batman", "sonic", "minecraft", "fortnite")},
     # aprovada na hora em 08/11/2026 (pedido feito a mando do Fred), CPA 11%, feed 2x por dia. Tênis On, Asics, Mizuno...
     "lauri": {"nome": "Lauri Esporte", "loja": "Lauri Esporte", "cor": "#E30613", "prefixo": "la",
               "anunciante": ("lauri",), "hashtag": "#lauriesporte", "conferir_site": False,
