@@ -143,7 +143,7 @@ def _chave_modelo(nome, plataforma=None):
     if MARCAS.get(plataforma, {}).get("acessorios_celular"):
         t = _APARELHO.sub("", t)
     if MARCAS.get(plataforma, {}).get("tamanhos"):   # tênis/roupa: cada tamanho e cor vem como produto; fica 1 por modelo
-        m = re.search(r"^(.*?\b(?:masculino|feminino|unissex|infantil|juvenil)\b)", t)
+        m = re.search(r"^(.*?\b(?:masculin[oa]s?|feminin[oa]s?|unissex|infantil|juvenil)\b)", t)
         t = m.group(1) if m else re.sub(r"\s(\d{2}(?:[.,]5)?|pp|p|m|g|gg|xg|xgg|eg|egg)\s*$", "", t)
     return " ".join(t.split())
 
