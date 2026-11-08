@@ -209,8 +209,30 @@ def teste():
         print(f"- {o.get('titulo')} — R$ {o['preco_fmt']} (uau {o.get('uau')}, {o.get('vendas')} vendas)")
 
 
+TEXTO_BUSCA = ("Tá procurando presente de Natal ou alguma coisa pra casa? 🎄\n\n"
+               "Comenta no @garimpovip4 o que você quer que o Zé garimpa pra você e manda no direct 🤠 "
+               "Só vendedor com nota alta e muita venda, e é de graça.\n\n"
+               f"👉 {INSTAGRAM}")
+
+
+def busca():
+    """Kit avulso da Busca do Zé (08/11/2026): arte de Story + texto com botão para o WhatsApp."""
+    chat = os.getenv("TELEGRAM_CHAT_PRIVADO", "").strip()
+    if not os.getenv("TELEGRAM_BOT_TOKEN", "").strip() or not chat:
+        print("⏸️  Faltam TELEGRAM_BOT_TOKEN ou TELEGRAM_CHAT_PRIVADO.")
+        return
+    arte = config.RAIZ / "assets" / "divulgacao" / "story_busca_ze.jpg"
+    with open(arte, "rb") as f:
+        telegram._api("sendPhoto", data={"chat_id": chat, "caption":
+                      "📣 Arte para o seu Status do Instagram/WhatsApp: segura a foto → Salvar, e posta no Story. "
+                      "Dá pra marcar o @garimpovip4 por cima."}, files={"photo": f})
+    telegram._api("sendMessage", data={"chat_id": chat, "text": TEXTO_BUSCA,
+                                       "reply_markup": json.dumps(_botao_zap(TEXTO_BUSCA))})
+    print("📣 Kit da Busca do Zé enviado.")
+
+
 if __name__ == "__main__":
-    acao = {"divulgar": divulgar, "lista_black": lista_black, "teste": teste}.get(sys.argv[1] if len(sys.argv) > 1 else "")
+    acao = {"divulgar": divulgar, "lista_black": lista_black, "teste": teste, "busca": busca}.get(sys.argv[1] if len(sys.argv) > 1 else "")
     if not acao:
-        raise SystemExit("Uso: python -m src.marketing divulgar|lista_black|teste")
+        raise SystemExit("Uso: python -m src.marketing divulgar|lista_black|teste|busca")
     acao()

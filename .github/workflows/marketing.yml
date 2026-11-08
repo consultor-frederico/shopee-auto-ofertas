@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
     inputs:
       acao:
-        description: 'divulgar, lista_black ou teste'
+        description: 'divulgar, lista_black, busca ou teste'
         required: true
         default: 'teste'
 
