@@ -194,8 +194,8 @@ TEMAS = {
                          "fita led rgb", "suporte headset", "controle bluetooth celular"],
               "embaralhar": True,
               "hashtags": "#gamer #setupgamer #achadinhosgamer"},
-    # 08/11/2026: pedido do Fred (post extra). Só Lego oficial (linhas próprias, até R$500). Fora do rodízio.
-    "lego": {"titulo": "KIT LEGO", "teto": 500, "meses": [], "rodizio": False, "so_marcas": True,
+    # 08/11/2026: pedido do Fred (post extra). Só Lego oficial (linhas próprias, até R$500). No rodízio desde 08/11 (ok do Fred).
+    "lego": {"titulo": "KIT LEGO", "teto": 500, "meses": [], "so_marcas": True,
              "mesma_familia": True,   # todos são "blocos de montar": a regra de família barraria o 2º set
              "gancho": "Kit Lego: {n} sets da loja oficial pra montar (e dar de presente) 🧱",
              "termos": ["lego city", "lego friends", "lego creator", "lego duplo", "lego technic",
@@ -203,8 +203,8 @@ TEMAS = {
              "embaralhar": True,
              "hashtags": "#lego #legobrasil #presentedenatal #brinquedos"},
     # 08/11/2026: pedido do Fred depois que a Lauri Esporte entrou. "marca:termo" busca só nas lojas oficiais
-    # (Lauri: tênis de verdade, com teto_marcas), o resto na Shopee/AliExpress até o teto. Fora do rodízio até o ok.
-    "esportes": {"titulo": "KIT DO ESPORTE", "teto": 120, "teto_marcas": 1000, "meses": [], "rodizio": False,
+    # (Lauri: tênis de verdade, com teto_marcas), o resto na Shopee/AliExpress até o teto. No rodízio desde 08/11 (ok do Fred).
+    "esportes": {"titulo": "KIT DO ESPORTE", "teto": 120, "teto_marcas": 1000, "meses": [],
                  "gancho": "Kit do esporte: {n} achados pra treinar com estilo 🏃",
                  "termos": ["marca:tênis asics", "marca:tênis mizuno", "marca:tênis new balance",
                             "marca:tênis on running", "marca:tênis olympikus", "marca:chuteira",
