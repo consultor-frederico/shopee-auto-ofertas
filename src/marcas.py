@@ -37,7 +37,7 @@ MARCAS = {
              "categoria": "brinquedos", "preco_max": 500, "sem_licencas": True, "awin_id": 30511,
              "linhas_proprias": ("city", "friends", "duplo", "creator", "creator 3 em 1", "classic", "technic",
                                  "ninjago", "dreamzzz", "botanicos", "colecao botanica", "icons"),
-             "bloquear": ("aloy", "horizon", "olivia rodrigo", "editions", "brickheadz", "velozes", "filme")},
+             "bloquear": ("aloy", "horizon", "olivia rodrigo", "editions", "brickheadz", "velozes", "filme", "f1", "ferrari", "mclaren")},
 }
 
 
