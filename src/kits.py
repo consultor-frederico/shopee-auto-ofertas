@@ -196,6 +196,7 @@ TEMAS = {
               "hashtags": "#gamer #setupgamer #achadinhosgamer"},
     # 08/11/2026: pedido do Fred (post extra). Só Lego oficial (linhas próprias, até R$500). Fora do rodízio.
     "lego": {"titulo": "KIT LEGO", "teto": 500, "meses": [], "rodizio": False, "so_marcas": True,
+             "mesma_familia": True,   # todos são "blocos de montar": a regra de família barraria o 2º set
              "gancho": "Kit Lego: {n} sets da loja oficial pra montar (e dar de presente) 🧱",
              "termos": ["lego city", "lego friends", "lego creator", "lego duplo", "lego technic",
                         "lego botanicos", "lego classic", "lego ninjago", "lego dreamzzz"],
@@ -364,7 +365,7 @@ def _das_marcas(termo):
 
 
 def melhor_do_termo(termo, teto, fila, ja, tema_titulo="", fontes=("shopee", "aliexpress", "marcas"), natal=False,
-                    bloqueados=(), familias_fora=()):
+                    bloqueados=(), familias_fora=(), mesma_familia=False):
     """O melhor produto que é mesmo o buscado, olhando as lojas de `fontes`. `ja` = itens já no kit (para não
     repetir produto nem família)."""
     from . import awin, busca_ze, marcas, variedade
@@ -382,7 +383,7 @@ def melhor_do_termo(termo, teto, fila, ja, tema_titulo="", fontes=("shopee", "al
             continue
         vistos.add(o["id"])
         if (busca_ze.relevante(o["nome"], termo) and _passa(o, teto, fila, natal, bloqueados)
-                and variedade.familia(o) not in familias
+                and (mesma_familia or variedade.familia(o) not in familias)
                 and not any(busca_ze._mesmo_produto(o, x) for x in ja)):
             bons.append(o)
     bons = sorted(bons, key=_pontos, reverse=True)[:12]
@@ -485,7 +486,7 @@ def escolher(tema, conferir_foto=True):
             if sum(marcas.eh_marca(it["oferta"]) for it in itens) < KIT_MAX_MARCAS:
                 fontes.append("marcas")
         o = melhor_do_termo(termo, teto, fila, [it["oferta"] for it in itens], cfg["titulo"], fontes,
-                            natal, bloqueados, familias_fora)
+                            natal, bloqueados, familias_fora, cfg.get("mesma_familia", False))
         if not o:
             print(f"   '{termo}': nada que passe nas regras.")
             continue
