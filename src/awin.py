@@ -45,10 +45,37 @@ def _texto(b):
     return b.decode("utf-8-sig", errors="replace")
 
 
+def _url_com_todas_as_marcas(url):
+    """Acrescenta ao endereço do feed os feeds das marcas de src/marcas.py (com awin_id) que ainda não estão nele,
+    para ligar marca nova sem precisar refazer o segredo AWIN_FEED_URL. Em qualquer falha, usa o endereço original."""
+    ids = {str(m["awin_id"]) for m in MARCAS.values() if m.get("awin_id")}
+    chave = re.search(r"/apikey/([^/?]+)", url)
+    fid = re.search(r"/fid/([0-9,]+)", url)
+    if not ids or not chave or not fid:
+        return url
+    try:
+        r = requests.get(f"https://productdata.awin.com/datafeed/list/apikey/{chave.group(1)}", timeout=60)
+        r.raise_for_status()
+        atuais = set(fid.group(1).split(","))
+        novos = []
+        for l in csv.DictReader(io.StringIO(_texto(r.content))):
+            if (l.get("Advertiser ID") or "").strip() in ids and (l.get("Membership Status") or "").strip().lower() == "active":
+                f = (l.get("Feed ID") or "").strip()
+                if f and f not in atuais and f not in novos:
+                    novos.append(f)
+    except Exception as e:
+        print(f"::warning::Awin: não consegui conferir os feeds das marcas ({type(e).__name__}); usando o feed do segredo.")
+        return url
+    if novos:
+        print(f"Awin: acrescentando {len(novos)} feed(s) de marca que não estavam no AWIN_FEED_URL.")
+        url = url.replace(f"/fid/{fid.group(1)}", f"/fid/{fid.group(1)},{','.join(novos)}", 1)
+    return url
+
+
 def baixar_linhas():
     """Baixa o feed e devolve a lista de linhas (dicionários por nome de coluna)."""
     try:
-        r = requests.get(config.AWIN_FEED_URL, timeout=90)
+        r = requests.get(_url_com_todas_as_marcas(config.AWIN_FEED_URL), timeout=90)
         r.raise_for_status()
     except requests.RequestException as e:
         # a URL leva a chave da Awin: nunca mostrar o endereço, só o tipo do erro
@@ -139,7 +166,7 @@ _SEM_GRACA = re.compile(r"\b(cabo|cabos|adaptador|adaptadores|cleaning|clean|lim
 _APARELHO = re.compile(r"\b(para )?(iphone|galaxy|ipad|moto|redmi|xiaomi)"
                        r"( (\d+\w*|[sag]\d+\w*|note|pro|max|plus|ultra|fe|mini|air|xr|xs|se|edge|g\d+\w*))*\b")
 
-_PALAVRAS_MARCA = {"shark", "ninja", "arno", "vx", "case"}
+_PALAVRAS_MARCA = {"shark", "ninja", "arno", "vx", "case", "lego"}
 
 
 def _tipo(nome, plataforma):
@@ -189,7 +216,7 @@ def normalizar(l):
     desconto = round((1 - preco / antigo) * 100) if antigo > preco > 0 else 0
     imagem = l.get("large_image") or l.get("merchant_image_url") or l.get("aw_image_url") or ""
     pid = l.get("aw_product_id") or l.get("merchant_product_id") or ""
-    cat = categoria_do_produto(nome, l.get("merchant_category") or l.get("category_name") or "", plat)
+    cat = m.get("categoria") or categoria_do_produto(nome, l.get("merchant_category") or l.get("category_name") or "", plat)
     o = {
         "id": f"{m['prefixo']}{pid}",
         "nome": nome,
@@ -234,6 +261,13 @@ def motivo_recusa(o):
         return "sem nome"
     if o["categoria"] is None:
         return "acessório ou reposição"
+    m = MARCAS[o["plataforma"]]
+    if m.get("preco_max") and o["preco"] > m["preco_max"]:
+        return f"acima de R$ {m['preco_max']}"
+    if m.get("sem_licencas"):
+        from .variedade import franquia
+        if franquia(o):
+            return "licença (franquia)"
     return None
 
 

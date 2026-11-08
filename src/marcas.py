@@ -11,6 +11,10 @@ lê esta tabela.
 - acessorios_celular: loja de acessórios de celular (regras próprias em awin.categoria_do_produto)
 - logo / logo_fundo: logo oficial (o do perfil da marca na Awin, em assets/marcas/) e a cor de fundo dele; entra sem
   mudar cor nem proporção numa plaquinha na faixa "LOJA OFICIAL" da arte (src/lojas_arte.py)
+- categoria: categoria fixa da marca (senão: awin.categoria_do_produto decide)
+- preco_max: teto de preço só desta marca (as outras não têm teto)
+- sem_licencas: produto de licença (Star Wars, Marvel, Harry Potter…: lista de franquias em variedade.py) fica de fora
+- awin_id: id do anunciante na Awin; se o feed dele não estiver no AWIN_FEED_URL, o robô acrescenta sozinho
 """
 
 MARCAS = {
@@ -25,6 +29,10 @@ MARCAS = {
                "anunciante": ("vx case", "vxcase"), "hashtag": "#vxcase", "conferir_site": False,
                "comissao_pct": 10.0, "acessorios_celular": True,
                "logo": "vxcase.png", "logo_fundo": "#000000"},
+    # aprovada em 25/10/2026, ligada em 08/11/2026 (ok do Fred). Só linhas próprias, sem sets de licença.
+    "lego": {"nome": "Lego", "loja": "Lego BR", "cor": "#D01012", "prefixo": "lg",
+             "anunciante": ("lego",), "hashtag": "#lego", "conferir_site": False,
+             "categoria": "brinquedos", "preco_max": 500, "sem_licencas": True, "awin_id": 30511},
 }
 
 
