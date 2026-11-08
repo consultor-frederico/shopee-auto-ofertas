@@ -12,6 +12,7 @@ lê esta tabela.
 - logo / logo_fundo: logo oficial (o do perfil da marca na Awin, em assets/marcas/) e a cor de fundo dele; entra sem
   mudar cor nem proporção numa plaquinha na faixa "LOJA OFICIAL" da arte (src/lojas_arte.py)
 - categoria: categoria fixa da marca (senão: awin.categoria_do_produto decide)
+- categoria_feminina: categoria usada quando o nome diz feminino/feminina (senão vale "categoria")
 - preco_max: teto de preço só desta marca (as outras não têm teto)
 - sem_licencas: produto de licença (Star Wars, Marvel, Harry Potter…: lista de franquias em variedade.py) fica de fora
 - linhas_proprias: nome no formato "MARCA Linha - Produto" só passa se a Linha estiver aqui (corta Wicked, Jurassic
@@ -38,6 +39,10 @@ MARCAS = {
              "linhas_proprias": ("city", "friends", "duplo", "creator", "creator 3 em 1", "classic", "technic",
                                  "ninjago", "dreamzzz", "botanicos", "colecao botanica", "icons"),
              "bloquear": ("aloy", "horizon", "olivia rodrigo", "editions", "brickheadz", "velozes", "filme", "f1", "ferrari", "mclaren")},
+    # aprovada na hora em 08/11/2026 (pedido feito a mando do Fred), CPA 11%, feed 2x por dia. Tênis On, Asics, Mizuno...
+    "lauri": {"nome": "Lauri Esporte", "loja": "Lauri Esporte", "cor": "#E30613", "prefixo": "la",
+              "anunciante": ("lauri",), "hashtag": "#lauriesporte", "conferir_site": False,
+              "comissao_pct": 11.0, "categoria": "masculino", "categoria_feminina": "moda", "awin_id": 118977},
 }
 
 

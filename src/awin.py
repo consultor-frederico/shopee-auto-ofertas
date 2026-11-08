@@ -166,7 +166,7 @@ _SEM_GRACA = re.compile(r"\b(cabo|cabos|adaptador|adaptadores|cleaning|clean|lim
 _APARELHO = re.compile(r"\b(para )?(iphone|galaxy|ipad|moto|redmi|xiaomi)"
                        r"( (\d+\w*|[sag]\d+\w*|note|pro|max|plus|ultra|fe|mini|air|xr|xs|se|edge|g\d+\w*))*\b")
 
-_PALAVRAS_MARCA = {"shark", "ninja", "arno", "vx", "case", "lego"}
+_PALAVRAS_MARCA = {"shark", "ninja", "arno", "vx", "case", "lego", "lauri", "esporte"}
 
 
 def _tipo(nome, plataforma):
@@ -216,7 +216,10 @@ def normalizar(l):
     desconto = round((1 - preco / antigo) * 100) if antigo > preco > 0 else 0
     imagem = l.get("large_image") or l.get("merchant_image_url") or l.get("aw_image_url") or ""
     pid = l.get("aw_product_id") or l.get("merchant_product_id") or ""
-    cat = m.get("categoria") or categoria_do_produto(nome, l.get("merchant_category") or l.get("category_name") or "", plat)
+    if m.get("categoria_feminina") and re.search(r"\bfeminin[oa]s?\b", _sem_acento(nome)):
+        cat = m["categoria_feminina"]
+    else:
+        cat = m.get("categoria") or categoria_do_produto(nome, l.get("merchant_category") or l.get("category_name") or "", plat)
     o = {
         "id": f"{m['prefixo']}{pid}",
         "nome": nome,
