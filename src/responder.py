@@ -12,7 +12,7 @@ import unicodedata
 import zlib
 from datetime import datetime, timedelta, timezone
 
-from . import config, facebook, instagram, marcas, vendas, youtube
+from . import cofre, config, facebook, instagram, marcas, vendas, youtube
 from .garimpar import BRT, FMT, agora, carregar_fila
 
 ARQ_RESPONDIDOS = config.PASTA_PERFIL / "respondidos.json"
@@ -133,15 +133,13 @@ def pediu_link(texto):
 
 
 def carregar_respondidos():
-    if ARQ_RESPONDIDOS.exists():
-        return json.loads(ARQ_RESPONDIDOS.read_text(encoding="utf-8"))
-    return {}
+    return cofre.ler_json(ARQ_RESPONDIDOS, {})
 
 
 def salvar_respondidos(dados):
     limite = (agora() - timedelta(days=DIAS_JANELA + 3)).strftime(FMT)
     dados = {k: v for k, v in dados.items() if v.get("em", "") >= limite}
-    ARQ_RESPONDIDOS.write_text(json.dumps(dados, ensure_ascii=False, indent=2), encoding="utf-8")
+    cofre.gravar_json(ARQ_RESPONDIDOS, dados, indent=2)   # trancado com DADOS_CHAVE (repo público)
 
 
 def posts_ativos(fila):
@@ -265,11 +263,11 @@ def responder(api=instagram):
                     except Exception as e:
                         reg["publica"] = f"erro: {str(e)[:300]}"
                         print(f"::warning::Resposta pública falhou: {e}")
-                print(f"📩 Link enviado para @{reg['usuario']} — {o['titulo']}")
+                print(f"📩 Link enviado para @{cofre.oculto(reg['usuario'])} — {o['titulo']}")
             except Exception as e:
                 falhas += 1
                 reg["dm"] = f"erro: {str(e)[:200]}"
-                print(f"⚠️  DM para @{reg['usuario']} falhou: {e}")
+                print(f"⚠️  DM para @{cofre.oculto(reg['usuario'])} falhou: {e}")
             respondidos[cid] = reg
             time.sleep(2)
     if config.PERFIL == "garimpo" and facebook.configurado():
@@ -401,10 +399,10 @@ def responder_top(api, minha, tops, respondidos):
                         reg["publica"] = "ok"
                     except Exception as e:
                         reg["publica"] = f"erro: {str(e)[:300]}"
-                print(f"🏆 Top: link {n or 'de todos'} enviado para @{usuario}")
+                print(f"🏆 Top: link {n or 'de todos'} enviado para @{cofre.oculto(usuario)}")
             except Exception as e:
                 reg["dm"] = f"erro: {str(e)[:200]}"
-                print(f"⚠️  DM do Top para @{usuario} falhou: {e}")
+                print(f"⚠️  DM do Top para @{cofre.oculto(usuario)} falhou: {e}")
             respondidos[cid] = reg
             time.sleep(2)
     return enviados
@@ -451,10 +449,10 @@ def responder_facebook(posts, respondidos):
                     reg["publica"] = "ok"
                 except Exception as e:
                     reg["publica"] = f"erro: {str(e)[:300]}"
-                print(f"📘 Link enviado no Messenger para {nome} — {o['titulo']}")
+                print(f"📘 Link enviado no Messenger para {cofre.oculto(nome)} — {o['titulo']}")
             except Exception as e:
                 reg["dm"] = f"erro: {str(e)[:200]}"
-                print(f"::warning::Messenger para {nome} falhou: {e}")
+                print(f"::warning::Messenger para {cofre.oculto(nome)} falhou: {e}")
             respondidos[cid] = reg
             time.sleep(2)
     return enviados
@@ -511,10 +509,10 @@ def responder_facebook_top(tops, respondidos):
                     reg["publica"] = "ok"
                 except Exception as e:
                     reg["publica"] = f"erro: {str(e)[:300]}"
-                print(f"📘 Carrossel: link {n or 'de todos'} enviado no Messenger para {nome}")
+                print(f"📘 Carrossel: link {n or 'de todos'} enviado no Messenger para {cofre.oculto(nome)}")
             except Exception as e:
                 reg["dm"] = f"erro: {str(e)[:200]}"
-                print(f"::warning::Messenger para {nome} falhou: {e}")
+                print(f"::warning::Messenger para {cofre.oculto(nome)} falhou: {e}")
             respondidos[cid] = reg
             time.sleep(2)
     return enviados

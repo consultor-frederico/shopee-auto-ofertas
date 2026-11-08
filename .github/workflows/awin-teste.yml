@@ -8,6 +8,9 @@ name: 13 - Testar marcas da Awin (Shark Ninja, Arno)
 on:
   workflow_dispatch:
 
+env:
+  DADOS_CHAVE: ${{ secrets.DADOS_CHAVE }}   # 08/11/2026: tranca os dados de seguidores (src/cofre.py)
+
 jobs:
   testar:
     runs-on: ubuntu-latest

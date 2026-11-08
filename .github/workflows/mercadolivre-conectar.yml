@@ -22,6 +22,9 @@ on:
 concurrency:
   group: mercadolivre-token
 
+env:
+  DADOS_CHAVE: ${{ secrets.DADOS_CHAVE }}   # 08/11/2026: tranca os dados de seguidores (src/cofre.py)
+
 jobs:
   conectar:
     runs-on: ubuntu-latest

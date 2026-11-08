@@ -13,7 +13,7 @@ import re
 
 import requests
 
-from . import config
+from . import cofre, config
 
 TOKEN_URL = "https://oauth2.googleapis.com/token"
 UPLOAD_URL = "https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status"
@@ -183,7 +183,7 @@ def diagnostico_respostas(limite=5):
     arq = config.RAIZ / "data" / "respondidos.json"
     if not arq.exists():
         return
-    regs = [(k[3:], v) for k, v in json.loads(arq.read_text(encoding="utf-8")).items()
+    regs = [(k[3:], v) for k, v in cofre.ler_json(arq, {}).items()
             if k.startswith("yt_") and v.get("dm") == "ok"]
     for cid, v in sorted(regs, key=lambda x: x[1].get("em", ""))[-limite:]:
         try:

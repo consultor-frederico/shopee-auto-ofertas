@@ -11,6 +11,9 @@ concurrency:
   group: previa-linhas
   cancel-in-progress: true
 
+env:
+  DADOS_CHAVE: ${{ secrets.DADOS_CHAVE }}   # 08/11/2026: tranca os dados de seguidores (src/cofre.py)
+
 jobs:
   previa:
     runs-on: ubuntu-latest

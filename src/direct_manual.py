@@ -8,6 +8,7 @@ import os
 import sys
 import unicodedata
 
+from . import cofre
 from .direct_telegram import ARROBAS, TOKENS, _req
 
 
@@ -38,17 +39,17 @@ def rodar():
             nomes[pid] = _req(token, "GET", pid, params={"fields": "name"}).get("name") or ""
         except Exception:
             nomes[pid] = ""
-    print("Conversas recentes:", ", ".join(f"@{u} [{nomes.get(i, '')}] ({t[:16]})" for u, i, t in pessoas[:50]))
+    print("Conversas recentes:", ", ".join(f"@{cofre.oculto(u)} ({t[:16]})" for u, i, t in pessoas[:50]))
     achados = [p for p in pessoas if para and (para in _norm(p[0]) or para in _norm(nomes.get(p[1])))]
     if len(achados) != 1:
         sys.exit(f"::error::Achei {len(achados)} conversa(s) com '{para}': "
                  + (", ".join("@" + u for u, _, _ in achados) or "nenhuma") + ". Nada foi enviado.")
     usuario, autor, _ = achados[0]
     if not texto:
-        print(f"::notice::Achei @{usuario} (sem TEXTO: nada enviado).")
+        print(f"::notice::Achei @{cofre.oculto(usuario)} (sem TEXTO: nada enviado).")
         return
     _req(token, "POST", f"{ig_id}/messages", json={"recipient": {"id": autor}, "message": {"text": texto[:1000]}})
-    print(f"::notice::✅ Enviado para @{usuario} pelo direct do {ARROBAS[perfil]}.")
+    print(f"::notice::✅ Enviado para @{cofre.oculto(usuario)} pelo direct do {ARROBAS[perfil]}.")
 
 
 if __name__ == "__main__":

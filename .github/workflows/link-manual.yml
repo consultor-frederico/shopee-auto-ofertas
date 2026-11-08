@@ -11,6 +11,9 @@ concurrency:
   group: grava-repositorio
   cancel-in-progress: false
 
+env:
+  DADOS_CHAVE: ${{ secrets.DADOS_CHAVE }}   # 08/11/2026: tranca os dados de seguidores (src/cofre.py)
+
 jobs:
   gerar:
     runs-on: ubuntu-latest

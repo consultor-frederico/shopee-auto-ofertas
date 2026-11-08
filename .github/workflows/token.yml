@@ -11,6 +11,12 @@ on:
         options: [garimpo, ana]
         default: garimpo
 
+permissions:
+  contents: read   # 08/11/2026 (segurança): só leitura, este workflow não grava no repo
+
+env:
+  DADOS_CHAVE: ${{ secrets.DADOS_CHAVE }}   # 08/11/2026: tranca os dados de seguidores (src/cofre.py)
+
 jobs:
   renovar:
     runs-on: ubuntu-latest

@@ -29,6 +29,9 @@ permissions:
   pages: write
   id-token: write
 
+env:
+  DADOS_CHAVE: ${{ secrets.DADOS_CHAVE }}   # 08/11/2026: tranca os dados de seguidores (src/cofre.py)
+
 jobs:
   publicar:
     runs-on: ubuntu-latest

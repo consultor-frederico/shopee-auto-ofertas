@@ -9,6 +9,12 @@ on:
         description: 'atalhos (gravar perguntas) ou conversas (diagnóstico do direct)'
         default: atalhos
 
+permissions:
+  contents: read   # 08/11/2026 (segurança): só leitura, este workflow não grava no repo
+
+env:
+  DADOS_CHAVE: ${{ secrets.DADOS_CHAVE }}   # 08/11/2026: tranca os dados de seguidores (src/cofre.py)
+
 jobs:
   atalhos:
     runs-on: ubuntu-latest

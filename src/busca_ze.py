@@ -16,7 +16,7 @@ do próprio produto do Reels continuam com o responder (link da oferta no direct
 import json
 from datetime import timedelta
 
-from . import config, vendas
+from . import cofre, config, vendas
 
 ANA = config.PERFIL == "ana"   # 💚 Busca da Ana: mesma ferramenta, com o jeito dela e #BuscaDaAna
 ARQ = config.PASTA_PERFIL / "busca_ze.json"
@@ -61,16 +61,13 @@ def _fmt():
 
 
 def carregar():
-    if ARQ.exists():
-        return json.loads(ARQ.read_text(encoding="utf-8"))
-    return {"ids": [], "procurado_em": "", "comentarios": {}}
+    return cofre.ler_json(ARQ, {"ids": [], "procurado_em": "", "comentarios": {}})
 
 
 def salvar(d):
     limite = (_agora() - timedelta(days=60)).strftime(_fmt())
     d["comentarios"] = {k: v for k, v in d["comentarios"].items() if v.get("em", "") >= limite}
-    ARQ.parent.mkdir(parents=True, exist_ok=True)
-    ARQ.write_text(json.dumps(d, ensure_ascii=False, indent=1), encoding="utf-8")
+    cofre.gravar_json(ARQ, d, indent=1)   # trancado com DADOS_CHAVE (repo público)
 
 
 def posts_da_busca(api, ig_id, d):
@@ -678,6 +675,20 @@ Escreva a próxima resposta de {quem}: curta (até 3 frases), simpática, em por
 Responda só com JSON {{"resposta": "<texto da mensagem>"}}."""
 
 
+def _resposta_segura(r):
+    """A conversa livre não pode levar a pessoa para fora do Garimpo: alguém pode tentar fazer a IA
+    escrever um link, um @, um telefone ou um pix. Só passam o Telegram do canal, a página da bio e o próprio @."""
+    import re
+    limpo = r.lower()
+    for ok in (TELEGRAM.lower(), TELEGRAM.lower().replace("https://", ""), "https://" + str(config.PAGINA_BIO).lower(),
+               str(config.PAGINA_BIO).lower(), config.ARROBA.lower()):
+        if ok:
+            limpo = limpo.replace(ok, "")
+    proibido = (r"https?://|www\.|\b[\w-]+\.(com|br|net|org|io|me|ly|app|link|site|xyz|shop|store)\b|t\.me/|wa\.me"
+                r"|@\w|\bpix\b|\(?\d{2}\)?\s?9?\d{4}[-\s]?\d{4}|\bsenha\b|\bc[oó]digo de verifica")
+    return not re.search(proibido, limpo)
+
+
 def _conversa_livre(texto, msgs, ig_id):
     """Resposta da IA para o que não é pedido de produto (dúvida, comentário, "entendi"...). "" se falhar."""
     if not config.GROQ_API_KEY:
@@ -697,6 +708,9 @@ def _conversa_livre(texto, msgs, ig_id):
         import re
         r = str(json.loads(re.search(r"\{.*\}", r or "", re.S).group(0)).get("resposta", "")).strip()
         if not r or len(r) > 700:
+            return ""
+        if not _resposta_segura(r):   # 08/11/2026 (segurança): link/@/telefone/pix estranho → não manda, avisa o Fred
+            print("::warning::IA do direct escreveu link, @, telefone ou pix fora da lista; não mandei.")
             return ""
         return r if r.startswith(MARCAS_ROBO) else (("Oi! 💚 " if ANA else "Oi! 🤠 ") + r)
     except Exception as e:
@@ -1163,15 +1177,15 @@ def rodar(api, minha, ja_respondidos=None):
                 enviar_dm(api, ig_id, cid, t, ofs)
                 api.responder_comentario(cid, PUBLICAS[len(d["comentarios"]) % len(PUBLICAS)].format(u=usuario))
                 reg.update({"status": "entregue", "achados": [o["id"] for o in ofs], **_resumo(ofs)})
-                print(f"🔎 @{usuario} buscou '{t}' → {len(ofs)} achados no direct.")
+                print(f"🔎 @{cofre.oculto(usuario)} buscou '{t}' → {len(ofs)} achados no direct.")
             else:
                 api.responder_comentario(cid, PUBLICA_NADA.format(u=usuario, t=t))
                 reg["status"] = "nao_achou"
-                print(f"🔎 @{usuario} buscou '{t}' → nada bom o bastante.")
+                print(f"🔎 @{cofre.oculto(usuario)} buscou '{t}' → nada bom o bastante.")
             feitos += 1
         except Exception as e:
             reg["status"] = f"erro: {str(e)[:200]}"
-            print(f"::warning::Busca do Zé: não consegui responder @{usuario}: {e}")
+            print(f"::warning::Busca do Zé: não consegui responder @{cofre.oculto(usuario)}: {e}")
         d["comentarios"][cid] = reg
     salvar(d)
     return feitos
@@ -1186,7 +1200,7 @@ if __name__ == "__main__":   # teste: python -m src.busca_ze "celular" "fone blu
             ms = (c.get("messages") or {}).get("data") or []
             u = ms[0] if ms else {}
             quem = "PÁGINA" if (u.get("from") or {}).get("id") == ig else "pessoa"
-            print(f"::notice::{c.get('updated_time')} | última de {quem}: {(u.get('message') or '[sem texto]')[:60]!r} "
+            print(f"::notice::{c.get('updated_time')} | última de {quem}: {(u.get('message') or '[sem texto]')[:25]!r} "
                   f"({u.get('created_time')})")
         sys.exit(0)
     if sys.argv[1:2] == ["posts"]:   # diagnóstico: posts do perfil e quantos comentários a API lê de cada
@@ -1209,7 +1223,7 @@ if __name__ == "__main__":   # teste: python -m src.busca_ze "celular" "fone blu
         regs = [dict(v, onde="direct") for v in d.get("dms", {}).values()] + \
                [dict(v, onde="comentário") for v in d.get("comentarios", {}).values()]
         for v in sorted((v for v in regs if v.get("em", "") >= lim and v.get("termo")), key=lambda v: v["em"]):
-            print(f"\n{v['em']} @{v.get('usuario', '?')} ({v['onde']}): {v.get('texto', '')[:80]!r} → "
+            print(f"\n{v['em']} @{cofre.oculto(v.get('usuario'))} ({v['onde']}): {v.get('texto', '')[:80]!r} → "
                   f"\"{v['termo']}\" [{v.get('status')}, IA: {v.get('ia', '?')}]")
             for e in v.get("enviados", []):
                 print(f"   • {e}")
@@ -1222,7 +1236,7 @@ if __name__ == "__main__":   # teste: python -m src.busca_ze "celular" "fone blu
         d = carregar()
         regs = [v for v in d.get("dms", {}).values() if (v.get("usuario") or "").lower() == usuario]
         if not regs:
-            sys.exit(f"::error::Não achei busca de @{usuario} no direct. Nada foi enviado.")
+            sys.exit(f"::error::Não achei busca de @{cofre.oculto(usuario)} no direct. Nada foi enviado.")
         autor = max(regs, key=lambda v: v["em"])["autor"]
         ofs = achados(t)
         if not ofs:
@@ -1237,7 +1251,7 @@ if __name__ == "__main__":   # teste: python -m src.busca_ze "celular" "fone blu
         rs.append(instagram._req("POST", f"{ig}/messages", json={"recipient": {"id": autor}, "message": {"text": DM_CONFERE}}))
         robo += [r["message_id"] for r in rs if (r or {}).get("message_id")]
         for o in ofs:
-            print(f"::notice::Enviado a @{usuario}: {_nome_loja(o)} R$ {o['preco_fmt']} {_selo(o, True)} — {o['nome'][:80]}")
+            print(f"::notice::Enviado a @{cofre.oculto(usuario)}: {_nome_loja(o)} R$ {o['preco_fmt']} {_selo(o, True)} — {o['nome'][:80]}")
         d["dms"][f"manual-{_agora().strftime('%Y%m%d%H%M%S')}"] = {
             "autor": autor, "usuario": usuario, "texto": "(envio manual)", "termo": t, "em": _agora().strftime(_fmt()),
             "status": "entregue", "achados": [o["id"] for o in ofs], **_resumo(ofs)}

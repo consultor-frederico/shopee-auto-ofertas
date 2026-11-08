@@ -9,6 +9,9 @@ permissions:
   actions: read
   contents: write   # salva data/seguidores.json (histórico dos seguidores)
 
+env:
+  DADOS_CHAVE: ${{ secrets.DADOS_CHAVE }}   # 08/11/2026: tranca os dados de seguidores (src/cofre.py)
+
 jobs:
   revisar:
     runs-on: ubuntu-latest

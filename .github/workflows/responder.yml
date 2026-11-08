@@ -7,6 +7,9 @@ concurrency:
   group: responder          # fila própria: não espera atrás de post/garimpo
   cancel-in-progress: false
 
+env:
+  DADOS_CHAVE: ${{ secrets.DADOS_CHAVE }}   # 08/11/2026: tranca os dados de seguidores (src/cofre.py)
+
 jobs:
   responder:
     runs-on: ubuntu-latest
