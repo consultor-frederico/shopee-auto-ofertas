@@ -194,6 +194,13 @@ TEMAS = {
                          "fita led rgb", "suporte headset", "controle bluetooth celular"],
               "embaralhar": True,
               "hashtags": "#gamer #setupgamer #achadinhosgamer"},
+    # 08/11/2026: pedido do Fred (post extra). Só Lego oficial (linhas próprias, até R$500). Fora do rodízio.
+    "lego": {"titulo": "KIT LEGO", "teto": 500, "meses": [], "rodizio": False, "so_marcas": True,
+             "gancho": "Kit Lego: {n} sets da loja oficial pra montar (e dar de presente) 🧱",
+             "termos": ["lego city", "lego friends", "lego creator", "lego duplo", "lego technic",
+                        "lego botanicos", "lego classic", "lego ninjago", "lego dreamzzz"],
+             "embaralhar": True,
+             "hashtags": "#lego #legobrasil #presentedenatal #brinquedos"},
     # 08/11/2026: pedido do Fred depois que a Lauri Esporte entrou. "marca:termo" busca só nas lojas oficiais
     # (Lauri: tênis de verdade, com teto_marcas), o resto na Shopee/AliExpress até o teto. Fora do rodízio até o ok.
     "esportes": {"titulo": "KIT DO ESPORTE", "teto": 120, "teto_marcas": 1000, "meses": [], "rodizio": False,
