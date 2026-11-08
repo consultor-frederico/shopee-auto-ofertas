@@ -43,6 +43,19 @@ def _saida(chave, valor):
 
 
 # ---------------------------------------------------------------- o que entra
+NOMES_LOJA = {"shopee": "Shopee", "mercadolivre": "Mercado Livre", "aliexpress": "AliExpress"}
+
+
+def loja_do_carrossel():
+    """ACHADOS_LOJA = shopee | mercadolivre | aliexpress → carrossel só daquela loja; vazio/geral = misturado."""
+    loja = (os.getenv("ACHADOS_LOJA") or "").strip().lower()
+    return loja if loja in NOMES_LOJA else ""
+
+
+def _da_loja(o, loja):
+    return (o.get("plataforma") or "shopee") == loja
+
+
 def escolher(fila, conferir=True, so_especiais=False):
     """QTD ofertas de tipos diferentes (nada de dois espelhos no mesmo carrossel), com foto e preço conferidos.
     Primeiro tenta uma de cada categoria; se faltar, completa com a mesma categoria.
@@ -50,6 +63,10 @@ def escolher(fila, conferir=True, so_especiais=False):
     camadas.CONHECIDOS_POR_CARROSSEL. so_especiais=True (Reels do Zé) deixa os conhecidos de fora."""
     from . import camadas, postar, precos, variedade
     lista = [o for o in postar.candidatos_ordenados(fila) if not o.get("video_manual") and not o.get("pedido")]
+    loja = loja_do_carrossel()
+    if loja:   # 🏪 carrossel de uma loja só (08/11/2026, pedido do Fred): 1 por dia de cada loja + 1 geral
+        lista = [o for o in lista if _da_loja(o, loja)]
+        print(f"🏪 Carrossel só {NOMES_LOJA[loja]}: {len(lista)} candidatos na fila")
     if camadas.ligado():
         lista = [o for o in lista if camadas.especial(o)] + ([] if so_especiais else [o for o in lista if not camadas.especial(o)])
     itens, familias, categorias, ids = [], set(), set(), set()
@@ -57,6 +74,8 @@ def escolher(fila, conferir=True, so_especiais=False):
     vagas_ae = aliexpress.vagas_hoje(fila, "postado_em", config.ALIEXPRESS_POR_DIA_INSTAGRAM, agora().strftime("%Y-%m-%d"))
     from . import mercadolivre
     vagas_ml = mercadolivre.vagas_hoje(fila, "postado_em", config.MERCADOLIVRE_POR_DIA_INSTAGRAM, agora().strftime("%Y-%m-%d"))
+    if loja:   # o carrossel da loja não gasta (nem respeita) a cota diária do carrossel geral
+        vagas_ae = vagas_ml = 99
 
     def tentar(o, so_categoria_nova):
         nonlocal shark, vagas_ae, vagas_ml
@@ -69,7 +88,7 @@ def escolher(fila, conferir=True, so_especiais=False):
             return
         if so_categoria_nova and o.get("categoria") in categorias:
             return
-        if (camadas.ligado() and not camadas.especial(o)
+        if (camadas.ligado() and not loja and not camadas.especial(o)
                 and sum(not camadas.especial(it["oferta"]) for it in itens) >= camadas.CONHECIDOS_POR_CARROSSEL):
             return   # 🏷️ conhecido só completa: o destaque é dos especiais
         if conferir:
@@ -101,7 +120,7 @@ def escolher(fila, conferir=True, so_especiais=False):
         lista = linhas.ordenar(lista)
         grupos = [[o for o in lista if linhas.eh_do_dia(o)], [o for o in lista if not linhas.eh_do_dia(o)]]
         print(f"🗂️  Linha do dia: {', '.join(linhas.do_dia())} ({len(grupos[0])} na fila)")
-    if agora().strftime("%Y-%m-%d") <= config.ML_LANCAMENTO_ATE:
+    if not loja and agora().strftime("%Y-%m-%d") <= config.ML_LANCAMENTO_ATE:
         # 🆕 lançamento do Mercado Livre: 1 achado do ML na frente do carrossel (máx 2 por dia, como sempre)
         for o in lista:
             if itens or vagas_ml <= 0:
@@ -117,7 +136,7 @@ def escolher(fila, conferir=True, so_especiais=False):
     if camadas.ligado():   # ⭐ especiais na frente (a capa é sempre um achado do Zé)
         itens.sort(key=lambda it: not camadas.especial(it["oferta"]))
         especiais = sum(camadas.especial(it["oferta"]) for it in itens)
-        if especiais < camadas.ESPECIAIS_POR_CARROSSEL_MIN:
+        if especiais < camadas.ESPECIAIS_POR_CARROSSEL_MIN and not loja:
             print(f"⚠️  Só {especiais} achado(s) especial(is) na fila: sem especial não tem carrossel.")
             return []
         print(f"⭐ {especiais} especiais + 🏷️ {len(itens) - especiais} conhecidos")

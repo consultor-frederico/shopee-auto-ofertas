@@ -15,6 +15,11 @@ on:
         description: 'Só gerar a prévia (não posta; os slides ficam em data/relatorios/achados)'
         type: boolean
         default: false
+      loja:
+        description: 'Carrossel de uma loja só (geral = misturado)'
+        type: choice
+        options: [geral, shopee, mercadolivre, aliexpress]
+        default: geral
       capa:
         description: 'Abertura do carrossel do Garimpo (auto = manhã vídeo do Zé, tarde capa de produto)'
         type: choice
@@ -40,6 +45,7 @@ jobs:
     env:
       PERFIL: ${{ inputs.perfil || 'garimpo' }}
       ACHADOS_CAPA: ${{ inputs.capa || 'auto' }}
+      ACHADOS_LOJA: ${{ inputs.loja || 'geral' }}   # 08/11/2026: 1 carrossel por dia de cada loja + 1 geral
     steps:
       - uses: actions/checkout@v4
         with:

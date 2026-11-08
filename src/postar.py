@@ -61,6 +61,11 @@ def candidatos_ordenados(fila):
     from . import camadas
     resto = [o for o in candidatos if not o.get("video_manual") and not o.get("so_telegram") and not o.get("pedido")
              and o["categoria"] in config.NICHO and (variedade.para_instagram(o) or camadas.conhecido(o))]   # outra conta fica de fora; só produto diferenciado (ou 🏷️ conhecido)
+    # 🏪 carrossel de uma loja só (ACHADOS_LOJA, 08/11/2026): só a loja da vez, sem a cota diária do carrossel geral
+    loja = (os.getenv("ACHADOS_LOJA") or "").strip().lower()
+    loja = loja if loja in ("shopee", "mercadolivre", "aliexpress") else ""
+    if loja:
+        resto = [o for o in resto if (o.get("plataforma") or "shopee") == loja]
     # mesmo tipo de produto no Instagram nos últimos DIAS_FAMILIA_INSTAGRAM dias: fora (repetição é inaceitável)
     semana = variedade.familias_recentes(fila, "postado_em", horas=config.DIAS_FAMILIA_INSTAGRAM * 24)
     resto = [o for o in resto if variedade.familia(o) not in semana]
@@ -71,10 +76,10 @@ def candidatos_ordenados(fila):
                      and str(o.get("postado_em") or "").startswith(agora().strftime("%Y-%m-%d")))
     if caras_hoje >= config.MARCA_CARA_POR_DIA:
         resto = [o for o in resto if not (marcas.eh_marca(o) and (o.get("preco") or 0) > config.MARCA_CARA_RS)]
-    if not aliexpress.vagas_hoje(fila, "postado_em", config.ALIEXPRESS_POR_DIA_INSTAGRAM, agora().strftime("%Y-%m-%d")):
+    if not loja and not aliexpress.vagas_hoje(fila, "postado_em", config.ALIEXPRESS_POR_DIA_INSTAGRAM, agora().strftime("%Y-%m-%d")):
         resto = [o for o in resto if o.get("plataforma") != "aliexpress"]   # 🌎 internacional: no máximo 2 por dia
     from . import mercadolivre
-    if not mercadolivre.vagas_hoje(fila, "postado_em", config.MERCADOLIVRE_POR_DIA_INSTAGRAM, agora().strftime("%Y-%m-%d")):
+    if not loja and not mercadolivre.vagas_hoje(fila, "postado_em", config.MERCADOLIVRE_POR_DIA_INSTAGRAM, agora().strftime("%Y-%m-%d")):
         resto = [o for o in resto if o.get("plataforma") != "mercadolivre"]
     # 🏷️ conhecidos (src/camadas.py) vão para o fim: só completam o carrossel, atrás dos especiais
     conhecidos = [o for o in resto if not variedade.para_instagram(o)]

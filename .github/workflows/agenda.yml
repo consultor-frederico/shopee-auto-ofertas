@@ -32,10 +32,16 @@ jobs:
           # 28/10/2026: quarta e sábado o carrossel das 18:45 vira Kit do Zé (carrossel temático, src/kits.py), ok do Fred
           # 30/10/2026: volta o carrossel das 07:45 (abre com o vídeo do Zé); o das 18:45 abre com a capa de produto
           # e o Zé pequeno embaixo (src/achados.py capa_de_produto), ok do Fred
+          # 08/11/2026 (Fred): 1 carrossel por dia de cada loja + 1 geral: 07:45 geral (vídeo do Zé),
+          # 12:45 só AliExpress, 16:30 só Shopee, 18:45 só Mercado Livre (qua/sáb o Kit fica às 18:45 e o ML vai às 21:30)
+          LOJA=""
           if [ "$HQ" = "07:45" ]; then WFS="$WFS achados.yml"; fi
+          if [ "$HQ" = "12:45" ]; then LOJA="aliexpress"; fi
+          if [ "$HQ" = "16:30" ]; then LOJA="shopee"; fi
           if [ "$HQ" = "18:45" ]; then
-            if [ "$DOW" = "3" ] || [ "$DOW" = "6" ]; then WFS="$WFS kits.yml"; else WFS="$WFS achados.yml"; fi
+            if [ "$DOW" = "3" ] || [ "$DOW" = "6" ]; then WFS="$WFS kits.yml"; else LOJA="mercadolivre"; fi
           fi
+          if [ "$HQ" = "21:30" ] && { [ "$DOW" = "3" ] || [ "$DOW" = "6" ]; }; then LOJA="mercadolivre"; fi
           # 03/11/2026: Kit de Natal TODO DIA às 20:00 (pedido do Fred), só temas de Natal e nunca o mesmo produto
           # (src/kits.py, KIT_MODO=natal). Vai de novembro a 31/12; fora da temporada o kits.yml não posta nada.
           NATAL=""
@@ -86,12 +92,17 @@ jobs:
           # com 3 juntas, a do meio era cancelada (30/10/2026: 5 rodadas de Ofertas no Telegram perdidas por dia).
           LIVRE=1
           [ -n "$NATAL" ] && LIVRE=0
+          [ -n "$LOJA" ] && LIVRE=0
           for WF in $WFS $ANA; do case "$WF" in responder.yml|revisao.yml) ;; *) LIVRE=0 ;; esac; done
           if [ "$LIVRE" = "1" ]; then WFS="$WFS aprovacao.yml"; fi
           for WF in $WFS; do
             echo "▶️  $WF"
             gh api -X POST "repos/$REPO/actions/workflows/$WF/dispatches" -f ref=main || echo "::warning::falhou $WF"
           done
+          if [ -n "$LOJA" ]; then
+            echo "▶️  achados.yml (loja $LOJA)"
+            gh api -X POST "repos/$REPO/actions/workflows/achados.yml/dispatches" -f ref=main -f "inputs[loja]=$LOJA" || echo "::warning::falhou achados.yml ($LOJA)"
+          fi
           if [ -n "$NATAL" ]; then
             echo "▶️  kits.yml (natal)"
             gh api -X POST "repos/$REPO/actions/workflows/kits.yml/dispatches" -f ref=main -f "inputs[modo]=natal" || echo "::warning::falhou kits.yml (natal)"
