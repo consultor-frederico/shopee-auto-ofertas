@@ -1,0 +1,24 @@
+name: 33 - Ver lojas da Awin com feed
+
+# Mostra no log as lojas brasileiras da Awin que têm feed de produtos (inscritas ou não).
+# Só lê; não grava, não posta, não pede parceria. A chave da Awin nunca aparece no log.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  listar:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Listar lojas
+        env:
+          AWIN_FEED_URL: ${{ secrets.AWIN_FEED_URL }}
+        run: python -m src.awin_lojas
