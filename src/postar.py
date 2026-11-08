@@ -58,8 +58,9 @@ def candidatos_ordenados(fila):
     pedidos_ze = [o for o in candidatos if o.get("pedido") and not o.get("video_manual")]
     manuais += pedidos_ze[:1]   # "Você pediu, o Zé achou": um por vez, na frente da fila
     preferidos = [o for o in candidatos if o.get("preferencial") and not o.get("video_manual")]   # aprovadas por você
+    from . import camadas
     resto = [o for o in candidatos if not o.get("video_manual") and not o.get("so_telegram") and not o.get("pedido")
-             and o["categoria"] in config.NICHO and variedade.para_instagram(o)]   # outra conta fica de fora; só produto diferenciado
+             and o["categoria"] in config.NICHO and (variedade.para_instagram(o) or camadas.conhecido(o))]   # outra conta fica de fora; só produto diferenciado (ou 🏷️ conhecido)
     # mesmo tipo de produto no Instagram nos últimos DIAS_FAMILIA_INSTAGRAM dias: fora (repetição é inaceitável)
     semana = variedade.familias_recentes(fila, "postado_em", horas=config.DIAS_FAMILIA_INSTAGRAM * 24)
     resto = [o for o in resto if variedade.familia(o) not in semana]
@@ -75,6 +76,9 @@ def candidatos_ordenados(fila):
     from . import mercadolivre
     if not mercadolivre.vagas_hoje(fila, "postado_em", config.MERCADOLIVRE_POR_DIA_INSTAGRAM, agora().strftime("%Y-%m-%d")):
         resto = [o for o in resto if o.get("plataforma") != "mercadolivre"]
+    # 🏷️ conhecidos (src/camadas.py) vão para o fim: só completam o carrossel, atrás dos especiais
+    conhecidos = [o for o in resto if not variedade.para_instagram(o)]
+    resto = [o for o in resto if variedade.para_instagram(o)]
     # 💎 Achado escondido: entra junto com o Ouro, mas no máximo config.ACHADOS_POR_DIA por dia
     hoje = agora().strftime("%Y-%m-%d")
     achados_hoje = sum(1 for o in fila["ofertas"].values() if o.get("nivel") == "achado"
@@ -97,7 +101,8 @@ def candidatos_ordenados(fila):
         frente = [o for o in base if o.get("origem_busca") == "viral"
                   and o["categoria"] not in recentes and variedade.familia(o) not in fams]
         base = frente + [o for o in base if o not in frente]
-    return manuais + preferidos + base
+    conhecidos = [o for o in conhecidos if o["categoria"] not in recentes] + [o for o in conhecidos if o["categoria"] in recentes]
+    return manuais + preferidos + base + variedade.ordenar(conhecidos, fams)
 
 
 def formato_da_vez(fila):

@@ -348,15 +348,20 @@ def candidatos(fila, ja_usado, julgar=None, palavras=None):
     if julgar:
         julgar(ofs)
     from datetime import datetime
+    from . import camadas
     if datetime.utcnow().strftime("%Y-%m-%d") <= config.ML_LANCAMENTO_ATE:
-        # lançamento: produto conhecido (uau >= ML_LANCAMENTO_UAU) entra como se fosse achado do Instagram
+        # lançamento: produto conhecido (uau >= ML_LANCAMENTO_UAU) entra para o público ver que o ML chegou.
+        # Com as camadas ligadas (src/camadas.py) ele entra como 🏷️ conhecido (sem o selo de achado);
+        # sem elas, como antes: vale como achado do Instagram.
         for o in ofs:
             if o.get("uau", 0) >= config.ML_LANCAMENTO_UAU:
-                o["uau_ia"] = o["uau"]
-                o["uau"] = max(o["uau"], config.UAU_MINIMO_INSTAGRAM)
                 o["lancamento_ml"] = True
-    comuns = [o for o in ofs if o.get("uau", 0) < config.UAU_MINIMO_POSTAR]
-    ofs = sorted((o for o in ofs if o.get("uau", 0) >= config.UAU_MINIMO_POSTAR),
+                if not camadas.ligado():
+                    o["uau_ia"] = o["uau"]
+                    o["uau"] = max(o["uau"], config.UAU_MINIMO_INSTAGRAM)
+    passa = [o for o in ofs if o.get("uau", 0) >= config.UAU_MINIMO_POSTAR or camadas.conhecido(o)]
+    comuns = [o for o in ofs if o not in passa]
+    ofs = sorted(passa,
                  key=lambda o: (o.get("uau_ia", o["uau"]), o["comissao"], -(o.get("posicao") or 99)), reverse=True)
     # variedade: no máximo 1 por família (nada de 3 câmeras) e só família que ainda tem vaga na fila
     from . import variedade

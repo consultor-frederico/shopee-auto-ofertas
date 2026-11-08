@@ -85,6 +85,25 @@ def aprovadas(ofs, analise):
     return escolhidas[:POR_EXECUCAO]
 
 
+def conhecido_do_dia(fila, pool):
+    """🏷️ Produto conhecido (marca famosa, campeão de vendas) para o canal quando a análise não aprovou nenhum achado:
+    a análise do canal reprova tudo que é "popular", então o conhecido não passa por ela. Máx. por dia em camadas."""
+    from . import camadas
+    if not camadas.ligado():
+        return []
+    hoje = agora().strftime("%Y-%m-%d")
+    ja = sum(1 for o in fila["ofertas"].values() if o.get("whatsapp") == "ok" and o.get("whatsapp_conhecido")
+             and str(o.get("whatsapp_em") or "").startswith(hoje))
+    if ja >= camadas.WHATSAPP_CONHECIDOS_POR_DIA:
+        return []
+    for o in pool:
+        if o.get("whatsapp") in (None, "reprovado", "pendente_analise") and camadas.conhecido(o):
+            o["whatsapp_conhecido"] = True
+            print(f"🏷️  Conhecido para o canal ({camadas.motivo_conhecido(o)}): {o.get('titulo')}")
+            return [o]
+    return []
+
+
 def texto_whatsapp(o):
     """Texto no formato do WhatsApp (*negrito*, ~riscado~, _itálico_)."""
     gancho = []
@@ -108,6 +127,10 @@ def texto_whatsapp(o):
     partes = []
     if o.get("nivel") == "achado":
         partes += ["💎 *ACHADO ESCONDIDO*", ""]
+    else:
+        from . import camadas
+        if camadas.selo_ze(o):   # ⭐ especial (src/camadas.py)
+            partes += ["⭐ *ACHADO DO ZÉ*", ""]
     partes += [f"🔥 *{o['titulo'].replace('*', '')}*", ""]
     if gancho:
         partes += gancho + [""]
@@ -253,6 +276,8 @@ def rodar():
             except Exception as e:
                 print(f"::warning::Não consegui avisar a falha da análise: {e}")
         ofs = aprovadas(pool, analise)
+        if not ofs:
+            ofs = conhecido_do_dia(fila, pool)   # 🏷️ nenhum achado aprovado: vai um produto conhecido (src/camadas.py)
         salvar_fila(fila)   # guarda as marcações de reprovado/pendente/repetido
     if not ofs:
         print(f"Nenhuma oferta aprovada para o canal nesta rodada ({len(analise)} analisadas).")

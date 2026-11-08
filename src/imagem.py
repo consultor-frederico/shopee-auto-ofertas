@@ -186,6 +186,40 @@ def selo_achado(d, x, y, escala=1.0):
     return w
 
 
+ZE_OURO, ZE_OURO_ESCURO, ZE_OURO_CLARO = "#D9A21B", "#6B4A0A", "#FFE9A8"
+
+
+def tem_selo_ze(oferta):
+    from . import camadas
+    return camadas.selo_ze(oferta)
+
+
+def selo_ze(d, x, y, escala=1.0):
+    """Selo dourado "⭐ ACHADO DO ZÉ" dos especiais (src/camadas.py), canto superior esquerdo em (x, y)."""
+    f1, f2 = _fonte(int(36 * escala), "Black"), _fonte(int(22 * escala), "Bold")
+    t1, t2 = "ACHADO DO ZÉ", "O ZÉ GARIMPOU E APROVOU"
+    h = int(92 * escala)
+    ic = int(30 * escala)
+    px = int(24 * escala)
+    w = 2 * ic + int(16 * escala) + max(d.textlength(t1, font=f1), d.textlength(t2, font=f2)) + 2 * px
+    d.rounded_rectangle([x + 4, y + 6, x + w + 4, y + h + 6], h // 2, fill=ZE_OURO_ESCURO)
+    d.rounded_rectangle([x, y, x + w, y + h], h // 2, fill=ZE_OURO, outline="#FFFFFF", width=max(3, int(4 * escala)))
+    cx, cy = x + px + ic, y + h / 2
+    d.ellipse([cx - ic, cy - ic, cx + ic, cy + ic], fill="#FFFFFF")
+    _estrela(d, cx, cy + 1 * escala, ic * 0.78, ZE_OURO)
+    tx = x + px + 2 * ic + int(16 * escala)
+    d.text((tx, y + int(10 * escala)), t1, font=f1, fill="#FFFFFF")
+    d.text((tx, y + int(54 * escala)), t2, font=f2, fill=ZE_OURO_CLARO)
+    return w
+
+
+def moldura_ze(d, caixa, raio, escala=1.0):
+    """Contorno dourado no cartão da foto do especial."""
+    x0, y0, x1, y1 = caixa
+    e = int(10 * escala)
+    d.rounded_rectangle([x0 - e, y0 - e, x1 + e, y1 + e], raio + e, outline=ZE_OURO, width=e)
+
+
 def moldura_achado(d, caixa, raio, escala=1.0):
     """Contorno turquesa no cartão da foto — o post de achado se destaca no feed."""
     x0, y0, x1, y1 = caixa
@@ -243,6 +277,9 @@ def gerar(oferta: dict, destino, foto: Image.Image = None, moldura=True):
     if eh_achado(oferta):   # 💎 achado escondido: moldura turquesa + faixa no pé da foto
         moldura_achado(d, (cx0, cy0, cx1, cy1), 40)
         selo_achado(d, cx0 + 28, cy1 - 28 - 92)
+    elif tem_selo_ze(oferta):   # ⭐ especial (src/camadas.py): moldura dourada + selo ACHADO DO ZÉ
+        moldura_ze(d, (cx0, cy0, cx1, cy1), 40)
+        selo_ze(d, cx0 + 28, cy1 - 28 - 92)
 
     # Selo de desconto
     if oferta.get("desconto"):

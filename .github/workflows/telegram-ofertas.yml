@@ -37,6 +37,7 @@ jobs:
           AWIN_FEED_URL: ${{ secrets.AWIN_FEED_URL }}
           AWIN_ATIVO: ${{ vars.AWIN_ATIVO || '1' }}   # Shark Ninja ligada; para desligar: Settings → Secrets and variables → Actions → Variables → AWIN_ATIVO = 0
           LINHAS: ${{ vars.LINHAS || '1' }}   # 🗂️ linhas temáticas (src/linhas.py), ligadas 04/11/2026 (ok do Fred). Desligar: variável LINHAS = 0
+          CAMADAS: ${{ vars.CAMADAS || '1' }}   # ⭐/🏷️ especiais + conhecidos (src/camadas.py). Desligar: variável CAMADAS = 0
         run: python -m src.telegram_ofertas
 
       - name: Salvar fila
