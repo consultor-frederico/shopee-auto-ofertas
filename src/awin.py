@@ -268,6 +268,13 @@ def motivo_recusa(o):
         from .variedade import franquia
         if franquia(o):
             return "licença (franquia)"
+    if m.get("linhas_proprias") or m.get("bloquear"):
+        n = _sem_acento(o["nome"])
+        if any(b in n for b in m.get("bloquear", ())):
+            return "licença (franquia)"
+        resto = re.sub(rf"^\s*{re.escape(_sem_acento(m['nome']))}\s+", "", n)
+        if " - " in resto and resto.split(" - ", 1)[0].strip() not in m.get("linhas_proprias", ()):
+            return "licença (franquia)"
     return None
 
 
