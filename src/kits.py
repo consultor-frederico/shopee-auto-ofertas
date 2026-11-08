@@ -203,7 +203,7 @@ TEMAS = {
                             "garrafa térmica academia", "faixa elástica exercício", "corda de pular",
                             "fone bluetooth esportivo", "pochete corrida", "toalha de academia",
                             "porta celular braço corrida", "squeeze academia", "tapete de yoga",
-                            "rolo de massagem", "luva academia", "meia de compressão"],
+                            "rolo de massagem", "luva academia", "joelheira esportiva"],
                  "embaralhar": True,
                  "hashtags": "#esporte #corrida #academia #treino"},
 }
@@ -483,6 +483,12 @@ def escolher(tema, conferir_foto=True):
             print(f"   '{termo}': nada que passe nas regras.")
             continue
         o["titulo"] = o.pop("titulo_ia", None) or _titulo(o["nome"])
+        if marcas.eh_marca(o) and cfg.get("teto_marcas"):   # tênis de loja oficial: marca e modelo, sem tamanho/cor
+            m = re.match(r"^(.*?)\s+(?:masculin|feminin|unissex|infantil|juvenil)", o["nome"], re.I)
+            t = m.group(1) if m else re.sub(r"\s+\d{2}(?:[.,]5)?$", "", o["nome"])
+            t = re.sub(r"\s+(azul|preta|preto|branca|branco|cinza|verde|vermelha|vermelho|rosa|bege|roxa|roxo|"
+                       r"amarela|amarelo|laranja|marinho|dourada|dourado|prata)(\s+e\s+\w+)?$", "", t, flags=re.I)
+            o["titulo"] = _titulo(t)
         cabeca = " ".join(o["titulo"].lower().split()[:2])
         if any(" ".join(it["oferta"]["titulo"].lower().split()[:2]) == cabeca for it in itens):
             print(f"   '{termo}': {o['titulo']} repete um item do kit; pulando.")
