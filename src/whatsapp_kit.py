@@ -242,22 +242,23 @@ def rodar():
             time.sleep(2)
         salvar_fila(fila)
         return
-    if forcada:   # reenvio manual de uma oferta específica, no formato atual
-        o = fila["ofertas"].get(forcada)
-        if not o:
-            print(f"::warning::Oferta {forcada} não encontrada na fila.")
-            return
-        situacao = precos.conferir(o)   # reenvio também confere o preço na loja antes de mandar
-        if situacao in ("sumiu", "subiu"):
-            print(f"::warning::Oferta {forcada} não enviada: o preço {situacao} na loja.")
-            salvar_fila(fila)
-            return
+    if forcada:   # reenvio manual de uma ou mais ofertas da fila (números separados por vírgula), no formato atual
         pasta = Path(tempfile.mkdtemp())
-        arte = pasta / f"{o['id']}.jpg"
-        imagem.gerar(o, arte, foto=imagem._baixar_foto(o["imagem"]))
-        enviar(o, arte)
-        salvar_fila(fila)   # guarda o preço conferido
-        print(f"📲 Reenviada: {o['id']} — {o.get('titulo', '')} (R$ {o['preco_fmt']})")
+        for oid in [i for i in forcada.replace(",", " ").split() if i]:
+            o = fila["ofertas"].get(oid)
+            if not o:
+                print(f"::warning::Oferta {oid} não encontrada na fila.")
+                continue
+            situacao = precos.conferir(o)   # reenvio também confere o preço na loja antes de mandar
+            if situacao in ("sumiu", "subiu"):
+                print(f"::warning::Oferta {oid} não enviada: o preço {situacao} na loja.")
+                continue
+            arte = pasta / f"{o['id']}.jpg"
+            imagem.gerar(o, arte, foto=imagem._baixar_foto(o["imagem"]))
+            enviar(o, arte)
+            print(f"📲 Reenviada: {o['id']} — {o.get('titulo', '')} (R$ {o['preco_fmt']})")
+            time.sleep(2)
+        salvar_fila(fila)   # guarda os preços conferidos
         return
     pool = candidatas(fila)
     if not pool:
