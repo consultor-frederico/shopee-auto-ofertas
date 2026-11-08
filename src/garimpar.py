@@ -574,13 +574,24 @@ def garimpar(buscar=shopee.buscar_ofertas):
         o["so_telegram"] = so_telegram(fila, o["id"])
     candidatos = candidatos + shark
     # Mercado Livre (04/11/2026): mais vendidos das categorias da vez, pela mesma IA de "uau"
-    candidatos = candidatos + mercadolivre.candidatos(fila, ja_usado, julgar=julgar_ml,
-                                                      palavras=[(c, p) for c, p, _ in escolhidas])
+    # 08/11/2026 (Fred): o ML tem vaga própria na fila (carrossel diário só do ML). mercadolivre.candidatos já
+    # tira repetição de família e o que já está na fila; aqui só não pode bater família com o resto da rodada.
+    ml = mercadolivre.candidatos(fila, ja_usado, julgar=julgar_ml, palavras=[(c, p) for c, p, _ in escolhidas])
     lojas_na_fila = {}
     for r in fila["ofertas"].values():   # só conta quem ainda pode ir para o Instagram (regra antiga não ocupa vaga)
         if r["status"] == "pendente" and r.get("loja") and "gancho" in r:
             lojas_na_fila[r["loja"]] = lojas_na_fila.get(r["loja"], 0) + 1
     escolhidos = selecionar(candidatos, config.OFERTAS_POR_GARIMPO, variedade.contar_pendentes(fila), lojas_na_fila)
+    fams_rodada = {variedade.familia(o) for o in escolhidos}
+    for o in ml:
+        if variedade.familia(o) in fams_rodada:
+            continue
+        fams_rodada.add(variedade.familia(o))
+        if camadas.conhecido(o) and not variedade.diferenciado(o):
+            o["camada"] = "conhecido"
+            o["motivo_conhecido"] = camadas.motivo_conhecido(o)
+        escolhidos.append(o)
+    print(f"🛒 Mercado Livre: {sum(o.get('plataforma') == 'mercadolivre' for o in escolhidos)} entram na fila (vaga própria)")
     fontes_ia = 0
     for o in escolhidos:
         texto = legenda.gerar(o)
