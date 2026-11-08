@@ -264,9 +264,9 @@ def buscar(termo, quantos=12):
 
 # ---------------------------------------------------------------- uso no garimpo
 CATEGORIAS_POR_GARIMPO = int(os.getenv("ML_CATEGORIAS_POR_GARIMPO", "3"))
-PRODUTOS_POR_CATEGORIA = int(os.getenv("ML_PRODUTOS_POR_CATEGORIA", "6"))
-SUBCATEGORIAS_POR_CATEGORIA = int(os.getenv("ML_SUBCATEGORIAS", "4"))
-POR_GARIMPO = int(os.getenv("ML_POR_GARIMPO", "3"))
+PRODUTOS_POR_CATEGORIA = int(os.getenv("ML_PRODUTOS_POR_CATEGORIA", "10"))
+SUBCATEGORIAS_POR_CATEGORIA = int(os.getenv("ML_SUBCATEGORIAS", "6"))
+POR_GARIMPO = int(os.getenv("ML_POR_GARIMPO", "8"))
 
 
 def configurado():
@@ -328,7 +328,7 @@ def candidatos(fila, ja_usado, julgar=None, palavras=None):
                                    pular=lambda i: ja_usado(fila, i) or i in vistos, info=(nome_sub, nicho, pct))
             vistos.update(o["id"] for o in lista)
         # 2º: subcategorias sorteadas das categorias da vez
-        for cat in _categorias_da_vez() if len(lista) < 10 else []:
+        for cat in _categorias_da_vez() if len(lista) < 20 else []:
             _, nicho, pct = CATEGORIAS[cat]
             for sub, nome_sub in _subcategorias(cat):
                 lista += mais_vendidos(sub, quantos=PRODUTOS_POR_CATEGORIA, preco_max=config.PRECO_MAXIMO,
