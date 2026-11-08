@@ -194,6 +194,18 @@ TEMAS = {
                          "fita led rgb", "suporte headset", "controle bluetooth celular"],
               "embaralhar": True,
               "hashtags": "#gamer #setupgamer #achadinhosgamer"},
+    # 08/11/2026: pedido do Fred depois que a Lauri Esporte entrou. "marca:termo" busca só nas lojas oficiais
+    # (Lauri: tênis de verdade, com teto_marcas), o resto na Shopee/AliExpress até o teto. Fora do rodízio até o ok.
+    "esportes": {"titulo": "KIT DO ESPORTE", "teto": 120, "teto_marcas": 1000, "meses": [], "rodizio": False,
+                 "gancho": "Kit do esporte: {n} achados pra treinar com estilo 🏃",
+                 "termos": ["marca:tênis asics", "marca:tênis mizuno", "marca:tênis new balance",
+                            "marca:tênis on running", "marca:tênis olympikus", "marca:chuteira",
+                            "garrafa térmica academia", "faixa elástica exercício", "corda de pular",
+                            "fone bluetooth esportivo", "pochete corrida", "toalha de academia",
+                            "porta celular braço corrida", "squeeze academia", "tapete de yoga",
+                            "rolo de massagem", "luva academia", "meia de compressão"],
+                 "embaralhar": True,
+                 "hashtags": "#esporte #corrida #academia #treino"},
 }
 
 
@@ -401,6 +413,10 @@ def _filtro_ia(tema, termo, ofs):
     try:
         extra = ("\nÉ um kit de NATAL: só vale o que é um presente bonito de dar e de ganhar."
                  if any(t["titulo"] == tema and t.get("natal") for t in TEMAS.values()) else "")
+        from . import marcas
+        if all(marcas.eh_marca(o) for o in ofs):   # loja oficial (ex.: Lauri vende Asics original): marca famosa serve
+            extra += ("\nATENÇÃO: todos são de LOJA OFICIAL/revenda autorizada, então marca famosa (Asics, On, Mizuno, "
+                      "New Balance...) é original e SERVE; aqui o título pode ter a marca e o modelo (ex.: \"Asics Gel-Nimbus 28\").")
         bruto = _chamar_groq(PROMPT_IA.format(tema=tema.title(), termo=termo, lista=lista, extra=extra))
         ok = json.loads(re.search(r"\{.*\}", bruto, re.S).group(0)).get("ok", [])
         saida = []
@@ -443,10 +459,17 @@ def escolher(tema, conferir_foto=True):
         usados_t = _carregar_estado().get("termos", {}).get(tema, {})
         termos.sort(key=lambda t: usados_t.get(t, ""))
     from . import marcas
+    if any(t.startswith("marca:") for t in termos):   # loja oficial primeiro (no máximo KIT_MAX_MARCAS entram)
+        termos.sort(key=lambda t: not t.startswith("marca:"))
     for termo in termos:
         if len(itens) >= QTD:
             break
-        if cfg.get("so_marcas"):
+        teto = cfg["teto"]
+        if termo.startswith("marca:"):
+            if sum(marcas.eh_marca(it["oferta"]) for it in itens) >= KIT_MAX_MARCAS:
+                continue
+            termo, fontes, teto = termo[6:], ("marcas",), cfg.get("teto_marcas", teto)
+        elif cfg.get("so_marcas"):
             fontes = ("marcas",)
         else:
             fontes = ["shopee"]
@@ -454,7 +477,7 @@ def escolher(tema, conferir_foto=True):
                 fontes.append("aliexpress")
             if sum(marcas.eh_marca(it["oferta"]) for it in itens) < KIT_MAX_MARCAS:
                 fontes.append("marcas")
-        o = melhor_do_termo(termo, cfg["teto"], fila, [it["oferta"] for it in itens], cfg["titulo"], fontes,
+        o = melhor_do_termo(termo, teto, fila, [it["oferta"] for it in itens], cfg["titulo"], fontes,
                             natal, bloqueados, familias_fora)
         if not o:
             print(f"   '{termo}': nada que passe nas regras.")
