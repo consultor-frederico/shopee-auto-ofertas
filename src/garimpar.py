@@ -204,16 +204,20 @@ _IDS_ANA = None
 
 
 def ids_da_ana():
-    """Produtos que a Ana postou ou tem na fila (30 dias): o Garimpo não repete, para as contas não parecerem
-    ligadas (31/10/2026, o Garimpo passou a buscar também o nicho da Ana). Lido 1x por rodada."""
+    """Produtos que a OUTRA conta já pegou (30 dias), para as contas não parecerem ligadas.
+    08/11/2026 (Fred): o Garimpo é a prioridade e a Ana é a segunda opção. Então:
+    - Garimpo: só pula o que a Ana já POSTOU (o que está só na fila dela, o Garimpo pode pegar);
+    - Ana: pula tudo o que o Garimpo postou ou tem na fila. Lido 1x por rodada."""
     global _IDS_ANA
     if _IDS_ANA is None:
         _IDS_ANA = set()
-        arq = config.PASTA_DADOS / "ana" / "fila.json"
-        if config.PERFIL == "garimpo" and arq.exists():
+        outra = {"garimpo": "ana", "ana": "garimpo"}.get(config.PERFIL)
+        arq = config.PERFIS[outra]["pasta_dados"] / "fila.json" if outra else None
+        if arq and arq.exists():
             try:
                 ofertas = json.loads(arq.read_text(encoding="utf-8")).get("ofertas", {})
-                _IDS_ANA = {i for i, r in ofertas.items() if r.get("criado_em") and _dias(r) < config.DIAS_SEM_REPETIR}
+                _IDS_ANA = {i for i, r in ofertas.items() if r.get("criado_em") and _dias(r) < config.DIAS_SEM_REPETIR
+                            and (config.PERFIL == "ana" or r.get("postado_em"))}
             except (OSError, ValueError, KeyError):
                 pass
     return _IDS_ANA
@@ -224,7 +228,8 @@ def _filtrar(fila, ofertas, origem, candidatos, recusas):
         if o["id"] in candidatos or ja_usado(fila, o["id"]):
             continue
         if o["id"] in ids_da_ana():
-            recusas["já está na Ana"] = recusas.get("já está na Ana", 0) + 1
+            k = "já está no Garimpo" if config.PERFIL == "ana" else "já está na Ana"
+            recusas[k] = recusas.get(k, 0) + 1
             continue
         m = motivo_recusa(o) or (aliexpress.recusa_extra(o) if o["plataforma"] == "aliexpress" else None)
         if m:
@@ -569,7 +574,7 @@ def garimpar(buscar=shopee.buscar_ofertas):
     busca_profunda.registrar(memoria, escolhidas, candidatos)
     busca_profunda.salvar(memoria)
     # Marcas oficiais (Awin: Shark Ninja, Arno): catálogo da marca, regras próprias — entra depois da curadoria da Shopee/AliExpress
-    shark = awin.candidatos(fila, ja_usado, julgar=julgar_marcas)
+    shark = awin.candidatos(fila, lambda f, i: ja_usado(f, i) or i in ids_da_ana(), julgar=julgar_marcas)
     for o in shark:
         o["so_telegram"] = so_telegram(fila, o["id"])
     candidatos = candidatos + shark
