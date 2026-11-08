@@ -338,8 +338,7 @@ def candidatos(fila, ja_usado, julgar=None, palavras=None):
         for o in lista:
             if o["categoria"] not in config.NICHO:
                 recusas["fora do nicho"] = recusas.get("fora do nicho", 0) + 1
-            elif o["comissao"] < config.NIVEIS["prata"]["comissao_rs"]:
-                recusas["comissão baixa"] = recusas.get("comissão baixa", 0) + 1
+            # 08/11/2026 (Fred): sem mínimo de comissão no ML (o livro de R$ 41 que vendeu rendeu ~R$ 5)
             else:
                 ofs.append(o)
     except Exception as e:
