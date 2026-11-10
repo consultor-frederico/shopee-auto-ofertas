@@ -638,7 +638,7 @@ def gerar(tema, itens, pasta):
     return {"tema": tema, "titulo": TEMAS[tema]["titulo"], "arquivos": arqs, "legenda": legenda(tema, itens),
             "tiktok": tiktok, "legenda_tiktok": tiktok_kit.legenda([it["oferta"] for it in itens], TEMAS[tema]["titulo"])
             if tiktok else "",
-            "itens": [{k: it["oferta"].get(k) for k in ("id", "nome", "titulo", "preco_fmt", "preco", "link_afiliado",
+            "itens": [{k: it["oferta"].get(k) for k in ("id", "loja_id", "nome", "titulo", "preco_fmt", "preco", "link_afiliado",
                                                          "plataforma", "imagem", "nota", "vendas", "comissao",
                                                          "comissao_pct", "loja", "categoria", "palavra", "num")}
                       for it in itens],

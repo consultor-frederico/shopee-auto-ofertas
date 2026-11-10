@@ -61,9 +61,32 @@ def link_curto(url_produto, sub_ids):
     return ((shopee.consultar(q, tentativas=2).get("generateShortLink") or {}).get("shortLink")) or ""
 
 
+_lojas_api = {}   # item → loja vinda da API nesta rodada (inclusive "não achou")
+
+
+def _loja_pela_api(item_id):
+    """10/11/2026: itens sem loja_id (kits antigos, cópias de top.json) saíam com o link normal, sem a marcação
+    do canal. Pergunta a loja à Shopee pelo ID do item (1 consulta por item por rodada)."""
+    if item_id not in _lojas_api:
+        try:
+            nos = shopee.buscar_por_item(item_id)
+            _lojas_api[item_id] = nos[0].get("shopId") if nos else None
+        except Exception as e:
+            print(f"::warning::Loja do item {item_id} não veio da Shopee: {str(e)[:120]}")
+            _lojas_api[item_id] = None
+    return _lojas_api[item_id]
+
+
 def _url_produto(o):
     item = str(o.get("id") or "")
     loja = o.get("loja_id") or (_loja_da_fila(item) if item.isdigit() else None)
+    if not loja and item.isdigit():
+        loja = _loja_pela_api(item)
+        if loja:
+            try:
+                o["loja_id"] = loja   # quem salvar a oferta depois já guarda a loja
+            except TypeError:
+                pass
     if loja and item.isdigit():
         return f"https://shopee.com.br/product/{int(loja)}/{int(item)}"
     return ""
