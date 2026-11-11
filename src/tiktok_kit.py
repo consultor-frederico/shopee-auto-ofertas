@@ -19,6 +19,9 @@ TAGS_CATEGORIA = {"lar": "#casaorganizada #utilidadesdomesticas", "pet": "#pet #
                   "beleza": "#beleza #maquiagem", "cabelo": "#cabelo #cuidadoscomcabelo",
                   "moda": "#moda #lookdodia", "autocuidado": "#autocuidado #selfcare",
                   "casa_fofa": "#decoracao #quartoaesthetic"}
+# 11/11/2026 (ok do Fred): o TikTok traz gente de fora; a legenda leva esse pessoal para o Canal do WhatsApp e o
+# Telegram (botões na página do perfil), onde as ofertas têm link e é onde as vendas acontecem.
+CANAIS = "📲 Ofertas todo dia no Canal do WhatsApp e no Telegram do Garimpo: os botões estão no link do perfil."
 NOME_LOJA = {"shopee": "Shopee", "aliexpress": "AliExpress", "mercadolivre": "Mercado Livre", **{p: m["nome"] for p, m in marcas.MARCAS.items()}}
 
 
@@ -57,7 +60,7 @@ def legenda(ofertas, tema=None):
         nome = (o.get("titulo") or o.get("nome") or "").replace("#", "")
         linhas.append(f"Nº {o.get('num', '?')} {nome} — R$ {o.get('preco_fmt')}")
     linhas += ["", f"👉 Gostou? Digite o número (Nº) do achado no link do perfil ({config.PAGINA_BIO}) e abre direto na loja.",
-               "Preços do dia do post, podem mudar na loja. Links de afiliado: você paga o mesmo.", ""]
+               CANAIS, "Preços do dia do post, podem mudar na loja. Links de afiliado: você paga o mesmo.", ""]
     cats = []
     for o in ofertas:
         t = TAGS_CATEGORIA.get(o.get("categoria"))
@@ -123,7 +126,7 @@ def enviar(arquivos, texto):
 def legenda_ze(texto):
     """Legenda do Reels do Zé para o TikTok: só o 1º parágrafo (sem o 'comenta QUERO'), a vitrine e 5 hashtags."""
     corpo = texto.split("\n\n")[0].replace("#", "").strip()
-    return (f"{corpo}\n\n👉 Os achados do Zé com link estão no perfil ({config.PAGINA_BIO}).\n\n"
+    return (f"{corpo}\n\n👉 Os achados do Zé com link estão no perfil ({config.PAGINA_BIO}).\n{CANAIS}\n\n"
             "#zegarimpo #garimpovip #achadinhos #achadinhosshopee #achadosdashopee")
 
 
