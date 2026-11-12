@@ -1,75 +1,31 @@
 
-📸 https://cf.shopee.com.br/file/br-11134207-7r98o-lrh7gznjv3tw9b
-👁️  Foto lida pelo Gemini (gemini-2.5-flash).
-   leitura: {'tem_produto': True, 'o_que_e': 'um ventilador de coluna preto', 'busca': 'ventilador de coluna preto', 'busca_curta': 'ventilador', 'infantil': False}
-   → o Zé entendeu: um ventilador de coluna preto | busca: "ventilador de coluna preto"
-⚠️  Shopee 'ventilador de coluna preto' (página 1, ordem 1, tentativa 1): Shopee retornou erro: [{'message': 'error [10000]: System Error', 'path': ['productOfferV2'], 'exten
-Awin: acrescentando 2 feed(s) de marca que não estavam no AWIN_FEED_URL.
-⚠️  AliExpress 'ventilador de coluna preto' (LAST_VOLUME_DESC): AliExpress resp_code 405: The result is empty
-🏬 Marcas (Awin): 1446 produtos válidos no feed {'Shark Ninja': 12, 'Arno': 124, 'VX Case': 773, 'Lego': 160, 'Lauri Esporte': 377} | recusados: {'acessório ou reposição': 1520, 'sem nome': 7, 'acima de R$ 500': 311, 'licença (franquia)': 207} | versões de voltagem repetidas: 2361
-⚠️  Shopee 'ventilador de coluna preto' (página 1, ordem 1, tentativa 2): Shopee retornou erro: [{'message': 'error [10000]: System Error', 'path': ['productOfferV2'], 'exten
-⚠️  AliExpress 'ventilador de coluna preto' (SALE_PRICE_ASC): AliExpress resp_code 405: The result is empty
-⚠️  Shopee 'ventilador de coluna preto' (página 1, ordem 2, tentativa 1): Shopee retornou erro: [{'message': 'error [10000]: System Error', 'path': ['productOfferV2'], 'exten
-⚠️  Shopee 'ventilador de coluna preto' (página 1, ordem 2, tentativa 2): Shopee retornou erro: [{'message': 'error [10000]: System Error', 'path': ['productOfferV2'], 'exten
-⚠️  Shopee 'ventilador de coluna preto' (página 1, ordem 2, tentativa 3): Shopee retornou erro: [{'message': 'error [10000]: System Error', 'path': ['productOfferV2'], 'exten
-🛒 'ventilador de coluna preto': encontrados {'shopee': 100, 'mercadolivre': 4, 'aliexpress': 0, 'marcas': 0}, para conferir [('shopee', 12), ('mercadolivre', 0), ('aliexpress', 0), ('marcas', 0)]
-⚠️  Gemini gemini-2.5-flash: HTTP 429 { "error": { "code": 429, "message": "You exceeded your current quota, please check your plan and billing details. For m
-⚠️  Gemini gemini-omni-1.2-flash: HTTP 429 { "error": { "code": 429, "message": "You exceeded your current quota, please check your plan and billing details. For m
-⚠️  Gemini gemini-omni-1.1-flash: HTTP 429 { "error": { "code": 429, "message": "You exceeded your current quota, please check your plan and billing details. For m
-   Oi! 🤠 Aqui é o Zé Garimpo. Recebi sua foto! Pelo que eu vi, é um ventilador de coluna preto. Garimpei parecidos e separei os melhores 👇
-   1. Ventilador de Coluna VTR830 Refresh Turbo Pro Cadence Preto 127V — R$ 169,90 (Shopee) ⭐4.8 503 vendas
-      foto: https://cf.shopee.com.br/file/sg-11134201-8257z-muxnfgcwsr2d7e
-   2. Ventilador 40Cm De Coluna Turbo126w Preto — R$ 159,90 (Shopee) ⭐4.8 311 vendas
-      foto: https://cf.shopee.com.br/file/br-11134207-81zto-mkmfp030ywap82
-
-📸 https://cf.shopee.com.br/file/sg-11134201-7rdwm-mc2jv1qmrooz0e
-⚠️  Foto/Gemini gemini-2.5-flash: HTTP 429 { "error": { "code": 429, "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error,
-⚠️  Foto/Gemini gemini-omni-1.2-flash: HTTP 429 { "error": { "code": 429, "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error,
-⚠️  Foto/Gemini gemini-omni-1.1-flash: HTTP 429 { "error": { "code": 429, "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error,
-ℹ️  Modelos da Groq: ['openai/gpt-oss-20b', 'whisper-large-v3', 'qwen/qwen3.8-27b', 'meta-llama/llama-prompt-guard-2-86m', 'canopylabs/orpheus-v1-english', 'openai/gpt-oss-safeguard-20b', 'whisper-large-v3-turbo', 'allam-2-7b', 'canopylabs/orpheus-arabic-saudi', 'openai/gpt-oss-120b', 'meta-llama/llama-prompt-guard-2-22m']
-👁️  Foto lida pela Groq (qwen/qwen3.8-27b).
-   leitura: {'tem_produto': True, 'o_que_e': 'um processador de alimentos preto', 'busca': 'processador de alimentos', 'busca_curta': 'processador de alimentos', 'infantil': False}
-   → o Zé entendeu: um processador de alimentos preto | busca: "processador de alimentos"
-⚠️  Shopee 'processador de alimentos' (página 1, ordem 1, tentativa 1): Shopee retornou erro: [{'message': 'error [10000]: System Error', 'path': ['productOfferV2'], 'exten
-⚠️  Shopee 'processador de alimentos' (página 2, ordem 1, tentativa 1): Shopee retornou erro: [{'message': 'error [10000]: System Error', 'path': ['productOfferV2'], 'exten
-⚠️  Shopee 'processador de alimentos' (página 2, ordem 1, tentativa 2): Shopee retornou erro: [{'message': 'error [10000]: System Error', 'path': ['productOfferV2'], 'exten
-⚠️  Shopee 'processador de alimentos' (página 1, ordem 2, tentativa 1): Shopee retornou erro: [{'message': 'error [10000]: System Error', 'path': ['productOfferV2'], 'exten
-🛒 'processador de alimentos': encontrados {'shopee': 150, 'mercadolivre': 0, 'aliexpress': 100, 'marcas': 0}, para conferir [('shopee', 12), ('mercadolivre', 0), ('aliexpress', 5), ('marcas', 0)]
-⚠️  Gemini gemini-2.5-flash: HTTP 429 { "error": { "code": 429, "message": "You exceeded your current quota, please check your plan and billing details. For m
-⚠️  Gemini gemini-omni-1.2-flash: HTTP 429 { "error": { "code": 429, "message": "You exceeded your current quota, please check your plan and billing details. For m
-⚠️  Gemini gemini-omni-1.1-flash: HTTP 429 { "error": { "code": 429, "message": "You exceeded your current quota, please check your plan and billing details. For m
-   Oi! 🤠 Aqui é o Zé Garimpo. Recebi sua foto! Pelo que eu vi, é um processador de alimentos preto. Garimpei parecidos e separei os melhores 👇
-   1. Processador Triturador De Alimentos New Oggi Mallory Cor Preto — R$ 79,90 (Shopee) ⭐4.9 3084 vendas
-      foto: https://cf.shopee.com.br/file/sg-11134201-7rdwm-mc2jv1qmrooz0e
-   2. Mini Processador Elétrico 700ml 300W 4 Lâminas para Alimentos Carne Legumes 110V — R$ 57,60 (Shopee) ⭐4.9 1099 vendas
-      foto: https://cf.shopee.com.br/file/br-11134207-820ly-msmmi5858b9iaf
-
-📸 https://ae-pic-a1.aliexpress-media.com/kf/S0314ba195867498ebaed82f658a9fd351.jpg
-⚠️  Foto/Gemini gemini-2.5-flash: HTTP 429 { "error": { "code": 429, "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error,
-⚠️  Foto/Gemini gemini-omni-1.2-flash: HTTP 429 { "error": { "code": 429, "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error,
-⚠️  Foto/Gemini gemini-omni-1.1-flash: HTTP 429 { "error": { "code": 429, "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error,
-ℹ️  Modelos da Groq: ['whisper-large-v3', 'qwen/qwen3.8-27b', 'allam-2-7b', 'canopylabs/orpheus-v1-english', 'canopylabs/orpheus-arabic-saudi', 'meta-llama/llama-prompt-guard-2-22m', 'meta-llama/llama-prompt-guard-2-86m', 'openai/gpt-oss-20b', 'openai/gpt-oss-120b', 'whisper-large-v3-turbo', 'openai/gpt-oss-safeguard-20b']
-👁️  Foto lida pela Groq (qwen/qwen3.8-27b).
-   leitura: {'tem_produto': True, 'o_que_e': 'um console portátil retrô prateado', 'busca': 'console portátil retrô', 'busca_curta': 'console portátil', 'infantil': False}
-   → o Zé entendeu: um console portátil retrô prateado | busca: "console portatil retro"
-⚠️  Shopee 'console portatil retro' (página 2, ordem 1, tentativa 1): Shopee retornou erro: [{'message': 'error [10000]: System Error', 'path': ['productOfferV2'], 'exten
-⚠️  Shopee 'console portatil retro' (página 1, ordem 2, tentativa 1): Shopee retornou erro: [{'message': 'error [10000]: System Error', 'path': ['productOfferV2'], 'exten
-⚠️  Shopee 'console portatil retro' (página 1, ordem 2, tentativa 2): Shopee retornou erro: [{'message': 'error [10000]: System Error', 'path': ['productOfferV2'], 'exten
-🛒 'console portatil retro': encontrados {'shopee': 150, 'mercadolivre': 2, 'aliexpress': 14, 'marcas': 0}, para conferir [('shopee', 5), ('mercadolivre', 1), ('aliexpress', 2), ('marcas', 0)]
-   Oi! 🤠 Aqui é o Zé Garimpo. Recebi sua foto! Pelo que eu vi, é um console portátil retrô prateado. Garimpei parecidos e separei os melhores 👇
-   1. Console Portátil Retrô 400 Jogos Tela 3 Pol TV Out Bateria até 6H — R$ 46,70 (Shopee) ⭐4.8 1492 vendas
-      foto: https://cf.shopee.com.br/file/br-11134207-81ztc-mj9ayw9ccxdtd5
-   2. Console Mini Vídeo Game Portátil 1000 Jogos Retrô Clássico 4.8" — R$ 145,86 (Shopee) ⭐4.8 544 vendas
-      foto: https://cf.shopee.com.br/file/br-11134207-7r98o-m7gt8uukbqnmee
-   3. Console de videogames retro portátil portátil, Mini Arcade Player, Handheld Held — R$ 125,91 (AliExpress) ⭐4.9 365 vendas
-      foto: https://ae-pic-a1.aliexpress-media.com/kf/S60e745f020fc4a58a2c928e8618687a2h.jpg
-
 📸 https://http2.mlstatic.com/D_NQ_NP_731428-MLA117878806524_102026-F.jpg
-👁️  Foto lida pelo Gemini (gemini-2.5-flash).
-   leitura: {'tem_produto': True, 'o_que_e': 'um kit de organizadores de armário', 'busca': 'organizador de armário colcha', 'busca_curta': 'organizador de armário', 'infantil': False}
-   → sem produto reconhecido: o Zé pediria outra foto ou o nome.
-
-📸 https://raw.githubusercontent.com/consultor-frederico/shopee-auto-ofertas/main/assets/ze/capa/ze_joia.png
-👁️  Foto lida pelo Gemini (gemini-2.5-flash).
-   leitura: {'tem_produto': False, 'o_que_e': '', 'busca': '', 'busca_curta': '', 'infantil': False}
-   → sem produto reconhecido: o Zé pediria outra foto ou o nome.
+⚠️  Foto/Gemini gemini-2.5-flash: HTTP 429 { "error": { "code": 429, "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error,
+⚠️  Foto/Gemini gemini-omni-1.2-flash: HTTP 429 { "error": { "code": 429, "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error,
+⚠️  Foto/Gemini gemini-omni-1.1-flash: HTTP 429 { "error": { "code": 429, "message": "You exceeded your current quota, please check your plan and billing details. For more information on this error,
+ℹ️  Modelos da Groq: ['whisper-large-v3-turbo', 'meta-llama/llama-prompt-guard-2-86m', 'whisper-large-v3', 'openai/gpt-oss-safeguard-20b', 'qwen/qwen3.8-27b', 'openai/gpt-oss-120b', 'meta-llama/llama-prompt-guard-2-22m', 'canopylabs/orpheus-arabic-saudi', 'allam-2-7b', 'openai/gpt-oss-20b', 'canopylabs/orpheus-v1-english']
+👁️  Foto lida pela Groq (qwen/qwen3.8-27b).
+   leitura: {'tem_produto': True, 'o_que_e': 'uma caixa organizadora de roupas', 'busca': 'caixa organizadora roupas', 'busca_curta': 'caixa organizadora', 'infantil': False}
+   → o Zé entendeu: uma caixa organizadora de roupas | busca: "caixa organizadora roupas"
+⚠️  Shopee 'caixa organizadora roupas' (página 1, ordem 1, tentativa 1): Shopee retornou erro: [{'message': 'error [10000]: System Error', 'path': ['productOfferV2'], 'exten
+Awin: acrescentando 2 feed(s) de marca que não estavam no AWIN_FEED_URL.
+🏬 Marcas (Awin): 1446 produtos válidos no feed {'Shark Ninja': 12, 'Arno': 124, 'VX Case': 773, 'Lego': 160, 'Lauri Esporte': 377} | recusados: {'acessório ou reposição': 1520, 'sem nome': 7, 'acima de R$ 500': 311, 'licença (franquia)': 207} | versões de voltagem repetidas: 2361
+⚠️  Shopee 'caixa organizadora roupas' (página 2, ordem 1, tentativa 1): Shopee retornou erro: [{'message': 'error [10000]: System Error', 'path': ['productOfferV2'], 'exten
+⚠️  Shopee 'caixa organizadora roupas' (página 1, ordem 2, tentativa 1): Shopee retornou erro: [{'message': 'error [10000]: System Error', 'path': ['productOfferV2'], 'exten
+⚠️  Shopee 'caixa organizadora' (página 1, ordem 1, tentativa 1): Shopee retornou erro: [{'message': 'error [10000]: System Error', 'path': ['productOfferV2'], 'exten
+⚠️  Shopee 'caixa organizadora' (página 1, ordem 1, tentativa 2): Shopee retornou erro: [{'message': 'error [10000]: System Error', 'path': ['productOfferV2'], 'exten
+⚠️  Shopee 'caixa organizadora' (página 2, ordem 1, tentativa 1): Shopee retornou erro: [{'message': 'error [10000]: System Error', 'path': ['productOfferV2'], 'exten
+⚠️  Shopee 'caixa organizadora' (página 2, ordem 1, tentativa 2): Shopee retornou erro: [{'message': 'error [10000]: System Error', 'path': ['productOfferV2'], 'exten
+⚠️  Shopee 'caixa organizadora' (página 2, ordem 1, tentativa 3): Shopee retornou erro: [{'message': 'error [10000]: System Error', 'path': ['productOfferV2'], 'exten
+⚠️  Shopee 'caixa organizadora' (página 1, ordem 2, tentativa 1): Shopee retornou erro: [{'message': 'error [10000]: System Error', 'path': ['productOfferV2'], 'exten
+🛒 'caixa organizadora roupas': encontrados {'shopee': 250, 'mercadolivre': 0, 'aliexpress': 100, 'marcas': 0}, para conferir [('shopee', 12), ('mercadolivre', 0), ('aliexpress', 1), ('marcas', 0)]
+⚠️  Gemini gemini-2.5-flash: HTTP 429 { "error": { "code": 429, "message": "You exceeded your current quota, please check your plan and billing details. For m
+⚠️  Gemini gemini-omni-1.2-flash: HTTP 429 { "error": { "code": 429, "message": "You exceeded your current quota, please check your plan and billing details. For m
+⚠️  Gemini gemini-omni-1.1-flash: HTTP 429 { "error": { "code": 429, "message": "You exceeded your current quota, please check your plan and billing details. For m
+   Oi! 🤠 Aqui é o Zé Garimpo. Recebi sua foto! Pelo que eu vi, é uma caixa organizadora de roupas. Garimpei parecidos e separei os melhores 👇
+   1. Kit 5 Caixas Organizadoras com Tampa Cesto Grande de Plástico 2 Litros 4,5 Litro — R$ 79,90 (Shopee) ⭐4.9 4037 vendas
+      foto: https://cf.shopee.com.br/file/br-11134207-820lj-mqvxcnrv84joe4
+   2. Wardrobe Caixa Organizadora 94L para Roupas com Tampa Anti-Poeira/Umidade/Inseto — R$ 22,47 (Shopee) ⭐4.8 2292 vendas
+      foto: https://cf.shopee.com.br/file/br-11134207-820lq-mrpbsfx1y58k23
+   3. Caixa organizadora dobrável para quarto com compartimentos para roupas, meias e  — R$ 11,30 (AliExpress) ⭐4.9 3035 vendas
+      foto: https://ae-pic-a1.aliexpress-media.com/kf/S8f986e17f4074c47bf52475d3a27e1c4D.jpg
