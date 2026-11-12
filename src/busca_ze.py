@@ -920,6 +920,30 @@ def rodar_dms(api, minha):
                                         "em": agora.strftime(_fmt())}
             feitos += 1
             continue
+        from . import foto_ze
+        if imagem and foto_ze.ATIVO and not ANA and not vale_a_pena.tem_link(texto):
+            # 📸 12/11/2026 (Fred): mandou a FOTO de um produto → o Zé reconhece e manda 3 parecidos
+            dica = []   # o que a pessoa escreveu junto, logo antes da foto ("procuro esse", "tem azul?")
+            for m in msgs:
+                if (m.get("from") or {}).get("id") == ig_id:
+                    break
+                dica.append(m.get("message") or "")
+            usuario = (ultima.get("from") or {}).get("username", "")
+            reg = {"autor": autor, "usuario": usuario, "texto": texto or "[foto]", "imagem": True,
+                   "em": agora.strftime(_fmt())}
+            try:
+                ids, status, t = foto_ze.responder(api, ig_id, autor, imagem,
+                                                   " / ".join(x for x in reversed(dica) if x.strip()), usuario)
+                enviados_robo.update(i for i in ids if i)
+                reg.update({"status": status, "termo": t, "foto": True})
+                print(f"📩 Direct: foto → '{t}' ({status}).")
+            except Exception as e:
+                reg["status"] = f"erro: {str(e)[:200]}"
+                print(f"::warning::Foto no direct: {e}")
+                _avisar_fred(reg, quando)
+            feitos_ids[ultima["id"]] = reg
+            feitos += 1
+            continue
         if config.VALE_A_PENA_ATIVO and (vale_a_pena.tem_link(texto) or imagem):   # 🤔 "Zé, isso vale a pena?"
             reg = {"autor": autor, "texto": texto, "imagem": bool(imagem), "em": agora.strftime(_fmt())}
             try:

@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       termos:
-        description: "Buscas separadas por vírgula"
+        description: "Buscas separadas por vírgula (ou foto: URL URL para testar a busca por foto)"
         default: "celular, fone bluetooth, air fryer, tênis masculino, panela de pressão"
       enviar_para:
         description: "(opcional) @ de quem buscou no direct: manda a 1ª busca para essa pessoa de verdade"
@@ -52,7 +52,7 @@ jobs:
           TERMOS: ${{ inputs.termos }}
         run: |
           mkdir -p data/relatorios
-          if [ "$TERMOS" = "revisar" ]; then python -u -m src.busca_ze revisar 7; else IFS=, read -ra T <<< "$TERMOS"; python -u -m src.busca_ze "${T[@]}"; fi 2>&1 | tee data/relatorios/teste_busca.txt
+          if [[ "$TERMOS" == foto:* ]]; then python -u -m src.foto_ze ${TERMOS#foto:}; elif [ "$TERMOS" = "revisar" ]; then python -u -m src.busca_ze revisar 7; else IFS=, read -ra T <<< "$TERMOS"; python -u -m src.busca_ze "${T[@]}"; fi 2>&1 | tee data/relatorios/teste_busca.txt
       - name: Mandar os achados de verdade (só se tiver @)
         if: inputs.enviar_para != ''
         env:
