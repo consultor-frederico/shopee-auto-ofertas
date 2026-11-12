@@ -142,6 +142,17 @@ def _groq(prompt, dados, tipo):
     return None
 
 
+def _proibido(t):
+    """Palavra proibida como palavra inteira ("arma" barra "arma de pressão", não "armário");
+    as compridas valem como começo ("erotic" barra "erotico")."""
+    from .busca_ze import _norm
+    for p in config.PALAVRAS_PROIBIDAS:
+        p = _norm(p).strip()
+        if p and re.search(rf"\b{re.escape(p)}{'' if len(p) >= 6 else r'\b'}", t):
+            return True
+    return False
+
+
 def ler(url, texto=""):
     """{"o_que_e", "busca"} do produto da foto, ou None se não tem produto / a IA não leu."""
     try:
@@ -159,7 +170,7 @@ def ler(url, texto=""):
 
     def limpa(txt, n):
         t = " ".join(_norm(str(txt or "")).strip(" .!?\"'").split()[:n])
-        if len(t) < 3 or any(p in t for p in config.PALAVRAS_PROIBIDAS):
+        if len(t) < 3 or _proibido(t):
             return ""
         if lido.get("infantil") and not _infantil(t):
             t += " infantil"   # sem isso a Busca do Zé tira os produtos de criança
