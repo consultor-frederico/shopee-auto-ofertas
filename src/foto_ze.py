@@ -30,15 +30,17 @@ porque quer comprar esse produto ou um parecido.{texto}
 Descubra qual é o produto principal da foto (o que está em destaque; se for print de loja, o produto anunciado).
 Responda só com JSON:
 {{"tem_produto": true/false, "o_que_e": "o produto em até 7 palavras, em português, começando com um/uma (ex.: uma mochila de couro marrom)",
-  "busca": "termo de busca para achar um parecido numa loja online: 2 a 5 palavras em português, o tipo do
-            produto + 1 ou 2 características que se veem (cor, material, formato, tamanho, uso)",
+  "busca": "termo de busca para achar um parecido numa loja online: 2 a 4 palavras em português, o tipo do
+            produto + a característica que mais importa (material, formato, tamanho ou uso; cor só se for
+            o que define o produto)",
+  "busca_curta": "só o tipo do produto, 1 a 3 palavras (ex.: processador de alimentos, ring light, mochila)",
   "infantil": true/false}}
 Regras:
 - NÃO coloque marca nem nome de personagem/time/franquia na busca (ex.: tênis da Nike → "tênis corrida masculino
   branco"; caneca do Stitch → "caneca personagem azul"). Use as palavras que um brasileiro digitaria na Shopee.
 - "infantil" é true só se o produto for claramente de criança/bebê.
 - Se a foto não mostra um produto que dá para comprar (selfie, pessoa, meme, paisagem, comida pronta, animal,
-  print de conversa, imagem sem foco), responda {{"tem_produto": false, "o_que_e": "", "busca": "", "infantil": false}}."""
+  print de conversa, imagem sem foco), responda {{"tem_produto": false, "o_que_e": "", "busca": "", "busca_curta": "", "infantil": false}}."""
 
 DM_INTRO = ("Oi! 🤠 Aqui é o Zé Garimpo. Recebi sua foto! Pelo que eu vi, é {o}. "
             "Garimpei parecidos e separei os melhores 👇")
@@ -60,7 +62,7 @@ def _baixar(url):
     try:
         from io import BytesIO
         from PIL import Image
-        im = Image.open(BytesIO(dados)).convert("RGB")
+        im = Image.open(BytesIO(dados)).convert("RGBA").convert("RGB")
         im.thumbnail((1024, 1024))
         buf = BytesIO()
         im.save(buf, "JPEG", quality=85)
@@ -90,6 +92,12 @@ def _gemini(prompt, dados, tipo):
         try:
             r = requests.post(f"{GEMINI_URL}/models/{modelo}:generateContent", params={"key": chave}, timeout=40,
                               json={"contents": [{"parts": partes}], "generationConfig": config_geracao(modelo, 0.2)})
+            if r.status_code == 503:   # "high demand": costuma passar em segundos
+                import time
+                time.sleep(4)
+                r = requests.post(f"{GEMINI_URL}/models/{modelo}:generateContent", params={"key": chave}, timeout=40,
+                                  json={"contents": [{"parts": partes}],
+                                        "generationConfig": config_geracao(modelo, 0.2)})
             if r.status_code != 200:
                 print(f"⚠️  Foto/Gemini {modelo}: HTTP {r.status_code} {' '.join(r.text[:160].split())}")
                 continue
@@ -106,6 +114,16 @@ def _groq(prompt, dados, tipo):
         return None
     from .vale_a_pena import _modelos_visao
     headers = {"Authorization": f"Bearer {config.GROQ_API_KEY}", "Content-Type": "application/json"}
+    try:   # a Groq recusa foto grande ("Request too large"): manda em 512px
+        from io import BytesIO
+        from PIL import Image
+        im = Image.open(BytesIO(dados)).convert("RGB")
+        im.thumbnail((512, 512))
+        buf = BytesIO()
+        im.save(buf, "JPEG", quality=80)
+        dados, tipo = buf.getvalue(), "image/jpeg"
+    except Exception:
+        pass
     url = f"data:{tipo};base64," + base64.b64encode(dados).decode()
     for modelo in _modelos_visao(headers)[:4]:
         try:
@@ -138,14 +156,34 @@ def ler(url, texto=""):
     if not lido or not lido.get("tem_produto"):
         return None
     from .busca_ze import _infantil, _norm
-    busca = _norm(str(lido.get("busca") or "")).strip(" .!?\"'")
-    busca = " ".join(busca.split()[:6])
-    if len(busca) < 3 or any(p in busca for p in config.PALAVRAS_PROIBIDAS):
+
+    def limpa(txt, n):
+        t = " ".join(_norm(str(txt or "")).strip(" .!?\"'").split()[:n])
+        if len(t) < 3 or any(p in t for p in config.PALAVRAS_PROIBIDAS):
+            return ""
+        if lido.get("infantil") and not _infantil(t):
+            t += " infantil"   # sem isso a Busca do Zé tira os produtos de criança
+        return t
+    busca = limpa(lido.get("busca"), 5)
+    curta = limpa(lido.get("busca_curta"), 4)
+    if not busca:
         return None
-    if lido.get("infantil") and not _infantil(busca):
-        busca += " infantil"   # sem isso a Busca do Zé tira os produtos de criança
     o = str(lido.get("o_que_e") or busca).strip().rstrip(".")
-    return {"o_que_e": o[:60], "busca": busca}
+    return {"o_que_e": o[:60], "busca": busca, "curta": curta if curta and curta != busca else ""}
+
+
+def achados(lido):
+    """Os 3 parecidos: busca pelo termo da foto; se vier menos de 2, completa com a busca só pelo tipo."""
+    from . import busca_ze
+    t = lido["busca"]
+    ofs = busca_ze.achados(t)
+    if len(ofs) < 2 and lido.get("curta"):
+        print(f"   poucos achados com \"{t}\": tentando só \"{lido['curta']}\"")
+        mais = busca_ze.achados(lido["curta"])
+        if len(mais) > len(ofs):
+            ids = {o["id"] for o in mais}
+            ofs, t = mais + [o for o in ofs if o["id"] not in ids], lido["curta"]
+    return ofs[:busca_ze.ACHADOS], t
 
 
 # ------------------------------------------------------------------ responder no direct
@@ -194,8 +232,7 @@ def responder(api, ig_id, autor, url, texto="", usuario=""):
         ids.append((r or {}).get("message_id"))
         _copia_fred(usuario, autor, url, None, [], "nao_reconheceu")
         return ids, "nao_reconheceu", ""
-    t = lido["busca"]
-    ofs = busca_ze.achados(t)
+    ofs, t = achados(lido)
     if not ofs:
         r = enviar({"text": DM_NADA.format(o=lido["o_que_e"])})
         ids.append((r or {}).get("message_id"))
@@ -224,7 +261,7 @@ if __name__ == "__main__":
             print("   → sem produto reconhecido: o Zé pediria outra foto ou o nome.")
             continue
         print(f"   → o Zé entendeu: {lido['o_que_e']} | busca: \"{lido['busca']}\"")
-        ofs = busca_ze.achados(lido["busca"])
+        ofs, _t = achados(lido)
         print("   " + DM_INTRO.format(o=lido["o_que_e"]))
         for i, o in enumerate(ofs, 1):
             print(f"   {i}. {o['nome'][:80]} — R$ {o['preco_fmt']} ({busca_ze._nome_loja(o)}) "
