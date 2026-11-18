@@ -12,6 +12,10 @@ on:
       texto:
         description: 'Mensagem (vazio = só procura, não manda)'
         required: false
+      ler_foto:
+        description: 'Só ler a foto que a pessoa mandou (descreve o produto no log, não manda nada)'
+        type: boolean
+        default: false
 
 permissions:
   contents: read   # 08/11/2026 (segurança): só leitura, este workflow não grava no repo
@@ -32,13 +36,16 @@ jobs:
           python-version: '3.12'
 
       - name: Instalar dependências
-        run: pip install requests
+        run: pip install requests pillow
 
       - name: Mandar no direct
         env:
           PERFIL: ${{ inputs.perfil }}
           PARA: ${{ inputs.para }}
           TEXTO: ${{ inputs.texto }}
+          LER_FOTO: ${{ inputs.ler_foto }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
           IG_ACCESS_TOKEN_ANA: ${{ secrets.IG_ACCESS_TOKEN_ANA }}
         run: python -m src.direct_manual
