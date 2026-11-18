@@ -109,6 +109,8 @@ PROMPT_SEGUE = """Numa conversa de busca de produtos na Shopee, o cliente tinha 
 Se a mensagem nova só detalha ou corrige o pedido anterior (ex.: "de adulto", "masculino", "tem maior?", "na cor preta",
 "mas pra adulto"), junte os dois num termo só (ex.: "roupa motocross" + "consegue de adulto?" → "roupa motocross adulto").
 Se ele pediu outro produto, use só o produto novo.
+Se ele dá opções com "ou" (marcas, cores), mantenha o "ou" no termo (ex.: "robô aspirador" + "mondial ou wap" →
+"robô aspirador mondial ou wap"). Nunca ponha preço no termo.
 Responda só com JSON {{"produto": "<termo curto de busca na Shopee, 1 a 5 palavras>"}}."""
 
 
@@ -494,9 +496,49 @@ def _loja(o):
     return "marcas" if _eh_marca(o) else _plat(o)
 
 
-def achados(t, lojas=None):
+def preco_teto(texto):
+    """18/11/2026 (Vanessa: "Preço abaixo de 350,00"): o teto de preço que a pessoa escreveu (0 = nenhum)."""
+    import re
+    m = re.search(r"\b(?:abaixo|menos|ate|max\w*|no maximo|inferior|nao passe|nao passar|mais barato)\s*"
+                  r"(?:de|que|a|do que)?\s*(?:r\$\s*)?(\d{1,3}(?:\.\d{3})*|\d+)(?:,\d{1,2})?\s*(?:reais|r\$|conto)?",
+                  _norm(texto))
+    if not m:
+        return 0
+    v = float(m.group(1).replace(".", ""))
+    return v if 10 <= v <= 100000 else 0
+
+
+def _alternativas(t):
+    """18/11/2026 (Vanessa: "robô aspirador mondial ou wap"): "a ou b" no termo vira duas buscas
+    ("robô aspirador mondial", "robô aspirador wap"); juntas numa só, nenhum produto tem as duas marcas."""
+    import re
+    if not re.search(r"\S+ ou \S+", t or ""):
+        return [t]
+    return [re.sub(r"\s+", " ", re.sub(r"(\S+) ou (\S+)", r"\%d" % i, t, count=1)).strip() for i in (1, 2)]
+
+
+def _juntar_opcoes(listas):
+    """Os achados de cada opção, alternando (1º de cada, depois 2º...), sem repetir e no máx. 2 por loja."""
+    escolhidos, vistos, n_loja = [], set(), {}
+    for rodada in range(ACHADOS):
+        for ofs in listas:
+            if rodada < len(ofs):
+                o = ofs[rodada]
+                if o["id"] in vistos or n_loja.get(_loja(o), 0) >= MAX_POR_LOJA:
+                    continue
+                vistos.add(o["id"])
+                n_loja[_loja(o)] = n_loja.get(_loja(o), 0) + 1
+                escolhidos.append(o)
+    return escolhidos[:ACHADOS]
+
+
+def achados(t, lojas=None, preco_max=0):
     """Até 3 produtos que SÃO o que a pessoa pediu, juntando as lojas (Shopee, Mercado Livre, AliExpress e
-    lojas oficiais): busca por relevância (e mais vendidos), regras contra acessórios, e a IA confere a lista final."""
+    lojas oficiais): busca por relevância (e mais vendidos), regras contra acessórios, e a IA confere a lista final.
+    preco_max: teto que a pessoa pediu ("abaixo de 350") — 0 = sem teto."""
+    alternativas = _alternativas(t)
+    if len(alternativas) > 1:   # "aspirador mondial ou wap": uma busca por opção, juntando no fim
+        return _juntar_opcoes([achados(a, lojas, preco_max) for a in alternativas])
     lojas = list(lojas or LOJAS)
     por_loja = _buscar_lojas(t, lojas)
     vistos, unicos = set(), []
@@ -505,6 +547,8 @@ def achados(t, lojas=None):
             vistos.add(o["id"])
             unicos.append(o)
     certos = [o for o in unicos if relevante(o["nome"], t)]
+    if preco_max:   # 18/11/2026 (Vanessa: "preço abaixo de 350,00")
+        certos = [o for o in certos if 0 < o["preco"] <= preco_max]
     if not _infantil(t):   # pediu "roupa motocross" (ou "de adulto"): nada de roupa de criança
         certos = [o for o in certos if not _infantil(o["nome"])]
     contagem = {l: len(v) for l, v in por_loja.items()}
@@ -975,12 +1019,21 @@ def rodar_dms(api, minha):
         conferiu = ((anterior.get("from") or {}).get("id") == ig_id
                     and "Era isso que você procurava" in (anterior.get("message") or ""))
         # resposta ao "Era isso que você procurava?" continua a mesma busca, mesmo horas depois
-        anterior_t = _pedido_recente(feitos_ids, autor, agora, JANELA_DM if conferiu else SEGUE_PEDIDO)
+        janela = JANELA_DM if conferiu else SEGUE_PEDIDO
+        anterior_t = _pedido_recente(feitos_ids, autor, agora, janela)
         t = termo(texto_todo, anterior_t) if (acabou_de_perguntar or config.GROQ_API_KEY) else pedidos._termo(texto)
+        if not t and anterior_t and config.GROQ_API_KEY and _so_detalhe(texto_todo):
+            # 18/11/2026 (Vanessa: "Robô aspirador mondial" e depois "Preto ou branco. Preço abaixo de 350,00"
+            # recebeu "qual achado você quer?" por causa da palavra "preço"): detalhe sem produto continua a busca
+            t = _junta_pedido(anterior_t, texto_todo, "")
         if not t and not conferiu and _parece_modelo(texto):   # 7/11/2026 (Bruno: "S25" no story ficou sem resposta)
             t = _norm(texto).strip(" ?!.")
+        t = _manter_ou(texto_todo, t)
+        teto = preco_teto(texto_todo) or (_teto_recente(feitos_ids, autor, agora, janela) if anterior_t else 0)
         reg = {"autor": autor, "usuario": (ultima.get("from") or {}).get("username", ""), "texto": texto,
                "termo": t, "em": agora.strftime(_fmt())}
+        if teto:
+            reg["preco_max"] = teto
         if not t and conferiu and not (_negou(texto) or _agradeceu(texto)):
             conferiu = False   # 7/11/2026 (Bianca: "Como funciona?" recebeu "Eu que agradeço!"): vira conversa
         if not t and conferiu:   # 2/11/2026 (Allan: "Sim obrigado" ficou sem resposta)
@@ -1041,13 +1094,13 @@ def rodar_dms(api, minha):
             feitos_ids[ultima["id"]] = reg
             continue
         try:
-            ofs = achados(t)
+            ofs = achados(t, preco_max=teto)
         except Exception as e:
             print(f"⚠️  Busca do Zé no direct '{t}' falhou: {e}")
             continue
         try:
             if ofs:
-                r = enviar_dm(api, ig_id, None, t, ofs, destinatario=autor)
+                r = enviar_dm(api, ig_id, None, _com_teto(t, teto), ofs, destinatario=autor)
                 reg.update({"status": "entregue", "achados": [o["id"] for o in ofs], **_resumo(ofs)})
                 try:   # 2/11/2026 (Fred): o Zé confere se acertou; a resposta vira detalhe da mesma busca
                     c = api._req("POST", f"{ig_id}/messages", json={"recipient": {"id": autor},
@@ -1058,7 +1111,7 @@ def rodar_dms(api, minha):
                     print(f"⚠️  Não mandei a pergunta de conferência: {e}")
             else:
                 r = api._req("POST", f"{ig_id}/messages", json={"recipient": {"id": autor},
-                                                                "message": {"text": DM_NADA.format(t=t)}})
+                                                                "message": {"text": DM_NADA.format(t=_com_teto(t, teto))}})
                 reg["status"] = "nao_achou"
             if (r or {}).get("message_id"):
                 enviados_robo.add(r["message_id"])
@@ -1108,6 +1161,50 @@ def _pedido_recente(feitos, autor, agora, janela=None):
     regs = [v for v in feitos.values() if v.get("autor") == autor and v.get("termo") and v.get("em", "") >= limite
             and v.get("status") in ("entregue", "nao_achou")]
     return max(regs, key=lambda v: v["em"])["termo"] if regs else ""
+
+
+def _teto_recente(feitos, autor, agora, janela=None):
+    """O teto de preço do último pedido dessa pessoa ("abaixo de 350" vale também para o detalhe seguinte)."""
+    limite = (agora - (janela or SEGUE_PEDIDO)).strftime(_fmt())
+    regs = [v for v in feitos.values() if v.get("autor") == autor and v.get("termo") and v.get("em", "") >= limite]
+    return max(regs, key=lambda v: v["em"]).get("preco_max", 0) if regs else 0
+
+
+def _so_detalhe(texto):
+    """Mensagem que só detalha a busca (cor, preço, marca, tamanho), sem pedir link de um achado."""
+    import re
+    n = _norm(texto)
+    return bool(preco_teto(texto) or re.search(r"\b(ou|cor|preto|preta|branco|branca|azul|rosa|vermelho|cinza|"
+                                               r"marca|marcas|tamanho|modelo|maior|menor|barato|mais barato)\b", n))
+
+
+def _manter_ou(texto, t):
+    """A IA às vezes junta "mondial ou wap" em "aspirador mondial wap" (ninguém vende os dois juntos):
+    volta o "ou" para virar duas buscas."""
+    import re
+    if not t or " ou " in t:
+        return t
+    for a, b in re.findall(r"(\w+) ou (\w+)", _norm(texto)):
+        ps = t.split()
+        na = [i for i, p in enumerate(ps) if _norm(p) == a]
+        nb = [i for i, p in enumerate(ps) if _norm(p) == b]
+        if na and nb and nb[0] == na[0] + 1:
+            ps[na[0]] = f"{ps[na[0]]} ou"
+            return " ".join(ps)
+    return t
+
+
+def _sem_teto(t):
+    """'robô aspirador mondial ou wap abaixo de 350' → ('robô aspirador mondial ou wap', 350) (envio manual/teste)."""
+    import re
+    teto = preco_teto(t)
+    if teto:
+        t = re.split(r"\s+(?:com\s+)?(?:pre[cç]o\s+)?(?:abaixo|menos|at[eé]|m[aá]x\w*|no m[aá]ximo)\b", t, maxsplit=1)[0]
+    return t.strip(" ,."), teto
+
+
+def _com_teto(t, teto):
+    return f"{t} até R$ {teto:,.0f}".replace(",", ".") if teto else t
 
 
 def _mesmo_pedido(t, titulo):
@@ -1262,7 +1359,8 @@ if __name__ == "__main__":   # teste: python -m src.busca_ze "celular" "fone blu
         if not regs:
             sys.exit(f"::error::Não achei busca de @{cofre.oculto(usuario)} no direct. Nada foi enviado.")
         autor = max(regs, key=lambda v: v["em"])["autor"]
-        ofs = achados(t)
+        t, teto = _sem_teto(t)
+        ofs = achados(t, preco_max=teto)
         if not ofs:
             sys.exit(f"::error::Nada bom para '{t}'. Nada foi enviado.")
         # 7/11/2026 (Bruno): as mensagens do envio manual contam como do robô, senão o robô achava
@@ -1271,14 +1369,14 @@ if __name__ == "__main__":   # teste: python -m src.busca_ze "celular" "fone blu
         rs = []
         if intro:
             rs.append(instagram._req("POST", f"{ig}/messages", json={"recipient": {"id": autor}, "message": {"text": intro}}))
-        rs.append(enviar_dm(instagram, ig, None, t, ofs, destinatario=autor))
+        rs.append(enviar_dm(instagram, ig, None, _com_teto(t, teto), ofs, destinatario=autor))
         rs.append(instagram._req("POST", f"{ig}/messages", json={"recipient": {"id": autor}, "message": {"text": DM_CONFERE}}))
         robo += [r["message_id"] for r in rs if (r or {}).get("message_id")]
         for o in ofs:
             print(f"::notice::Enviado a @{cofre.oculto(usuario)}: {_nome_loja(o)} R$ {o['preco_fmt']} {_selo(o, True)} — {o['nome'][:80]}")
         d["dms"][f"manual-{_agora().strftime('%Y%m%d%H%M%S')}"] = {
             "autor": autor, "usuario": usuario, "texto": "(envio manual)", "termo": t, "em": _agora().strftime(_fmt()),
-            "status": "entregue", "achados": [o["id"] for o in ofs], **_resumo(ofs)}
+            "status": "entregue", "achados": [o["id"] for o in ofs], **_resumo(ofs), **({"preco_max": teto} if teto else {})}
         salvar(d)
         sys.exit(0)
     if sys.argv[1:2] == ["atalhos"]:   # python -m src.busca_ze atalhos → grava as perguntas do direct
@@ -1293,10 +1391,11 @@ if __name__ == "__main__":   # teste: python -m src.busca_ze "celular" "fone blu
         t = t.strip()
         ant, _, t = t.rpartition(">")   # "roupa de motocross > consegue de adulto?" = conversa com 2 mensagens
         ant = (termo(ant.strip()) or ant.strip()) if ant else ""
-        busca = termo(t.strip(), ant) or t.strip()
-        print(f"\n🔎 {t.strip()}" + (f"  (antes: {ant})" if ant else "") + f"  → busca \"{busca}\"")
+        busca, teto = _sem_teto(t)
+        busca = busca if " ou " in busca else _manter_ou(t, termo(busca, ant) or busca)
+        print(f"\n🔎 {t.strip()}" + (f"  (antes: {ant})" if ant else "") + f"  → busca \"{_com_teto(busca, teto)}\"")
         try:
-            for o in achados(busca):
+            for o in achados(busca, preco_max=teto):
                 print(f"  • {_nome_loja(o):<14} R$ {o['preco_fmt']:>9} {_selo(o, True):<28} — {o['nome'][:80]}")
         except Exception as e:
             print(f"  ⚠️  {e}")
