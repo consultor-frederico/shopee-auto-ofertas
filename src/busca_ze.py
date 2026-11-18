@@ -933,6 +933,14 @@ def rodar_dms(api, minha):
         ultima = msgs[0]                                    # a API manda da mais nova para a mais velha
         autor = (ultima.get("from") or {}).get("id")
         imagem = _imagem(ultima)
+        if not imagem and (ultima.get("from") or {}).get("id") != ig_id:
+            # 18/11/2026 (Vanessa: mandou a foto de um robô aspirador e logo depois "Oi ai"): a foto que veio
+            # antes do texto, sem resposta do robô no meio, também conta
+            for m in msgs[1:]:
+                if (m.get("from") or {}).get("id") == ig_id:
+                    break
+                if (imagem := _imagem(m)):
+                    break
         if autor == ig_id or ultima["id"] in feitos_ids or ultima["id"] in de_story or not (ultima.get("message") or imagem):
             continue
         quando = _quando(ultima.get("created_time", ""))
