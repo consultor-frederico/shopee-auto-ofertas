@@ -643,6 +643,14 @@ def mensagem(t, ofs):
     return "\n".join(linhas)
 
 
+def _foto_cartao(url):
+    """19/11/2026 (Fred: "o da Arno veio sem foto"): loja VTEX (Arno, Shark Ninja) manda a foto como …/ids/123_2,
+    sem extensão, e o Instagram deixa o cartão sem foto. Pede a mesma foto no formato padrão da VTEX, com .jpg."""
+    import re
+    m = re.match(r"^(https?://[^/]+)/arquivos/ids/(\d+)", url or "")
+    return f"{m.group(1)}/arquivos/ids/{m.group(2)}-600-600/foto.jpg" if m else url
+
+
 def _cartao(i, o):
     """Um achado em cartão (template genérico): foto, nome, preço/nota/vendas e os botões."""
     link = vendas.do_canal(o, "zebusca")
@@ -654,7 +662,7 @@ def _cartao(i, o):
         botoes.append({"type": "web_url", "url": f"https://{config.PAGINA_BIO}", "title": "🔗 Achados de hoje"})
     return {"title": f"{i}. {_curto(o['nome'], 70)}",
             "subtitle": f"{loja}R$ {o['preco_fmt']}{selo}{intl} • link de afiliado"[:80],
-            "image_url": o["imagem"], "default_action": {"type": "web_url", "url": link}, "buttons": botoes}
+            "image_url": _foto_cartao(o["imagem"]), "default_action": {"type": "web_url", "url": link}, "buttons": botoes}
 
 
 def enviar_dm(api, ig_id, cid, t, ofs, destinatario=None):
