@@ -532,6 +532,26 @@ def _juntar_opcoes(listas):
     return escolhidos[:ACHADOS]
 
 
+def escolhidos(pedido):
+    """19/11/2026 (Fred: "manda os dois robôs pra Vanessa"): envio manual de produtos ESCOLHIDOS.
+    pedido = "escolher: busca 1 :: palavras do nome ; busca 2 :: palavras do nome". Em cada busca fica o melhor
+    produto (vendedor aceitável) cujo nome tem todas as palavras."""
+    ofs = []
+    for parte in pedido.split(":", 1)[1].split(";"):
+        busca, _, palavras = parte.partition("::")
+        busca, teto = _sem_teto(busca.strip())
+        chaves = [_norm(p) for p in palavras.split()] or _palavras(busca)
+        por_loja = _buscar_lojas(busca, list(LOJAS))
+        bons = [o for v in por_loja.values() for o in v
+                if all(c in _norm(o["nome"]) for c in chaves) and _aceitavel(o, False)
+                and (not teto or o["preco"] <= teto) and o["id"] not in {x["id"] for x in ofs}]
+        if bons:
+            ofs.append(max(bons, key=_pontos))
+        else:
+            print(f"::warning::Nada com {chaves} em '{busca}'.")
+    return ofs[:ACHADOS]
+
+
 def achados(t, lojas=None, preco_max=0):
     """Até 3 produtos que SÃO o que a pessoa pediu, juntando as lojas (Shopee, Mercado Livre, AliExpress e
     lojas oficiais): busca por relevância (e mais vendidos), regras contra acessórios, e a IA confere a lista final.
@@ -1367,8 +1387,12 @@ if __name__ == "__main__":   # teste: python -m src.busca_ze "celular" "fone blu
         if not regs:
             sys.exit(f"::error::Não achei busca de @{cofre.oculto(usuario)} no direct. Nada foi enviado.")
         autor = max(regs, key=lambda v: v["em"])["autor"]
-        t, teto = _sem_teto(t)
-        ofs = achados(t, preco_max=teto)
+        if t.lower().startswith("escolher:"):
+            ofs, teto = escolhidos(t), 0
+            t = _com_teto(*_sem_teto(t.split(":", 1)[1].split(";")[0].split("::")[0].strip()))
+        else:
+            t, teto = _sem_teto(t)
+            ofs = achados(t, preco_max=teto)
         if not ofs:
             sys.exit(f"::error::Nada bom para '{t}'. Nada foi enviado.")
         # 7/11/2026 (Bruno): as mensagens do envio manual contam como do robô, senão o robô achava
@@ -1397,6 +1421,11 @@ if __name__ == "__main__":   # teste: python -m src.busca_ze "celular" "fone blu
         sys.exit(0)
     for t in sys.argv[1:] or ["celular"]:
         t = t.strip()
+        if t.lower().startswith("escolher:"):   # prévia do envio de produtos escolhidos
+            print(f"\n🔎 {t}")
+            for o in escolhidos(t):
+                print(f"  • {_nome_loja(o):<14} R$ {o['preco_fmt']:>9} {_selo(o, True):<28} — {o['nome'][:80]} [{o['id']}]")
+            continue
         ant, _, t = t.rpartition(">")   # "roupa de motocross > consegue de adulto?" = conversa com 2 mensagens
         ant = (termo(ant.strip()) or ant.strip()) if ant else ""
         busca, teto = _sem_teto(t)
