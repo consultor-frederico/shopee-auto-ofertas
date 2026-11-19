@@ -36,6 +36,7 @@ jobs:
           TELEGRAM_CHAT_PRIVADO: ${{ secrets.TELEGRAM_CHAT_PRIVADO }}
           IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}           # resposta de direct pelo Telegram
           IG_ACCESS_TOKEN_ANA: ${{ secrets.IG_ACCESS_TOKEN_ANA }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}             # 19/11/2026: o Zé escreve a resposta ("responde a fulana...")
         run: python -m src.aprovacao
 
       - name: Salvar estado

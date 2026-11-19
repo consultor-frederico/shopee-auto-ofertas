@@ -34,6 +34,26 @@ def _responder(chat, texto):
     telegram._api("sendMessage", data={"chat_id": chat, "text": texto, "disable_web_page_preview": "true"})
 
 
+def _botao_rascunho(chat, previa, enviar):
+    """✅ Enviar / ❌ Cancelar no rascunho do Zé: o texto e a pessoa estão na própria mensagem do rascunho."""
+    try:   # tira os botões (não manda duas vezes)
+        telegram._api("editMessageReplyMarkup", data={"chat_id": chat, "message_id": previa.get("message_id"),
+                                                       "reply_markup": '{"inline_keyboard": []}'})
+    except Exception:
+        pass
+    alvo = direct_telegram.do_alerta(previa.get("text"))
+    texto = direct_telegram.rascunho(previa.get("text"))
+    if not enviar:
+        _responder(chat, "❌ Rascunho cancelado, nada foi enviado.")
+        return
+    if not (alvo and texto):
+        _responder(chat, "❓ Não consegui ler o rascunho. Mande o pedido de novo.")
+        return
+    ok, aviso = direct_telegram.encaminhar(*alvo, texto)
+    _responder(chat, aviso)
+    print(f"📩 Rascunho do Zé ({alvo[0]}): {'ok' if ok else aviso}")
+
+
 def rodar():
     chat = os.getenv("TELEGRAM_CHAT_PRIVADO", "").strip()
     if not os.getenv("TELEGRAM_BOT_TOKEN", "").strip() or not chat:
@@ -60,6 +80,9 @@ def rodar():
                 telegram._api("answerCallbackQuery", data={"callback_query_id": cq["id"]})
             except Exception:
                 pass
+            if dado.startswith("dm:"):   # botão do rascunho do Zé (comando de direct pelo Telegram)
+                _botao_rascunho(chat, cq.get("message") or {}, dado == "dm:ok")
+                continue
         else:
             msg = u.get("message") or {}
             # só o seu chat privado manda comando; qualquer outro é ignorado
@@ -70,6 +93,13 @@ def rodar():
                 ok, aviso = direct_telegram.encaminhar(*alvo, msg["text"].strip())
                 _responder(chat, aviso)
                 print(f"📩 Direct pelo Telegram ({alvo[0]}): {'ok' if ok else aviso}")
+                continue
+            if direct_telegram.eh_comando(msg.get("text")):   # 19/11/2026: "/ze nome texto" ou "responde a fulana..."
+                resposta, teclado = direct_telegram.comando(msg["text"])
+                dados = {"chat_id": chat, "text": resposta, "disable_web_page_preview": "true"}
+                if teclado:
+                    dados["reply_markup"] = teclado
+                telegram._api("sendMessage", data=dados)
                 continue
             m = RE_OK.match(msg.get("text") or "")
             if not m:
