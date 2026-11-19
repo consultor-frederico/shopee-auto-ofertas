@@ -673,6 +673,20 @@ def _foto_cartao(o):
         if _abre(u):
             _FOTO_OK[o["id"]] = u
             return u
+    try:   # loja VTEX: a API pública do catálogo traz as fotos do produto (…/slug/p → imageUrl)
+        m = re.match(r"^(https?://[^/]+)/([^/?]+)/p\b", o.get("pagina") or "")
+        if m:
+            js = requests.get(f"{m.group(1)}/api/catalog_system/pub/products/search/{m.group(2)}/p", timeout=20,
+                              headers={"User-Agent": "Mozilla/5.0"}).json()
+            fotos = [img.get("imageUrl") for p in js or [] for it in p.get("items", []) for img in it.get("images", [])]
+            print(f"🔎 Catálogo VTEX: {len(fotos)} fotos.")
+            for u in [f for f in fotos if f][:6]:
+                if _abre(u):
+                    _FOTO_OK[o["id"]] = u
+                    print(f"📸 Foto do feed fora do ar ({o['nome'][:40]}): usei a do catálogo da loja ({u}).")
+                    return u
+    except Exception as e:
+        print(f"⚠️  Catálogo da loja sem foto ({e}).")
     try:   # foto da página do produto: og:image e, nas lojas VTEX, as fotos …/arquivos/ids/N da galeria
         pg = requests.get(o.get("pagina") or o.get("link_afiliado"), timeout=20,
                           headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -690,20 +704,6 @@ def _foto_cartao(o):
                 return u
     except Exception as e:
         print(f"⚠️  Página da loja sem foto ({e}).")
-    try:   # loja VTEX: a API pública do catálogo traz as fotos do produto (…/slug/p → imageUrl)
-        m = re.match(r"^(https?://[^/]+)/([^/?]+)/p\b", o.get("pagina") or "")
-        if m:
-            js = requests.get(f"{m.group(1)}/api/catalog_system/pub/products/search/{m.group(2)}/p", timeout=20,
-                              headers={"User-Agent": "Mozilla/5.0"}).json()
-            fotos = [img.get("imageUrl") for p in js or [] for it in p.get("items", []) for img in it.get("images", [])]
-            print(f"🔎 Catálogo VTEX: {len(fotos)} fotos.")
-            for u in [f for f in fotos if f][:6]:
-                if _abre(u):
-                    _FOTO_OK[o["id"]] = u
-                    print(f"📸 Foto do feed fora do ar ({o['nome'][:40]}): usei a do catálogo da loja ({u}).")
-                    return u
-    except Exception as e:
-        print(f"⚠️  Catálogo da loja sem foto ({e}).")
     print(f"⚠️  Nenhuma foto abre para {o['nome'][:50]}.")
     _FOTO_OK[o["id"]] = url
     return url
