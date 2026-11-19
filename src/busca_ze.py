@@ -644,11 +644,17 @@ def mensagem(t, ofs):
 
 
 def _foto_cartao(url):
-    """19/11/2026 (Fred: "o da Arno veio sem foto"): loja VTEX (Arno, Shark Ninja) manda a foto como …/ids/123_2,
-    sem extensão, e o Instagram deixa o cartão sem foto. Pede a mesma foto no formato padrão da VTEX, com .jpg."""
+    """19/11/2026 (Fred: "o da Arno veio sem foto", 2x): a foto das lojas da Awin (Arno/Shark Ninja na VTEX, Lauri,
+    Lego...) não aparece no cartão do direct. Shopee, AliExpress e Mercado Livre funcionam; as outras passam pelo
+    wsrv.nl (CDN pública de imagens), que entrega um .jpg comum que o Instagram aceita."""
     import re
-    m = re.match(r"^(https?://[^/]+)/arquivos/ids/(\d+)", url or "")
-    return f"{m.group(1)}/arquivos/ids/{m.group(2)}-600-600/foto.jpg" if m else url
+    from urllib.parse import quote
+    if not url or re.search(r"susercontent\.com|shopee\.com|alicdn\.com|aliexpress|mlstatic\.com", url):
+        return url
+    m = re.match(r"^(https?://[^/]+)/arquivos/ids/(\d+)", url)
+    if m:   # VTEX: o feed traz a miniatura (…/ids/123_2); sem o sufixo é a foto original
+        url = f"{m.group(1)}/arquivos/ids/{m.group(2)}"
+    return f"https://wsrv.nl/?url={quote(url, safe='')}&w=600&h=600&fit=contain&cbg=white&output=jpg"
 
 
 def _cartao(i, o):
@@ -1421,6 +1427,13 @@ if __name__ == "__main__":   # teste: python -m src.busca_ze "celular" "fone blu
         rs.append(instagram._req("POST", f"{ig}/messages", json={"recipient": {"id": autor}, "message": {"text": DM_CONFERE}}))
         robo += [r["message_id"] for r in rs if (r or {}).get("message_id")]
         for o in ofs:
+            try:   # diagnóstico: a foto do cartão abre de fora? (19/11/2026, Arno sem foto)
+                import requests
+                f = requests.get(_foto_cartao(o["imagem"]), timeout=20)
+                print(f"foto do cartão: HTTP {f.status_code} {f.headers.get('content-type')} {len(f.content)} bytes "
+                      f"| {_foto_cartao(o['imagem'])}")
+            except Exception as e:
+                print(f"foto do cartão: erro {e}")
             print(f"::notice::Enviado a @{cofre.oculto(usuario)}: {_nome_loja(o)} R$ {o['preco_fmt']} {_selo(o, True)} — {o['nome'][:80]}")
         d["dms"][f"manual-{_agora().strftime('%Y%m%d%H%M%S')}"] = {
             "autor": autor, "usuario": usuario, "texto": "(envio manual)", "termo": t, "em": _agora().strftime(_fmt()),
