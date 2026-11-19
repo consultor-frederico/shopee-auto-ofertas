@@ -643,18 +643,48 @@ def mensagem(t, ofs):
     return "\n".join(linhas)
 
 
-def _foto_cartao(url):
-    """19/11/2026 (Fred: "o da Arno veio sem foto", 2x): a foto das lojas da Awin (Arno/Shark Ninja na VTEX, Lauri,
-    Lego...) não aparece no cartão do direct. Shopee, AliExpress e Mercado Livre funcionam; as outras passam pelo
-    wsrv.nl (CDN pública de imagens), que entrega um .jpg comum que o Instagram aceita."""
+_FOTO_OK = {}
+
+
+def _abre(u):
+    """A foto abre de fora (como o Instagram vai pedir)? HTTP 200 com imagem."""
+    import requests
+    try:
+        r = requests.get(u, timeout=15, headers={"User-Agent": "facebookexternalhit/1.1"}, stream=True)
+        return r.ok and (r.headers.get("content-type") or "").startswith("image/")
+    except Exception:
+        return False
+
+
+def _foto_cartao(o):
+    """19/11/2026 (Fred: "o da Arno veio sem foto"): a foto que o feed da Awin traz pode estar apagada na loja
+    (Arno HS81: …/ids/165566_2 dá 404). Shopee, AliExpress e Mercado Livre vão direto; nas marcas, testa as fotos
+    do feed e, se nenhuma abrir, pega a foto (og:image) da página do produto na loja."""
     import re
-    from urllib.parse import quote
-    if not url or re.search(r"susercontent\.com|shopee\.com|alicdn\.com|aliexpress|mlstatic\.com", url):
+    import requests
+    url = o.get("imagem") or ""
+    if not _eh_marca(o) or re.search(r"susercontent\.com|shopee\.com|alicdn\.com|mlstatic\.com", url):
         return url
-    m = re.match(r"^(https?://[^/]+)/arquivos/ids/(\d+)", url)
-    if m:   # VTEX: o feed traz a miniatura (…/ids/123_2); sem o sufixo é a foto original
-        url = f"{m.group(1)}/arquivos/ids/{m.group(2)}"
-    return f"https://wsrv.nl/?url={quote(url, safe='')}&w=600&h=600&fit=contain&cbg=white&output=jpg"
+    if o["id"] in _FOTO_OK:
+        return _FOTO_OK[o["id"]]
+    cands = [url, *(o.get("imagens_feed") or {}).values()]
+    for u in dict.fromkeys(c for c in cands if c):
+        if _abre(u):
+            _FOTO_OK[o["id"]] = u
+            return u
+    try:
+        pg = requests.get(o.get("pagina") or o.get("link_afiliado"), timeout=20, headers={"User-Agent": "Mozilla/5.0"})
+        m = re.search(r'<meta[^>]+property=["\']og:image["\'][^>]+content=["\']([^"\']+)', pg.text) or \
+            re.search(r'<meta[^>]+content=["\']([^"\']+)["\'][^>]+property=["\']og:image', pg.text)
+        if m and _abre(m.group(1)):
+            _FOTO_OK[o["id"]] = m.group(1)
+            print(f"📸 Foto do feed fora do ar ({o['nome'][:40]}): usei a da página da loja.")
+            return m.group(1)
+    except Exception as e:
+        print(f"⚠️  Página da loja sem foto ({e}).")
+    print(f"⚠️  Nenhuma foto abre para {o['nome'][:50]}.")
+    _FOTO_OK[o["id"]] = url
+    return url
 
 
 def _cartao(i, o):
@@ -668,7 +698,7 @@ def _cartao(i, o):
         botoes.append({"type": "web_url", "url": f"https://{config.PAGINA_BIO}", "title": "🔗 Achados de hoje"})
     return {"title": f"{i}. {_curto(o['nome'], 70)}",
             "subtitle": f"{loja}R$ {o['preco_fmt']}{selo}{intl} • link de afiliado"[:80],
-            "image_url": _foto_cartao(o["imagem"]), "default_action": {"type": "web_url", "url": link}, "buttons": botoes}
+            "image_url": _foto_cartao(o), "default_action": {"type": "web_url", "url": link}, "buttons": botoes}
 
 
 def enviar_dm(api, ig_id, cid, t, ofs, destinatario=None):
@@ -1362,24 +1392,12 @@ def rodar(api, minha, ja_respondidos=None):
     return feitos
 
 
-def _testar_fotos(url):
-    """Diagnóstico (19/11/2026, Arno sem foto no cartão): quais endereços da foto abrem de fora, e para quem."""
-    import re
-    import requests
-    from urllib.parse import quote
-    cands = [url, _foto_cartao(url)]
-    m = re.match(r"^(https?://[^/]+)/arquivos/ids/(\d+)", url or "")
-    if m:
-        b, n = m.groups()
-        cands += [f"{b}/arquivos/ids/{n}", f"{b}/arquivos/ids/{n}-600-600/foto.jpg", f"{b}/arquivos/ids/{n}-600-600",
-                  f"https://wsrv.nl/?url={quote(b + '/arquivos/ids/' + n + '-600-600/foto.jpg', safe='')}&output=jpg"]
-    for u in dict.fromkeys(cands):
-        for ua in ("python-requests", "facebookexternalhit/1.1", "Mozilla/5.0"):
-            try:
-                r = requests.get(u, timeout=20, headers={"User-Agent": ua})
-                print(f"    foto {r.status_code} {r.headers.get('content-type')} {len(r.content)}b [{ua}] {u}")
-            except Exception as e:
-                print(f"    foto erro {type(e).__name__} [{ua}] {u}")
+def _testar_fotos(o):
+    """Diagnóstico (19/11/2026, Arno sem foto no cartão): quais fotos abrem de fora e qual vai no cartão."""
+    for u in dict.fromkeys([o.get("imagem"), *(o.get("imagens_feed") or {}).values()]):
+        if u:
+            print(f"    foto {'ok' if _abre(u) else 'NÃO ABRE'}: {u}")
+    print(f"    → no cartão: {_foto_cartao(o)}")
 
 
 if __name__ == "__main__":   # teste: python -m src.busca_ze "celular" "fone bluetooth"
@@ -1447,13 +1465,6 @@ if __name__ == "__main__":   # teste: python -m src.busca_ze "celular" "fone blu
         rs.append(instagram._req("POST", f"{ig}/messages", json={"recipient": {"id": autor}, "message": {"text": DM_CONFERE}}))
         robo += [r["message_id"] for r in rs if (r or {}).get("message_id")]
         for o in ofs:
-            try:   # diagnóstico: a foto do cartão abre de fora? (19/11/2026, Arno sem foto)
-                import requests
-                f = requests.get(_foto_cartao(o["imagem"]), timeout=20)
-                print(f"foto do cartão: HTTP {f.status_code} {f.headers.get('content-type')} {len(f.content)} bytes "
-                      f"| {_foto_cartao(o['imagem'])}")
-            except Exception as e:
-                print(f"foto do cartão: erro {e}")
             print(f"::notice::Enviado a @{cofre.oculto(usuario)}: {_nome_loja(o)} R$ {o['preco_fmt']} {_selo(o, True)} — {o['nome'][:80]}")
         d["dms"][f"manual-{_agora().strftime('%Y%m%d%H%M%S')}"] = {
             "autor": autor, "usuario": usuario, "texto": "(envio manual)", "termo": t, "em": _agora().strftime(_fmt()),
@@ -1474,7 +1485,7 @@ if __name__ == "__main__":   # teste: python -m src.busca_ze "celular" "fone blu
             print(f"\n🔎 {t}")
             for o in escolhidos(t):
                 print(f"  • {_nome_loja(o):<14} R$ {o['preco_fmt']:>9} {_selo(o, True):<28} — {o['nome'][:80]} [{o['id']}]")
-                _testar_fotos(o["imagem"])
+                _testar_fotos(o)
             continue
         ant, _, t = t.rpartition(">")   # "roupa de motocross > consegue de adulto?" = conversa com 2 mensagens
         ant = (termo(ant.strip()) or ant.strip()) if ant else ""
