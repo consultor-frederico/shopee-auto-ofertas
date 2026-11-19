@@ -681,7 +681,8 @@ def _foto_cartao(o):
         achadas = re.findall(r'property=["\']og:image["\'][^>]*content=["\']([^"\']+)', html) + \
             re.findall(r'content=["\']([^"\']+)["\'][^>]*property=["\']og:image', html) + \
             re.findall(r'https?://[\w.-]+/arquivos/ids/\d+[^"\'\s<>]*', html)
-        print(f"🔎 Página da loja: HTTP {pg.status_code}, {len(html)} letras, {len(achadas)} fotos.")
+        og = re.findall(r'og:image["\'][^>]*content=["\']([^"\']+)', html)
+        print(f"🔎 Página da loja: HTTP {pg.status_code}, {len(html)} letras, {len(achadas)} fotos, og:image={og[:2]}.")
         for u in list(dict.fromkeys(a.split("?")[0] for a in achadas))[:8]:
             if _abre(u):
                 _FOTO_OK[o["id"]] = u
