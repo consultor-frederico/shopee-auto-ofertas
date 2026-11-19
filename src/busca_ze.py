@@ -108,6 +108,8 @@ def posts_da_busca(api, ig_id, d):
 PROMPT_SEGUE = """Numa conversa de busca de produtos na Shopee, o cliente tinha pedido "{ant}" e agora escreveu: "{texto}".
 Se a mensagem nova só detalha ou corrige o pedido anterior (ex.: "de adulto", "masculino", "tem maior?", "na cor preta",
 "mas pra adulto"), junte os dois num termo só (ex.: "roupa motocross" + "consegue de adulto?" → "roupa motocross adulto").
+Se ele descreve como o produto funciona ou para que serve, troque pelo nome certo do produto (ex.: "ferro de passar a
+vapor" + "a roupa fica pendurada no cabide e passa no vapor" → "vaporizador de roupas vertical").
 Se ele pediu outro produto, use só o produto novo.
 Se ele dá opções com "ou" (marcas, cores), mantenha o "ou" no termo (ex.: "robô aspirador" + "mondial ou wap" →
 "robô aspirador mondial ou wap"). Nunca ponha preço no termo.
@@ -724,7 +726,8 @@ Como funciona: a pessoa manda aqui o nome do produto que procura e {quem} garimp
 e no AliExpress e manda os 3 melhores, SÓ de vendedor confiável (bem avaliado e com muitas vendas); quando não acha
 de vendedor confiável, não manda nenhum. Os links são de afiliado: a pessoa paga o mesmo preço.
 Também tem ofertas no feed e no canal do Telegram ({telegram}).
-NUNCA prometa frete grátis, desconto, prazo, estoque, aviso futuro nem nada que você não faz. Não invente
+NUNCA prometa frete grátis, desconto, prazo, estoque, aviso futuro nem nada que você não faz. NUNCA diga que vai
+procurar/garimpar e "já volta": você não volta sozinho. Se a pessoa descreveu um produto, peça o nome dele. Não invente
 produto, preço ou link. Não fale de assunto fora de compras.
 A página NÃO vende nada: só indica produtos das lojas. Troca, devolução, defeito, atraso na entrega, reembolso ou
 qualquer problema com uma compra é resolvido direto com o vendedor, pelo app da loja onde comprou: na Shopee em
@@ -1046,11 +1049,16 @@ def rodar_dms(api, minha):
         # no direct, só o nome do produto já é busca ("fogão"); a IA barra "oi", "obrigado"...
         conferiu = ((anterior.get("from") or {}).get("id") == ig_id
                     and "Era isso que você procurava" in (anterior.get("message") or ""))
+        # 19/11/2026 (ferro de passar: "Não" → "me conta com mais detalhe" → "a roupa fica pendurada no cabide e
+        # vc passa no vapor" virou conversa e o Zé prometeu "já volto" sem voltar): resposta ao pedido de detalhe
+        # é SEMPRE detalhe da mesma busca
+        pediu_detalhe = ((anterior.get("from") or {}).get("id") == ig_id
+                         and (anterior.get("message") or "").strip() == DM_DETALHE.strip())
         # resposta ao "Era isso que você procurava?" continua a mesma busca, mesmo horas depois
-        janela = JANELA_DM if conferiu else SEGUE_PEDIDO
+        janela = JANELA_DM if (conferiu or pediu_detalhe) else SEGUE_PEDIDO
         anterior_t = _pedido_recente(feitos_ids, autor, agora, janela)
         t = termo(texto_todo, anterior_t) if (acabou_de_perguntar or config.GROQ_API_KEY) else pedidos._termo(texto)
-        if not t and anterior_t and config.GROQ_API_KEY and _so_detalhe(texto_todo):
+        if not t and anterior_t and config.GROQ_API_KEY and (pediu_detalhe or _so_detalhe(texto_todo)):
             # 18/11/2026 (Vanessa: "Robô aspirador mondial" e depois "Preto ou branco. Preço abaixo de 350,00"
             # recebeu "qual achado você quer?" por causa da palavra "preço"): detalhe sem produto continua a busca
             t = _junta_pedido(anterior_t, texto_todo, "")
