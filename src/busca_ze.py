@@ -667,8 +667,9 @@ def _foto_cartao(o):
         return url
     if o["id"] in _FOTO_OK:
         return _FOTO_OK[o["id"]]
-    cands = [url, *(o.get("imagens_feed") or {}).values()]
-    for u in dict.fromkeys(c for c in cands if c):
+    # images2.productserve.com é a cópia da Awin: com a foto da loja apagada ela vira "sem foto disponível" (Fred 19/11)
+    cands = [u for u in [url, *(o.get("imagens_feed") or {}).values()] if u and "productserve.com" not in u]
+    for u in dict.fromkeys(cands):
         if _abre(u):
             _FOTO_OK[o["id"]] = u
             return u
@@ -1397,6 +1398,7 @@ def _testar_fotos(o):
     for u in dict.fromkeys([o.get("imagem"), *(o.get("imagens_feed") or {}).values()]):
         if u:
             print(f"    foto {'ok' if _abre(u) else 'NÃO ABRE'}: {u}")
+    print(f"    página: {o.get('pagina')}")
     print(f"    → no cartão: {_foto_cartao(o)}")
 
 
