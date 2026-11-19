@@ -1362,6 +1362,26 @@ def rodar(api, minha, ja_respondidos=None):
     return feitos
 
 
+def _testar_fotos(url):
+    """Diagnóstico (19/11/2026, Arno sem foto no cartão): quais endereços da foto abrem de fora, e para quem."""
+    import re
+    import requests
+    from urllib.parse import quote
+    cands = [url, _foto_cartao(url)]
+    m = re.match(r"^(https?://[^/]+)/arquivos/ids/(\d+)", url or "")
+    if m:
+        b, n = m.groups()
+        cands += [f"{b}/arquivos/ids/{n}", f"{b}/arquivos/ids/{n}-600-600/foto.jpg", f"{b}/arquivos/ids/{n}-600-600",
+                  f"https://wsrv.nl/?url={quote(b + '/arquivos/ids/' + n + '-600-600/foto.jpg', safe='')}&output=jpg"]
+    for u in dict.fromkeys(cands):
+        for ua in ("python-requests", "facebookexternalhit/1.1", "Mozilla/5.0"):
+            try:
+                r = requests.get(u, timeout=20, headers={"User-Agent": ua})
+                print(f"    foto {r.status_code} {r.headers.get('content-type')} {len(r.content)}b [{ua}] {u}")
+            except Exception as e:
+                print(f"    foto erro {type(e).__name__} [{ua}] {u}")
+
+
 if __name__ == "__main__":   # teste: python -m src.busca_ze "celular" "fone bluetooth"
     import sys
     if sys.argv[1:2] == ["conversas"]:   # diagnóstico: o que o robô enxerga no direct
@@ -1454,6 +1474,7 @@ if __name__ == "__main__":   # teste: python -m src.busca_ze "celular" "fone blu
             print(f"\n🔎 {t}")
             for o in escolhidos(t):
                 print(f"  • {_nome_loja(o):<14} R$ {o['preco_fmt']:>9} {_selo(o, True):<28} — {o['nome'][:80]} [{o['id']}]")
+                _testar_fotos(o["imagem"])
             continue
         ant, _, t = t.rpartition(">")   # "roupa de motocross > consegue de adulto?" = conversa com 2 mensagens
         ant = (termo(ant.strip()) or ant.strip()) if ant else ""
