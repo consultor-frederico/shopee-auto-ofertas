@@ -49,8 +49,11 @@ DM_NAO_RECONHECI = ("Oi! 🤠 Aqui é o Zé Garimpo. Recebi sua foto, mas não c
                     "\"tênis de corrida\"), que eu garimpo parecidos pra você! ⛏️")
 DM_NADA = ("Oi! 🤠 Aqui é o Zé Garimpo. Vi na sua foto {o}, garimpei parecidos na Shopee, no Mercado Livre e no "
            "AliExpress, mas não achei de vendedor confiável 😅 Eu só mando produto bem avaliado e com muitas "
-           "vendas, pra você não cair em furada.\n\nSe quiser, me escreve com outras palavras o que procura "
-           "(cor, tamanho, pra que vai usar) que eu tento de novo! ⛏️")
+           "vendas, pra você não cair em furada.\n\n"
+           # 20/11/2026 (Fred): oferece outros vendedores, sem garantia (a resposta SIM é tratada em busca_ze)
+           "Se quiser, eu te mostro outros vendedores. Como eles não passam na avaliação que eu faço "
+           "(nota e vendas), não posso garantir a qualidade: a escolha fica com você. "
+           "Quer que eu mostre? Responde SIM ou NÃO 🙂")
 
 
 # ------------------------------------------------------------------ ler a foto

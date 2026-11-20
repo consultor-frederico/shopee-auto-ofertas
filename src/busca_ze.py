@@ -238,10 +238,22 @@ def _eh_marca(o):
 
 
 def _aceitavel(o, rigoroso=True):
+    """rigoroso: True (padrão), False (um pouco mais solto) ou "livre" (outros vendedores, só quando a pessoa
+    aceitou ver sem garantia de qualidade — 20/11/2026, Fred)."""
     nome = o["nome"].lower()
     if not (o["link_afiliado"] and o["imagem"] and 0 < o["preco"] and (not PRECO_MAX or o["preco"] <= PRECO_MAX)
             and not any(p in nome for p in config.PALAVRAS_PROIBIDAS)):
         return False
+    if rigoroso == "livre":
+        if _eh_marca(o):
+            return True
+        if _plat(o) == "mercadolivre":
+            return (o.get("posicao") or 99) <= 30
+        if _plat(o) == "aliexpress":
+            from . import aliexpress
+            if aliexpress.recusa_extra(o):
+                return False
+        return o["nota"] >= 4.0 and o["vendas"] >= 1
     if _eh_marca(o):          # loja oficial (Awin): não tem nota nem vendas, a marca é a garantia
         return True
     if _plat(o) == "mercadolivre":   # catálogo do ML não mostra nota/vendas: vale a posição na busca
@@ -554,13 +566,13 @@ def escolhidos(pedido):
     return ofs[:ACHADOS]
 
 
-def achados(t, lojas=None, preco_max=0):
+def achados(t, lojas=None, preco_max=0, livre=False):
     """Até 3 produtos que SÃO o que a pessoa pediu, juntando as lojas (Shopee, Mercado Livre, AliExpress e
     lojas oficiais): busca por relevância (e mais vendidos), regras contra acessórios, e a IA confere a lista final.
     preco_max: teto que a pessoa pediu ("abaixo de 350") — 0 = sem teto."""
     alternativas = _alternativas(t)
     if len(alternativas) > 1:   # "aspirador mondial ou wap": uma busca por opção, juntando no fim
-        return _juntar_opcoes([achados(a, lojas, preco_max) for a in alternativas])
+        return _juntar_opcoes([achados(a, lojas, preco_max, livre) for a in alternativas])
     lojas = list(lojas or LOJAS)
     por_loja = _buscar_lojas(t, lojas)
     vistos, unicos = set(), []
@@ -574,7 +586,7 @@ def achados(t, lojas=None, preco_max=0):
     if not _infantil(t):   # pediu "roupa motocross" (ou "de adulto"): nada de roupa de criança
         certos = [o for o in certos if not _infantil(o["nome"])]
     contagem = {l: len(v) for l, v in por_loja.items()}
-    for rigoroso in (True, False):
+    for rigoroso in (("livre",) if livre else (True, False)):
         bons = []
         for loja in lojas:   # os melhores de cada loja vão para a IA conferir juntos
             da_loja = sorted((o for o in certos if _loja(o) == loja and _aceitavel(o, rigoroso)), key=_pontos, reverse=True)
@@ -754,11 +766,19 @@ def enviar_dm(api, ig_id, cid, t, ofs, destinatario=None):
 JANELA_DM = timedelta(hours=23)       # o Instagram só deixa responder até 24h depois da mensagem
 SILENCIO_HUMANO = timedelta(hours=2)  # se o Fred escreveu na conversa há pouco, o robô não se mete
 MARCAS_ROBO = ("Oi! 😊", "Oi! 🤠", "Oi! 💚", "Oiê!", "Oi, amiga!", "Aaah", "Prontinho!", "Oi! Esse")   # começo das mensagens automáticas (não contam como o Fred)
+# 20/11/2026 (Fred): quando não acha de vendedor confiável, o Zé oferece mostrar de outros vendedores, sem garantia
+PERGUNTA_OUTROS = ("Se quiser, eu te mostro outros vendedores. Como eles não passam na avaliação que eu faço "
+                   "(nota e vendas), não posso garantir a qualidade: a escolha fica com você. "
+                   "Quer que eu mostre? Responde SIM ou NÃO 🙂")
 DM_NADA = ("Oi! 🤠 Aqui é o Zé Garimpo. Cavei \"{t}\" na Shopee, no Mercado Livre e no AliExpress, mas não "
            "achei de vendedor confiável 😅 Eu só mando produto de vendedor bem avaliado e com muitas vendas, "
-           "pra você não cair em furada. Por isso não te mandei nenhum agora.\n\n"
-           "Me pede de novo daqui uns dias, ou manda com outras palavras (ex.: \"fone bluetooth\", "
-           "\"air fryer 5 litros\") que eu tento de novo! ⛏️")
+           "pra você não cair em furada.\n\n" + PERGUNTA_OUTROS)
+DM_OUTROS = ("Oi! 🤠 Prontinho, garimpei em outros vendedores pra você 👇\n\n⚠️ Atenção: esses têm menos "
+             "avaliações ou vendas, então não garanto a qualidade. Antes de comprar, confira a nota, os comentários "
+             "e a reputação do vendedor na loja.")
+DM_OUTROS_NADA = ("Oi! 🤠 Procurei em outros vendedores também, mas nem assim achei \"{t}\" 😕 Se quiser, me manda "
+                  "com outras palavras (marca, modelo, pra que vai usar) que eu tento de novo ⛏️")
+DM_OUTROS_NAO = "Oi! 🤠 Beleza! Se precisar de outra coisa, é só me mandar o nome do produto que eu garimpo ⛏️"
 if ANA:
     DM_NADA = ("Oi! 💚 Aqui é a Ana. Procurei \"{t}\" na Shopee, mas não achei de vendedor confiável 😕 "
                "Só mando produto bem avaliado e com muitas vendas, por isso não te mandei nenhum agora. "
@@ -1077,6 +1097,8 @@ def rodar_dms(api, minha):
                                                    " / ".join(x for x in reversed(dica) if x.strip()), usuario)
                 enviados_robo.update(i for i in ids if i)
                 reg.update({"status": status, "termo": t, "foto": True})
+                if status == "nao_achou":
+                    reg["oferta_outros"] = True
                 print(f"📩 Direct: foto → '{t}' ({status}).")
             except Exception as e:
                 reg["status"] = f"erro: {str(e)[:200]}"
@@ -1115,6 +1137,26 @@ def rodar_dms(api, minha):
         # no direct, só o nome do produto já é busca ("fogão"); a IA barra "oi", "obrigado"...
         conferiu = ((anterior.get("from") or {}).get("id") == ig_id
                     and "Era isso que você procurava" in (anterior.get("message") or ""))
+        ofereceu = (not ANA and (anterior.get("from") or {}).get("id") == ig_id
+                    and "outros vendedores" in (anterior.get("message") or ""))
+        curta = len(_norm(texto).split()) <= 4   # "sim", "quero sim", "não precisa" (pedido novo segue o fluxo normal)
+        if ofereceu and curta and (_sim(texto) or _nao(texto)):   # 20/11/2026 (Fred): SIM → mostra de outros vendedores
+            reg = {"autor": autor, "usuario": (ultima.get("from") or {}).get("username", ""), "texto": texto,
+                   "em": agora.strftime(_fmt())}
+            try:
+                ids, reg["status"], reg["termo"], ofs = _responder_outros(api, ig_id, autor, feitos_ids, agora,
+                                                                          _sim(texto) and not _nao(texto))
+                enviados_robo.update(i for i in ids if i)
+                if ofs:
+                    reg.update({"achados": [o["id"] for o in ofs], **_resumo(ofs)})
+                print(f"📩 Direct: outros vendedores → {reg['status']}.")
+            except Exception as e:
+                reg["status"] = f"erro: {str(e)[:200]}"
+                print(f"::warning::Direct: outros vendedores: {e}")
+                _avisar_fred(reg, quando)
+            feitos_ids[ultima["id"]] = reg
+            feitos += 1
+            continue
         # 19/11/2026 (ferro de passar: "Não" → "me conta com mais detalhe" → "a roupa fica pendurada no cabide e
         # vc passa no vapor" virou conversa e o Zé prometeu "já volto" sem voltar): resposta ao pedido de detalhe
         # é SEMPRE detalhe da mesma busca
@@ -1215,6 +1257,7 @@ def rodar_dms(api, minha):
                 r = api._req("POST", f"{ig_id}/messages", json={"recipient": {"id": autor},
                                                                 "message": {"text": DM_NADA.format(t=_com_teto(t, teto))}})
                 reg["status"] = "nao_achou"
+                reg["oferta_outros"] = not ANA
             if (r or {}).get("message_id"):
                 enviados_robo.add(r["message_id"])
             feitos += 1
@@ -1249,6 +1292,38 @@ def _agradeceu(texto):
     return bool(re.search(r"\b(obrigad[oa]|obg|brigad[oa]|valeu|vlw|sim|s|era isso|isso mesmo|gostei|amei|perfeito|"
                           r"show|top|otimo|beleza|blz|ok|entendi|certo|massa)\b", t)) or (
         not re.search(r"[a-z0-9]", t) and bool(texto.strip()))   # só emoji (👍❤️)
+
+
+def _sim(texto):
+    """'sim', 'quero', 'pode', 'manda', 'claro', 'bora', 'ok' → aceitou ver outros vendedores."""
+    import re
+    return bool(re.search(r"\b(sim|s|ss|quero|pode|manda|mostra|claro|bora|ok|okay|isso|yes|por favor|pfv)\b", _norm(texto)))
+
+
+def _nao(texto):
+    import re
+    return bool(re.search(r"\b(nao|n|nem|dispenso)\b", _norm(texto)))
+
+
+def _responder_outros(api, ig_id, autor, feitos, agora, aceitou):
+    """Resposta ao "quer que eu mostre de outros vendedores?". Devolve (ids, status, termo, ofertas)."""
+    enviar = lambda txt: api._req("POST", f"{ig_id}/messages", json={"recipient": {"id": autor}, "message": {"text": txt}})
+    limite = (agora - JANELA_DM).strftime(_fmt())
+    regs = [v for v in feitos.values() if v.get("autor") == autor and v.get("oferta_outros") and v.get("termo")
+            and v.get("em", "") >= limite]
+    if not aceitou or not regs:
+        r = enviar(DM_OUTROS_NAO if not aceitou else DM_OBRIGADO)
+        return [(r or {}).get("message_id")], "recusou_outros" if not aceitou else "sem_pedido", "", []
+    pedido = max(regs, key=lambda v: v["em"])
+    pedido["oferta_outros"] = False   # oferece uma vez só
+    t, teto = pedido["termo"], pedido.get("preco_max", 0)
+    ofs = achados(t, preco_max=teto, livre=True)
+    if not ofs:
+        r = enviar(DM_OUTROS_NADA.format(t=_com_teto(t, teto)))
+        return [(r or {}).get("message_id")], "outros_nao_achou", t, []
+    ids = [(enviar(DM_OUTROS) or {}).get("message_id")]
+    ids.append((enviar_dm(api, ig_id, None, _com_teto(t, teto), ofs, destinatario=autor) or {}).get("message_id"))
+    return ids, "outros_vendedores", t, ofs
 
 
 def _negou(texto):
@@ -1504,6 +1579,13 @@ if __name__ == "__main__":   # teste: python -m src.busca_ze "celular" "fone blu
         sys.exit(0)
     for t in sys.argv[1:] or ["celular"]:
         t = t.strip()
+        livre = t.lower().startswith("outros:")   # prévia do "outros vendedores" (sem garantia de qualidade)
+        if livre:
+            busca, teto = _sem_teto(t.split(":", 1)[1].strip())
+            print(f"\n🔎 outros vendedores: \"{_com_teto(busca, teto)}\"")
+            for o in achados(busca, preco_max=teto, livre=True):
+                print(f"  • {_nome_loja(o):<14} R$ {o['preco_fmt']:>9} {_selo(o, True):<28} — {o['nome'][:80]}")
+            continue
         if t.lower().startswith("escolher:"):   # prévia do envio de produtos escolhidos
             print(f"\n🔎 {t}")
             for o in escolhidos(t):
