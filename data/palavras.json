@@ -75,10 +75,10 @@
   "brinquedo interativo gato": {
    "cat": "pet",
    "origem": "fixa",
-   "usos": 20,
+   "usos": 21,
    "achados": 0,
    "criado": "2026-10-09",
-   "ultimo_uso": "2026-11-14"
+   "ultimo_uso": "2026-11-21"
   },
   "compressor de ar portátil": {
    "cat": "automotivo",
@@ -131,10 +131,10 @@
   "brinquedo educativo": {
    "cat": "brinquedos",
    "origem": "fixa",
-   "usos": 29,
-   "achados": 24,
+   "usos": 30,
+   "achados": 25,
    "criado": "2026-10-09",
-   "ultimo_uso": "2026-11-20"
+   "ultimo_uso": "2026-11-21"
   },
   "carrinho controle remoto": {
    "cat": "brinquedos",
@@ -147,10 +147,10 @@
   "bebedouro fonte pet": {
    "cat": "pet",
    "origem": "fixa",
-   "usos": 12,
+   "usos": 13,
    "achados": 5,
    "criado": "2026-10-10",
-   "ultimo_uso": "2026-11-20"
+   "ultimo_uso": "2026-11-21"
   },
   "mini impressora térmica": {
    "cat": "eletronicos",
@@ -203,10 +203,10 @@
   "luminária led": {
    "cat": "lar",
    "origem": "fixa",
-   "usos": 33,
-   "achados": 121,
+   "usos": 34,
+   "achados": 127,
    "criado": "2026-10-13",
-   "ultimo_uso": "2026-11-20"
+   "ultimo_uso": "2026-11-21"
   },
   "power bank": {
    "cat": "eletronicos",
@@ -291,10 +291,10 @@
   "tv retro": {
    "cat": "eletronicos",
    "origem": "viral",
-   "usos": 15,
+   "usos": 16,
    "achados": 22,
    "criado": "2026-11-01",
-   "ultimo_uso": "2026-11-19"
+   "ultimo_uso": "2026-11-21"
   },
   "luminária decorativa": {
    "cat": "casa_fofa",
@@ -483,10 +483,10 @@
   "luminária infantil": {
    "cat": "brinquedos",
    "origem": "linha",
-   "usos": 2,
+   "usos": 3,
    "achados": 1,
    "criado": "2026-11-06",
-   "ultimo_uso": "2026-11-14"
+   "ultimo_uso": "2026-11-21"
   },
   "tábua corte": {
    "cat": "lar",
@@ -515,10 +515,10 @@
   "kit higiene bebê": {
    "cat": "brinquedos",
    "origem": "linha",
-   "usos": 2,
+   "usos": 3,
    "achados": 0,
    "criado": "2026-11-07",
-   "ultimo_uso": "2026-11-14"
+   "ultimo_uso": "2026-11-21"
   },
   "escova limpeza rejunte": {
    "cat": "lar",
@@ -555,34 +555,10 @@
   "fogão a gás portátil": {
    "cat": "lar",
    "origem": "viral",
-   "usos": 6,
-   "achados": 8,
+   "usos": 7,
+   "achados": 12,
    "criado": "2026-11-08",
-   "ultimo_uso": "2026-11-20"
-  },
-  "desodorizador ar holográfico": {
-   "cat": "automotivo",
-   "origem": "ia",
-   "usos": 1,
-   "achados": 0,
-   "criado": "2026-11-08",
-   "ultimo_uso": "2026-11-08"
-  },
-  "espelho de aumento portátil": {
-   "cat": "beleza",
-   "origem": "ia",
-   "usos": 1,
-   "achados": 0,
-   "criado": "2026-11-08",
-   "ultimo_uso": "2026-11-08"
-  },
-  "sandália feminina": {
-   "cat": "moda",
-   "origem": "fixa",
-   "usos": 1,
-   "achados": 0,
-   "criado": "2026-11-08",
-   "ultimo_uso": "2026-11-08"
+   "ultimo_uso": "2026-11-21"
   },
   "modelador de cachos": {
    "cat": "cabelo",
@@ -591,78 +567,6 @@
    "achados": 0,
    "criado": "2026-11-08",
    "ultimo_uso": "2026-11-17"
-  },
-  "chapa para fogão": {
-   "cat": "lar",
-   "origem": "viral",
-   "usos": 1,
-   "achados": 0,
-   "criado": "2026-11-08",
-   "ultimo_uso": "2026-11-08"
-  },
-  "ralador manual legumes": {
-   "cat": "lar",
-   "origem": "viral",
-   "usos": 1,
-   "achados": 0,
-   "criado": "2026-11-08",
-   "ultimo_uso": "2026-11-08"
-  },
-  "quebra vidro cinto segurança": {
-   "cat": "automotivo",
-   "origem": "viral",
-   "usos": 1,
-   "achados": 0,
-   "criado": "2026-11-08",
-   "ultimo_uso": "2026-11-08"
-  },
-  "lanterna trilha pesca": {
-   "cat": "eletronicos",
-   "origem": "viral",
-   "usos": 1,
-   "achados": 0,
-   "criado": "2026-11-08",
-   "ultimo_uso": "2026-11-08"
-  },
-  "capa chuva transparente": {
-   "cat": "moda",
-   "origem": "viral",
-   "usos": 1,
-   "achados": 0,
-   "criado": "2026-11-08",
-   "ultimo_uso": "2026-11-08"
-  },
-  "rádio portátil longo alcance": {
-   "cat": "eletronicos",
-   "origem": "viral",
-   "usos": 1,
-   "achados": 0,
-   "criado": "2026-11-08",
-   "ultimo_uso": "2026-11-08"
-  },
-  "gadget multifuncional canivete": {
-   "cat": "masculino",
-   "origem": "ia",
-   "usos": 1,
-   "achados": 0,
-   "criado": "2026-11-08",
-   "ultimo_uso": "2026-11-08"
-  },
-  "robô de desenho 3d": {
-   "cat": "brinquedos",
-   "origem": "ia",
-   "usos": 1,
-   "achados": 0,
-   "criado": "2026-11-08",
-   "ultimo_uso": "2026-11-08"
-  },
-  "carregador solar dobrável": {
-   "cat": "eletronicos",
-   "origem": "ia",
-   "usos": 1,
-   "achados": 0,
-   "criado": "2026-11-08",
-   "ultimo_uso": "2026-11-08"
   },
   "comedouro inteligente com câmera": {
    "cat": "pet",
@@ -1291,10 +1195,10 @@
   "gerador portátil": {
    "cat": "eletronicos",
    "origem": "viral",
-   "usos": 9,
+   "usos": 10,
    "achados": 12,
    "criado": "2026-11-10",
-   "ultimo_uso": "2026-11-20"
+   "ultimo_uso": "2026-11-21"
   },
   "mini veículo elétrico": {
    "cat": "automotivo",
@@ -2467,10 +2371,10 @@
   "brinquedo para cachorro": {
    "cat": "pet",
    "origem": "linha",
-   "usos": 2,
-   "achados": 1,
+   "usos": 3,
+   "achados": 2,
    "criado": "2026-11-13",
-   "ultimo_uso": "2026-11-14"
+   "ultimo_uso": "2026-11-21"
   },
   "aquecedor eletrico": {
    "cat": "eletronicos",
@@ -4683,18 +4587,18 @@
   "bebedouro portátil pet": {
    "cat": "pet",
    "origem": "linha",
-   "usos": 1,
+   "usos": 2,
    "achados": 0,
    "criado": "2026-11-20",
-   "ultimo_uso": "2026-11-20"
+   "ultimo_uso": "2026-11-21"
   },
   "blocos de montar": {
    "cat": "brinquedos",
    "origem": "linha",
-   "usos": 1,
-   "achados": 0,
+   "usos": 2,
+   "achados": 1,
    "criado": "2026-11-20",
-   "ultimo_uso": "2026-11-20"
+   "ultimo_uso": "2026-11-21"
   },
   "mordedor bebê": {
    "cat": "brinquedos",
@@ -4799,6 +4703,102 @@
    "achados": 0,
    "criado": "2026-11-20",
    "ultimo_uso": "2026-11-20"
+  },
+  "enfeite natal": {
+   "cat": "casa_fofa",
+   "origem": "viral",
+   "usos": 1,
+   "achados": 3,
+   "criado": "2026-11-21",
+   "ultimo_uso": "2026-11-21"
+  },
+  "celular retrátil": {
+   "cat": "eletronicos",
+   "origem": "viral",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-11-21",
+   "ultimo_uso": "2026-11-21"
+  },
+  "taça magnética": {
+   "cat": "casa_fofa",
+   "origem": "viral",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-11-21",
+   "ultimo_uso": "2026-11-21"
+  },
+  "escova modeladora usb": {
+   "cat": "cabelo",
+   "origem": "viral",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-11-21",
+   "ultimo_uso": "2026-11-21"
+  },
+  "molde sobrancelha": {
+   "cat": "beleza",
+   "origem": "viral",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-11-21",
+   "ultimo_uso": "2026-11-21"
+  },
+  "lousa mágica led": {
+   "cat": "brinquedos",
+   "origem": "viral",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-11-21",
+   "ultimo_uso": "2026-11-21"
+  },
+  "suporte copo refrigerado": {
+   "cat": "automotivo",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-11-21",
+   "ultimo_uso": "2026-11-21"
+  },
+  "escova alisadora térmica": {
+   "cat": "cabelo",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-11-21",
+   "ultimo_uso": "2026-11-21"
+  },
+  "puzzle luz interativa": {
+   "cat": "brinquedos",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-11-21",
+   "ultimo_uso": "2026-11-21"
+  },
+  "óculos espelhado retrô": {
+   "cat": "moda",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-11-21",
+   "ultimo_uso": "2026-11-21"
+  },
+  "bebedouro auto fluxo": {
+   "cat": "pet",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-11-21",
+   "ultimo_uso": "2026-11-21"
+  },
+  "organizador gaveta dobravel": {
+   "cat": "lar",
+   "origem": "ia",
+   "usos": 1,
+   "achados": 0,
+   "criado": "2026-11-21",
+   "ultimo_uso": "2026-11-21"
   }
  },
  "categorias": {
@@ -4806,13 +4806,13 @@
    "nivel": 0,
    "votos": {
     "masculino": 22889,
-    "lar": 3169,
-    "brinquedos": 866,
+    "lar": 3268,
+    "brinquedos": 871,
     "automotivo": 2292,
-    "eletronicos": 10069,
-    "pet": 1062,
+    "eletronicos": 10126,
+    "pet": 1063,
     "autocuidado": 220,
-    "moda": 4197,
+    "moda": 4198,
     "casa_fofa": 412,
     "cabelo": 79,
     "beleza": 24
@@ -4822,13 +4822,13 @@
    "nivel": 1,
    "votos": {
     "masculino": 18934,
-    "lar": 2567,
-    "brinquedos": 800,
+    "lar": 2665,
+    "brinquedos": 801,
     "automotivo": 1999,
-    "eletronicos": 7971,
-    "pet": 1033,
+    "eletronicos": 8015,
+    "pet": 1034,
     "casa_fofa": 144,
-    "moda": 526,
+    "moda": 527,
     "cabelo": 22,
     "autocuidado": 55,
     "beleza": 22
@@ -4838,10 +4838,10 @@
    "nivel": 2,
    "votos": {
     "masculino": 16693,
-    "lar": 2422,
-    "brinquedos": 126,
+    "lar": 2518,
+    "brinquedos": 127,
     "automotivo": 737,
-    "eletronicos": 6667,
+    "eletronicos": 6700,
     "pet": 869,
     "moda": 311,
     "cabelo": 3,
@@ -4857,46 +4857,46 @@
    "nivel": 0,
    "votos": {
     "masculino": 42073,
-    "lar": 321618,
-    "automotivo": 16539,
-    "pet": 11978,
-    "eletronicos": 60958,
-    "brinquedos": 14868,
-    "beleza": 9669,
-    "casa_fofa": 34720,
+    "lar": 323012,
+    "automotivo": 16550,
+    "pet": 11989,
+    "eletronicos": 62214,
+    "brinquedos": 15822,
+    "beleza": 9680,
+    "casa_fofa": 36029,
     "autocuidado": 9789,
-    "moda": 3685,
-    "cabelo": 2100
+    "moda": 3688,
+    "cabelo": 2111
    }
   },
   "100715": {
    "nivel": 1,
    "votos": {
     "masculino": 31226,
-    "automotivo": 5842,
-    "eletronicos": 3954,
-    "lar": 8000,
+    "automotivo": 5850,
+    "eletronicos": 4468,
+    "lar": 8006,
     "pet": 200,
-    "brinquedos": 582,
+    "brinquedos": 583,
     "moda": 240,
     "cabelo": 312,
     "autocuidado": 113,
     "beleza": 50,
-    "casa_fofa": 2043
+    "casa_fofa": 2046
    }
   },
   "101191": {
    "nivel": 2,
    "votos": {
     "masculino": 30500,
-    "automotivo": 3542,
-    "eletronicos": 3112,
-    "lar": 2421,
-    "brinquedos": 409,
+    "automotivo": 3550,
+    "eletronicos": 3591,
+    "lar": 2423,
+    "brinquedos": 410,
     "pet": 83,
     "moda": 155,
     "cabelo": 37,
-    "casa_fofa": 23,
+    "casa_fofa": 25,
     "beleza": 25,
     "autocuidado": 38
    },
@@ -4907,12 +4907,12 @@
   "100644": {
    "nivel": 0,
    "votos": {
-    "eletronicos": 59410,
-    "lar": 688,
+    "eletronicos": 59416,
+    "lar": 696,
     "automotivo": 697,
     "masculino": 251,
     "pet": 517,
-    "brinquedos": 229,
+    "brinquedos": 238,
     "casa_fofa": 29,
     "autocuidado": 26,
     "moda": 7,
@@ -4925,7 +4925,7 @@
    "votos": {
     "eletronicos": 22524,
     "masculino": 30,
-    "brinquedos": 12,
+    "brinquedos": 19,
     "automotivo": 2
    }
   },
@@ -4941,12 +4941,12 @@
   "100631": {
    "nivel": 0,
    "votos": {
-    "pet": 151950,
+    "pet": 155830,
     "masculino": 1075,
     "automotivo": 1313,
-    "brinquedos": 704,
-    "lar": 4983,
-    "eletronicos": 673,
+    "brinquedos": 708,
+    "lar": 4988,
+    "eletronicos": 676,
     "cabelo": 208,
     "moda": 170,
     "beleza": 269,
@@ -4957,12 +4957,12 @@
   "100668": {
    "nivel": 1,
    "votos": {
-    "pet": 116353,
+    "pet": 120211,
     "automotivo": 1310,
     "masculino": 67,
-    "brinquedos": 701,
-    "eletronicos": 598,
-    "lar": 922,
+    "brinquedos": 705,
+    "eletronicos": 601,
+    "lar": 927,
     "cabelo": 48,
     "moda": 53,
     "casa_fofa": 73,
@@ -4972,7 +4972,7 @@
   "100920": {
    "nivel": 2,
    "votos": {
-    "pet": 23593,
+    "pet": 23686,
     "lar": 230,
     "automotivo": 30,
     "brinquedos": 25,
@@ -4988,13 +4988,13 @@
   "100632": {
    "nivel": 0,
    "votos": {
-    "brinquedos": 151686,
+    "brinquedos": 154759,
     "masculino": 1086,
-    "lar": 3498,
-    "pet": 3387,
-    "eletronicos": 5115,
-    "automotivo": 6137,
-    "casa_fofa": 1404,
+    "lar": 3499,
+    "pet": 3434,
+    "eletronicos": 5142,
+    "automotivo": 6140,
+    "casa_fofa": 1411,
     "beleza": 359,
     "autocuidado": 170,
     "moda": 387,
@@ -5004,70 +5004,70 @@
   "100684": {
    "nivel": 1,
    "votos": {
-    "brinquedos": 147200,
+    "brinquedos": 149279,
     "lar": 1113,
-    "eletronicos": 4288,
+    "eletronicos": 4305,
     "masculino": 361,
-    "pet": 2470,
+    "pet": 2513,
     "automotivo": 1934,
     "beleza": 130,
     "moda": 71,
     "autocuidado": 8,
     "cabelo": 2,
-    "casa_fofa": 1294
+    "casa_fofa": 1301
    }
   },
   "101007": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 24768,
-    "pet": 14,
-    "eletronicos": 18,
+    "brinquedos": 25717,
+    "pet": 15,
+    "eletronicos": 21,
     "lar": 55,
     "casa_fofa": 5,
     "masculino": 2,
     "automotivo": 9
    },
-   "achados": 37,
+   "achados": 38,
    "usos": 32,
    "ultimo_uso": "2026-11-20"
   },
   "100638": {
    "nivel": 0,
    "votos": {
-    "brinquedos": 2267,
+    "brinquedos": 2488,
     "pet": 640,
-    "lar": 1266,
+    "lar": 1270,
     "automotivo": 991,
     "masculino": 703,
-    "eletronicos": 15265,
-    "beleza": 43,
+    "eletronicos": 15283,
+    "beleza": 71,
     "moda": 209,
     "autocuidado": 90,
     "cabelo": 17,
-    "casa_fofa": 777
+    "casa_fofa": 794
    }
   },
   "100734": {
    "nivel": 1,
    "votos": {
-    "brinquedos": 728,
+    "brinquedos": 730,
     "pet": 206,
     "lar": 223,
     "masculino": 42,
-    "eletronicos": 12472,
+    "eletronicos": 12474,
     "automotivo": 27,
     "autocuidado": 26,
     "cabelo": 14,
     "casa_fofa": 36,
     "moda": 4,
-    "beleza": 3
+    "beleza": 16
    }
   },
   "101378": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 73,
+    "brinquedos": 74,
     "pet": 28,
     "masculino": 2,
     "automotivo": 6,
@@ -5081,14 +5081,14 @@
   "100639": {
    "nivel": 0,
    "votos": {
-    "brinquedos": 34158,
+    "brinquedos": 34281,
     "masculino": 1184,
     "automotivo": 364,
     "pet": 481,
-    "eletronicos": 1477,
+    "eletronicos": 1519,
     "lar": 565,
-    "beleza": 24,
-    "casa_fofa": 778,
+    "beleza": 25,
+    "casa_fofa": 783,
     "moda": 47,
     "cabelo": 9,
     "autocuidado": 8
@@ -5097,11 +5097,11 @@
   "100739": {
    "nivel": 1,
    "votos": {
-    "brinquedos": 28846,
+    "brinquedos": 28922,
     "pet": 391,
     "masculino": 78,
     "automotivo": 127,
-    "eletronicos": 652,
+    "eletronicos": 667,
     "lar": 15,
     "moda": 2,
     "casa_fofa": 30
@@ -5110,9 +5110,9 @@
   "101409": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 1275,
+    "brinquedos": 1292,
     "automotivo": 14,
-    "eletronicos": 82,
+    "eletronicos": 86,
     "pet": 105,
     "casa_fofa": 21,
     "lar": 4
@@ -5121,10 +5121,10 @@
   "101012": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 55596,
-    "eletronicos": 1700,
+    "brinquedos": 56516,
+    "eletronicos": 1708,
     "lar": 43,
-    "pet": 239,
+    "pet": 242,
     "moda": 38,
     "autocuidado": 2,
     "casa_fofa": 30,
@@ -5140,9 +5140,9 @@
   "101011": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 3547,
+    "brinquedos": 3559,
     "automotivo": 320,
-    "pet": 1069,
+    "pet": 1073,
     "eletronicos": 523,
     "lar": 91,
     "beleza": 9,
@@ -5157,12 +5157,12 @@
   "100635": {
    "nivel": 0,
    "votos": {
-    "brinquedos": 710,
-    "eletronicos": 38711,
+    "brinquedos": 716,
+    "eletronicos": 38719,
     "automotivo": 841,
-    "lar": 1099,
+    "lar": 1111,
     "masculino": 289,
-    "pet": 481,
+    "pet": 485,
     "autocuidado": 53,
     "casa_fofa": 23,
     "moda": 55,
@@ -5173,12 +5173,12 @@
   "100703": {
    "nivel": 1,
    "votos": {
-    "brinquedos": 402,
-    "eletronicos": 12476,
+    "brinquedos": 408,
+    "eletronicos": 12484,
     "automotivo": 780,
-    "lar": 897,
+    "lar": 909,
     "masculino": 260,
-    "pet": 143,
+    "pet": 147,
     "autocuidado": 42,
     "casa_fofa": 21,
     "moda": 53,
@@ -5189,11 +5189,11 @@
   "101111": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 273,
-    "eletronicos": 1594,
+    "brinquedos": 279,
+    "eletronicos": 1595,
     "automotivo": 71,
-    "lar": 883,
-    "pet": 131,
+    "lar": 895,
+    "pet": 135,
     "masculino": 51,
     "autocuidado": 29,
     "moda": 7,
@@ -5206,13 +5206,13 @@
    "nivel": 0,
    "votos": {
     "masculino": 42529,
-    "brinquedos": 208,
-    "lar": 7328,
+    "brinquedos": 217,
+    "lar": 7342,
     "automotivo": 701,
-    "eletronicos": 7516,
+    "eletronicos": 7553,
     "pet": 220,
-    "beleza": 64784,
-    "cabelo": 20627,
+    "beleza": 65743,
+    "cabelo": 21301,
     "autocuidado": 3937,
     "casa_fofa": 211,
     "moda": 472
@@ -5222,13 +5222,13 @@
    "nivel": 1,
    "votos": {
     "masculino": 8586,
-    "lar": 1297,
-    "eletronicos": 5667,
+    "lar": 1300,
+    "eletronicos": 5696,
     "automotivo": 573,
     "pet": 70,
-    "brinquedos": 19,
-    "beleza": 31024,
-    "cabelo": 17388,
+    "brinquedos": 26,
+    "beleza": 31739,
+    "cabelo": 18037,
     "autocuidado": 237,
     "casa_fofa": 53,
     "moda": 391
@@ -5238,7 +5238,7 @@
    "nivel": 2,
    "votos": {
     "masculino": 128,
-    "eletronicos": 241,
+    "eletronicos": 264,
     "lar": 217,
     "pet": 10,
     "brinquedos": 5,
@@ -5255,12 +5255,12 @@
    "nivel": 1,
    "votos": {
     "masculino": 142,
-    "eletronicos": 51,
-    "brinquedos": 18,
+    "eletronicos": 52,
+    "brinquedos": 19,
     "pet": 17,
     "lar": 81,
     "automotivo": 21,
-    "beleza": 10292,
+    "beleza": 10505,
     "moda": 3,
     "autocuidado": 3,
     "casa_fofa": 53,
@@ -5274,7 +5274,7 @@
     "brinquedos": 1,
     "lar": 2,
     "pet": 1,
-    "beleza": 3537,
+    "beleza": 3742,
     "cabelo": 5
    }
   },
@@ -5285,7 +5285,7 @@
     "lar": 2434,
     "pet": 57,
     "eletronicos": 82,
-    "cabelo": 139,
+    "cabelo": 157,
     "beleza": 3313,
     "autocuidado": 2813,
     "automotivo": 66,
@@ -5299,7 +5299,7 @@
     "lar": 2415,
     "pet": 57,
     "eletronicos": 79,
-    "cabelo": 123,
+    "cabelo": 141,
     "beleza": 3226,
     "autocuidado": 2808,
     "automotivo": 66,
@@ -5313,8 +5313,8 @@
    "nivel": 2,
    "votos": {
     "masculino": 866,
-    "eletronicos": 94,
-    "lar": 22,
+    "eletronicos": 100,
+    "lar": 24,
     "automotivo": 5,
     "pet": 12,
     "brinquedos": 10,
@@ -5334,7 +5334,7 @@
     "pet": 14,
     "lar": 235,
     "beleza": 680,
-    "cabelo": 2442,
+    "cabelo": 2446,
     "moda": 4,
     "casa_fofa": 84,
     "autocuidado": 23,
@@ -5363,7 +5363,7 @@
     "pet": 14,
     "lar": 142,
     "eletronicos": 32,
-    "cabelo": 721,
+    "cabelo": 723,
     "beleza": 110,
     "autocuidado": 1
    }
@@ -5401,8 +5401,8 @@
     "masculino": 6047,
     "lar": 149,
     "pet": 10,
-    "eletronicos": 3863,
-    "cabelo": 17196,
+    "eletronicos": 3868,
+    "cabelo": 17845,
     "autocuidado": 21,
     "beleza": 3149,
     "moda": 44,
@@ -5416,16 +5416,16 @@
    "nivel": 2,
    "votos": {
     "masculino": 607,
-    "eletronicos": 1408,
+    "eletronicos": 1409,
     "automotivo": 568,
-    "lar": 834,
+    "lar": 837,
     "pet": 11,
-    "beleza": 16790,
+    "beleza": 17466,
     "casa_fofa": 51,
     "moda": 338,
     "cabelo": 137,
     "autocuidado": 3,
-    "brinquedos": 14
+    "brinquedos": 21
    }
   },
   "100870": {
@@ -5443,9 +5443,9 @@
    "votos": {
     "masculino": 976,
     "lar": 603,
-    "brinquedos": 37,
-    "eletronicos": 672,
-    "pet": 101,
+    "brinquedos": 43,
+    "eletronicos": 675,
+    "pet": 102,
     "automotivo": 160,
     "beleza": 646,
     "autocuidado": 4628,
@@ -5476,10 +5476,10 @@
    "votos": {
     "masculino": 175,
     "pet": 146,
-    "lar": 1060,
+    "lar": 1063,
     "automotivo": 42,
-    "brinquedos": 16,
-    "eletronicos": 430,
+    "brinquedos": 17,
+    "eletronicos": 463,
     "casa_fofa": 1180,
     "moda": 68,
     "autocuidado": 1,
@@ -5502,10 +5502,10 @@
    "votos": {
     "masculino": 36,
     "lar": 293,
-    "brinquedos": 573,
+    "brinquedos": 583,
     "pet": 6,
-    "eletronicos": 20,
-    "automotivo": 5,
+    "eletronicos": 21,
+    "automotivo": 8,
     "moda": 112,
     "autocuidado": 26,
     "cabelo": 84,
@@ -5526,13 +5526,13 @@
    "nivel": 1,
    "votos": {
     "masculino": 221,
-    "lar": 26840,
-    "brinquedos": 816,
-    "eletronicos": 3523,
+    "lar": 26858,
+    "brinquedos": 903,
+    "eletronicos": 3637,
     "automotivo": 705,
-    "pet": 1765,
-    "casa_fofa": 7682,
-    "beleza": 3025,
+    "pet": 1769,
+    "casa_fofa": 7916,
+    "beleza": 3030,
     "autocuidado": 2010,
     "moda": 173,
     "cabelo": 184
@@ -5542,13 +5542,13 @@
    "nivel": 2,
    "votos": {
     "masculino": 17,
-    "eletronicos": 488,
-    "lar": 1047,
-    "brinquedos": 40,
+    "eletronicos": 518,
+    "lar": 1049,
+    "brinquedos": 62,
     "automotivo": 136,
     "pet": 1012,
-    "casa_fofa": 698,
-    "beleza": 25,
+    "casa_fofa": 710,
+    "beleza": 26,
     "moda": 2,
     "autocuidado": 1
    }
@@ -5557,12 +5557,12 @@
    "nivel": 1,
    "votos": {
     "masculino": 1254,
-    "lar": 2235,
-    "eletronicos": 1571,
+    "lar": 2246,
+    "eletronicos": 1575,
     "pet": 51,
     "brinquedos": 40,
     "beleza": 14709,
-    "cabelo": 594,
+    "cabelo": 597,
     "autocuidado": 215,
     "moda": 68,
     "casa_fofa": 13,
@@ -5573,12 +5573,12 @@
    "nivel": 2,
    "votos": {
     "masculino": 1246,
-    "lar": 2142,
-    "eletronicos": 1545,
+    "lar": 2153,
+    "eletronicos": 1549,
     "pet": 51,
     "brinquedos": 40,
     "beleza": 14374,
-    "cabelo": 591,
+    "cabelo": 594,
     "moda": 53,
     "casa_fofa": 13,
     "autocuidado": 20,
@@ -5591,15 +5591,15 @@
    "votos": {
     "masculino": 11,
     "pet": 25,
-    "lar": 104,
-    "eletronicos": 106,
+    "lar": 105,
+    "eletronicos": 117,
     "automotivo": 7,
     "moda": 23,
     "autocuidado": 1,
     "casa_fofa": 10,
     "beleza": 1,
     "cabelo": 1,
-    "brinquedos": 1
+    "brinquedos": 2
    }
   },
   "102002": {
@@ -5608,11 +5608,12 @@
     "masculino": 70,
     "lar": 348,
     "pet": 9,
-    "eletronicos": 42,
+    "eletronicos": 45,
     "beleza": 1524,
     "autocuidado": 496,
     "cabelo": 20,
-    "casa_fofa": 1
+    "casa_fofa": 1,
+    "brinquedos": 1
    }
   },
   "102010": {
@@ -5620,27 +5621,28 @@
    "votos": {
     "masculino": 26,
     "pet": 9,
-    "eletronicos": 42,
+    "eletronicos": 45,
     "lar": 25,
     "beleza": 7,
     "cabelo": 9,
-    "autocuidado": 10
+    "autocuidado": 10,
+    "brinquedos": 1
    }
   },
   "100009": {
    "nivel": 0,
    "votos": {
     "masculino": 10938,
-    "eletronicos": 720,
+    "eletronicos": 732,
     "automotivo": 92,
-    "brinquedos": 94,
+    "brinquedos": 95,
     "lar": 306,
     "pet": 55,
-    "beleza": 184,
-    "moda": 13230,
-    "cabelo": 1037,
+    "beleza": 185,
+    "moda": 13767,
+    "cabelo": 1041,
     "autocuidado": 41,
-    "casa_fofa": 57
+    "casa_fofa": 59
    }
   },
   "100025": {
@@ -5649,9 +5651,9 @@
     "masculino": 3264,
     "brinquedos": 25,
     "lar": 23,
-    "eletronicos": 16,
+    "eletronicos": 17,
     "beleza": 59,
-    "cabelo": 948,
+    "cabelo": 952,
     "moda": 1535,
     "autocuidado": 6,
     "automotivo": 6,
@@ -5677,7 +5679,7 @@
     "masculino": 19,
     "eletronicos": 4,
     "brinquedos": 5,
-    "cabelo": 105,
+    "cabelo": 107,
     "autocuidado": 11,
     "beleza": 17
    }
@@ -5687,11 +5689,11 @@
    "votos": {
     "masculino": 14,
     "eletronicos": 17,
-    "brinquedos": 8,
+    "brinquedos": 10,
     "automotivo": 3,
     "lar": 20,
-    "casa_fofa": 82,
-    "beleza": 18,
+    "casa_fofa": 118,
+    "beleza": 22,
     "autocuidado": 3,
     "pet": 3
    }
@@ -5700,47 +5702,47 @@
    "nivel": 0,
    "votos": {
     "masculino": 7,
-    "pet": 17,
+    "pet": 19,
     "lar": 529,
-    "brinquedos": 78,
+    "brinquedos": 79,
     "casa_fofa": 4,
     "autocuidado": 16,
-    "eletronicos": 65
+    "eletronicos": 83
    }
   },
   "100647": {
    "nivel": 1,
    "votos": {
     "masculino": 7,
-    "pet": 14,
+    "pet": 16,
     "brinquedos": 27,
     "lar": 11,
     "casa_fofa": 1,
-    "eletronicos": 59
+    "eletronicos": 76
    }
   },
   "100798": {
    "nivel": 2,
    "votos": {
     "masculino": 7,
-    "pet": 14,
+    "pet": 16,
     "brinquedos": 12,
     "lar": 11,
     "casa_fofa": 1,
-    "eletronicos": 59
+    "eletronicos": 76
    }
   },
   "100013": {
    "nivel": 0,
    "votos": {
-    "eletronicos": 109842,
-    "lar": 5158,
+    "eletronicos": 110515,
+    "lar": 5175,
     "masculino": 12530,
     "automotivo": 23445,
-    "brinquedos": 270,
+    "brinquedos": 287,
     "pet": 36,
     "moda": 2196,
-    "casa_fofa": 71,
+    "casa_fofa": 79,
     "beleza": 141,
     "autocuidado": 71,
     "cabelo": 102
@@ -5749,14 +5751,14 @@
   "100075": {
    "nivel": 1,
    "votos": {
-    "eletronicos": 92941,
-    "lar": 5139,
+    "eletronicos": 93602,
+    "lar": 5156,
     "masculino": 6647,
     "automotivo": 21672,
-    "brinquedos": 258,
+    "brinquedos": 275,
     "pet": 11,
     "moda": 439,
-    "casa_fofa": 71,
+    "casa_fofa": 79,
     "beleza": 139,
     "autocuidado": 36,
     "cabelo": 101
@@ -5765,7 +5767,7 @@
   "100284": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 13821,
+    "eletronicos": 13938,
     "masculino": 487,
     "automotivo": 3218,
     "lar": 3288,
@@ -5781,23 +5783,23 @@
   "102187": {
    "nivel": 0,
    "votos": {
-    "eletronicos": 10786,
-    "lar": 6400,
+    "eletronicos": 11121,
+    "lar": 6406,
     "automotivo": 136527,
     "pet": 220,
     "masculino": 1067,
     "brinquedos": 938,
     "cabelo": 327,
-    "casa_fofa": 688,
+    "casa_fofa": 690,
     "autocuidado": 508,
-    "moda": 542,
+    "moda": 545,
     "beleza": 414
    }
   },
   "102249": {
    "nivel": 1,
    "votos": {
-    "eletronicos": 5291,
+    "eletronicos": 5582,
     "automotivo": 62193,
     "lar": 1979,
     "brinquedos": 118,
@@ -5813,7 +5815,7 @@
   "102593": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 2104,
+    "eletronicos": 2202,
     "automotivo": 5504,
     "lar": 43,
     "masculino": 9,
@@ -5823,7 +5825,7 @@
   "100287": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 16216,
+    "eletronicos": 16219,
     "masculino": 58,
     "automotivo": 88,
     "lar": 2
@@ -5834,20 +5836,20 @@
   "102265": {
    "nivel": 1,
    "votos": {
-    "eletronicos": 1790,
+    "eletronicos": 1808,
     "automotivo": 18883,
     "masculino": 337,
     "lar": 51,
     "pet": 1,
     "brinquedos": 175,
     "autocuidado": 35,
-    "casa_fofa": 2
+    "casa_fofa": 4
    }
   },
   "102267": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 568,
+    "eletronicos": 571,
     "automotivo": 3433,
     "lar": 9,
     "masculino": 2,
@@ -5859,13 +5861,13 @@
   "102260": {
    "nivel": 1,
    "votos": {
-    "eletronicos": 1599,
+    "eletronicos": 1606,
     "automotivo": 1787,
     "masculino": 35,
     "brinquedos": 53,
     "lar": 17,
     "cabelo": 153,
-    "moda": 189,
+    "moda": 192,
     "autocuidado": 12,
     "beleza": 6,
     "casa_fofa": 1
@@ -5874,7 +5876,7 @@
   "102551": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 1225,
+    "eletronicos": 1232,
     "automotivo": 1066,
     "masculino": 8,
     "brinquedos": 50,
@@ -5887,7 +5889,7 @@
   "102524": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 2066,
+    "eletronicos": 2250,
     "automotivo": 8659,
     "brinquedos": 27,
     "lar": 94,
@@ -5901,14 +5903,14 @@
   "100010": {
    "nivel": 0,
    "votos": {
-    "eletronicos": 38533,
-    "lar": 47357,
-    "automotivo": 13541,
+    "eletronicos": 38731,
+    "lar": 48287,
+    "automotivo": 13544,
     "masculino": 657,
-    "brinquedos": 2628,
-    "pet": 1223,
+    "brinquedos": 2647,
+    "pet": 1226,
     "autocuidado": 1707,
-    "casa_fofa": 304,
+    "casa_fofa": 311,
     "cabelo": 581,
     "moda": 32,
     "beleza": 171
@@ -5917,12 +5919,12 @@
   "100042": {
    "nivel": 1,
    "votos": {
-    "eletronicos": 15161,
+    "eletronicos": 15173,
     "lar": 329,
     "automotivo": 3186,
     "masculino": 29,
     "pet": 4,
-    "brinquedos": 49,
+    "brinquedos": 50,
     "moda": 13,
     "beleza": 40,
     "autocuidado": 241,
@@ -5933,7 +5935,7 @@
   "100213": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 7855,
+    "eletronicos": 7859,
     "lar": 52,
     "automotivo": 32,
     "beleza": 13,
@@ -5945,9 +5947,9 @@
   "102224": {
    "nivel": 1,
    "votos": {
-    "eletronicos": 1176,
+    "eletronicos": 1182,
     "automotivo": 20817,
-    "lar": 1633,
+    "lar": 1638,
     "brinquedos": 402,
     "masculino": 14,
     "casa_fofa": 48,
@@ -5960,7 +5962,7 @@
   "102226": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 64,
+    "eletronicos": 68,
     "automotivo": 831,
     "masculino": 10,
     "lar": 144,
@@ -5974,7 +5976,7 @@
   "102528": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 456,
+    "eletronicos": 462,
     "automotivo": 9027,
     "brinquedos": 33,
     "lar": 442,
@@ -5992,14 +5994,14 @@
   "100719": {
    "nivel": 1,
    "votos": {
-    "lar": 62768,
-    "eletronicos": 32506,
+    "lar": 63623,
+    "eletronicos": 32507,
     "automotivo": 2383,
-    "brinquedos": 8493,
+    "brinquedos": 9270,
     "masculino": 210,
     "pet": 70,
     "moda": 22,
-    "casa_fofa": 5363,
+    "casa_fofa": 5401,
     "autocuidado": 310,
     "beleza": 185,
     "cabelo": 3
@@ -6011,10 +6013,10 @@
     "lar": 1596,
     "eletronicos": 10875,
     "automotivo": 1387,
-    "brinquedos": 2458,
+    "brinquedos": 2476,
     "masculino": 10,
     "pet": 111,
-    "casa_fofa": 17,
+    "casa_fofa": 19,
     "autocuidado": 27,
     "beleza": 2
    }
@@ -6025,8 +6027,8 @@
     "lar": 1142,
     "eletronicos": 10246,
     "automotivo": 953,
-    "brinquedos": 2092,
-    "casa_fofa": 13,
+    "brinquedos": 2107,
+    "casa_fofa": 15,
     "autocuidado": 27,
     "beleza": 2
    },
@@ -6037,10 +6039,10 @@
   "100285": {
    "nivel": 2,
    "votos": {
-    "lar": 925,
+    "lar": 938,
     "automotivo": 2357,
-    "brinquedos": 81,
-    "eletronicos": 2024,
+    "brinquedos": 96,
+    "eletronicos": 2026,
     "masculino": 36,
     "casa_fofa": 21,
     "autocuidado": 12,
@@ -6053,23 +6055,23 @@
    "nivel": 1,
    "votos": {
     "lar": 456,
-    "eletronicos": 925,
-    "brinquedos": 68,
+    "eletronicos": 951,
+    "brinquedos": 76,
     "masculino": 70,
-    "pet": 63,
+    "pet": 64,
     "automotivo": 97,
     "casa_fofa": 64,
-    "beleza": 99,
+    "beleza": 100,
     "moda": 10,
-    "cabelo": 21,
+    "cabelo": 26,
     "autocuidado": 13
    }
   },
   "100046": {
    "nivel": 1,
    "votos": {
-    "lar": 75,
-    "eletronicos": 236,
+    "lar": 76,
+    "eletronicos": 238,
     "automotivo": 36,
     "pet": 1,
     "masculino": 5,
@@ -6091,7 +6093,7 @@
   "101940": {
    "nivel": 1,
    "votos": {
-    "lar": 167,
+    "lar": 174,
     "eletronicos": 3678,
     "automotivo": 366,
     "pet": 514,
@@ -6118,18 +6120,19 @@
   "101165": {
    "nivel": 2,
    "votos": {
-    "lar": 3309,
-    "brinquedos": 361,
-    "eletronicos": 1100,
+    "lar": 3319,
+    "brinquedos": 415,
+    "eletronicos": 1121,
     "automotivo": 131,
-    "pet": 123,
+    "pet": 127,
     "masculino": 12,
-    "casa_fofa": 1682,
+    "casa_fofa": 1846,
     "autocuidado": 13,
     "moda": 16,
     "beleza": 77,
     "cabelo": 26
-   }
+   },
+   "achados": 1
   },
   "102251": {
    "nivel": 1,
@@ -6137,7 +6140,7 @@
     "lar": 42,
     "automotivo": 2159,
     "masculino": 13,
-    "eletronicos": 109,
+    "eletronicos": 111,
     "moda": 27,
     "beleza": 25,
     "cabelo": 21,
@@ -6150,7 +6153,7 @@
    "votos": {
     "lar": 14,
     "automotivo": 49,
-    "eletronicos": 40,
+    "eletronicos": 42,
     "moda": 4,
     "beleza": 7,
     "masculino": 6,
@@ -6164,13 +6167,13 @@
     "automotivo": 1180,
     "pet": 1333,
     "masculino": 813,
-    "lar": 19823,
-    "eletronicos": 8038,
-    "brinquedos": 76,
+    "lar": 19826,
+    "eletronicos": 8044,
+    "brinquedos": 77,
     "beleza": 664,
-    "casa_fofa": 1615,
+    "casa_fofa": 1616,
     "autocuidado": 41,
-    "cabelo": 150,
+    "cabelo": 153,
     "moda": 85
    }
   },
@@ -6193,7 +6196,7 @@
    "votos": {
     "automotivo": 12906,
     "pet": 39,
-    "eletronicos": 79,
+    "eletronicos": 82,
     "lar": 1590,
     "masculino": 251,
     "cabelo": 7,
@@ -6232,7 +6235,7 @@
     "automotivo": 2511,
     "masculino": 160,
     "pet": 27,
-    "eletronicos": 21,
+    "eletronicos": 23,
     "lar": 160,
     "beleza": 14,
     "casa_fofa": 428,
@@ -6257,7 +6260,7 @@
    "nivel": 2,
    "votos": {
     "automotivo": 1515,
-    "eletronicos": 30,
+    "eletronicos": 31,
     "masculino": 13,
     "lar": 96,
     "autocuidado": 29,
@@ -6286,8 +6289,8 @@
     "automotivo": 131,
     "pet": 129,
     "masculino": 32,
-    "lar": 539,
-    "eletronicos": 109,
+    "lar": 540,
+    "eletronicos": 111,
     "brinquedos": 26,
     "autocuidado": 9,
     "cabelo": 27,
@@ -6336,7 +6339,7 @@
     "lar": 3474,
     "masculino": 523,
     "eletronicos": 48,
-    "cabelo": 91,
+    "cabelo": 94,
     "autocuidado": 2,
     "casa_fofa": 311,
     "beleza": 38
@@ -6364,15 +6367,15 @@
    "nivel": 1,
    "votos": {
     "automotivo": 8742,
-    "eletronicos": 1722,
-    "lar": 11116,
+    "eletronicos": 1861,
+    "lar": 11119,
     "masculino": 563,
     "brinquedos": 23,
     "pet": 77,
     "autocuidado": 1348,
     "cabelo": 61,
     "moda": 18,
-    "casa_fofa": 27,
+    "casa_fofa": 28,
     "beleza": 92
    }
   },
@@ -6380,7 +6383,7 @@
    "nivel": 2,
    "votos": {
     "automotivo": 8585,
-    "eletronicos": 163,
+    "eletronicos": 165,
     "lar": 4661,
     "pet": 30,
     "cabelo": 4,
@@ -6408,8 +6411,8 @@
     "masculino": 4818,
     "lar": 63,
     "brinquedos": 12,
-    "eletronicos": 920,
-    "pet": 40,
+    "eletronicos": 927,
+    "pet": 41,
     "casa_fofa": 5,
     "moda": 3102,
     "beleza": 13,
@@ -6425,7 +6428,7 @@
     "lar": 18,
     "brinquedos": 8,
     "eletronicos": 42,
-    "pet": 40,
+    "pet": 41,
     "casa_fofa": 4,
     "beleza": 10,
     "moda": 131,
@@ -6447,7 +6450,7 @@
    "votos": {
     "automotivo": 289,
     "lar": 163,
-    "eletronicos": 150,
+    "eletronicos": 154,
     "pet": 3,
     "masculino": 35,
     "beleza": 16,
@@ -6462,7 +6465,7 @@
    "votos": {
     "automotivo": 122,
     "lar": 123,
-    "eletronicos": 29,
+    "eletronicos": 32,
     "cabelo": 3,
     "moda": 1,
     "masculino": 1
@@ -6486,7 +6489,7 @@
   "100670": {
    "nivel": 1,
    "votos": {
-    "pet": 17997,
+    "pet": 18004,
     "masculino": 905,
     "lar": 234,
     "eletronicos": 33,
@@ -6499,7 +6502,7 @@
   "100929": {
    "nivel": 2,
    "votos": {
-    "pet": 16004,
+    "pet": 16008,
     "masculino": 823,
     "lar": 127,
     "cabelo": 125,
@@ -6515,11 +6518,11 @@
   "100921": {
    "nivel": 2,
    "votos": {
-    "pet": 2028,
+    "pet": 2118,
     "automotivo": 529,
-    "eletronicos": 90,
+    "eletronicos": 93,
     "brinquedos": 8,
-    "lar": 221,
+    "lar": 226,
     "cabelo": 13,
     "casa_fofa": 4,
     "moda": 1,
@@ -6531,7 +6534,7 @@
   "100673": {
    "nivel": 1,
    "votos": {
-    "pet": 420,
+    "pet": 422,
     "brinquedos": 1,
     "moda": 1
    }
@@ -6542,7 +6545,7 @@
     "pet": 162,
     "lar": 164,
     "masculino": 18,
-    "eletronicos": 215,
+    "eletronicos": 227,
     "brinquedos": 108,
     "automotivo": 50,
     "autocuidado": 215,
@@ -6584,8 +6587,8 @@
   "100919": {
    "nivel": 2,
    "votos": {
-    "pet": 35292,
-    "brinquedos": 662,
+    "pet": 37114,
+    "brinquedos": 666,
     "eletronicos": 433,
     "automotivo": 18,
     "lar": 11,
@@ -6600,7 +6603,7 @@
   "100931": {
    "nivel": 2,
    "votos": {
-    "pet": 161,
+    "pet": 163,
     "lar": 57,
     "masculino": 56,
     "cabelo": 2,
@@ -6611,7 +6614,7 @@
   "100932": {
    "nivel": 2,
    "votos": {
-    "pet": 1773,
+    "pet": 1774,
     "masculino": 21,
     "lar": 37,
     "eletronicos": 1,
@@ -6624,7 +6627,7 @@
   "100922": {
    "nivel": 2,
    "votos": {
-    "pet": 1087,
+    "pet": 1103,
     "masculino": 12,
     "automotivo": 13,
     "lar": 5,
@@ -6641,12 +6644,12 @@
     "automotivo": 430,
     "lar": 23630,
     "eletronicos": 495,
-    "brinquedos": 73,
+    "brinquedos": 75,
     "masculino": 14,
     "beleza": 803,
     "autocuidado": 225,
     "casa_fofa": 1354,
-    "cabelo": 276,
+    "cabelo": 279,
     "moda": 17
    }
   },
@@ -6657,7 +6660,8 @@
     "lar": 119,
     "masculino": 3,
     "beleza": 393,
-    "autocuidado": 170
+    "autocuidado": 170,
+    "cabelo": 3
    },
    "usos": 1,
    "ultimo_uso": "2026-10-29"
@@ -6666,12 +6670,12 @@
    "nivel": 1,
    "votos": {
     "pet": 69,
-    "lar": 4845,
-    "eletronicos": 808,
-    "automotivo": 705,
-    "brinquedos": 97,
+    "lar": 4848,
+    "eletronicos": 836,
+    "automotivo": 708,
+    "brinquedos": 98,
     "masculino": 362,
-    "casa_fofa": 2192,
+    "casa_fofa": 2527,
     "autocuidado": 1852,
     "moda": 27,
     "cabelo": 34,
@@ -6682,9 +6686,9 @@
    "nivel": 2,
    "votos": {
     "pet": 10,
-    "eletronicos": 187,
+    "eletronicos": 208,
     "lar": 2604,
-    "automotivo": 346,
+    "automotivo": 349,
     "brinquedos": 38,
     "masculino": 321,
     "moda": 9,
@@ -6712,10 +6716,11 @@
   "101014": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 10535,
-    "pet": 54,
+    "brinquedos": 10543,
+    "pet": 55,
     "eletronicos": 82,
-    "masculino": 3
+    "masculino": 3,
+    "casa_fofa": 1
    },
    "achados": 4,
    "usos": 5,
@@ -6724,7 +6729,7 @@
   "100733": {
    "nivel": 1,
    "votos": {
-    "brinquedos": 378,
+    "brinquedos": 381,
     "pet": 360,
     "automotivo": 315,
     "lar": 238,
@@ -6732,15 +6737,15 @@
     "eletronicos": 31,
     "moda": 64,
     "autocuidado": 10,
-    "beleza": 17,
-    "casa_fofa": 264,
+    "beleza": 32,
+    "casa_fofa": 265,
     "cabelo": 2
    }
   },
   "101370": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 263,
+    "brinquedos": 265,
     "pet": 348,
     "lar": 174,
     "automotivo": 63,
@@ -6748,24 +6753,24 @@
     "eletronicos": 30,
     "moda": 64,
     "autocuidado": 10,
-    "casa_fofa": 52,
-    "beleza": 6,
+    "casa_fofa": 53,
+    "beleza": 21,
     "cabelo": 2
    }
   },
   "100732": {
    "nivel": 1,
    "votos": {
-    "brinquedos": 888,
+    "brinquedos": 1100,
     "pet": 62,
     "automotivo": 612,
-    "lar": 630,
+    "lar": 634,
     "masculino": 564,
-    "eletronicos": 2623,
+    "eletronicos": 2629,
     "beleza": 9,
     "moda": 97,
     "autocuidado": 12,
-    "casa_fofa": 382
+    "casa_fofa": 390
    }
   },
   "101347": {
@@ -6782,14 +6787,14 @@
   "100633": {
    "nivel": 0,
    "votos": {
-    "brinquedos": 1577,
+    "brinquedos": 1594,
     "masculino": 3514,
-    "eletronicos": 265,
-    "lar": 172,
+    "eletronicos": 267,
+    "lar": 177,
     "pet": 9,
     "automotivo": 26,
     "beleza": 19,
-    "moda": 2344,
+    "moda": 2349,
     "cabelo": 217,
     "casa_fofa": 46,
     "autocuidado": 51
@@ -6798,12 +6803,12 @@
   "100689": {
    "nivel": 1,
    "votos": {
-    "brinquedos": 483,
+    "brinquedos": 485,
     "masculino": 1585,
     "eletronicos": 187,
     "lar": 13,
     "beleza": 8,
-    "moda": 831,
+    "moda": 836,
     "cabelo": 213,
     "casa_fofa": 1,
     "autocuidado": 51,
@@ -6827,7 +6832,7 @@
   "100678": {
    "nivel": 1,
    "votos": {
-    "brinquedos": 711,
+    "brinquedos": 1192,
     "eletronicos": 52,
     "masculino": 427,
     "lar": 193,
@@ -6843,7 +6848,7 @@
   "100972": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 57,
+    "brinquedos": 90,
     "lar": 5,
     "masculino": 82,
     "cabelo": 114,
@@ -6854,10 +6859,10 @@
    "nivel": 1,
    "votos": {
     "masculino": 25,
-    "eletronicos": 2393,
+    "eletronicos": 2399,
     "lar": 105,
     "brinquedos": 86,
-    "pet": 10,
+    "pet": 11,
     "automotivo": 4,
     "cabelo": 1,
     "autocuidado": 6,
@@ -6872,7 +6877,7 @@
     "pet": 15,
     "eletronicos": 19,
     "lar": 56,
-    "beleza": 538,
+    "beleza": 566,
     "autocuidado": 21,
     "cabelo": 2,
     "automotivo": 2
@@ -6884,14 +6889,14 @@
   "100041": {
    "nivel": 1,
    "votos": {
-    "lar": 32578,
-    "pet": 1018,
+    "lar": 33476,
+    "pet": 1020,
     "masculino": 25,
-    "eletronicos": 2814,
+    "eletronicos": 2825,
     "automotivo": 117,
     "brinquedos": 11,
     "autocuidado": 60,
-    "casa_fofa": 127,
+    "casa_fofa": 131,
     "cabelo": 6,
     "beleza": 16
    }
@@ -6912,7 +6917,8 @@
    "nivel": 2,
    "votos": {
     "lar": 4115,
-    "eletronicos": 40
+    "eletronicos": 48,
+    "casa_fofa": 4
    },
    "usos": 1,
    "ultimo_uso": "2026-11-14"
@@ -6932,15 +6938,15 @@
    "nivel": 2,
    "votos": {
     "lar": 1348,
-    "eletronicos": 26,
+    "eletronicos": 29,
     "autocuidado": 8,
     "beleza": 13,
     "automotivo": 1,
     "casa_fofa": 10,
     "cabelo": 3
    },
-   "usos": 29,
-   "ultimo_uso": "2026-11-20",
+   "usos": 30,
+   "ultimo_uso": "2026-11-21",
    "achados": 15
   },
   "100191": {
@@ -6959,16 +6965,16 @@
   "100717": {
    "nivel": 1,
    "votos": {
-    "lar": 88141,
-    "brinquedos": 1736,
-    "eletronicos": 2410,
+    "lar": 88154,
+    "brinquedos": 1740,
+    "eletronicos": 2416,
     "masculino": 8509,
-    "pet": 949,
+    "pet": 953,
     "automotivo": 1418,
     "moda": 133,
-    "beleza": 36,
+    "beleza": 40,
     "autocuidado": 637,
-    "casa_fofa": 1938,
+    "casa_fofa": 1946,
     "cabelo": 38
    }
   },
@@ -7005,8 +7011,8 @@
    "nivel": 2,
    "votos": {
     "lar": 639,
-    "brinquedos": 1778,
-    "pet": 40,
+    "brinquedos": 1824,
+    "pet": 42,
     "masculino": 146,
     "eletronicos": 223,
     "beleza": 112,
@@ -7034,7 +7040,7 @@
   "100197": {
    "nivel": 2,
    "votos": {
-    "lar": 5373,
+    "lar": 6268,
     "beleza": 3,
     "eletronicos": 3
    },
@@ -7071,7 +7077,7 @@
   "101237": {
    "nivel": 2,
    "votos": {
-    "lar": 4283,
+    "lar": 4291,
     "brinquedos": 1059,
     "eletronicos": 865,
     "masculino": 268,
@@ -7098,13 +7104,13 @@
   "100721": {
    "nivel": 1,
    "votos": {
-    "lar": 33315,
+    "lar": 33796,
     "automotivo": 2422,
     "masculino": 310,
-    "brinquedos": 1062,
-    "pet": 77,
-    "eletronicos": 1096,
-    "casa_fofa": 4451,
+    "brinquedos": 1065,
+    "pet": 79,
+    "eletronicos": 1105,
+    "casa_fofa": 4454,
     "moda": 2169,
     "beleza": 354,
     "cabelo": 76,
@@ -7114,12 +7120,12 @@
   "101256": {
    "nivel": 2,
    "votos": {
-    "lar": 3596,
+    "lar": 3599,
     "brinquedos": 28,
     "masculino": 56,
     "automotivo": 232,
     "eletronicos": 66,
-    "casa_fofa": 336,
+    "casa_fofa": 337,
     "beleza": 10,
     "pet": 3,
     "moda": 20
@@ -7151,8 +7157,8 @@
   "100212": {
    "nivel": 2,
    "votos": {
-    "lar": 710,
-    "pet": 4,
+    "lar": 712,
+    "pet": 6,
     "eletronicos": 98,
     "brinquedos": 5,
     "autocuidado": 42,
@@ -7176,7 +7182,7 @@
   "101224": {
    "nivel": 2,
    "votos": {
-    "lar": 11455,
+    "lar": 11456,
     "automotivo": 917,
     "pet": 5,
     "casa_fofa": 1059,
@@ -7210,18 +7216,18 @@
     "casa_fofa": 36
    },
    "achados": 8,
-   "usos": 9,
-   "ultimo_uso": "2026-11-20"
+   "usos": 10,
+   "ultimo_uso": "2026-11-21"
   },
   "101220": {
    "nivel": 2,
    "votos": {
     "lar": 22470,
-    "pet": 66,
+    "pet": 70,
     "automotivo": 138,
-    "eletronicos": 16,
+    "eletronicos": 19,
     "masculino": 712,
-    "brinquedos": 28,
+    "brinquedos": 32,
     "moda": 128,
     "autocuidado": 585,
     "casa_fofa": 92,
@@ -7242,8 +7248,8 @@
     "masculino": 14,
     "pet": 767,
     "autocuidado": 2,
-    "beleza": 6,
-    "casa_fofa": 113,
+    "beleza": 10,
+    "casa_fofa": 115,
     "cabelo": 1
    }
   },
@@ -7257,7 +7263,7 @@
   "101244": {
    "nivel": 2,
    "votos": {
-    "lar": 290,
+    "lar": 291,
     "brinquedos": 1,
     "pet": 10,
     "casa_fofa": 92,
@@ -7286,14 +7292,14 @@
   "100211": {
    "nivel": 2,
    "votos": {
-    "lar": 66,
+    "lar": 67,
     "eletronicos": 9
    }
   },
   "100669": {
    "nivel": 1,
    "votos": {
-    "pet": 9349,
+    "pet": 9356,
     "eletronicos": 19,
     "lar": 3689,
     "casa_fofa": 30,
@@ -7329,7 +7335,7 @@
    "nivel": 2,
    "votos": {
     "automotivo": 6210,
-    "eletronicos": 192,
+    "eletronicos": 193,
     "masculino": 8,
     "autocuidado": 3,
     "brinquedos": 31
@@ -7354,7 +7360,7 @@
    "nivel": 2,
    "votos": {
     "automotivo": 8447,
-    "eletronicos": 788,
+    "eletronicos": 802,
     "masculino": 23,
     "autocuidado": 32,
     "brinquedos": 117
@@ -7367,7 +7373,7 @@
    "nivel": 2,
    "votos": {
     "automotivo": 7312,
-    "lar": 919,
+    "lar": 922,
     "eletronicos": 79,
     "brinquedos": 24,
     "autocuidado": 139,
@@ -7421,7 +7427,7 @@
     "lar": 41,
     "pet": 1,
     "brinquedos": 12,
-    "casa_fofa": 2
+    "casa_fofa": 4
    }
   },
   "102211": {
@@ -7441,7 +7447,7 @@
    "votos": {
     "automotivo": 9982,
     "eletronicos": 850,
-    "lar": 306,
+    "lar": 308,
     "brinquedos": 28,
     "casa_fofa": 21,
     "beleza": 32,
@@ -7456,7 +7462,7 @@
    "nivel": 0,
    "votos": {
     "automotivo": 35,
-    "eletronicos": 530,
+    "eletronicos": 548,
     "brinquedos": 1507,
     "masculino": 567,
     "pet": 86,
@@ -7488,8 +7494,8 @@
     "automotivo": 15758,
     "brinquedos": 133,
     "masculino": 28,
-    "eletronicos": 523,
-    "lar": 884,
+    "eletronicos": 526,
+    "lar": 885,
     "pet": 24,
     "moda": 55,
     "beleza": 21,
@@ -7502,7 +7508,7 @@
    "nivel": 2,
    "votos": {
     "automotivo": 587,
-    "eletronicos": 185,
+    "eletronicos": 186,
     "lar": 58,
     "pet": 17,
     "brinquedos": 14,
@@ -7519,7 +7525,7 @@
     "automotivo": 27,
     "masculino": 5837,
     "brinquedos": 7,
-    "beleza": 5,
+    "beleza": 6,
     "autocuidado": 6,
     "lar": 9,
     "casa_fofa": 3,
@@ -7547,7 +7553,7 @@
   "100040": {
    "nivel": 1,
    "votos": {
-    "eletronicos": 603,
+    "eletronicos": 616,
     "automotivo": 5,
     "lar": 56,
     "pet": 1,
@@ -7559,7 +7565,7 @@
   "100189": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 196,
+    "eletronicos": 199,
     "lar": 12,
     "autocuidado": 2,
     "automotivo": 2
@@ -7570,7 +7576,7 @@
   "100290": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 15523,
+    "eletronicos": 15533,
     "masculino": 4230,
     "automotivo": 2706,
     "brinquedos": 85,
@@ -7578,14 +7584,14 @@
     "beleza": 2,
     "moda": 23,
     "cabelo": 18,
-    "casa_fofa": 1
+    "casa_fofa": 5
    }
   },
   "100173": {
    "nivel": 2,
    "votos": {
     "eletronicos": 60,
-    "lar": 1614,
+    "lar": 1616,
     "automotivo": 34,
     "masculino": 3,
     "brinquedos": 4,
@@ -7653,7 +7659,7 @@
   "100924": {
    "nivel": 2,
    "votos": {
-    "pet": 1154,
+    "pet": 1156,
     "lar": 542,
     "casa_fofa": 1
    },
@@ -7664,12 +7670,12 @@
    "nivel": 1,
    "votos": {
     "pet": 2540,
-    "brinquedos": 223,
+    "brinquedos": 257,
     "automotivo": 448,
     "masculino": 22,
-    "lar": 26409,
-    "eletronicos": 4812,
-    "casa_fofa": 4016,
+    "lar": 26414,
+    "eletronicos": 5301,
+    "casa_fofa": 4017,
     "autocuidado": 573,
     "moda": 221,
     "cabelo": 47,
@@ -7681,8 +7687,8 @@
    "votos": {
     "pet": 28,
     "automotivo": 71,
-    "brinquedos": 26,
-    "eletronicos": 89,
+    "brinquedos": 27,
+    "eletronicos": 96,
     "lar": 1753,
     "masculino": 1,
     "casa_fofa": 29,
@@ -7694,7 +7700,7 @@
   "100917": {
    "nivel": 2,
    "votos": {
-    "pet": 5535,
+    "pet": 5543,
     "masculino": 32,
     "automotivo": 618,
     "lar": 10,
@@ -7719,7 +7725,7 @@
    "votos": {
     "lar": 65,
     "masculino": 36,
-    "eletronicos": 680,
+    "eletronicos": 691,
     "automotivo": 416,
     "cabelo": 1,
     "moda": 10,
@@ -7732,11 +7738,11 @@
     "lar": 148,
     "brinquedos": 99,
     "pet": 7,
-    "eletronicos": 66,
+    "eletronicos": 71,
     "automotivo": 7,
     "autocuidado": 34,
     "moda": 30,
-    "casa_fofa": 33,
+    "casa_fofa": 41,
     "beleza": 2,
     "masculino": 1
    }
@@ -7762,7 +7768,7 @@
     "automotivo": 18,
     "beleza": 14,
     "casa_fofa": 483,
-    "eletronicos": 13
+    "eletronicos": 16
    }
   },
   "101262": {
@@ -7771,8 +7777,8 @@
     "lar": 2768,
     "masculino": 28,
     "automotivo": 300,
-    "eletronicos": 410,
-    "brinquedos": 117,
+    "eletronicos": 411,
+    "brinquedos": 118,
     "casa_fofa": 214,
     "cabelo": 29,
     "autocuidado": 3,
@@ -7787,15 +7793,15 @@
   "100722": {
    "nivel": 1,
    "votos": {
-    "lar": 3690,
-    "brinquedos": 1499,
+    "lar": 3695,
+    "brinquedos": 1529,
     "automotivo": 165,
-    "eletronicos": 626,
+    "eletronicos": 641,
     "masculino": 50,
     "pet": 35,
-    "moda": 474,
-    "casa_fofa": 2258,
-    "beleza": 54,
+    "moda": 477,
+    "casa_fofa": 2928,
+    "beleza": 55,
     "autocuidado": 98,
     "cabelo": 6
    }
@@ -7803,15 +7809,15 @@
   "101270": {
    "nivel": 2,
    "votos": {
-    "lar": 2616,
-    "brinquedos": 1269,
+    "lar": 2619,
+    "brinquedos": 1297,
     "automotivo": 114,
-    "eletronicos": 481,
+    "eletronicos": 496,
     "masculino": 28,
     "pet": 29,
     "moda": 415,
-    "casa_fofa": 2128,
-    "beleza": 24,
+    "casa_fofa": 2779,
+    "beleza": 25,
     "autocuidado": 91,
     "cabelo": 6
    },
@@ -7823,23 +7829,24 @@
    "nivel": 2,
    "votos": {
     "lar": 193,
-    "brinquedos": 304,
-    "eletronicos": 427,
+    "brinquedos": 305,
+    "eletronicos": 429,
     "masculino": 10,
     "pet": 175,
     "autocuidado": 12,
     "casa_fofa": 29,
     "moda": 1,
     "cabelo": 3,
-    "automotivo": 6
+    "automotivo": 6,
+    "beleza": 11
    }
   },
   "101199": {
    "nivel": 2,
    "votos": {
-    "lar": 958,
+    "lar": 962,
     "masculino": 350,
-    "eletronicos": 601,
+    "eletronicos": 632,
     "automotivo": 95,
     "brinquedos": 11,
     "pet": 19,
@@ -7853,12 +7860,12 @@
   "100274": {
    "nivel": 2,
    "votos": {
-    "lar": 152,
+    "lar": 153,
     "automotivo": 671,
-    "eletronicos": 1359,
+    "eletronicos": 1610,
     "masculino": 169,
     "pet": 2,
-    "brinquedos": 24,
+    "brinquedos": 26,
     "beleza": 5,
     "autocuidado": 20,
     "casa_fofa": 11,
@@ -7868,7 +7875,7 @@
   "101238": {
    "nivel": 2,
    "votos": {
-    "lar": 164,
+    "lar": 166,
     "pet": 18,
     "automotivo": 6,
     "eletronicos": 4,
@@ -7881,12 +7888,12 @@
   "100676": {
    "nivel": 1,
    "votos": {
-    "pet": 57,
+    "pet": 58,
     "automotivo": 20,
     "eletronicos": 67,
     "masculino": 52,
     "lar": 62,
-    "brinquedos": 76,
+    "brinquedos": 80,
     "casa_fofa": 10,
     "autocuidado": 21,
     "beleza": 8,
@@ -7896,12 +7903,12 @@
   "100961": {
    "nivel": 2,
    "votos": {
-    "pet": 47,
+    "pet": 48,
     "automotivo": 13,
     "eletronicos": 67,
     "masculino": 52,
     "lar": 46,
-    "brinquedos": 75,
+    "brinquedos": 78,
     "casa_fofa": 10,
     "beleza": 8,
     "cabelo": 1
@@ -7936,7 +7943,7 @@
    "votos": {
     "automotivo": 18872,
     "lar": 496,
-    "eletronicos": 67,
+    "eletronicos": 70,
     "masculino": 44,
     "moda": 16,
     "casa_fofa": 2,
@@ -8015,7 +8022,7 @@
    "votos": {
     "automotivo": 188,
     "lar": 4021,
-    "eletronicos": 509,
+    "eletronicos": 513,
     "masculino": 2,
     "pet": 4,
     "moda": 1,
@@ -8037,9 +8044,9 @@
   "100640": {
    "nivel": 0,
    "votos": {
-    "automotivo": 16102,
+    "automotivo": 16106,
     "masculino": 37,
-    "eletronicos": 638,
+    "eletronicos": 644,
     "lar": 1774,
     "pet": 6,
     "brinquedos": 11,
@@ -8071,8 +8078,8 @@
   "100747": {
    "nivel": 1,
    "votos": {
-    "automotivo": 12834,
-    "eletronicos": 447,
+    "automotivo": 12838,
+    "eletronicos": 452,
     "lar": 1524,
     "pet": 2,
     "brinquedos": 8,
@@ -8098,7 +8105,7 @@
   "100015": {
    "nivel": 0,
    "votos": {
-    "automotivo": 5251,
+    "automotivo": 5254,
     "eletronicos": 244,
     "masculino": 2808,
     "lar": 6033,
@@ -8216,7 +8223,7 @@
     "automotivo": 18,
     "brinquedos": 2,
     "moda": 1441,
-    "eletronicos": 162,
+    "eletronicos": 164,
     "autocuidado": 5,
     "lar": 2
    }
@@ -8228,7 +8235,7 @@
     "eletronicos": 394,
     "pet": 20,
     "automotivo": 290,
-    "brinquedos": 55,
+    "brinquedos": 59,
     "lar": 585,
     "autocuidado": 139,
     "moda": 3184,
@@ -8268,10 +8275,10 @@
    "nivel": 1,
    "votos": {
     "masculino": 84,
-    "eletronicos": 92,
+    "eletronicos": 105,
     "pet": 8,
     "brinquedos": 11,
-    "lar": 17,
+    "lar": 18,
     "moda": 3,
     "automotivo": 3,
     "autocuidado": 2,
@@ -8371,7 +8378,7 @@
     "pet": 20,
     "brinquedos": 9,
     "lar": 21,
-    "eletronicos": 11,
+    "eletronicos": 14,
     "moda": 20,
     "beleza": 3,
     "casa_fofa": 8
@@ -8385,7 +8392,7 @@
     "automotivo": 3760,
     "pet": 66,
     "lar": 761,
-    "brinquedos": 57,
+    "brinquedos": 61,
     "autocuidado": 63,
     "moda": 137,
     "casa_fofa": 2
@@ -8419,16 +8426,16 @@
    "votos": {
     "masculino": 52,
     "automotivo": 150,
-    "lar": 11393,
-    "brinquedos": 5,
+    "lar": 11837,
+    "brinquedos": 6,
     "casa_fofa": 585,
     "moda": 61,
     "beleza": 5,
     "cabelo": 1
    },
    "achados": 6,
-   "usos": 9,
-   "ultimo_uso": "2026-11-15"
+   "usos": 10,
+   "ultimo_uso": "2026-11-21"
   },
   "101183": {
    "nivel": 2,
@@ -8436,7 +8443,7 @@
     "masculino": 135,
     "pet": 30,
     "lar": 18,
-    "eletronicos": 92,
+    "eletronicos": 102,
     "automotivo": 4,
     "moda": 36,
     "casa_fofa": 13,
@@ -8457,7 +8464,7 @@
    "nivel": 1,
    "votos": {
     "masculino": 69,
-    "eletronicos": 200,
+    "eletronicos": 208,
     "brinquedos": 14,
     "lar": 143,
     "pet": 21,
@@ -8465,8 +8472,8 @@
     "moda": 142,
     "autocuidado": 8,
     "cabelo": 25,
-    "beleza": 26,
-    "casa_fofa": 36
+    "beleza": 27,
+    "casa_fofa": 38
    }
   },
   "100160": {
@@ -8475,7 +8482,7 @@
     "masculino": 4,
     "brinquedos": 2,
     "pet": 16,
-    "eletronicos": 80,
+    "eletronicos": 85,
     "moda": 7,
     "beleza": 1,
     "casa_fofa": 5,
@@ -8507,7 +8514,7 @@
    "nivel": 1,
    "votos": {
     "masculino": 5852,
-    "eletronicos": 14742,
+    "eletronicos": 14748,
     "automotivo": 1443,
     "moda": 1749,
     "beleza": 2,
@@ -8602,7 +8609,7 @@
    "votos": {
     "masculino": 181,
     "eletronicos": 156,
-    "brinquedos": 71,
+    "brinquedos": 72,
     "moda": 37,
     "lar": 7,
     "beleza": 1,
@@ -8621,8 +8628,8 @@
    "nivel": 1,
    "votos": {
     "masculino": 948,
-    "lar": 139,
-    "brinquedos": 15,
+    "lar": 144,
+    "brinquedos": 27,
     "moda": 455,
     "cabelo": 2,
     "eletronicos": 1
@@ -8632,9 +8639,9 @@
    "nivel": 2,
    "votos": {
     "masculino": 862,
-    "lar": 137,
+    "lar": 142,
     "moda": 29,
-    "brinquedos": 8
+    "brinquedos": 20
    },
    "achados": 1,
    "usos": 5,
@@ -8729,8 +8736,8 @@
    "nivel": 0,
    "votos": {
     "masculino": 6999,
-    "eletronicos": 664,
-    "lar": 51,
+    "eletronicos": 715,
+    "lar": 52,
     "brinquedos": 34,
     "pet": 6,
     "automotivo": 14,
@@ -8757,9 +8764,9 @@
   "100039": {
    "nivel": 1,
    "votos": {
-    "eletronicos": 4701,
-    "lar": 1502,
-    "automotivo": 61,
+    "eletronicos": 4716,
+    "lar": 1530,
+    "automotivo": 64,
     "pet": 1,
     "cabelo": 500,
     "autocuidado": 3,
@@ -8772,8 +8779,8 @@
    "nivel": 2,
    "votos": {
     "eletronicos": 4390,
-    "lar": 1418,
-    "automotivo": 36,
+    "lar": 1442,
+    "automotivo": 39,
     "pet": 1,
     "autocuidado": 3,
     "casa_fofa": 107
@@ -8785,7 +8792,7 @@
   "100277": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 11917,
+    "eletronicos": 11977,
     "automotivo": 895,
     "lar": 334,
     "masculino": 4,
@@ -8801,8 +8808,8 @@
   "100178": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 380,
-    "lar": 180,
+    "eletronicos": 398,
+    "lar": 181,
     "masculino": 551,
     "automotivo": 45,
     "pet": 17,
@@ -8814,13 +8821,13 @@
   "100176": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 1052,
+    "eletronicos": 1163,
     "automotivo": 78,
     "lar": 3862,
     "brinquedos": 19,
     "cabelo": 13,
     "autocuidado": 290,
-    "casa_fofa": 27,
+    "casa_fofa": 28,
     "beleza": 21,
     "masculino": 3
    },
@@ -8863,9 +8870,9 @@
   "101008": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 12968,
-    "eletronicos": 579,
-    "pet": 510,
+    "brinquedos": 12982,
+    "eletronicos": 585,
+    "pet": 535,
     "lar": 129,
     "automotivo": 48,
     "masculino": 61,
@@ -8873,35 +8880,35 @@
     "moda": 7,
     "autocuidado": 3,
     "cabelo": 1,
-    "casa_fofa": 40
+    "casa_fofa": 45
    },
-   "achados": 19,
-   "usos": 24,
-   "ultimo_uso": "2026-11-20"
+   "achados": 20,
+   "usos": 25,
+   "ultimo_uso": "2026-11-21"
   },
   "100737": {
    "nivel": 1,
    "votos": {
-    "brinquedos": 4320,
+    "brinquedos": 4349,
     "automotivo": 73,
     "lar": 115,
     "masculino": 68,
     "pet": 35,
-    "eletronicos": 219,
+    "eletronicos": 228,
     "moda": 4,
-    "casa_fofa": 599,
+    "casa_fofa": 603,
     "beleza": 3
    }
   },
   "101385": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 2855,
+    "brinquedos": 2873,
     "automotivo": 27,
     "lar": 31,
     "masculino": 65,
     "pet": 12,
-    "eletronicos": 88,
+    "eletronicos": 90,
     "casa_fofa": 144
    }
   },
@@ -8930,25 +8937,25 @@
   "100738": {
    "nivel": 1,
    "votos": {
-    "brinquedos": 629,
+    "brinquedos": 636,
     "masculino": 807,
-    "eletronicos": 361,
+    "eletronicos": 372,
     "lar": 309,
     "pet": 5,
     "automotivo": 94,
-    "beleza": 15,
+    "beleza": 16,
     "moda": 22,
     "cabelo": 7,
-    "casa_fofa": 68,
+    "casa_fofa": 69,
     "autocuidado": 5
    }
   },
   "101396": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 467,
+    "brinquedos": 471,
     "masculino": 796,
-    "eletronicos": 246,
+    "eletronicos": 253,
     "lar": 199,
     "automotivo": 86,
     "pet": 4,
@@ -8956,7 +8963,7 @@
     "cabelo": 6,
     "casa_fofa": 48,
     "autocuidado": 5,
-    "beleza": 8
+    "beleza": 9
    }
   },
   "100532": {
@@ -8994,7 +9001,7 @@
   "100693": {
    "nivel": 1,
    "votos": {
-    "brinquedos": 794,
+    "brinquedos": 797,
     "masculino": 51,
     "moda": 461,
     "lar": 2,
@@ -9013,7 +9020,7 @@
   "101010": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 8570,
+    "brinquedos": 8591,
     "pet": 205,
     "eletronicos": 130,
     "masculino": 6,
@@ -9064,7 +9071,7 @@
     "brinquedos": 121,
     "automotivo": 48,
     "lar": 5590,
-    "eletronicos": 4300,
+    "eletronicos": 4736,
     "masculino": 2,
     "casa_fofa": 2684,
     "moda": 15,
@@ -9078,13 +9085,13 @@
   "101015": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 1874,
+    "brinquedos": 1887,
     "masculino": 31,
-    "pet": 91,
+    "pet": 92,
     "eletronicos": 264,
     "lar": 20,
     "automotivo": 8,
-    "casa_fofa": 12,
+    "casa_fofa": 13,
     "moda": 1
    },
    "usos": 14,
@@ -9102,7 +9109,7 @@
     "pet": 64,
     "autocuidado": 384,
     "moda": 2,
-    "casa_fofa": 10,
+    "casa_fofa": 11,
     "cabelo": 2
    }
   },
@@ -9123,13 +9130,13 @@
   "101265": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 98,
-    "lar": 800,
+    "brinquedos": 99,
+    "lar": 802,
     "masculino": 12,
     "eletronicos": 123,
     "moda": 1,
     "pet": 3,
-    "casa_fofa": 39,
+    "casa_fofa": 51,
     "automotivo": 7,
     "autocuidado": 5
    },
@@ -9138,9 +9145,9 @@
   "101006": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 7451,
+    "brinquedos": 7539,
     "eletronicos": 256,
-    "pet": 158,
+    "pet": 161,
     "lar": 108,
     "moda": 8,
     "masculino": 23,
@@ -9154,9 +9161,9 @@
   "100731": {
    "nivel": 1,
    "votos": {
-    "brinquedos": 140,
+    "brinquedos": 144,
     "masculino": 16,
-    "eletronicos": 33,
+    "eletronicos": 38,
     "lar": 21,
     "automotivo": 9,
     "pet": 3,
@@ -9184,7 +9191,7 @@
     "brinquedos": 165,
     "masculino": 403,
     "pet": 6,
-    "eletronicos": 406,
+    "eletronicos": 424,
     "moda": 1063,
     "lar": 6,
     "casa_fofa": 3,
@@ -9204,15 +9211,15 @@
   "101254": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 119,
+    "brinquedos": 120,
     "automotivo": 899,
     "masculino": 114,
-    "lar": 2386,
-    "pet": 27,
+    "lar": 2410,
+    "pet": 29,
     "eletronicos": 19,
     "moda": 163,
     "beleza": 126,
-    "casa_fofa": 595,
+    "casa_fofa": 597,
     "cabelo": 42,
     "autocuidado": 8
    }
@@ -9230,8 +9237,8 @@
     "brinquedos": 106,
     "automotivo": 13326,
     "masculino": 21,
-    "eletronicos": 169,
-    "lar": 794,
+    "eletronicos": 170,
+    "lar": 795,
     "pet": 6,
     "beleza": 16,
     "casa_fofa": 38,
@@ -9316,7 +9323,7 @@
    "nivel": 2,
    "votos": {
     "automotivo": 434,
-    "brinquedos": 312,
+    "brinquedos": 315,
     "eletronicos": 525,
     "masculino": 10,
     "lar": 429,
@@ -9388,7 +9395,7 @@
   "101431": {
    "nivel": 2,
    "votos": {
-    "automotivo": 663,
+    "automotivo": 667,
     "lar": 27,
     "brinquedos": 5,
     "eletronicos": 56,
@@ -9422,7 +9429,7 @@
    "nivel": 1,
    "votos": {
     "automotivo": 53,
-    "eletronicos": 257,
+    "eletronicos": 259,
     "masculino": 70,
     "pet": 1,
     "lar": 1250,
@@ -9448,7 +9455,7 @@
    "votos": {
     "automotivo": 84,
     "lar": 21,
-    "eletronicos": 102,
+    "eletronicos": 103,
     "masculino": 34,
     "beleza": 7,
     "casa_fofa": 5
@@ -9458,7 +9465,7 @@
    "nivel": 1,
    "votos": {
     "automotivo": 131,
-    "eletronicos": 311,
+    "eletronicos": 314,
     "masculino": 28,
     "lar": 19,
     "brinquedos": 12,
@@ -9484,7 +9491,7 @@
    "votos": {
     "lar": 696,
     "masculino": 3,
-    "eletronicos": 203
+    "eletronicos": 212
    },
    "usos": 2,
    "ultimo_uso": "2026-11-20",
@@ -9521,7 +9528,7 @@
     "masculino": 5707,
     "eletronicos": 91,
     "automotivo": 21,
-    "casa_fofa": 5,
+    "casa_fofa": 7,
     "autocuidado": 8
    },
    "usos": 1,
@@ -9558,11 +9565,11 @@
   "100535": {
    "nivel": 0,
    "votos": {
-    "brinquedos": 147,
-    "eletronicos": 35060,
+    "brinquedos": 163,
+    "eletronicos": 35104,
     "masculino": 75,
     "automotivo": 180,
-    "lar": 463,
+    "lar": 467,
     "casa_fofa": 5,
     "beleza": 39,
     "moda": 5,
@@ -9574,8 +9581,8 @@
    "nivel": 1,
    "votos": {
     "brinquedos": 90,
-    "eletronicos": 9143,
-    "lar": 62,
+    "eletronicos": 9150,
+    "lar": 66,
     "automotivo": 39,
     "moda": 2,
     "autocuidado": 2,
@@ -9586,8 +9593,8 @@
    "nivel": 2,
    "votos": {
     "brinquedos": 73,
-    "eletronicos": 8869,
-    "lar": 60,
+    "eletronicos": 8874,
+    "lar": 64,
     "automotivo": 24
    },
    "achados": 1,
@@ -9598,7 +9605,7 @@
    "nivel": 2,
    "votos": {
     "brinquedos": 15,
-    "eletronicos": 198,
+    "eletronicos": 200,
     "automotivo": 13,
     "lar": 1,
     "moda": 2,
@@ -9610,17 +9617,17 @@
   "101013": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 20113,
+    "brinquedos": 20121,
     "eletronicos": 513,
-    "pet": 90,
+    "pet": 93,
     "lar": 5,
     "automotivo": 29,
     "moda": 2,
     "casa_fofa": 1
    },
    "achados": 7,
-   "usos": 12,
-   "ultimo_uso": "2026-11-18"
+   "usos": 13,
+   "ultimo_uso": "2026-11-21"
   },
   "100682": {
    "nivel": 1,
@@ -9629,7 +9636,7 @@
     "pet": 1,
     "autocuidado": 14,
     "cabelo": 24,
-    "brinquedos": 172,
+    "brinquedos": 297,
     "moda": 2,
     "beleza": 69
    }
@@ -9638,7 +9645,7 @@
    "nivel": 2,
    "votos": {
     "lar": 246,
-    "brinquedos": 19
+    "brinquedos": 36
    },
    "usos": 1,
    "ultimo_uso": "2026-10-19"
@@ -9648,13 +9655,13 @@
    "votos": {
     "lar": 397,
     "masculino": 57,
-    "pet": 23,
+    "pet": 24,
     "eletronicos": 428,
     "automotivo": 59,
     "autocuidado": 1088,
     "moda": 23,
     "beleza": 64,
-    "brinquedos": 1,
+    "brinquedos": 2,
     "cabelo": 8,
     "casa_fofa": 2
    }
@@ -9686,13 +9693,13 @@
    "votos": {
     "masculino": 75,
     "automotivo": 9866,
-    "eletronicos": 8350,
+    "eletronicos": 8488,
     "lar": 250,
     "pet": 9,
     "brinquedos": 28,
     "beleza": 7,
     "cabelo": 1,
-    "casa_fofa": 1
+    "casa_fofa": 5
    },
    "achados": 1
   },
@@ -9700,7 +9707,7 @@
    "nivel": 2,
    "votos": {
     "masculino": 149,
-    "eletronicos": 188,
+    "eletronicos": 194,
     "automotivo": 12,
     "autocuidado": 3,
     "moda": 11
@@ -9738,7 +9745,7 @@
    "nivel": 2,
    "votos": {
     "masculino": 10,
-    "eletronicos": 69,
+    "eletronicos": 74,
     "lar": 2,
     "casa_fofa": 2
    }
@@ -9748,7 +9755,7 @@
    "votos": {
     "masculino": 97,
     "brinquedos": 23,
-    "eletronicos": 56,
+    "eletronicos": 58,
     "pet": 21,
     "automotivo": 17,
     "lar": 11,
@@ -9798,7 +9805,7 @@
    "nivel": 1,
    "votos": {
     "masculino": 69,
-    "brinquedos": 205,
+    "brinquedos": 208,
     "pet": 21,
     "eletronicos": 11,
     "automotivo": 11,
@@ -9865,7 +9872,7 @@
    "nivel": 2,
    "votos": {
     "automotivo": 102,
-    "pet": 40553,
+    "pet": 42382,
     "lar": 401,
     "eletronicos": 39,
     "brinquedos": 6,
@@ -9882,7 +9889,7 @@
    "votos": {
     "automotivo": 674,
     "masculino": 3,
-    "eletronicos": 36,
+    "eletronicos": 37,
     "lar": 33,
     "moda": 12,
     "autocuidado": 5,
@@ -9972,8 +9979,8 @@
    "votos": {
     "pet": 89,
     "brinquedos": 14,
-    "eletronicos": 20,
-    "lar": 228,
+    "eletronicos": 21,
+    "lar": 230,
     "casa_fofa": 40,
     "automotivo": 26
    },
@@ -9991,9 +9998,9 @@
   "100578": {
    "nivel": 1,
    "votos": {
-    "eletronicos": 23064,
+    "eletronicos": 23065,
     "masculino": 29,
-    "brinquedos": 28,
+    "brinquedos": 37,
     "automotivo": 20,
     "beleza": 10
    }
@@ -10001,7 +10008,7 @@
   "100077": {
    "nivel": 1,
    "votos": {
-    "eletronicos": 329,
+    "eletronicos": 331,
     "automotivo": 283,
     "pet": 25,
     "lar": 19,
@@ -10040,7 +10047,7 @@
     "automotivo": 20,
     "masculino": 586,
     "lar": 15,
-    "moda": 1638,
+    "moda": 2175,
     "beleza": 26,
     "cabelo": 7,
     "casa_fofa": 1
@@ -10052,7 +10059,7 @@
     "eletronicos": 21,
     "masculino": 26,
     "beleza": 5,
-    "moda": 1455,
+    "moda": 1967,
     "casa_fofa": 1,
     "lar": 3
    }
@@ -10060,12 +10067,12 @@
   "100584": {
    "nivel": 1,
    "votos": {
-    "eletronicos": 697,
+    "eletronicos": 700,
     "masculino": 41,
     "lar": 33,
     "automotivo": 11,
     "casa_fofa": 4,
-    "brinquedos": 4,
+    "brinquedos": 5,
     "moda": 3,
     "cabelo": 3
    }
@@ -10075,14 +10082,14 @@
    "votos": {
     "eletronicos": 75,
     "beleza": 21,
-    "moda": 43,
+    "moda": 67,
     "automotivo": 1
    }
   },
   "100579": {
    "nivel": 1,
    "votos": {
-    "eletronicos": 1503,
+    "eletronicos": 1535,
     "automotivo": 101,
     "masculino": 3,
     "lar": 9,
@@ -10115,10 +10122,10 @@
    "nivel": 1,
    "votos": {
     "automotivo": 370,
-    "pet": 450,
-    "brinquedos": 577,
+    "pet": 453,
+    "brinquedos": 920,
     "eletronicos": 109,
-    "lar": 260,
+    "lar": 261,
     "masculino": 2,
     "casa_fofa": 70,
     "beleza": 8,
@@ -10132,7 +10139,7 @@
    "votos": {
     "automotivo": 191,
     "lar": 71,
-    "brinquedos": 424,
+    "brinquedos": 743,
     "masculino": 1,
     "beleza": 8,
     "casa_fofa": 31,
@@ -10149,14 +10156,14 @@
     "masculino": 92,
     "autocuidado": 55,
     "moda": 71,
-    "brinquedos": 5
+    "brinquedos": 9
    },
    "achados": 1
   },
   "100086": {
    "nivel": 1,
    "votos": {
-    "automotivo": 121,
+    "automotivo": 124,
     "masculino": 774,
     "lar": 83,
     "pet": 1,
@@ -10185,7 +10192,7 @@
    "nivel": 2,
    "votos": {
     "automotivo": 245,
-    "eletronicos": 2,
+    "eletronicos": 3,
     "lar": 30,
     "cabelo": 2
    },
@@ -10195,7 +10202,7 @@
   "100323": {
    "nivel": 2,
    "votos": {
-    "automotivo": 17,
+    "automotivo": 20,
     "masculino": 116,
     "casa_fofa": 3,
     "autocuidado": 7,
@@ -10209,7 +10216,7 @@
     "automotivo": 363,
     "eletronicos": 29,
     "lar": 1607,
-    "brinquedos": 30,
+    "brinquedos": 32,
     "pet": 724,
     "masculino": 1,
     "cabelo": 208,
@@ -10252,7 +10259,7 @@
    "nivel": 2,
    "votos": {
     "automotivo": 92,
-    "lar": 250,
+    "lar": 252,
     "masculino": 26,
     "eletronicos": 13,
     "pet": 3,
@@ -10304,7 +10311,7 @@
    "nivel": 2,
    "votos": {
     "automotivo": 558,
-    "eletronicos": 100,
+    "eletronicos": 102,
     "lar": 41,
     "masculino": 3,
     "cabelo": 5,
@@ -10319,7 +10326,7 @@
   "101387": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 91
+    "brinquedos": 93
    }
   },
   "101407": {
@@ -10347,7 +10354,7 @@
   "100686": {
    "nivel": 1,
    "votos": {
-    "brinquedos": 91,
+    "brinquedos": 101,
     "eletronicos": 17,
     "lar": 8,
     "automotivo": 1,
@@ -10361,7 +10368,7 @@
    "nivel": 2,
    "votos": {
     "automotivo": 278,
-    "lar": 122,
+    "lar": 129,
     "pet": 462,
     "eletronicos": 251,
     "masculino": 8,
@@ -10427,7 +10434,7 @@
     "eletronicos": 3,
     "brinquedos": 15,
     "beleza": 2,
-    "casa_fofa": 326,
+    "casa_fofa": 329,
     "moda": 10,
     "cabelo": 10
    }
@@ -10435,11 +10442,11 @@
   "101258": {
    "nivel": 2,
    "votos": {
-    "lar": 994,
+    "lar": 995,
     "automotivo": 462,
     "pet": 4,
     "brinquedos": 51,
-    "eletronicos": 79,
+    "eletronicos": 83,
     "masculino": 11,
     "casa_fofa": 183,
     "autocuidado": 2,
@@ -10450,7 +10457,7 @@
   "101403": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 4124,
+    "brinquedos": 4130,
     "pet": 12
    },
    "usos": 2,
@@ -10488,10 +10495,10 @@
     "lar": 1303,
     "eletronicos": 5,
     "automotivo": 171,
-    "brinquedos": 2,
+    "brinquedos": 3,
     "autocuidado": 292,
     "moda": 7,
-    "casa_fofa": 379,
+    "casa_fofa": 380,
     "cabelo": 870,
     "masculino": 3
    }
@@ -10522,7 +10529,7 @@
   "100220": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 1273,
+    "eletronicos": 1281,
     "lar": 181,
     "automotivo": 110,
     "masculino": 15,
@@ -10560,7 +10567,7 @@
    "nivel": 2,
    "votos": {
     "masculino": 5,
-    "moda": 27,
+    "moda": 32,
     "cabelo": 1,
     "beleza": 1
    },
@@ -10571,7 +10578,7 @@
    "nivel": 2,
    "votos": {
     "masculino": 34,
-    "eletronicos": 3518,
+    "eletronicos": 3524,
     "automotivo": 58,
     "lar": 1,
     "pet": 3,
@@ -10585,8 +10592,8 @@
    "nivel": 0,
    "votos": {
     "masculino": 9,
-    "brinquedos": 120,
-    "eletronicos": 3217,
+    "brinquedos": 121,
+    "eletronicos": 3396,
     "pet": 7,
     "lar": 1,
     "cabelo": 3,
@@ -10598,7 +10605,7 @@
    "nivel": 1,
    "votos": {
     "masculino": 3,
-    "eletronicos": 682,
+    "eletronicos": 702,
     "lar": 1,
     "brinquedos": 57,
     "moda": 4
@@ -10608,8 +10615,8 @@
    "nivel": 1,
    "votos": {
     "masculino": 882,
-    "brinquedos": 24,
-    "eletronicos": 220,
+    "brinquedos": 29,
+    "eletronicos": 221,
     "pet": 76,
     "lar": 156,
     "automotivo": 96,
@@ -10642,7 +10649,7 @@
     "automotivo": 10,
     "eletronicos": 26,
     "lar": 6,
-    "moda": 8,
+    "moda": 9,
     "cabelo": 7
    }
   },
@@ -10660,8 +10667,8 @@
   "100137": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 16,
-    "eletronicos": 150,
+    "brinquedos": 17,
+    "eletronicos": 151,
     "lar": 54,
     "pet": 7,
     "masculino": 17,
@@ -10669,14 +10676,14 @@
     "autocuidado": 3464,
     "beleza": 112
    },
-   "usos": 6,
-   "ultimo_uso": "2026-11-12",
-   "achados": 9
+   "usos": 7,
+   "ultimo_uso": "2026-11-21",
+   "achados": 10
   },
   "100667": {
    "nivel": 1,
    "votos": {
-    "pet": 240,
+    "pet": 246,
     "lar": 21,
     "moda": 2,
     "eletronicos": 2
@@ -10685,7 +10692,7 @@
   "100909": {
    "nivel": 2,
    "votos": {
-    "pet": 163
+    "pet": 167
    },
    "usos": 1,
    "ultimo_uso": "2026-11-01"
@@ -10694,9 +10701,9 @@
    "nivel": 2,
    "votos": {
     "pet": 21,
-    "brinquedos": 8222,
+    "brinquedos": 8270,
     "masculino": 8,
-    "eletronicos": 91,
+    "eletronicos": 92,
     "moda": 2,
     "lar": 9,
     "casa_fofa": 2
@@ -10718,7 +10725,7 @@
    "votos": {
     "automotivo": 773,
     "masculino": 110,
-    "eletronicos": 1754,
+    "eletronicos": 1811,
     "moda": 19,
     "casa_fofa": 2
    }
@@ -10737,8 +10744,8 @@
    "nivel": 2,
    "votos": {
     "automotivo": 391,
-    "eletronicos": 17057,
-    "lar": 96,
+    "eletronicos": 17059,
+    "lar": 99,
     "beleza": 28,
     "casa_fofa": 2
    },
@@ -10752,7 +10759,7 @@
     "automotivo": 17,
     "pet": 4,
     "lar": 26,
-    "eletronicos": 28,
+    "eletronicos": 32,
     "cabelo": 1,
     "casa_fofa": 1
    }
@@ -10785,7 +10792,7 @@
     "pet": 24,
     "masculino": 3,
     "autocuidado": 13,
-    "beleza": 56,
+    "beleza": 67,
     "moda": 3,
     "cabelo": 37,
     "casa_fofa": 2
@@ -10822,7 +10829,7 @@
     "masculino": 3,
     "automotivo": 1,
     "lar": 8,
-    "beleza": 29,
+    "beleza": 32,
     "autocuidado": 2,
     "moda": 3,
     "casa_fofa": 2,
@@ -10834,22 +10841,22 @@
    "nivel": 2,
    "votos": {
     "eletronicos": 15,
-    "lar": 1566,
+    "lar": 1572,
     "pet": 2,
     "autocuidado": 1976,
-    "casa_fofa": 114,
+    "casa_fofa": 119,
     "automotivo": 14,
     "beleza": 63,
     "masculino": 6,
-    "brinquedos": 1,
+    "brinquedos": 2,
     "moda": 4
    }
   },
   "101343": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 564,
-    "lar": 206,
+    "brinquedos": 772,
+    "lar": 210,
     "eletronicos": 26,
     "automotivo": 33,
     "masculino": 1
@@ -10859,9 +10866,9 @@
   "100980": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 74,
+    "brinquedos": 77,
     "eletronicos": 19,
-    "pet": 3
+    "pet": 6
    },
    "usos": 1,
    "ultimo_uso": "2026-10-26",
@@ -10887,7 +10894,7 @@
   "100643": {
    "nivel": 0,
    "votos": {
-    "brinquedos": 552,
+    "brinquedos": 558,
     "masculino": 14,
     "eletronicos": 20,
     "automotivo": 2,
@@ -10898,7 +10905,7 @@
   "100777": {
    "nivel": 1,
    "votos": {
-    "brinquedos": 552,
+    "brinquedos": 558,
     "masculino": 14,
     "eletronicos": 12,
     "automotivo": 2,
@@ -10909,7 +10916,7 @@
   "101541": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 343
+    "brinquedos": 344
    },
    "usos": 3,
    "ultimo_uso": "2026-11-19",
@@ -10918,7 +10925,7 @@
   "101068": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 12,
+    "brinquedos": 15,
     "masculino": 46,
     "lar": 1,
     "moda": 33
@@ -10938,7 +10945,7 @@
     "moda": 1,
     "autocuidado": 3,
     "casa_fofa": 53,
-    "brinquedos": 2,
+    "brinquedos": 3,
     "cabelo": 1
    },
    "usos": 2,
@@ -10987,7 +10994,7 @@
     "automotivo": 605,
     "brinquedos": 7,
     "lar": 18,
-    "moda": 23,
+    "moda": 24,
     "beleza": 2,
     "autocuidado": 4,
     "cabelo": 7,
@@ -11028,7 +11035,7 @@
   "100288": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 2475,
+    "eletronicos": 2476,
     "automotivo": 57,
     "masculino": 838,
     "moda": 151
@@ -11066,7 +11073,7 @@
   "101392": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 34,
+    "brinquedos": 35,
     "eletronicos": 9,
     "lar": 25,
     "automotivo": 1,
@@ -11076,7 +11083,7 @@
   "101029": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 140,
+    "brinquedos": 141,
     "masculino": 43,
     "beleza": 1,
     "cabelo": 192,
@@ -11097,18 +11104,18 @@
   "100698": {
    "nivel": 1,
    "votos": {
-    "brinquedos": 43,
+    "brinquedos": 44,
     "masculino": 6,
     "pet": 4,
-    "eletronicos": 65,
+    "eletronicos": 69,
     "casa_fofa": 1
    }
   },
   "101402": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 298,
-    "eletronicos": 159,
+    "brinquedos": 301,
+    "eletronicos": 169,
     "pet": 30,
     "casa_fofa": 7,
     "automotivo": 4,
@@ -11121,7 +11128,7 @@
    "nivel": 1,
    "votos": {
     "brinquedos": 52,
-    "eletronicos": 165,
+    "eletronicos": 171,
     "pet": 4,
     "masculino": 36,
     "lar": 77,
@@ -11142,7 +11149,7 @@
   "100581": {
    "nivel": 1,
    "votos": {
-    "brinquedos": 25,
+    "brinquedos": 26,
     "eletronicos": 271,
     "beleza": 6,
     "lar": 356
@@ -11151,7 +11158,7 @@
   "101569": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 143
+    "brinquedos": 145
    }
   },
   "101352": {
@@ -11182,7 +11189,7 @@
     "masculino": 119,
     "lar": 1,
     "eletronicos": 10,
-    "casa_fofa": 29,
+    "casa_fofa": 30,
     "automotivo": 1
    }
   },
@@ -11192,7 +11199,7 @@
     "masculino": 110,
     "pet": 25,
     "eletronicos": 4,
-    "brinquedos": 10,
+    "brinquedos": 17,
     "moda": 4,
     "automotivo": 1,
     "casa_fofa": 6,
@@ -11298,12 +11305,12 @@
   "100680": {
    "nivel": 1,
    "votos": {
-    "eletronicos": 448,
+    "eletronicos": 455,
     "pet": 318,
     "lar": 101,
     "automotivo": 36,
     "casa_fofa": 9,
-    "brinquedos": 2152,
+    "brinquedos": 2153,
     "moda": 2,
     "masculino": 2,
     "cabelo": 1
@@ -11312,7 +11319,7 @@
   "100984": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 396,
+    "eletronicos": 403,
     "pet": 168,
     "automotivo": 1,
     "brinquedos": 2079
@@ -11380,7 +11387,7 @@
    "nivel": 1,
    "votos": {
     "lar": 19,
-    "eletronicos": 40,
+    "eletronicos": 41,
     "automotivo": 1,
     "moda": 1,
     "beleza": 2
@@ -11404,8 +11411,8 @@
    "nivel": 2,
    "votos": {
     "eletronicos": 81,
-    "lar": 68,
-    "brinquedos": 63,
+    "lar": 69,
+    "brinquedos": 83,
     "automotivo": 1,
     "casa_fofa": 23
    }
@@ -11413,7 +11420,7 @@
   "100048": {
    "nivel": 1,
    "votos": {
-    "eletronicos": 25,
+    "eletronicos": 26,
     "masculino": 251,
     "casa_fofa": 12
    }
@@ -11433,7 +11440,7 @@
     "automotivo": 75,
     "masculino": 5,
     "pet": 3,
-    "brinquedos": 2,
+    "brinquedos": 3,
     "beleza": 27,
     "casa_fofa": 2
    }
@@ -11454,7 +11461,7 @@
     "automotivo": 1,
     "brinquedos": 2,
     "lar": 1,
-    "eletronicos": 2
+    "eletronicos": 6
    }
   },
   "101274": {
@@ -11463,14 +11470,14 @@
     "masculino": 76,
     "automotivo": 11,
     "lar": 17,
-    "eletronicos": 7
+    "eletronicos": 8
    }
   },
   "100127": {
    "nivel": 2,
    "votos": {
     "masculino": 2,
-    "pet": 11,
+    "pet": 12,
     "automotivo": 2
    }
   },
@@ -11527,7 +11534,7 @@
     "automotivo": 24,
     "eletronicos": 11,
     "moda": 101,
-    "casa_fofa": 1620,
+    "casa_fofa": 1622,
     "beleza": 1
    }
   },
@@ -11564,7 +11571,7 @@
     "beleza": 431,
     "autocuidado": 3,
     "cabelo": 742,
-    "brinquedos": 1,
+    "brinquedos": 2,
     "automotivo": 2
    }
   },
@@ -11574,7 +11581,7 @@
     "eletronicos": 47,
     "masculino": 304,
     "autocuidado": 5,
-    "brinquedos": 525,
+    "brinquedos": 904,
     "cabelo": 5,
     "automotivo": 1,
     "lar": 3,
@@ -11589,7 +11596,7 @@
     "lar": 33,
     "automotivo": 3,
     "beleza": 12,
-    "brinquedos": 68,
+    "brinquedos": 116,
     "moda": 2
    }
   },
@@ -11617,12 +11624,12 @@
   "101154": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 336,
+    "eletronicos": 345,
     "automotivo": 6,
     "pet": 4,
     "lar": 1143,
     "masculino": 3,
-    "casa_fofa": 41,
+    "casa_fofa": 47,
     "moda": 38,
     "autocuidado": 5,
     "cabelo": 153
@@ -11636,7 +11643,7 @@
     "lar": 3,
     "casa_fofa": 4,
     "automotivo": 11,
-    "brinquedos": 62,
+    "brinquedos": 63,
     "moda": 2,
     "masculino": 2,
     "cabelo": 1
@@ -11648,7 +11655,7 @@
   "100163": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 103,
+    "eletronicos": 106,
     "lar": 100,
     "automotivo": 8,
     "pet": 5,
@@ -11717,8 +11724,8 @@
     "masculino": 6,
     "moda": 64,
     "eletronicos": 6,
-    "casa_fofa": 20,
-    "beleza": 4,
+    "casa_fofa": 22,
+    "beleza": 5,
     "autocuidado": 1
    }
   },
@@ -11745,7 +11752,7 @@
     "masculino": 4,
     "cabelo": 6,
     "lar": 7,
-    "beleza": 1,
+    "beleza": 3,
     "autocuidado": 2
    }
   },
@@ -11761,7 +11768,7 @@
   "101218": {
    "nivel": 2,
    "votos": {
-    "lar": 578,
+    "lar": 581,
     "casa_fofa": 7
    }
   },
@@ -11812,10 +11819,10 @@
   "101388": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 1096,
+    "brinquedos": 1099,
     "pet": 7,
     "automotivo": 21,
-    "eletronicos": 28,
+    "eletronicos": 29,
     "lar": 1,
     "casa_fofa": 8
    },
@@ -11880,7 +11887,7 @@
    "votos": {
     "masculino": 7,
     "lar": 110,
-    "brinquedos": 49,
+    "brinquedos": 63,
     "pet": 1,
     "automotivo": 3,
     "casa_fofa": 1,
@@ -11892,9 +11899,9 @@
    "nivel": 2,
    "votos": {
     "masculino": 16,
-    "eletronicos": 29,
+    "eletronicos": 34,
     "lar": 4,
-    "brinquedos": 32,
+    "brinquedos": 34,
     "moda": 6,
     "casa_fofa": 31,
     "beleza": 10
@@ -11906,7 +11913,7 @@
     "masculino": 13,
     "eletronicos": 53,
     "automotivo": 22,
-    "brinquedos": 33,
+    "brinquedos": 34,
     "lar": 7,
     "cabelo": 1,
     "casa_fofa": 15,
@@ -11917,12 +11924,12 @@
   "101398": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 58,
+    "brinquedos": 59,
     "eletronicos": 22,
     "lar": 81,
     "beleza": 7,
     "automotivo": 1,
-    "casa_fofa": 4
+    "casa_fofa": 5
    },
    "usos": 1,
    "ultimo_uso": "2026-10-21"
@@ -11932,7 +11939,7 @@
    "votos": {
     "brinquedos": 12,
     "lar": 38,
-    "eletronicos": 24,
+    "eletronicos": 26,
     "pet": 2,
     "masculino": 3,
     "automotivo": 5,
@@ -11946,7 +11953,7 @@
   "101158": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 816,
+    "eletronicos": 834,
     "automotivo": 39,
     "brinquedos": 59,
     "masculino": 167,
@@ -11973,7 +11980,7 @@
   "100927": {
    "nivel": 2,
    "votos": {
-    "pet": 97,
+    "pet": 102,
     "casa_fofa": 28,
     "lar": 3
    }
@@ -11993,9 +12000,9 @@
    "votos": {
     "automotivo": 10,
     "lar": 334,
-    "brinquedos": 250,
+    "brinquedos": 258,
     "pet": 11,
-    "eletronicos": 252,
+    "eletronicos": 255,
     "casa_fofa": 1985,
     "beleza": 4
    },
@@ -12017,14 +12024,14 @@
   "100583": {
    "nivel": 1,
    "votos": {
-    "eletronicos": 204,
+    "eletronicos": 205,
     "automotivo": 5
    }
   },
   "100695": {
    "nivel": 1,
    "votos": {
-    "eletronicos": 2384,
+    "eletronicos": 2533,
     "cabelo": 3,
     "brinquedos": 4,
     "casa_fofa": 1
@@ -12033,7 +12040,7 @@
   "101081": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 1888,
+    "eletronicos": 2003,
     "cabelo": 3,
     "brinquedos": 4,
     "casa_fofa": 1
@@ -12124,7 +12131,7 @@
    "votos": {
     "masculino": 6084,
     "brinquedos": 15,
-    "eletronicos": 631,
+    "eletronicos": 681,
     "moda": 4,
     "lar": 9,
     "casa_fofa": 30,
@@ -12137,7 +12144,7 @@
    "votos": {
     "masculino": 4885,
     "brinquedos": 15,
-    "eletronicos": 612,
+    "eletronicos": 660,
     "moda": 2,
     "casa_fofa": 26,
     "lar": 8,
@@ -12153,7 +12160,7 @@
     "masculino": 346,
     "brinquedos": 72,
     "pet": 6,
-    "eletronicos": 198,
+    "eletronicos": 216,
     "lar": 6,
     "moda": 66,
     "casa_fofa": 3
@@ -12191,7 +12198,7 @@
    "nivel": 2,
    "votos": {
     "masculino": 771,
-    "eletronicos": 15,
+    "eletronicos": 17,
     "moda": 2,
     "lar": 1
    },
@@ -12235,7 +12242,7 @@
    "nivel": 2,
    "votos": {
     "masculino": 235,
-    "eletronicos": 19,
+    "eletronicos": 20,
     "casa_fofa": 12
    }
   },
@@ -12372,7 +12379,7 @@
    "votos": {
     "eletronicos": 15430,
     "lar": 107,
-    "brinquedos": 144,
+    "brinquedos": 146,
     "masculino": 16,
     "automotivo": 17,
     "casa_fofa": 16,
@@ -12410,7 +12417,7 @@
   "101115": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 4560
+    "eletronicos": 4561
    }
   },
   "101348": {
@@ -12459,11 +12466,11 @@
   "101173": {
    "nivel": 2,
    "votos": {
-    "lar": 3694,
+    "lar": 3698,
     "brinquedos": 3,
     "automotivo": 5,
     "casa_fofa": 269,
-    "eletronicos": 334,
+    "eletronicos": 377,
     "beleza": 61
    },
    "achados": 1
@@ -12488,7 +12495,7 @@
    "nivel": 2,
    "votos": {
     "lar": 253,
-    "brinquedos": 1,
+    "brinquedos": 2,
     "casa_fofa": 350
    },
    "usos": 3,
@@ -12540,7 +12547,7 @@
    "nivel": 2,
    "votos": {
     "automotivo": 60,
-    "eletronicos": 115,
+    "eletronicos": 116,
     "lar": 3
    }
   },
@@ -12603,7 +12610,7 @@
    "nivel": 2,
    "votos": {
     "lar": 48,
-    "brinquedos": 34,
+    "brinquedos": 37,
     "automotivo": 25,
     "masculino": 5,
     "eletronicos": 45,
@@ -12615,7 +12622,7 @@
   "100623": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 521,
+    "eletronicos": 546,
     "masculino": 3,
     "beleza": 23,
     "lar": 3
@@ -12636,7 +12643,8 @@
     "eletronicos": 178,
     "automotivo": 4,
     "lar": 3,
-    "casa_fofa": 1
+    "casa_fofa": 1,
+    "brinquedos": 5
    }
   },
   "101206": {
@@ -12654,7 +12662,7 @@
    "nivel": 2,
    "votos": {
     "lar": 216,
-    "brinquedos": 136,
+    "brinquedos": 139,
     "pet": 6,
     "masculino": 2,
     "automotivo": 5,
@@ -12681,8 +12689,8 @@
   "101934": {
    "nivel": 1,
    "votos": {
-    "eletronicos": 630,
-    "lar": 328,
+    "eletronicos": 632,
+    "lar": 329,
     "masculino": 29,
     "automotivo": 171,
     "autocuidado": 18,
@@ -12730,10 +12738,10 @@
    "votos": {
     "automotivo": 123,
     "masculino": 30,
-    "eletronicos": 201,
+    "eletronicos": 208,
     "brinquedos": 20,
     "lar": 151,
-    "casa_fofa": 1141,
+    "casa_fofa": 1472,
     "autocuidado": 33,
     "cabelo": 4,
     "beleza": 3
@@ -12780,7 +12788,7 @@
     "automotivo": 303,
     "brinquedos": 4,
     "eletronicos": 7,
-    "casa_fofa": 1042,
+    "casa_fofa": 1045,
     "masculino": 1,
     "moda": 1,
     "cabelo": 1
@@ -12792,7 +12800,7 @@
   "101161": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 82,
+    "eletronicos": 89,
     "lar": 37,
     "autocuidado": 12,
     "casa_fofa": 323,
@@ -12803,11 +12811,11 @@
   "101399": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 67,
+    "brinquedos": 69,
     "masculino": 10,
     "lar": 28,
     "pet": 1,
-    "eletronicos": 46,
+    "eletronicos": 48,
     "automotivo": 3,
     "casa_fofa": 16,
     "moda": 2,
@@ -12899,7 +12907,7 @@
    "nivel": 2,
    "votos": {
     "automotivo": 39,
-    "eletronicos": 55
+    "eletronicos": 61
    },
    "usos": 1,
    "ultimo_uso": "2026-10-22"
@@ -12924,7 +12932,7 @@
    "nivel": 2,
    "votos": {
     "automotivo": 3,
-    "eletronicos": 288,
+    "eletronicos": 296,
     "lar": 10,
     "beleza": 1,
     "casa_fofa": 2
@@ -12933,8 +12941,8 @@
   "101216": {
    "nivel": 2,
    "votos": {
-    "lar": 2548,
-    "eletronicos": 46,
+    "lar": 2549,
+    "eletronicos": 49,
     "cabelo": 1
    },
    "achados": 1,
@@ -12952,11 +12960,11 @@
    "nivel": 1,
    "votos": {
     "lar": 86,
-    "brinquedos": 7,
+    "brinquedos": 8,
     "masculino": 14,
     "pet": 6,
     "moda": 3520,
-    "eletronicos": 14,
+    "eletronicos": 15,
     "beleza": 45,
     "casa_fofa": 7,
     "autocuidado": 2
@@ -12975,7 +12983,7 @@
     "lar": 5337,
     "pet": 327,
     "automotivo": 5,
-    "casa_fofa": 18,
+    "casa_fofa": 22,
     "moda": 8,
     "brinquedos": 4
    },
@@ -13016,7 +13024,7 @@
   "101169": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 48,
+    "eletronicos": 50,
     "lar": 8465,
     "pet": 78,
     "masculino": 5,
@@ -13062,7 +13070,7 @@
     "eletronicos": 18,
     "masculino": 12,
     "lar": 649,
-    "beleza": 2850,
+    "beleza": 2857,
     "autocuidado": 96,
     "casa_fofa": 2,
     "cabelo": 10,
@@ -13081,7 +13089,7 @@
   "101954": {
    "nivel": 2,
    "votos": {
-    "lar": 315,
+    "lar": 316,
     "eletronicos": 134,
     "automotivo": 14,
     "masculino": 6,
@@ -13100,7 +13108,7 @@
     "pet": 1912,
     "casa_fofa": 34,
     "eletronicos": 3,
-    "brinquedos": 6,
+    "brinquedos": 39,
     "autocuidado": 180
    }
   },
@@ -13161,7 +13169,7 @@
   "101413": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 87,
+    "eletronicos": 93,
     "lar": 56,
     "automotivo": 10,
     "masculino": 13,
@@ -13172,7 +13180,7 @@
   "101956": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 174,
+    "eletronicos": 176,
     "automotivo": 3
    },
    "usos": 1,
@@ -13189,14 +13197,14 @@
    "nivel": 1,
    "votos": {
     "automotivo": 37,
-    "eletronicos": 1007,
+    "eletronicos": 1011,
     "masculino": 6
    }
   },
   "101253": {
    "nivel": 2,
    "votos": {
-    "lar": 5450,
+    "lar": 5452,
     "masculino": 8,
     "automotivo": 30,
     "casa_fofa": 834,
@@ -13211,7 +13219,7 @@
   "101170": {
    "nivel": 2,
    "votos": {
-    "lar": 1147,
+    "lar": 1148,
     "automotivo": 7,
     "casa_fofa": 40
    }
@@ -13219,7 +13227,7 @@
   "101255": {
    "nivel": 2,
    "votos": {
-    "lar": 2155,
+    "lar": 2160,
     "automotivo": 41,
     "moda": 28,
     "casa_fofa": 19,
@@ -13233,10 +13241,10 @@
    "nivel": 2,
    "votos": {
     "lar": 47,
-    "brinquedos": 7,
+    "brinquedos": 8,
     "masculino": 127,
     "beleza": 2,
-    "eletronicos": 1,
+    "eletronicos": 2,
     "autocuidado": 4,
     "casa_fofa": 1,
     "automotivo": 5,
@@ -13295,12 +13303,12 @@
   "101263": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 57,
+    "brinquedos": 58,
     "lar": 89,
     "eletronicos": 16,
     "moda": 15,
     "pet": 3,
-    "casa_fofa": 40,
+    "casa_fofa": 46,
     "beleza": 2
    }
   },
@@ -13352,7 +13360,7 @@
   "101394": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 133,
+    "brinquedos": 138,
     "lar": 36,
     "eletronicos": 5,
     "moda": 1,
@@ -13439,7 +13447,7 @@
   "101207": {
    "nivel": 2,
    "votos": {
-    "lar": 1422,
+    "lar": 1424,
     "eletronicos": 7695,
     "automotivo": 17,
     "cabelo": 3,
@@ -13465,7 +13473,7 @@
     "pet": 272,
     "lar": 3,
     "automotivo": 1,
-    "brinquedos": 7,
+    "brinquedos": 8,
     "casa_fofa": 9
    },
    "usos": 2,
@@ -13489,7 +13497,7 @@
     "brinquedos": 154,
     "pet": 2,
     "masculino": 27,
-    "eletronicos": 33,
+    "eletronicos": 35,
     "lar": 9,
     "moda": 336,
     "beleza": 7,
@@ -13533,7 +13541,7 @@
    "votos": {
     "brinquedos": 8,
     "eletronicos": 13,
-    "pet": 40,
+    "pet": 41,
     "automotivo": 9,
     "masculino": 6,
     "moda": 15,
@@ -13563,15 +13571,16 @@
   "100953": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 280,
+    "brinquedos": 285,
     "lar": 28,
-    "eletronicos": 18,
+    "eletronicos": 19,
     "masculino": 18,
     "autocuidado": 15,
     "cabelo": 81,
     "moda": 1,
     "beleza": 11,
-    "casa_fofa": 5
+    "casa_fofa": 5,
+    "automotivo": 3
    }
   },
   "100356": {
@@ -13587,7 +13596,7 @@
    "votos": {
     "lar": 19,
     "brinquedos": 11,
-    "eletronicos": 12,
+    "eletronicos": 13,
     "autocuidado": 2,
     "casa_fofa": 1
    }
@@ -13686,7 +13695,7 @@
     "pet": 91,
     "automotivo": 29,
     "lar": 893,
-    "eletronicos": 34,
+    "eletronicos": 35,
     "masculino": 6,
     "moda": 182,
     "cabelo": 4,
@@ -13700,7 +13709,7 @@
    "votos": {
     "pet": 5,
     "lar": 4,
-    "brinquedos": 2,
+    "brinquedos": 3,
     "cabelo": 3,
     "masculino": 2
    }
@@ -13713,7 +13722,8 @@
     "casa_fofa": 7,
     "moda": 1,
     "autocuidado": 41,
-    "cabelo": 1
+    "cabelo": 1,
+    "brinquedos": 1
    },
    "achados": 1,
    "usos": 2,
@@ -13829,7 +13839,7 @@
    "nivel": 2,
    "votos": {
     "brinquedos": 37,
-    "eletronicos": 22,
+    "eletronicos": 24,
     "automotivo": 4,
     "lar": 1
    }
@@ -13837,19 +13847,19 @@
   "100645": {
    "nivel": 1,
    "votos": {
-    "brinquedos": 20
+    "brinquedos": 21
    }
   },
   "100783": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 20
+    "brinquedos": 21
    }
   },
   "101340": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 60,
+    "brinquedos": 62,
     "lar": 6,
     "moda": 1,
     "casa_fofa": 20,
@@ -13865,7 +13875,7 @@
     "brinquedos": 2,
     "automotivo": 6,
     "cabelo": 853,
-    "casa_fofa": 28,
+    "casa_fofa": 29,
     "autocuidado": 1
    }
   },
@@ -13887,7 +13897,7 @@
     "eletronicos": 24,
     "lar": 32,
     "masculino": 4,
-    "beleza": 358,
+    "beleza": 378,
     "autocuidado": 46,
     "cabelo": 15
    }
@@ -13994,9 +14004,9 @@
    "votos": {
     "automotivo": 4,
     "lar": 107,
-    "eletronicos": 349,
+    "eletronicos": 375,
     "beleza": 2,
-    "casa_fofa": 2,
+    "casa_fofa": 4,
     "cabelo": 4
    }
   },
@@ -14005,7 +14015,7 @@
    "votos": {
     "pet": 1,
     "cabelo": 16,
-    "brinquedos": 140,
+    "brinquedos": 238,
     "lar": 13
    }
   },
@@ -14030,9 +14040,9 @@
   "100683": {
    "nivel": 1,
    "votos": {
-    "brinquedos": 70,
+    "brinquedos": 83,
     "lar": 6,
-    "eletronicos": 16,
+    "eletronicos": 18,
     "masculino": 30,
     "automotivo": 1,
     "pet": 4,
@@ -14045,7 +14055,7 @@
    "nivel": 2,
    "votos": {
     "brinquedos": 10,
-    "eletronicos": 14
+    "eletronicos": 16
    }
   },
   "100028": {
@@ -14125,7 +14135,7 @@
   "101401": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 44,
+    "brinquedos": 46,
     "pet": 32,
     "lar": 2
    }
@@ -14164,7 +14174,7 @@
   "101985": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 103,
+    "brinquedos": 105,
     "lar": 32,
     "eletronicos": 28,
     "casa_fofa": 6,
@@ -14178,10 +14188,10 @@
    "nivel": 2,
    "votos": {
     "brinquedos": 27,
-    "eletronicos": 41,
+    "eletronicos": 45,
     "autocuidado": 30,
     "lar": 5,
-    "casa_fofa": 3,
+    "casa_fofa": 5,
     "moda": 1,
     "masculino": 1
    },
@@ -14194,10 +14204,10 @@
     "brinquedos": 74,
     "lar": 20,
     "pet": 4,
-    "eletronicos": 59,
+    "eletronicos": 65,
     "automotivo": 20,
     "moda": 1,
-    "casa_fofa": 407
+    "casa_fofa": 411
    }
   },
   "101406": {
@@ -14215,7 +14225,7 @@
     "masculino": 2,
     "pet": 16,
     "lar": 47,
-    "eletronicos": 8,
+    "eletronicos": 9,
     "casa_fofa": 19
    },
    "achados": 1
@@ -14223,7 +14233,7 @@
   "100910": {
    "nivel": 2,
    "votos": {
-    "pet": 28
+    "pet": 30
    },
    "usos": 1,
    "ultimo_uso": "2026-11-19"
@@ -14233,7 +14243,7 @@
    "votos": {
     "lar": 81,
     "brinquedos": 2,
-    "casa_fofa": 8,
+    "casa_fofa": 11,
     "moda": 2
    }
   },
@@ -14276,7 +14286,7 @@
     "lar": 55,
     "masculino": 1,
     "eletronicos": 1,
-    "brinquedos": 1
+    "brinquedos": 2
    }
   },
   "101546": {
@@ -14318,7 +14328,7 @@
   "100275": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 437,
+    "eletronicos": 441,
     "masculino": 18,
     "moda": 16
    },
@@ -14384,13 +14394,13 @@
   "100723": {
    "nivel": 1,
    "votos": {
-    "lar": 488,
+    "lar": 490,
     "pet": 1,
-    "brinquedos": 9,
-    "eletronicos": 19,
+    "brinquedos": 13,
+    "eletronicos": 20,
     "moda": 17,
     "autocuidado": 2,
-    "casa_fofa": 44,
+    "casa_fofa": 59,
     "automotivo": 6,
     "beleza": 2
    }
@@ -14405,7 +14415,7 @@
   "100058": {
    "nivel": 1,
    "votos": {
-    "lar": 25,
+    "lar": 26,
     "masculino": 8,
     "eletronicos": 2,
     "moda": 3
@@ -14414,7 +14424,7 @@
   "100253": {
    "nivel": 2,
    "votos": {
-    "lar": 25,
+    "lar": 26,
     "moda": 3
    },
    "usos": 1,
@@ -14429,7 +14439,7 @@
     "automotivo": 3,
     "moda": 15,
     "autocuidado": 17,
-    "eletronicos": 1
+    "eletronicos": 2
    }
   },
   "100111": {
@@ -14515,7 +14525,7 @@
    "votos": {
     "lar": 30,
     "pet": 6,
-    "brinquedos": 7,
+    "brinquedos": 12,
     "casa_fofa": 3
    }
   },
@@ -14545,7 +14555,7 @@
     "eletronicos": 4,
     "brinquedos": 7,
     "lar": 15,
-    "moda": 23,
+    "moda": 26,
     "beleza": 28,
     "casa_fofa": 40
    }
@@ -14622,7 +14632,7 @@
    "votos": {
     "eletronicos": 14,
     "masculino": 3,
-    "moda": 10,
+    "moda": 13,
     "automotivo": 35,
     "cabelo": 5
    }
@@ -14781,7 +14791,7 @@
    "nivel": 2,
    "votos": {
     "lar": 3,
-    "brinquedos": 12
+    "brinquedos": 13
    }
   },
   "101428": {
@@ -14807,7 +14817,7 @@
     "automotivo": 5,
     "autocuidado": 3,
     "eletronicos": 1,
-    "brinquedos": 1,
+    "brinquedos": 2,
     "beleza": 56
    }
   },
@@ -14849,7 +14859,7 @@
     "pet": 4,
     "masculino": 6,
     "lar": 8,
-    "eletronicos": 5
+    "eletronicos": 6
    }
   },
   "101458": {
@@ -14858,7 +14868,7 @@
     "automotivo": 19,
     "pet": 3,
     "masculino": 5,
-    "eletronicos": 5
+    "eletronicos": 6
    }
   },
   "102204": {
@@ -14883,7 +14893,7 @@
     "masculino": 31,
     "automotivo": 21,
     "pet": 3,
-    "brinquedos": 16,
+    "brinquedos": 20,
     "eletronicos": 8,
     "moda": 37,
     "casa_fofa": 10
@@ -14897,7 +14907,7 @@
     "automotivo": 3,
     "moda": 2,
     "cabelo": 4,
-    "brinquedos": 1
+    "brinquedos": 2
    }
   },
   "100098": {
@@ -14934,8 +14944,9 @@
    "votos": {
     "masculino": 2,
     "lar": 5,
-    "beleza": 136,
-    "cabelo": 1
+    "beleza": 144,
+    "cabelo": 1,
+    "eletronicos": 1
    }
   },
   "100872": {
@@ -15048,7 +15059,8 @@
     "pet": 1,
     "brinquedos": 9,
     "casa_fofa": 2,
-    "moda": 7
+    "moda": 7,
+    "eletronicos": 1
    }
   },
   "101225": {
@@ -15149,7 +15161,7 @@
    "nivel": 2,
    "votos": {
     "lar": 28,
-    "brinquedos": 4,
+    "brinquedos": 7,
     "casa_fofa": 1,
     "moda": 2
    }
@@ -15242,7 +15254,7 @@
     "automotivo": 11,
     "masculino": 2,
     "moda": 15,
-    "pet": 1,
+    "pet": 2,
     "casa_fofa": 1
    }
   },
@@ -15396,7 +15408,7 @@
     "autocuidado": 4,
     "moda": 10,
     "lar": 9,
-    "casa_fofa": 2
+    "casa_fofa": 5
    }
   },
   "100146": {
@@ -15481,7 +15493,7 @@
     "pet": 4,
     "autocuidado": 1,
     "moda": 42,
-    "brinquedos": 1
+    "brinquedos": 2
    }
   },
   "100887": {
@@ -15507,7 +15519,7 @@
    "nivel": 2,
    "votos": {
     "masculino": 2,
-    "eletronicos": 34
+    "eletronicos": 36
    }
   },
   "101308": {
@@ -15529,7 +15541,7 @@
   "101977": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 24
+    "eletronicos": 25
    }
   },
   "101948": {
@@ -15592,7 +15604,7 @@
    "votos": {
     "lar": 7,
     "brinquedos": 3,
-    "casa_fofa": 7
+    "casa_fofa": 15
    }
   },
   "100884": {
@@ -15645,7 +15657,7 @@
    "votos": {
     "masculino": 27,
     "lar": 3,
-    "eletronicos": 36,
+    "eletronicos": 41,
     "moda": 260,
     "autocuidado": 8,
     "automotivo": 13
@@ -15664,7 +15676,7 @@
    "votos": {
     "brinquedos": 16,
     "pet": 3,
-    "eletronicos": 86,
+    "eletronicos": 92,
     "casa_fofa": 1
    }
   },
@@ -15673,7 +15685,7 @@
    "votos": {
     "brinquedos": 16,
     "pet": 3,
-    "eletronicos": 64
+    "eletronicos": 69
    }
   },
   "101310": {
@@ -15697,7 +15709,7 @@
     "automotivo": 7,
     "lar": 4,
     "autocuidado": 11,
-    "brinquedos": 1
+    "brinquedos": 2
    }
   },
   "101372": {
@@ -15787,9 +15799,9 @@
   "100183": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 212,
+    "eletronicos": 222,
     "cabelo": 20,
-    "lar": 30
+    "lar": 34
    }
   },
   "100898": {
@@ -15948,7 +15960,8 @@
     "lar": 4,
     "moda": 11,
     "automotivo": 3,
-    "eletronicos": 2
+    "eletronicos": 2,
+    "casa_fofa": 1
    }
   },
   "101109": {
@@ -16119,7 +16132,8 @@
    "nivel": 2,
    "votos": {
     "lar": 212,
-    "cabelo": 4
+    "cabelo": 4,
+    "casa_fofa": 4
    }
   },
   "101573": {
@@ -16257,7 +16271,7 @@
    "nivel": 2,
    "votos": {
     "lar": 1,
-    "brinquedos": 10
+    "brinquedos": 20
    }
   },
   "100946": {
@@ -16284,9 +16298,9 @@
    "votos": {
     "masculino": 13,
     "brinquedos": 1,
-    "cabelo": 726,
+    "cabelo": 730,
     "moda": 1440,
-    "eletronicos": 10,
+    "eletronicos": 11,
     "beleza": 4
    }
   },
@@ -16328,7 +16342,7 @@
   "101571": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 43
+    "brinquedos": 46
    },
    "usos": 1,
    "ultimo_uso": "2026-11-18"
@@ -16339,7 +16353,7 @@
     "lar": 4,
     "automotivo": 6,
     "autocuidado": 2,
-    "eletronicos": 14
+    "eletronicos": 19
    }
   },
   "100742": {
@@ -16348,7 +16362,7 @@
     "lar": 2,
     "automotivo": 24,
     "casa_fofa": 5,
-    "eletronicos": 11,
+    "eletronicos": 12,
     "masculino": 3
    }
   },
@@ -16373,7 +16387,7 @@
   "100175": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 58,
+    "eletronicos": 66,
     "lar": 799,
     "moda": 12,
     "masculino": 1
@@ -16398,7 +16412,7 @@
    "nivel": 2,
    "votos": {
     "eletronicos": 3,
-    "brinquedos": 3
+    "brinquedos": 10
    }
   },
   "101479": {
@@ -16435,7 +16449,7 @@
    "nivel": 2,
    "votos": {
     "lar": 347,
-    "beleza": 162,
+    "beleza": 163,
     "autocuidado": 30,
     "casa_fofa": 2
    },
@@ -16550,7 +16564,7 @@
     "masculino": 2,
     "lar": 1,
     "autocuidado": 23,
-    "beleza": 147
+    "beleza": 153
    },
    "usos": 1,
    "ultimo_uso": "2026-11-07"
@@ -16616,7 +16630,7 @@
    "nivel": 2,
    "votos": {
     "automotivo": 20,
-    "eletronicos": 86,
+    "eletronicos": 91,
     "lar": 13,
     "brinquedos": 1
    }
@@ -16624,7 +16638,7 @@
   "100685": {
    "nivel": 1,
    "votos": {
-    "brinquedos": 7,
+    "brinquedos": 10,
     "cabelo": 2
    }
   },
@@ -16634,7 +16648,7 @@
     "lar": 435,
     "autocuidado": 1,
     "cabelo": 4,
-    "brinquedos": 7,
+    "brinquedos": 14,
     "beleza": 69
    }
   },
@@ -16708,7 +16722,7 @@
    "votos": {
     "lar": 1,
     "autocuidado": 13,
-    "brinquedos": 6,
+    "brinquedos": 9,
     "moda": 2
    }
   },
@@ -16755,14 +16769,14 @@
     "pet": 2,
     "moda": 9,
     "cabelo": 2,
-    "eletronicos": 7
+    "eletronicos": 9
    }
   },
   "101048": {
    "nivel": 2,
    "votos": {
     "masculino": 4,
-    "eletronicos": 19,
+    "eletronicos": 21,
     "lar": 2,
     "brinquedos": 3,
     "casa_fofa": 1,
@@ -16843,7 +16857,7 @@
    "votos": {
     "eletronicos": 16,
     "lar": 15,
-    "casa_fofa": 227,
+    "casa_fofa": 228,
     "automotivo": 3,
     "autocuidado": 7,
     "moda": 1
@@ -16996,7 +17010,7 @@
   "101077": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 459
+    "eletronicos": 492
    },
    "usos": 2,
    "ultimo_uso": "2026-11-18"
@@ -17026,13 +17040,13 @@
   "101080": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 12
+    "eletronicos": 13
    }
   },
   "101086": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 16
+    "eletronicos": 17
    }
   },
   "101286": {
@@ -17172,7 +17186,7 @@
   "100187": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 7
+    "eletronicos": 9
    }
   },
   "100103": {
@@ -17284,7 +17298,7 @@
    "nivel": 1,
    "votos": {
     "lar": 3,
-    "eletronicos": 6,
+    "eletronicos": 7,
     "brinquedos": 1
    }
   },
@@ -17605,7 +17619,7 @@
    "nivel": 2,
    "votos": {
     "brinquedos": 23,
-    "casa_fofa": 29
+    "casa_fofa": 30
    }
   },
   "100735": {
@@ -17757,13 +17771,13 @@
   "101003": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 3
+    "brinquedos": 5
    }
   },
   "100957": {
    "nivel": 2,
    "votos": {
-    "brinquedos": 3
+    "brinquedos": 5
    }
   },
   "101341": {
@@ -17894,7 +17908,7 @@
   "100825": {
    "nivel": 2,
    "votos": {
-    "eletronicos": 6,
+    "eletronicos": 7,
     "brinquedos": 1
    }
   },
@@ -18153,9 +18167,9 @@
   "1579353989": {
    "nome": "Florence Espelhos",
    "achados": 20,
-   "usos": 18,
+   "usos": 19,
    "desde": "2026-10-29",
-   "ultimo_uso": "2026-11-18"
+   "ultimo_uso": "2026-11-21"
   },
   "1628808691": {
    "nome": "FlorenceStore",
@@ -18178,6 +18192,13 @@
    "desde": "2026-10-13",
    "ultimo_uso": "2026-10-27"
   },
+  "1006215031": {
+   "nome": "Choice Oficial",
+   "achados": 12,
+   "usos": 10,
+   "desde": "2026-10-27",
+   "ultimo_uso": "2026-11-15"
+  },
   "1661007426": {
    "nome": "Invention Hunters",
    "achados": 11,
@@ -18191,13 +18212,6 @@
    "usos": 11,
    "desde": "2026-10-14",
    "ultimo_uso": "2026-11-07"
-  },
-  "1006215031": {
-   "nome": "Choice Oficial",
-   "achados": 10,
-   "usos": 10,
-   "desde": "2026-10-27",
-   "ultimo_uso": "2026-11-15"
   },
   "1284670189": {
    "nome": "LTS - BR",
@@ -18215,7 +18229,7 @@
   },
   "1452502430": {
    "nome": "Abajurê",
-   "achados": 8,
+   "achados": 9,
    "usos": 7,
    "desde": "2026-10-25",
    "ultimo_uso": "2026-11-20"
@@ -18241,6 +18255,20 @@
    "desde": "2026-10-17",
    "ultimo_uso": "2026-11-07"
   },
+  "1523872056": {
+   "nome": "ALTISTOY",
+   "achados": 7,
+   "usos": 6,
+   "desde": "2026-10-23",
+   "ultimo_uso": "2026-11-13"
+  },
+  "1573559052": {
+   "nome": "Starking.br",
+   "achados": 7,
+   "usos": 6,
+   "desde": "2026-10-23",
+   "ultimo_uso": "2026-11-18"
+  },
   "1500993562": {
    "nome": "Swan111.br",
    "achados": 6,
@@ -18261,20 +18289,6 @@
    "usos": 6,
    "desde": "2026-10-16",
    "ultimo_uso": "2026-11-04"
-  },
-  "1523872056": {
-   "nome": "ALTISTOY",
-   "achados": 6,
-   "usos": 6,
-   "desde": "2026-10-23",
-   "ultimo_uso": "2026-11-13"
-  },
-  "1573559052": {
-   "nome": "Starking.br",
-   "achados": 6,
-   "usos": 6,
-   "desde": "2026-10-23",
-   "ultimo_uso": "2026-11-18"
   },
   "1127030290": {
    "nome": "JIMMY.STORE",
@@ -18867,16 +18881,16 @@
   "599271358": {
    "nome": "Rei dos Vidros",
    "achados": 2,
-   "usos": 1,
+   "usos": 2,
    "desde": "2026-10-30",
-   "ultimo_uso": "2026-10-31"
+   "ultimo_uso": "2026-11-21"
   },
   "1862380469": {
    "nome": "QCTIVA",
    "achados": 2,
-   "usos": 1,
+   "usos": 2,
    "desde": "2026-10-31",
-   "ultimo_uso": "2026-11-04"
+   "ultimo_uso": "2026-11-21"
   },
   "789807677": {
    "nome": "Up Glass",
@@ -18930,9 +18944,9 @@
   "1789924660": {
    "nome": "Zé Miniaturas & Brinquedos",
    "achados": 2,
-   "usos": 1,
+   "usos": 2,
    "desde": "2026-11-12",
-   "ultimo_uso": "2026-11-20"
+   "ultimo_uso": "2026-11-21"
   },
   "1737160008": {
    "nome": "BR Orbe Shop",
