@@ -76,6 +76,32 @@ LEGENDAS_BF_HOJE = ["🔥 É HOJE! Black Friday! O Zé está garimpando as melho
                     "Fica de olho nos posts e no direct! ⛏️💎"]
 HASHTAGS = "#zegarimpo #garimpovip #achadinhos #achadinhosshopee #achadosdashopee"
 
+# Tatu Carão, o arqui-inimigo do Zé (22/11/2026, pedido do Fred: "faça uma ficha dele na legenda")
+ABERTURA_TATU = {
+    "ze_tatu_chegada_semtrilha.mp4": "🚨 Tem alguém cavando no garimpo do Zé... e veio pra Black Friday.",
+    "ze_tatu_prazer_semtrilha.mp4": "🎩 Ele chegou se apresentando. Prazer, Tatu Carão.",
+    "ze_tatu_cronometro_semtrilha.mp4": "⏳ \"Acaba em 10 segundos!\"... há 3 semanas.",
+    "ze_tatu_espelho_semtrilha.mp4": "🪞 Bastidores do arqui-inimigo do Zé: ensaiando o \"últimas unidades\".",
+    "ze_tatu_leve-dois_semtrilha.mp4": "🧮 Leve 2, pague 3. A matemática do Tatu.",
+    "ze_tatu_letrinha_semtrilha.mp4": "🔎 A promoção era imperdível. A letrinha miúda, nem tanto.",
+    "ze_tatu_bonus_semtrilha.mp4": "🎁 O \"bônus exclusivo\" do Tatu: uma caixa vazia.",
+}
+FICHA_TATU = (
+    "📋 FICHA DO TATU CARÃO\n"
+    "• Quem é: o arqui-inimigo do Zé Garimpo\n"
+    "• Especialidade: colar etiqueta bonita em pedra comum\n"
+    "• Truques: preço inflado antes da Black, \"acaba em 10 segundos\", letrinha miúda e bônus de caixa vazia\n"
+    "• Visual: terno roxo, gravata dourada e óculos escuros, até à noite\n"
+    "• Ponto fraco: gente que olha nota e vendas antes de comprar"
+)
+PEDIDO_TATU = "🛡️ Não caia no Tatu! Comenta o que você quer comprar que o Zé garimpa e te manda no direct 👇"
+HASHTAGS_TATU = "#tatucarao #zegarimpo #garimpovip #blackfriday #achadinhos"
+
+
+def legenda_tatu(video):
+    abertura = ABERTURA_TATU.get(video, "🦔 Olha quem voltou: o Tatu Carão, o arqui-inimigo do Zé.")
+    return f"{abertura}\n\n{FICHA_TATU}\n\n{PEDIDO_TATU}\n\n{HASHTAGS_TATU}"
+
 # Posts próprios da Ana (sem oferta): tom de amiga, sem prometer teste de produto
 LEGENDAS_ANA = [
     "💚 Oi, gente! Aqui é a Ana. Todo dia eu caço achadinhos de beleza, moda, autocuidado e casa "
@@ -428,7 +454,11 @@ def preparar():
     else:
         from . import ze_textos
         try:   # frase do roteiro gravada na tela (assets/ze/textos.json): quase todo mundo assiste sem som
-            com_texto = not ANA and ze_textos.gravar(video, pasta / nome)
+            if e_tatu(video.name):   # arte própria do arqui-inimigo do Zé (src/tatu_arte.py)
+                from . import tatu_arte
+                com_texto = tatu_arte.gravar(video, pasta / nome)
+            else:
+                com_texto = not ANA and ze_textos.gravar(video, pasta / nome)
         except Exception as e:
             print(f"::warning::Texto na tela não entrou ({e}); o vídeo sai sem ele.")
             com_texto = False
@@ -460,6 +490,8 @@ def preparar():
     elif itens:
         from . import ze_vitrine
         leg = ze_vitrine.legenda(itens, _legenda_propria(n))
+    elif e_tatu(video.name):
+        leg = legenda_tatu(video.name)
     else:
         leg = _legenda_propria(n) + ("\n" + config.compartilhar(n) if config.compartilhar(n) else "") + "\n\n" + PEDIDO + ("\n" + config.LEMBRETE_BIO if config.LEMBRETE_BIO else "") + "\n\n" + HASHTAGS
     ARQ_PROX.write_text(json.dumps({"arquivo": f"midia/{nome}", "video": video.name, "legenda": leg, "marco": marco,
@@ -481,7 +513,8 @@ def publicar():
     itens = prox.get("itens")
     from . import ze_vitrine
     cont = instagram.criar_container(ig_id, prox["legenda"], video_url=url,
-                                     thumb_offset=ze_vitrine.CAPA_MS if itens else None)   # capa com produto
+                                     thumb_offset=ze_vitrine.CAPA_MS if itens
+                                     else (7000 if e_tatu(prox["video"]) else None))   # capa com produto / Tatu com selo
     instagram.aguardar_container(cont)
     media = instagram.publicar(ig_id, cont)
     reg = {"video": prox["video"], "postado_em": _agora().strftime(FMT), "id_post": media,
