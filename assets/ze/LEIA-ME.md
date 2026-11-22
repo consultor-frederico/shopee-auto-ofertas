@@ -58,6 +58,25 @@ Vídeo novo sem trilha própria: nomeie `ze_nome_semtrilha.mp4` e o robô põe a
 | ze_escondido_semtrilha.mp4 | esconde a encomenda atrás das pedras | (robô põe) |
 | ze_lista-de-desejos_semtrilha.mp4 | a lista de desejos rola morro abaixo | (robô põe) |
 | ze_carrinho-esquecido_semtrilha.mp4 | desenterra um carrinho de compras esquecido | (robô põe) |
+| ze_pela-foto_semtrilha.mp4 | puxa uma corda enorme e sai uma caixinha do tamanho de um dedal (texto já gravado pelo Flow) | (robô põe) |
+| ze_jumento_semtrilha.mp4 | o jumento senta e não anda mais: "o limite chegou" | (robô põe) |
+| ze_tudo-junto_semtrilha.mp4 | a torre de caixas desaba em cima dele | (robô põe) |
+| ze_eco_semtrilha.mp4 | grita "achei baratinho!" no alto do morro | (robô põe) |
+| ze_ajudante_semtrilha.mp4 | o cachorro caramelo cava e traz um chinelo velho | (robô põe) |
+| ze_detector_semtrilha.mp4 | o detector apita para tudo, até para a fivela do cinto | (robô põe) |
+| ze_madrugada_semtrilha.mp4 | 3 da manhã, olho arregalado: "só mais um e eu durmo" (texto já gravado pelo Flow) | (robô põe) |
+| ze_onde-comprou_semtrilha.mp4 | os bichos da vila perguntam "onde você comprou?" | (robô põe) |
+| ze_pescaria_semtrilha.mp4 | pesca bota, bota... e uma caixinha dourada | (robô põe) |
+| ze_grupo-familia_semtrilha.mp4 | manda um achado no grupo da família e chovem balões de conversa | (robô põe) |
+| ze_amigo-secreto_semtrilha.mp4 | tira no amigo secreto alguém que nem conhece (só nov/dez) | (robô põe) |
+| ze_treno_semtrilha.mp4 | desce o morro de gorro de Natal na bateia cheia de presentes (só nov/dez) | (robô põe) |
+
+Vídeos de temporada: `TEMPORADA` em `src/ze.py` diz em que meses cada um pode sair (fora disso não entra no rodízio).
+
+### Músicas (`assets/musicas/`)
+22/11/2026: entraram 6 trilhas do Google Flow Music, cada uma cortada em 4 trechos de 20 s (`_1` a `_4`):
+viola_garimpeiro, corrida_do_ouro, faroeste, frevo, samba_rock, carimbo. Tocam nos Reels de oferta e nos do Zé.
+Músicas do Tatu Carão NÃO vão aqui: ficam em `assets/musicas_tatu/` (o robô não usa essa pasta nos Reels de oferta).
 
 Vídeo novo sai primeiro como Reels do Zé, na ordem de `ordem.txt`; só depois de estrear ele pode abrir carrossel.
 

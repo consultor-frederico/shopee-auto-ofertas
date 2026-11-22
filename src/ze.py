@@ -286,8 +286,16 @@ def emendar_final(reels, oferta=None):
 
 
 # ------------------------------------------------------------------ post do Zé (ZE_DIAS)
+# Vídeos de temporada: só entram no rodízio (Reels do Zé e abertura de carrossel) nesses meses.
+TEMPORADA = {
+    "ze_amigo-secreto_semtrilha.mp4": (11, 12),
+    "ze_treno_semtrilha.mp4": (11, 12),
+}
+
+
 def videos():
-    return sorted(PASTA.glob(f"{PREFIXO}*.mp4"))
+    mes = _agora().month
+    return sorted(v for v in PASTA.glob(f"{PREFIXO}*.mp4") if mes in TEMPORADA.get(v.name, (mes,)))
 
 
 def video_da_vez(dados):
