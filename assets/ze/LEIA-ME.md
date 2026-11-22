@@ -71,6 +71,10 @@ Vídeo novo sem trilha própria: nomeie `ze_nome_semtrilha.mp4` e o robô põe a
 | ze_amigo-secreto_semtrilha.mp4 | tira no amigo secreto alguém que nem conhece (só nov/dez) | (robô põe) |
 | ze_treno_semtrilha.mp4 | desce o morro de gorro de Natal na bateia cheia de presentes (só nov/dez) | (robô põe) |
 
+| ze_tatu_chegada_semtrilha.mp4 | estreia do Tatu Carão: sai do buraco na mina, "Vim pra Black Friday!" (19 s, só nov/dez) | trilha do Tatu |
+
+Vídeos do Tatu (`ze_tatu_*`): música só de `assets/musicas_tatu/`, tela cheia (sem produtos), não abrem carrossel.
+
 Vídeos de temporada: `TEMPORADA` em `src/ze.py` diz em que meses cada um pode sair (fora disso não entra no rodízio).
 
 ### Músicas (`assets/musicas/`)

@@ -41,6 +41,13 @@ FINAL_LIGADO = os.getenv("ZE_NO_FINAL", "1") != "0"
 INICIO_LIGADO = os.getenv("ZE_NO_INICIO", "1") != "0"
 SEMPRE_NO_INICIO = os.getenv("ZE_SEMPRE_NO_INICIO", "1") != "0"   # 0 volta ao rodízio (2 no final, 1 no começo)
 PASTA_MUSICAS = config.RAIZ / "assets" / ("ana/musicas" if ANA else "musicas")   # pasta vazia = sem música
+# Trilhas do Tatu Carão: só nos vídeos ze_tatu_* (nunca nos Reels de oferta, que usam PASTA_MUSICAS)
+PASTA_MUSICAS_TATU = config.RAIZ / "assets" / "musicas_tatu"
+
+
+def e_tatu(nome):
+    """Vídeo do Tatu Carão (sozinho ou com o Zé): ze_tatu_*.mp4."""
+    return "ze_tatu_" in str(nome or "")
 MUSICA_LIGADA = os.getenv("MUSICA_REELS", "1") != "0"
 # Ana: música ambiente, bem de fundo
 VOLUME_MUSICA = float(os.getenv("VOLUME_MUSICA", "0.35" if ANA else "0.6"))
@@ -178,7 +185,8 @@ def escolher_musicas(oferta=None, total=30.0):
     Começa por uma faixa diferente da que abriu o Reels anterior e vai trocando de música
     a cada volta (só repete depois de usar todas)."""
     import random
-    musicas = sorted(PASTA_MUSICAS.glob("*.mp3"))
+    pasta = PASTA_MUSICAS_TATU if e_tatu((oferta or {}).get("id")) else PASTA_MUSICAS
+    musicas = sorted(pasta.glob("*.mp3"))
     if not musicas:
         return []
     dados = _carregar()
@@ -290,6 +298,7 @@ def emendar_final(reels, oferta=None):
 TEMPORADA = {
     "ze_amigo-secreto_semtrilha.mp4": (11, 12),
     "ze_treno_semtrilha.mp4": (11, 12),
+    "ze_tatu_chegada_semtrilha.mp4": (11, 12),   # "Vim pra Black Friday!"
 }
 
 
@@ -405,7 +414,7 @@ def preparar():
         shutil.copy(video, pasta / nome)
     elif not marco and not busca and not ANA:
         from . import ze_vitrine
-        if ze_vitrine.LIGADO:
+        if ze_vitrine.LIGADO and not e_tatu(video.name):   # Tatu sai em tela cheia (é cena com fala, de 15-20 s)
             try:
                 itens = ze_vitrine.preparar(video, pasta / nome)
             except Exception as e:
