@@ -72,6 +72,12 @@ Vídeo novo sem trilha própria: nomeie `ze_nome_semtrilha.mp4` e o robô põe a
 | ze_treno_semtrilha.mp4 | desce o morro de gorro de Natal na bateia cheia de presentes (só nov/dez) | (robô põe) |
 
 | ze_tatu_chegada_semtrilha.mp4 | estreia do Tatu Carão: sai do buraco na mina, "Vim pra Black Friday!" (19 s, só nov/dez) | trilha do Tatu |
+| ze_tatu_prazer_semtrilha.mp4 | Tatu se apresenta no caixote e a pistola de etiquetas dispara no rosto dele | trilha do Tatu |
+| ze_tatu_cronometro_semtrilha.mp4 | "acaba em 10 segundos!" e volta o relógio escondido | trilha do Tatu |
+| ze_tatu_espelho_semtrilha.mp4 | ensaia no espelho "últimas unidades" e o espelho racha (fala já legendada pelo Flow) | trilha do Tatu |
+| ze_tatu_leve-dois_semtrilha.mp4 | "leve 2, pague 3!" e a barraca quebra | trilha do Tatu |
+| ze_tatu_letrinha_semtrilha.mp4 | a letrinha miúda desenrola e ele tropeça | trilha do Tatu |
+| ze_tatu_bonus_semtrilha.mp4 | o "bônus exclusivo" é uma caixa vazia com mariposa | trilha do Tatu |
 
 Vídeos do Tatu (`ze_tatu_*`): música só de `assets/musicas_tatu/`, tela cheia (sem produtos), não abrem carrossel.
 

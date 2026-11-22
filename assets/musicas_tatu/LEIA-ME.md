@@ -9,4 +9,8 @@ Vídeo `assets/ze/ze_tatu_*_semtrilha.mp4` recebe música só desta pasta (`ze.e
 
 | Arquivo | Música |
 |---|---|
-| conflito_do_ouro.mp3 | O Conflito do Ouro (Google Flow Music, 22/11/2026), estreia do Tatu |
+| conflito_do_ouro_1..4.mp3 | O Conflito do Ouro (Google Flow Music, 22/11/2026) |
+| cumbia_da_etiqueta_1..4.mp3 | Cumbia da Etiqueta (22/11/2026) |
+| espiao_do_preco_alto_1..4.mp3 | Espião do Preço Alto (22/11/2026) |
+
+Cada música foi cortada em 4 trechos de 20 s (o robô toca cada arquivo desde o começo).
