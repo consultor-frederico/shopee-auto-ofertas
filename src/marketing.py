@@ -140,15 +140,22 @@ def ofertas_da_lista(fila, hoje=None):
 def texto_lista(ofs, hoje=None):
     from . import vendas
     hoje = hoje or date.today()
-    linhas = [f"<b>{TITULO_LISTA}</b>", f"<i>Atualizada em {hoje.strftime('%d/%m')} • muda todo dia até 30/11</i>", ""]
-    for i, o in enumerate(ofs, 1):
+    topo = [f"<b>{TITULO_LISTA}</b>", f"<i>Atualizada em {hoje.strftime('%d/%m')} • muda todo dia até 30/11</i>", ""]
+    rodape = ["", "🔎 Procurando outra coisa? Comenta no Instagram @garimpovip4 o que você quer que o Zé acha pra você.",
+              "<i>Preços conferidos quando a oferta saiu no canal: podem mudar na loja. "
+              "Links de afiliado: você paga o mesmo e ajuda o Garimpo VIP 💛</i>"]
+    # O Telegram aceita até 4096 caracteres. Em vez de cortar o texto (o corte caía no meio de um
+    # link e o Telegram recusava o HTML: "Unclosed start tag"), para de pôr ofertas antes do limite.
+    limite = 4000 - len("\n".join(topo + rodape)) - 1
+    itens = []
+    for o in ofs:
         link = html.escape(vendas.do_canal(o, "tg"), quote=True)
-        linhas.append(f"{i}. <a href=\"{link}\">{html.escape(o.get('titulo') or o.get('nome', ''))[:70]}</a> — "
-                      f"<b>R$ {o['preco_fmt']}</b>")
-    linhas += ["", "🔎 Procurando outra coisa? Comenta no Instagram @garimpovip4 o que você quer que o Zé acha pra você.",
-               "<i>Preços conferidos quando a oferta saiu no canal: podem mudar na loja. "
-               "Links de afiliado: você paga o mesmo e ajuda o Garimpo VIP 💛</i>"]
-    return "\n".join(linhas)[:4000]
+        nome = html.escape((o.get('titulo') or o.get('nome', ''))[:70])
+        linha = f"{len(itens) + 1}. <a href=\"{link}\">{nome}</a> — <b>R$ {o['preco_fmt']}</b>"
+        if len("\n".join(itens + [linha])) > limite:
+            break
+        itens.append(linha)
+    return "\n".join(topo + itens + rodape)
 
 
 def _fixada(canal):
