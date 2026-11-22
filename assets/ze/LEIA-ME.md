@@ -79,7 +79,7 @@ Vídeo novo sem trilha própria: nomeie `ze_nome_semtrilha.mp4` e o robô põe a
 | ze_tatu_letrinha_semtrilha.mp4 | a letrinha miúda desenrola e ele tropeça | trilha do Tatu |
 | ze_tatu_bonus_semtrilha.mp4 | o "bônus exclusivo" é uma caixa vazia com mariposa | trilha do Tatu |
 
-Vídeos do Tatu (`ze_tatu_*`): música só de `assets/musicas_tatu/`, tela cheia (sem produtos), não abrem carrossel.
+Vídeos do Tatu (`ze_tatu_*`): o Tatu Carão é o arqui-inimigo do Zé, e o texto de tela e o 1º comentário dizem isso. música só de `assets/musicas_tatu/`, tela cheia (sem produtos), não abrem carrossel.
 
 Vídeos de temporada: `TEMPORADA` em `src/ze.py` diz em que meses cada um pode sair (fora disso não entra no rodízio).
 
