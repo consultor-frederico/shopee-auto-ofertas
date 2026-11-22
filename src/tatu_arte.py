@@ -2,7 +2,7 @@
 
 Vídeos ze_tatu_*: o texto de tela (assets/ze/textos.json) vai numa etiqueta de preço amarela e torta,
 com letra roxa e o fim em vermelho; moldura roxa com tracejado amarelo e selo fixo
-"TATU CARÃO / o arqui-inimigo do Zé". O Zé continua com a faixa marrom e dourada (src/ze_textos.py).
+"TATU CARÃO" (o "arqui-inimigo do Zé" fica só na legenda). O Zé continua com a faixa marrom e dourada (src/ze_textos.py).
 
 Prévia: python -m src.tatu_arte ze_tatu_chegada_semtrilha.mp4   → data/relatorios/tatu_arte/
 """
@@ -65,7 +65,7 @@ def cartela(texto, destino):
 
 
 def moldura(destino):
-    """Borda roxa com tracejado amarelo de etiqueta + selo fixo 'TATU CARÃO / arqui-inimigo do Zé'."""
+    """Borda roxa com tracejado amarelo de etiqueta + selo fixo 'TATU CARÃO'."""
     img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
     b = 22
@@ -89,11 +89,10 @@ def moldura(destino):
     base = Image.alpha_composite(roxo, img)
     # selo fixo (acima da legenda do Instagram)
     selo = Image.new("RGBA", (620, 200), (0, 0, 0, 0))
-    etiqueta(selo, (10, 10, 600, 180), ROXO + (255,), AMARELO + (255,))
+    etiqueta(selo, (10, 10, 600, 130), ROXO + (255,), AMARELO + (255,))
     ds = ImageDraw.Draw(selo)
     f1, f2 = _fonte(62, "Black"), _fonte(34, "Bold")
-    ds.text((115, 30), "TATU CARÃO", font=f1, fill=AMARELO)
-    ds.text((118, 112), "o arqui-inimigo do Zé", font=f2, fill="white")
+    ds.text((115, 30), "TATU CARÃO", font=f1, fill=AMARELO)   # "arqui-inimigo" fica só na legenda (Fred, 22/11)
     selo = selo.rotate(4, expand=True, resample=Image.BICUBIC)
     base.alpha_composite(selo, (40, 1290))
     # carimbo VILÃO no canto
