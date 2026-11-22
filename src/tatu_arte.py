@@ -20,7 +20,7 @@ ROXO_ESC = (34, 8, 52)
 ROXO = (98, 40, 150)
 AMARELO = (255, 210, 0)
 VERMELHO = (224, 40, 40)
-TOPO = 150
+TOPO = 70             # 22/11: subiu a pedido do Fred (cobria o rosto do Tatu)
 
 
 def etiqueta(draw_img, box, fill, outline, furo=True):
@@ -39,7 +39,7 @@ def etiqueta(draw_img, box, fill, outline, furo=True):
 def cartela(texto, destino):
     img = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     d = ImageDraw.Draw(img)
-    tam = 64
+    tam = 56
     while True:
         f = _fonte(tam, "Black")
         linhas = ze_textos._quebrar(d, texto, f, W - 300)
