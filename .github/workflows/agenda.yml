@@ -34,19 +34,26 @@ jobs:
           # e o Zé pequeno embaixo (src/achados.py capa_de_produto), ok do Fred
           # 08/11/2026 (Fred): 1 carrossel por dia de cada loja + 1 geral: 07:45 geral (vídeo do Zé),
           # 12:45 só AliExpress, 16:30 só Shopee, 18:45 só Mercado Livre (qua/sáb o Kit fica às 18:45 e o ML vai às 21:30)
+          # 24/11/2026 (Fred): seguir a recomendação do Instagram (7 Reels + 10 posts por semana). Estavam saindo ~29
+          # posts/semana com alcance ~5 contas cada. Agora o feed tem 1 carrossel por dia às 18:45, revezando a loja,
+          # + Kit de Natal 3x/semana às 20:00 (ter, qui, dom) = 10 posts. Reels do Zé segue todo dia 13:30.
+          #   seg Mercado Livre ("Esse ou esse?") · ter Shopee · qua Kit do Zé · qui Mercado Livre ("Adivinha o preço")
+          #   sex AliExpress · sáb Kit do Zé · dom geral (todas as lojas)
+          # Antes: 07:45 geral, 12:45 AliExpress, 16:30 Shopee, 18:45 ML (qua/sáb Kit e ML 21:30) e Natal todo dia 20:00.
           LOJA=""
-          if [ "$HQ" = "07:45" ]; then WFS="$WFS achados.yml"; fi
-          if [ "$HQ" = "12:45" ]; then LOJA="aliexpress"; fi
-          if [ "$HQ" = "16:30" ]; then LOJA="shopee"; fi
           if [ "$HQ" = "18:45" ]; then
-            if [ "$DOW" = "3" ] || [ "$DOW" = "6" ]; then WFS="$WFS kits.yml"; else LOJA="mercadolivre"; fi
+            case "$DOW" in
+              1|4) LOJA="mercadolivre" ;;
+              2) LOJA="shopee" ;;
+              3|6) WFS="$WFS kits.yml" ;;
+              5) LOJA="aliexpress" ;;
+              7) WFS="$WFS achados.yml" ;;
+            esac
           fi
-          if [ "$HQ" = "21:30" ] && { [ "$DOW" = "3" ] || [ "$DOW" = "6" ]; }; then LOJA="mercadolivre"; fi
-          # 03/11/2026: Kit de Natal TODO DIA às 20:00 (pedido do Fred), só temas de Natal e nunca o mesmo produto
-          # (src/kits.py, KIT_MODO=natal). Vai de novembro a 31/12; fora da temporada o kits.yml não posta nada.
+          # Kit de Natal (src/kits.py, KIT_MODO=natal), nunca o mesmo produto; só nov/dez. 03/11 era todo dia, 24/11 passou a ter/qui/dom.
           NATAL=""
           MES=$(date +%m)
-          if [ "$HQ" = "20:00" ] && { [ "$MES" = "11" ] || [ "$MES" = "12" ]; }; then NATAL=1; fi
+          if [ "$HQ" = "20:00" ] && { [ "$MES" = "11" ] || [ "$MES" = "12" ]; } && { [ "$DOW" = "2" ] || [ "$DOW" = "4" ] || [ "$DOW" = "7" ]; }; then NATAL=1; fi
           # postar.yml agora só entrega "Você pediu, o Zé achou" e vídeos manuais (não faz nada se não houver)
           case "$HQ" in 10:45|15:45|20:45) WFS="$WFS postar.yml" ;; esac
           if [ "$Q" = "15" ] && [ $((10#$H)) -ge 8 ] && [ $((10#$H)) -le 22 ]; then WFS="$WFS telegram-ofertas.yml"; fi
