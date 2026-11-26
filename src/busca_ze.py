@@ -127,10 +127,10 @@ def _junta_pedido(anterior, texto, novo):
         bruto = _chamar_groq(PROMPT_SEGUE.format(ant=anterior.replace('"', "'"),
                                                  texto=(texto or "")[:200].replace('"', "'")))
         t = str(json.loads(re.search(r"\{.*\}", bruto, re.S).group(0)).get("produto", "")).strip().lower()[:60]
-        return t or novo
+        return _com_voltagem(texto, t or novo)
     except Exception as e:
         print(f"⚠️  IA não juntou com o pedido anterior ({e}); fico com '{novo}'.")
-        return novo
+        return _com_voltagem(texto, novo or (anterior if _voltagem(texto) else ""))
 
 
 def termo(texto, anterior=""):
@@ -140,8 +140,16 @@ def termo(texto, anterior=""):
     if config.GROQ_API_KEY:
         t = pedidos._refinar({"texto": texto, "termo": ""})
         if t is not None:
-            return _junta_pedido(anterior, texto, t) if (t and anterior) else t
-    return pedidos.termo_do_comentario(texto, exigir_pedido=False)
+            return _junta_pedido(anterior, texto, t) if (t and anterior) else _com_voltagem(texto, t)
+    return _com_voltagem(texto, pedidos.termo_do_comentario(texto, exigir_pedido=False))
+
+
+def _com_voltagem(texto, t):
+    """A IA limpa o termo e às vezes tira o "220v" que a pessoa pediu: volta com ele (25/11/2026, Lorena)."""
+    v = _voltagem(texto)
+    if not t or not v or _voltagem(t):
+        return t
+    return f"{t} {v if v == 'bivolt' else v + 'v'}"
 
 
 PRECO_MAX = float(__import__("os").getenv("BUSCA_PRECO_MAX", "0"))   # 0 = sem limite de preço na Busca do Zé
@@ -302,7 +310,8 @@ Abaixo, produtos encontrados (número: nome — preço). Quais SÃO o próprio p
 Não conta acessório, peça, capa, suporte, refil, nem produto de outro tipo que só cita a palavra
 (ex.: pediu "cama casal" → lençol, colcha ou protetor "para cama casal" NÃO servem; só a cama).
 Respeite as características do pedido (adulto ou infantil, masculino ou feminino, tamanho, cor, voltagem):
-produto bivolt serve para qualquer voltagem pedida (110 V, 127 V ou 220 V);
+produto bivolt serve para qualquer voltagem pedida (110 V, 127 V ou 220 V), e se o nome não diz a voltagem ele
+pode servir; só tire o que diz outra voltagem;
 se ele não pediu infantil/criança, produto infantil NÃO serve; se pediu adulto, só adulto.
 Entenda o pedido pelo uso mais comum do produto: "projetor parede" é projetor de imagem/vídeo (de filme,
 de ligar no celular), NÃO projetor de estrelas/galáxia, luminária ou luz decorativa; versão de
