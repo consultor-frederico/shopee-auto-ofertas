@@ -184,9 +184,6 @@ def _brl(v):
     return f"{v:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
 
-_DIAG = []
-
-
 def produto(pid, categoria, posicao, nome_cat, pct=10.0):
     """Produto do catálogo → oferta no formato do robô (o mesmo da Shopee/AliExpress)."""
     r = _get(f"/products/{pid}")
@@ -203,18 +200,10 @@ def produto(pid, categoria, posicao, nome_cat, pct=10.0):
         bb = p.get("buy_box_winner") or {}
         if bb.get("price"):
             itens = [bb]
-        elif categoria == "busca":
-            if not _DIAG:
-                _DIAG.append(1)
-                import json as _j
-                print(f"⚠️  ML {pid}: buy_box_winner={str(bb)[:200]} | campos: {sorted(p)}")
-                print("⚠️  ML campos com preço: " + _j.dumps({k: v for k, v in p.items() if any(
-                    w in k for w in ("price", "buy", "winner", "picker", "status", "settings"))}, ensure_ascii=False)[:1500])
-                for cam in (f"/items?ids={pid}", f"/products/{pid}/items?limit=1", f"/sites/MLB/search?product_id={pid}"):
-                    rr = _get(cam.split("?")[0], **dict(x.split("=") for x in cam.split("?")[1].split("&")))
-                    print(f"⚠️  ML teste {cam}: {rr.status_code} {rr.text[:200]}")
+        elif categoria == "busca":   # sem preço na API: fica o nome para quem for responder à mão
+            print(f"⚠️  ML {pid} sem preço na API: {p.get('name', '')[:80]} → {link_afiliado(f'https://www.mercadolivre.com.br/p/{pid}')}")
     if not itens:
-        if categoria == "busca":   # diagnóstico da Busca do Zé (26/11/2026)
+        if categoria == "busca" and r2.status_code != 403:   # diagnóstico da Busca do Zé (26/11/2026)
             print(f"⚠️  ML {pid}: sem anúncio novo (itens respondeu {r2.status_code}: {r2.text[:120]})")
         return None
     melhor = min(itens, key=lambda i: i["price"])
