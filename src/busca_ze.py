@@ -1638,7 +1638,11 @@ if __name__ == "__main__":   # teste: python -m src.busca_ze "celular" "fone blu
         ant, _, t = t.rpartition(">")   # "roupa de motocross > consegue de adulto?" = conversa com 2 mensagens
         ant = (termo(ant.strip()) or ant.strip()) if ant else ""
         busca, teto = _sem_teto(t)
-        busca = busca if " ou " in busca else _manter_ou(t, termo(busca, ant) or busca)
+        if " ou " not in busca:   # igual ao direct: detalhe sem produto ("preciso em 220 v") continua a busca anterior
+            novo = termo(busca, ant)
+            if not novo and ant and _so_detalhe(busca):
+                novo = _junta_pedido(ant, busca, "")
+            busca = _manter_ou(t, novo or busca)
         print(f"\n🔎 {t.strip()}" + (f"  (antes: {ant})" if ant else "") + f"  → busca \"{_com_teto(busca, teto)}\"")
         try:
             for o in achados(busca, preco_max=teto):
