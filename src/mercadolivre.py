@@ -194,6 +194,14 @@ def produto(pid, categoria, posicao, nome_cat, pct=10.0):
     r2 = _get(f"/products/{pid}/items", limit=20)
     itens = r2.json().get("results", []) if r2.status_code == 200 else []
     itens = [i for i in itens if i.get("condition") == "new" and i.get("price")]
+    if not itens and r2.status_code == 403:
+        # 26/11/2026: desde ~21/11 o ML responde 403 em /products/{id}/items (PolicyAgent) e o ML sumiu do
+        # garimpo e da Busca do Zé. O próprio produto do catálogo traz o vendedor que ganha a vitrine.
+        bb = p.get("buy_box_winner") or {}
+        if bb.get("price"):
+            itens = [bb]
+        elif categoria == "busca":
+            print(f"⚠️  ML {pid}: sem buy_box_winner; campos do produto: {sorted(p)[:40]}")
     if not itens:
         if categoria == "busca":   # diagnóstico da Busca do Zé (26/11/2026)
             print(f"⚠️  ML {pid}: sem anúncio novo (itens respondeu {r2.status_code}: {r2.text[:120]})")
