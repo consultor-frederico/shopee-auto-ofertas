@@ -39,6 +39,32 @@ def _onde(lojas=None):
     partes = [nomes[l] for l in (lojas or LOJAS) if l in nomes] or ["na Shopee"]
     return partes[0] if len(partes) == 1 else ", ".join(partes[:-1]) + " e " + partes[-1]
 
+
+# 26/11/2026 (Fred: "se o cliente pedir mercado livre foque onde ele pedir"; Herica pediu "Iphone 17" e depois
+# "Procura no mercado livre por favor"): quem cita uma loja recebe só achados dessa loja
+PEDE_LOJA = (("mercadolivre", r"mercado\s*livre|mercadolivre|\b(?:no|do|pelo|pela|via|em|na|da)\s+(?:ml|meli)\b"),
+             ("shopee", r"\bshop+e+\b|\bxopi\b"),
+             ("aliexpress", r"\bali\s*express\b|\baliexpres+\b|\baliex\b"))
+
+
+def loja_pedida(texto):
+    """A loja que a pessoa pediu ("procura no mercado livre", "tem na shopee?") — "" se não pediu (ou se pediu
+    mais de uma, ou uma loja em que o Zé não busca)."""
+    import re
+    n = _norm(texto)
+    achadas = [l for l, rx in PEDE_LOJA if re.search(rx, n) and l in LOJAS]
+    return achadas[0] if len(achadas) == 1 else ""
+
+
+def _sem_loja(texto):
+    """Tira a loja do texto antes de virar termo de busca ("iphone 17 no mercado livre" → "iphone 17")."""
+    import re
+    t = _norm(texto)
+    for _, rx in PEDE_LOJA:
+        t = re.sub(r"(?:\b(?:procura|procure|busca|busque|ve|ver|olha|tem|so|somente|apenas)\s+)?"
+                   r"(?:\b(?:no|na|do|da|pelo|pela|via|em)\s+)?(?:" + rx + r")", " ", t)
+    return " ".join(t.split()).strip(" ,.;:-")
+
 PUBLICAS = ["@{u} o Zé achou! ⛏️ Te mandei no direct 📩",
             "Achei, @{u}! 🤠 Confere o seu direct 📲",
             "@{u} garimpado! ⛏️ Os achados estão no seu direct 💌"]
@@ -642,8 +668,9 @@ def achados(t, lojas=None, preco_max=0, livre=False):
             bons = sorted(conferidos, key=_pontos, reverse=True)
         bons = _sem_repetidos(bons)   # mesmo produto em duas lojas: fica o mais barato
         escolhidos, n_loja = [], {}
+        teto_loja = ACHADOS if len(lojas) == 1 else MAX_POR_LOJA   # pediu uma loja: os 3 podem ser dela
         for o in bons:
-            if n_loja.get(_loja(o), 0) < MAX_POR_LOJA:
+            if n_loja.get(_loja(o), 0) < teto_loja:
                 escolhidos.append(o)
                 n_loja[_loja(o)] = n_loja.get(_loja(o), 0) + 1
         if escolhidos:
@@ -680,9 +707,9 @@ def _curto(nome, n=45):
     return nome if len(nome) <= n else nome[:n - 1].rstrip() + "…"
 
 
-def mensagem(t, ofs):
-    linhas = [(f"Oi! 💚 Aqui é a Ana. Procurei \"{t}\" {_onde()} e separei pra você:" if ANA
-               else f"Oi! 🤠 Aqui é o Zé Garimpo. Garimpei \"{t}\" {_onde()} e separei os melhores:"), ""]
+def mensagem(t, ofs, lojas=None):
+    linhas = [(f"Oi! 💚 Aqui é a Ana. Procurei \"{t}\" {_onde(lojas)} e separei pra você:" if ANA
+               else f"Oi! 🤠 Aqui é o Zé Garimpo. Garimpei \"{t}\" {_onde(lojas)} e separei os melhores:"), ""]
     varias = len(LOJAS) > 1
     for i, o in enumerate(ofs, 1):
         intl = " 🌎 internacional" if o.get("internacional") else ""
@@ -777,11 +804,11 @@ def _cartao(i, o):
             "image_url": _foto_cartao(o), "default_action": {"type": "web_url", "url": link}, "buttons": botoes}
 
 
-def enviar_dm(api, ig_id, cid, t, ofs, destinatario=None):
+def enviar_dm(api, ig_id, cid, t, ofs, destinatario=None, lojas=None):
     """Manda os achados no direct: como resposta privada a um comentário (cid) ou,
     numa conversa que a pessoa abriu, direto para ela (destinatario = id da pessoa)."""
     para = {"id": destinatario} if destinatario else {"comment_id": cid}
-    texto = mensagem(t, ofs)
+    texto = mensagem(t, ofs, lojas)
     try:   # 31/10/2026 (Fred): cartões com foto, lado a lado, cada um com o botão do achado e o da vitrine da bio
         return api._req("POST", f"{ig_id}/messages", json={
             "recipient": para,
@@ -812,7 +839,7 @@ MARCAS_ROBO = ("Oi! 😊", "Oi! 🤠", "Oi! 💚", "Oiê!", "Oi, amiga!", "Aaah"
 PERGUNTA_OUTROS = ("Se quiser, eu te mostro outros vendedores. Como eles não passam na avaliação que eu faço "
                    "(nota e vendas), não posso garantir a qualidade: a escolha fica com você. "
                    "Quer que eu mostre? Responde SIM ou NÃO 🙂")
-DM_NADA = ("Oi! 🤠 Aqui é o Zé Garimpo. Cavei \"{t}\" na Shopee, no Mercado Livre e no AliExpress, mas não "
+DM_NADA = ("Oi! 🤠 Aqui é o Zé Garimpo. Cavei \"{t}\" {onde}, mas não "
            "achei de vendedor confiável 😅 Eu só mando produto de vendedor bem avaliado e com muitas vendas, "
            "pra você não cair em furada.\n\n" + PERGUNTA_OUTROS)
 DM_OUTROS = ("Oi! 🤠 Prontinho, garimpei em outros vendedores pra você 👇\n\n⚠️ Atenção: esses têm menos "
@@ -1207,7 +1234,15 @@ def rodar_dms(api, minha):
         # resposta ao "Era isso que você procurava?" continua a mesma busca, mesmo horas depois
         janela = JANELA_DM if (conferiu or pediu_detalhe) else SEGUE_PEDIDO
         anterior_t = _pedido_recente(feitos_ids, autor, agora, janela)
-        t = termo(texto_todo, anterior_t) if (acabou_de_perguntar or config.GROQ_API_KEY) else pedidos._termo(texto)
+        # 26/11/2026 (Fred/Herica): "procura no mercado livre" → busca só na loja pedida; sem produto na
+        # mensagem, é o mesmo pedido de antes nessa loja
+        loja = loja_pedida(texto_todo)
+        texto_busca = _sem_loja(texto_todo) if loja else texto_todo
+        lojas = [loja] if loja else (_lojas_recentes(feitos_ids, autor, agora, janela) if anterior_t else None)
+        t = ((termo(texto_busca, anterior_t) if texto_busca else "")
+             if (acabou_de_perguntar or config.GROQ_API_KEY) else pedidos._termo(texto_busca))
+        if loja and not t and anterior_t:
+            t = anterior_t
         if not t and anterior_t and config.GROQ_API_KEY and (pediu_detalhe or _so_detalhe(texto_todo)):
             # 18/11/2026 (Vanessa: "Robô aspirador mondial" e depois "Preto ou branco. Preço abaixo de 350,00"
             # recebeu "qual achado você quer?" por causa da palavra "preço"): detalhe sem produto continua a busca
@@ -1220,6 +1255,8 @@ def rodar_dms(api, minha):
                "termo": t, "em": agora.strftime(_fmt())}
         if teto:
             reg["preco_max"] = teto
+        if lojas:
+            reg["lojas"] = lojas
         if not t and conferiu and not (_negou(texto) or _agradeceu(texto)):
             conferiu = False   # 7/11/2026 (Bianca: "Como funciona?" recebeu "Eu que agradeço!"): vira conversa
         if not t and conferiu:   # 2/11/2026 (Allan: "Sim obrigado" ficou sem resposta)
@@ -1280,13 +1317,13 @@ def rodar_dms(api, minha):
             feitos_ids[ultima["id"]] = reg
             continue
         try:
-            ofs = achados(t, preco_max=teto)
+            ofs = achados(t, lojas=lojas, preco_max=teto)
         except Exception as e:
             print(f"⚠️  Busca do Zé no direct '{t}' falhou: {e}")
             continue
         try:
             if ofs:
-                r = enviar_dm(api, ig_id, None, _com_teto(t, teto), ofs, destinatario=autor)
+                r = enviar_dm(api, ig_id, None, _com_teto(t, teto), ofs, destinatario=autor, lojas=lojas)
                 reg.update({"status": "entregue", "achados": [o["id"] for o in ofs], **_resumo(ofs)})
                 try:   # 2/11/2026 (Fred): o Zé confere se acertou; a resposta vira detalhe da mesma busca
                     c = api._req("POST", f"{ig_id}/messages", json={"recipient": {"id": autor},
@@ -1297,7 +1334,7 @@ def rodar_dms(api, minha):
                     print(f"⚠️  Não mandei a pergunta de conferência: {e}")
             else:
                 r = api._req("POST", f"{ig_id}/messages", json={"recipient": {"id": autor},
-                                                                "message": {"text": DM_NADA.format(t=_com_teto(t, teto))}})
+                                                                "message": {"text": DM_NADA.format(t=_com_teto(t, teto), onde=_onde(lojas))}})
                 reg["status"] = "nao_achou"
                 reg["oferta_outros"] = not ANA
             if (r or {}).get("message_id"):
@@ -1358,13 +1395,13 @@ def _responder_outros(api, ig_id, autor, feitos, agora, aceitou):
         return [(r or {}).get("message_id")], "recusou_outros" if not aceitou else "sem_pedido", "", []
     pedido = max(regs, key=lambda v: v["em"])
     pedido["oferta_outros"] = False   # oferece uma vez só
-    t, teto = pedido["termo"], pedido.get("preco_max", 0)
-    ofs = achados(t, preco_max=teto, livre=True)
+    t, teto, lojas = pedido["termo"], pedido.get("preco_max", 0), pedido.get("lojas")
+    ofs = achados(t, lojas=lojas, preco_max=teto, livre=True)
     if not ofs:
         r = enviar(DM_OUTROS_NADA.format(t=_com_teto(t, teto)))
         return [(r or {}).get("message_id")], "outros_nao_achou", t, []
     ids = [(enviar(DM_OUTROS) or {}).get("message_id")]
-    ids.append((enviar_dm(api, ig_id, None, _com_teto(t, teto), ofs, destinatario=autor) or {}).get("message_id"))
+    ids.append((enviar_dm(api, ig_id, None, _com_teto(t, teto), ofs, destinatario=autor, lojas=lojas) or {}).get("message_id"))
     return ids, "outros_vendedores", t, ofs
 
 
@@ -1387,6 +1424,13 @@ def _teto_recente(feitos, autor, agora, janela=None):
     limite = (agora - (janela or SEGUE_PEDIDO)).strftime(_fmt())
     regs = [v for v in feitos.values() if v.get("autor") == autor and v.get("termo") and v.get("em", "") >= limite]
     return max(regs, key=lambda v: v["em"]).get("preco_max", 0) if regs else 0
+
+
+def _lojas_recentes(feitos, autor, agora, janela=None):
+    """A loja que a pessoa pediu no último pedido ("no mercado livre" vale também para o detalhe seguinte)."""
+    limite = (agora - (janela or SEGUE_PEDIDO)).strftime(_fmt())
+    regs = [v for v in feitos.values() if v.get("autor") == autor and v.get("termo") and v.get("em", "") >= limite]
+    return max(regs, key=lambda v: v["em"]).get("lojas") if regs else None
 
 
 def _so_detalhe(texto):
@@ -1591,9 +1635,11 @@ if __name__ == "__main__":   # teste: python -m src.busca_ze "celular" "fone blu
         if t.lower().startswith("escolher:"):
             ofs, teto = escolhidos(t), 0
             t = _com_teto(*_sem_teto(t.split(":", 1)[1].split(";")[0].split("::")[0].strip()))
+            lojas = None
         else:
-            t, teto = _sem_teto(t)
-            ofs = achados(t, preco_max=teto)
+            lojas = [loja_pedida(t)] if loja_pedida(t) else None   # "iphone 17 no mercado livre" (26/11/2026)
+            t, teto = _sem_teto(_sem_loja(t) if lojas else t)
+            ofs = achados(t, lojas=lojas, preco_max=teto)
         if not ofs:
             sys.exit(f"::error::Nada bom para '{t}'. Nada foi enviado.")
         # 7/11/2026 (Bruno): as mensagens do envio manual contam como do robô, senão o robô achava
@@ -1602,14 +1648,15 @@ if __name__ == "__main__":   # teste: python -m src.busca_ze "celular" "fone blu
         rs = []
         if intro:
             rs.append(instagram._req("POST", f"{ig}/messages", json={"recipient": {"id": autor}, "message": {"text": intro}}))
-        rs.append(enviar_dm(instagram, ig, None, _com_teto(t, teto), ofs, destinatario=autor))
+        rs.append(enviar_dm(instagram, ig, None, _com_teto(t, teto), ofs, destinatario=autor, lojas=lojas))
         rs.append(instagram._req("POST", f"{ig}/messages", json={"recipient": {"id": autor}, "message": {"text": DM_CONFERE}}))
         robo += [r["message_id"] for r in rs if (r or {}).get("message_id")]
         for o in ofs:
             print(f"::notice::Enviado a @{cofre.oculto(usuario)}: {_nome_loja(o)} R$ {o['preco_fmt']} {_selo(o, True)} — {o['nome'][:80]}")
         d["dms"][f"manual-{_agora().strftime('%Y%m%d%H%M%S')}"] = {
             "autor": autor, "usuario": usuario, "texto": "(envio manual)", "termo": t, "em": _agora().strftime(_fmt()),
-            "status": "entregue", "achados": [o["id"] for o in ofs], **_resumo(ofs), **({"preco_max": teto} if teto else {})}
+            "status": "entregue", "achados": [o["id"] for o in ofs], **_resumo(ofs), **({"preco_max": teto} if teto else {}),
+            **({"lojas": lojas} if lojas else {})}
         salvar(d)
         sys.exit(0)
     if sys.argv[1:2] == ["atalhos"]:   # python -m src.busca_ze atalhos → grava as perguntas do direct
@@ -1637,15 +1684,20 @@ if __name__ == "__main__":   # teste: python -m src.busca_ze "celular" "fone blu
             continue
         ant, _, t = t.rpartition(">")   # "roupa de motocross > consegue de adulto?" = conversa com 2 mensagens
         ant = (termo(ant.strip()) or ant.strip()) if ant else ""
-        busca, teto = _sem_teto(t)
+        loja = loja_pedida(t)   # "iphone 17 > procura no mercado livre" (26/11/2026)
+        lojas = [loja] if loja else None
+        busca, teto = _sem_teto(_sem_loja(t) if loja else t)
+        if loja and ant and not (termo(busca, ant) if busca else ""):
+            busca = ant
         if " ou " not in busca:   # igual ao direct: detalhe sem produto ("preciso em 220 v") continua a busca anterior
             novo = termo(busca, ant)
             if not novo and ant and _so_detalhe(busca):
                 novo = _junta_pedido(ant, busca, "")
             busca = _manter_ou(t, novo or busca)
-        print(f"\n🔎 {t.strip()}" + (f"  (antes: {ant})" if ant else "") + f"  → busca \"{_com_teto(busca, teto)}\"")
+        print(f"\n🔎 {t.strip()}" + (f"  (antes: {ant})" if ant else "") + f"  → busca \"{_com_teto(busca, teto)}\""
+              + (f" só {_onde(lojas)}" if lojas else ""))
         try:
-            for o in achados(busca, preco_max=teto):
+            for o in achados(busca, lojas=lojas, preco_max=teto):
                 print(f"  • {_nome_loja(o):<14} R$ {o['preco_fmt']:>9} {_selo(o, True):<28} — {o['nome'][:80]}")
         except Exception as e:
             print(f"  ⚠️  {e}")
