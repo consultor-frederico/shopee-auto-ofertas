@@ -1633,6 +1633,28 @@ if __name__ == "__main__":   # teste: python -m src.busca_ze "celular" "fone blu
         if not regs:
             sys.exit(f"::error::Não achei busca de @{cofre.oculto(usuario)} no direct. Nada foi enviado.")
         autor = max(regs, key=lambda v: v["em"])["autor"]
+        if t.lower().startswith("ml:"):   # 26/11/2026 (Herica): cartões do catálogo do ML sem preço (API não dá)
+            from . import mercadolivre
+            cards = []
+            for i, pid in enumerate([x.strip().upper() for x in t[3:].split(";") if x.strip()][:ACHADOS], 1):
+                pr = mercadolivre._get(f"/products/{pid}").json()
+                fotos = [f.get("url") for f in pr.get("pictures") or [] if f.get("url")]
+                link = mercadolivre.link_afiliado(f"https://www.mercadolivre.com.br/p/{pid}")
+                cards.append({"title": f"{i}. {_curto(pr.get('name', ''), 70)}",
+                              "subtitle": "Mercado Livre • preço do dia na página • link de afiliado",
+                              "image_url": fotos[0] if fotos else None, "default_action": {"type": "web_url", "url": link},
+                              "buttons": [{"type": "web_url", "url": link, "title": f"🛒 Ver achado {i}"}]})
+                print(f"::notice::Cartão {i}: {pr.get('name')} | foto={'sim' if fotos else 'NÃO'}")
+            robo = d.setdefault("msgs_robo", [])
+            rs = []
+            if intro:
+                rs.append(instagram._req("POST", f"{ig}/messages", json={"recipient": {"id": autor}, "message": {"text": intro}}))
+            rs.append(instagram._req("POST", f"{ig}/messages", json={"recipient": {"id": autor}, "message": {
+                "attachment": {"type": "template", "payload": {"template_type": "generic", "elements": cards}}}}))
+            robo += [r["message_id"] for r in rs if (r or {}).get("message_id")]
+            salvar(d)
+            print(f"::notice::Enviados {len(cards)} cartões do Mercado Livre a @{cofre.oculto(usuario)}.")
+            sys.exit(0)
         if t.lower().startswith("escolher:"):
             ofs, teto = escolhidos(t), 0
             t = _com_teto(*_sem_teto(t.split(":", 1)[1].split(";")[0].split("::")[0].strip()))
