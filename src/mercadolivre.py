@@ -195,6 +195,8 @@ def produto(pid, categoria, posicao, nome_cat, pct=10.0):
     itens = r2.json().get("results", []) if r2.status_code == 200 else []
     itens = [i for i in itens if i.get("condition") == "new" and i.get("price")]
     if not itens:
+        if categoria == "busca":   # diagnóstico da Busca do Zé (26/11/2026)
+            print(f"⚠️  ML {pid}: sem anúncio novo (itens respondeu {r2.status_code}: {r2.text[:120]})")
         return None
     melhor = min(itens, key=lambda i: i["price"])
     preco = float(melhor["price"])
@@ -254,6 +256,7 @@ def buscar(termo, quantos=12):
     if r.status_code != 200:
         raise RuntimeError(f"busca no catálogo respondeu {r.status_code}: {r.text[:150]}")
     ids = [x["id"] for x in r.json().get("results", []) if x.get("id")][:quantos]
+    print(f"🔎 ML '{termo}': {len(ids)} produtos no catálogo.")
     from concurrent.futures import ThreadPoolExecutor
 
     def um(par):
