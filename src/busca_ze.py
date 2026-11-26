@@ -14,6 +14,7 @@ Vale também em TODOS os Reels de oferta (últimos 7 dias): ali, o comentário q
 do próprio produto do Reels continuam com o responder (link da oferta no direct).
 """
 import json
+import re
 from datetime import timedelta
 
 from . import cofre, config, vendas
@@ -112,7 +113,8 @@ Se ele descreve como o produto funciona ou para que serve, troque pelo nome cert
 vapor" + "a roupa fica pendurada no cabide e passa no vapor" → "vaporizador de roupas vertical").
 Se ele pediu outro produto, use só o produto novo.
 Se ele dá opções com "ou" (marcas, cores), mantenha o "ou" no termo (ex.: "robô aspirador" + "mondial ou wap" →
-"robô aspirador mondial ou wap"). Nunca ponha preço no termo.
+"robô aspirador mondial ou wap"). Voltagem entra no termo como "220v", "110v" ou "bivolt" (ex.: "robô aspirador
+xiaomi h50" + "preciso em 220 v" → "robô aspirador xiaomi h50 220v"). Nunca ponha preço no termo.
 Responda só com JSON {{"produto": "<termo curto de busca na Shopee, 1 a 5 palavras>"}}."""
 
 
@@ -195,10 +197,38 @@ def _outra_versao(nome_p, ped_p):
     return False
 
 
+VOLTS = re.compile(r"\b(110|127|220)\s*(?:v|volts?)\b|\bbivolt\b")
+
+
+def _voltagem(txt):
+    """'220v', '220 v', '220 volts' → '220'; '127' conta como '110'; 'bivolt' → 'bivolt'; nada → ''."""
+    m = VOLTS.search(_norm(txt))
+    if not m:
+        return ""
+    return "bivolt" if not m.group(1) else ("110" if m.group(1) == "127" else m.group(1))
+
+
+def _voltagem_serve(nome, pedida):
+    """25/11/2026 (Lorena: "Robô aspirador xiaomi h50" e depois "Preciso em 220 v"): bivolt serve para 110 e 220;
+    produto sem voltagem no nome passa (a IA confere); só sai o que diz outra voltagem."""
+    n = _norm(nome)
+    if not pedida or "bivolt" in n:
+        return True
+    achadas = {"110" if v == "127" else v for v in re.findall(r"\b(110|127|220)\s*(?:v|volts?)\b", n)}
+    if pedida == "bivolt":
+        return not achadas or len(achadas) > 1
+    return not achadas or pedida in achadas
+
+
 def relevante(nome, t):
     """O produto É o que a pessoa pediu? Todas as palavras do pedido no nome, e não pode ser
     acessório "de/para" a coisa pedida (capinha de celular, suporte para celular...)."""
     import re
+    volt = _voltagem(t)
+    if volt:   # voltagem não precisa estar escrita igual no nome: bivolt serve para 220v
+        if not _voltagem_serve(nome, volt):
+            return False
+        t = VOLTS.sub(" ", _norm(t))
     pedido = [p for p in _palavras(t) if len(p) > 2 and p not in ("para", "pra", "com", "sem")]
     pedido = [p for p in pedido if p not in GENERICAS] or pedido
     nome_p = _palavras(nome)
@@ -272,6 +302,7 @@ Abaixo, produtos encontrados (número: nome — preço). Quais SÃO o próprio p
 Não conta acessório, peça, capa, suporte, refil, nem produto de outro tipo que só cita a palavra
 (ex.: pediu "cama casal" → lençol, colcha ou protetor "para cama casal" NÃO servem; só a cama).
 Respeite as características do pedido (adulto ou infantil, masculino ou feminino, tamanho, cor, voltagem):
+produto bivolt serve para qualquer voltagem pedida (110 V, 127 V ou 220 V);
 se ele não pediu infantil/criança, produto infantil NÃO serve; se pediu adulto, só adulto.
 Entenda o pedido pelo uso mais comum do produto: "projetor parede" é projetor de imagem/vídeo (de filme,
 de ligar no celular), NÃO projetor de estrelas/galáxia, luminária ou luz decorativa; versão de
@@ -574,7 +605,9 @@ def achados(t, lojas=None, preco_max=0, livre=False):
     if len(alternativas) > 1:   # "aspirador mondial ou wap": uma busca por opção, juntando no fim
         return _juntar_opcoes([achados(a, lojas, preco_max, livre) for a in alternativas])
     lojas = list(lojas or LOJAS)
-    por_loja = _buscar_lojas(t, lojas)
+    # 25/11/2026 (Lorena): busca sem a voltagem ("220v" esconde os bivolt); o filtro relevante() confere a voltagem
+    busca = " ".join(VOLTS.sub(" ", t).split()) if _voltagem(t) else t
+    por_loja = _buscar_lojas(busca or t, lojas)
     vistos, unicos = set(), []
     for o in (o for ofs in por_loja.values() for o in ofs):
         if o["id"] not in vistos:
@@ -1351,8 +1384,9 @@ def _so_detalhe(texto):
     """Mensagem que só detalha a busca (cor, preço, marca, tamanho), sem pedir link de um achado."""
     import re
     n = _norm(texto)
-    return bool(preco_teto(texto) or re.search(r"\b(ou|cor|preto|preta|branco|branca|azul|rosa|vermelho|cinza|"
-                                               r"marca|marcas|tamanho|modelo|maior|menor|barato|mais barato)\b", n))
+    return bool(preco_teto(texto) or _voltagem(texto) or re.search(
+        r"\b(ou|cor|preto|preta|branco|branca|azul|rosa|vermelho|cinza|marca|marcas|tamanho|modelo|maior|menor|"
+        r"barato|mais barato|voltagem|volts?|versao|adulto|adulta|infantil|masculino|feminino)\b", n))
 
 
 def _manter_ou(texto, t):
