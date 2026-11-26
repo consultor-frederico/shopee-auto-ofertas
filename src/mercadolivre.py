@@ -68,8 +68,15 @@ def access_token():
 
 
 def _get(caminho, **params):
-    r = requests.get(f"{API}{caminho}", params=params, timeout=30,
-                     headers={"Authorization": f"Bearer {access_token()}", "Accept": "application/json"})
+    """26/11/2026 (Herica pediu iPhone 17 no Mercado Livre): o ML às vezes responde 429 "local_rate_limited"
+    (limite por IP, e o GitHub divide IP entre muitos robôs). Espera um pouco e tenta de novo."""
+    import time
+    for tentativa in range(5):
+        r = requests.get(f"{API}{caminho}", params=params, timeout=30,
+                         headers={"Authorization": f"Bearer {access_token()}", "Accept": "application/json"})
+        if r.status_code != 429:
+            return r
+        time.sleep(min(2 ** tentativa * 1.5, 15))
     return r
 
 
