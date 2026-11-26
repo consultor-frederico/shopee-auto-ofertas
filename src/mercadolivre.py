@@ -188,6 +188,7 @@ def produto(pid, categoria, posicao, nome_cat, pct=10.0):
     """Produto do catálogo → oferta no formato do robô (o mesmo da Shopee/AliExpress)."""
     r = _get(f"/products/{pid}")
     if r.status_code != 200:
+        print(f"⚠️  ML {pid}: produto respondeu {r.status_code}")
         return None
     p = r.json()
     r2 = _get(f"/products/{pid}/items", limit=20)

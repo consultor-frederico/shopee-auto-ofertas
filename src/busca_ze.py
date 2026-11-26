@@ -675,6 +675,7 @@ def achados(t, lojas=None, preco_max=0, livre=False):
                 n_loja[_loja(o)] = n_loja.get(_loja(o), 0) + 1
         if escolhidos:
             return escolhidos[:ACHADOS]
+    print(f"🛒 '{t}': encontrados {contagem}, relevantes {len(certos)}, nenhum passou nos filtros.")
     return []
 
 
