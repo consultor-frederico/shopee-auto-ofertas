@@ -1661,12 +1661,21 @@ if __name__ == "__main__":   # teste: python -m src.busca_ze "celular" "fone blu
         if t.lower().startswith("ml:"):   # 26/11/2026 (Herica): cartões do catálogo do ML sem preço (API não dá)
             from . import mercadolivre
             cards = []
-            for i, pid in enumerate([x.strip().upper() for x in t[3:].split(";") if x.strip()][:ACHADOS], 1):
-                pr = mercadolivre._get(f"/products/{pid}").json()
+            for i, item in enumerate([x.strip() for x in t[3:].split(";") if x.strip()][:ACHADOS], 1):
+                pid, _, preco = (p.strip() for p in item.partition("|"))   # 27/11/2026: "ml: URL | 40,90"
+                if pid.lower().startswith("http"):   # link de afiliado pronto (meli.la do painel): botão usa ele
+                    from . import link_ze
+                    o = (link_ze._mercadolivre(pid) or {}).get("oferta") or {}
+                    pr = {"name": o.get("nome", ""), "pictures": [{"url": o["imagem"]}] if o.get("imagem") else []}
+                    link = pid
+                    print(f"::notice::Link {pid} → {o.get('id')} | {o.get('link_afiliado')}")
+                else:
+                    pid = pid.upper()
+                    pr = mercadolivre._get(f"/products/{pid}").json()
+                    link = mercadolivre.link_afiliado(f"https://www.mercadolivre.com.br/p/{pid}")
                 fotos = [f.get("url") for f in pr.get("pictures") or [] if f.get("url")]
-                link = mercadolivre.link_afiliado(f"https://www.mercadolivre.com.br/p/{pid}")
-                cards.append({"title": f"{i}. {_curto(pr.get('name', ''), 70)}",
-                              "subtitle": "Mercado Livre • preço do dia na página • link de afiliado",
+                cards.append({"title": f"{i}. {_curto(pr.get('name', '') or 'Achado do Mercado Livre', 70)}",
+                              "subtitle": f"Mercado Livre • {'R$ ' + preco if preco else 'preço do dia na página'} • link de afiliado",
                               "image_url": fotos[0] if fotos else None, "default_action": {"type": "web_url", "url": link},
                               "buttons": [{"type": "web_url", "url": link, "title": f"🛒 Ver achado {i}"}]})
                 print(f"::notice::Cartão {i}: {pr.get('name')} | foto={'sim' if fotos else 'NÃO'}")
