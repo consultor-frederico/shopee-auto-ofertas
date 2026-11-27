@@ -67,6 +67,11 @@ def escolher(fila, conferir=True, so_especiais=False):
     if loja:   # 🏪 carrossel de uma loja só (08/11/2026, pedido do Fred): 1 por dia de cada loja + 1 geral
         lista = [o for o in lista if _da_loja(o, loja)]
         print(f"🏪 Carrossel só {NOMES_LOJA[loja]}: {len(lista)} candidatos na fila")
+        if len(lista) < MINIMO:   # 27/11/2026: com o ML parado (API 403) o dia dele ficava sem post nenhum (IG e TikTok)
+            os.environ["ACHADOS_LOJA"] = ""   # vira carrossel geral (postar.candidatos_ordenados também lê a variável)
+            nome, loja = NOMES_LOJA[loja], ""
+            lista = [o for o in postar.candidatos_ordenados(fila) if not o.get("video_manual") and not o.get("pedido")]
+            print(f"↩️  Poucos da {nome}: o carrossel de hoje sai misturado ({len(lista)} candidatos)")
     if camadas.ligado():
         lista = [o for o in lista if camadas.especial(o)] + ([] if so_especiais else [o for o in lista if not camadas.especial(o)])
     itens, familias, categorias, ids = [], set(), set(), set()
