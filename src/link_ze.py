@@ -158,9 +158,8 @@ def _aliexpress(url):
     pid = _id_aliexpress(url)
     if not pid:
         final, html, caminho = _abrir(url)
-        todos = " ".join(caminho) + " " + html[:80000]
-        pid = (re.search(r"(?<!\d)(100\d{13})(?!\d)", unquote(unquote(todos))) or [None, None])[1] \
-            or next((p for p in map(_id_aliexpress, caminho) if p), None)
+        # só os endereços do redirecionamento: a página cita outros produtos (recomendados) e dava o id errado
+        pid = next((p for p in map(_id_aliexpress, caminho) if p), None)
     if not pid:
         return None
     track = aliexpress._env("ALIEXPRESS_TRACKING_ID")
