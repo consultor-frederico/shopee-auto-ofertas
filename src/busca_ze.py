@@ -1151,6 +1151,31 @@ def rodar_dms(api, minha):
                                         "em": agora.strftime(_fmt())}
             feitos += 1
             continue
+        from . import link_ze
+        recentes = []   # o que a pessoa mandou desde a última resposta do robô (o link pode vir antes do "tem?")
+        for m in msgs:
+            if (m.get("from") or {}).get("id") == ig_id:
+                break
+            recentes.append(m.get("message") or "")
+        com_link = " ".join(reversed(recentes))
+        if not ANA and link_ze.ATIVO and link_ze.tem_link(com_link):
+            # 🔗 27/11/2026 (Fred): mandou o link de um produto → o Zé devolve o mesmo produto, na mesma loja,
+            # pelo link de afiliado do Garimpo
+            reg = {"autor": autor, "usuario": (ultima.get("from") or {}).get("username", ""), "texto": texto,
+                   "em": agora.strftime(_fmt())}
+            try:
+                ids, status, resumo = link_ze.responder(api, ig_id, autor, com_link)
+                enviados_robo.update(i for i in ids if i)
+                reg.update({"status": status, "links": resumo})
+                print(f"📩 Direct: link de produto → {status} ({'; '.join(resumo)[:200]}).")
+                _copia_fred(reg, com_link, f"[{status}] " + " | ".join(resumo))
+            except Exception as e:
+                reg["status"] = f"erro: {str(e)[:200]}"
+                print(f"::warning::Link no direct: {e}")
+                _avisar_fred(reg, quando)
+            feitos_ids[ultima["id"]] = reg
+            feitos += 1
+            continue
         from . import foto_ze
         if imagem and foto_ze.ATIVO and not ANA and not vale_a_pena.tem_link(texto):
             # 📸 12/11/2026 (Fred): mandou a FOTO de um produto → o Zé reconhece e manda 3 parecidos

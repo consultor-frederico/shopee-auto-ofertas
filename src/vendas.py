@@ -27,6 +27,7 @@ CANAIS = {
     "igstory": "Instagram (story)",
     "igtop": "Instagram (Top 5/carrossel)",
     "zebusca": "Busca do Zé",
+    "zelink": "Link trocado no direct",
     "fbdm": "Facebook",
     "yt": "YouTube",
     "tg": "Telegram",
