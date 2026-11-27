@@ -143,8 +143,11 @@ def _shopee(url):
 # ------------------------------------------------------------------ AliExpress
 def _id_aliexpress(url):
     u = unquote(unquote(url))
+    m = re.search(r"(?<!\d)(100\d{13})(?!\d)", u)   # id do produto (1005…); o 3256… do link curto é outro id
+    if m:
+        return m.group(1)
     m = (re.search(r"/item/(?:\d+/)?(\d{8,})\.html", u) or re.search(r"[?&](?:productId|product_id|itemId)=(\d{8,})", u)
-         or re.search(r"/i/(\d{8,})\.html", u) or re.search(r"\b(100\d{13})\b", u))
+         or re.search(r"/i/(\d{8,})\.html", u))
     return m.group(1) if m else None
 
 
@@ -155,7 +158,9 @@ def _aliexpress(url):
     pid = _id_aliexpress(url)
     if not pid:
         final, html, caminho = _abrir(url)
-        pid = next((p for p in map(_id_aliexpress, caminho) if p), None) or _id_aliexpress(html[:50000])
+        todos = " ".join(caminho) + " " + html[:80000]
+        pid = (re.search(r"(?<!\d)(100\d{13})(?!\d)", unquote(unquote(todos))) or [None, None])[1] \
+            or next((p for p in map(_id_aliexpress, caminho) if p), None)
     if not pid:
         return None
     track = aliexpress._env("ALIEXPRESS_TRACKING_ID")

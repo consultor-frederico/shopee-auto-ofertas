@@ -47,7 +47,7 @@ jobs:
           ML_CLIENT_SECRET: ${{ secrets.ML_CLIENT_SECRET }}  # ID + chave (Client Credentials) e não gira o token do garimpo
           ML_ATIVO: ${{ vars.ML_ATIVO || '1' }}
           BUSCA_FOTO_ATIVO: ${{ vars.BUSCA_FOTO_ATIVO || '1' }}   # 📸 foto no direct → 3 parecidos (ligada 13/11/2026, ok do Fred)
-          LINK_ZE_ATIVO: ${{ vars.LINK_ZE_ATIVO || '0' }}   # 🔗 link de produto no direct → mesmo produto no link do Garimpo (27/11/2026)
+          LINK_ZE_ATIVO: ${{ vars.LINK_ZE_ATIVO || '1' }}   # 🔗 link de produto no direct → mesmo produto no link do Garimpo (ligado 27/11/2026, pedido do Fred)
           SHOPEE_APP_ID: ${{ secrets.SHOPEE_APP_ID }}
           SHOPEE_APP_SECRET: ${{ secrets.SHOPEE_APP_SECRET }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
